@@ -17,7 +17,7 @@ export const {
 } = NextAuth({
   providers: [GitHub],
   callbacks: {
-    jwt({ token, profile }) {
+    async jwt({ token, profile }) {
       if (profile) {
         token.id = profile.id
         token.image = profile.picture
@@ -26,6 +26,10 @@ export const {
     },
     authorized({ auth }) {
       return !!auth?.user // this ensures there is a logged in user for -every- request
+    },
+    async signIn({ profile }) {
+      const isGithubUserAllowed = profile?.login === 'dieharders'
+      return isGithubUserAllowed
     }
   },
   pages: {
