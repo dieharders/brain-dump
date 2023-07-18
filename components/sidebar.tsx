@@ -10,19 +10,21 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { IconSidebar } from '@/components/ui/icons'
+import { IconChat, IconBrain } from '@/components/ui/icons'
 
 export interface SidebarProps {
   children?: React.ReactNode
   title?: string
+  icon?: string
 }
 
-export function Sidebar({ children, title }: SidebarProps) {
+export function Sidebar({ children, title, icon }: SidebarProps) {
+  const Icon = icon === 'chat' || !icon ? IconChat : IconBrain
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" className="-ml-2 h-9 w-9 p-0">
-          <IconSidebar className="h-6 w-6" />
+          <Icon className="h-6 w-6" />
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>

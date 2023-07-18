@@ -24,6 +24,15 @@
     "semi": ["error", "never"],
     "no-multi-spaces": ["error"],
     "no-trailing-spaces": ["warn"],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
+      }
+    ],
     // React
     "react/prop-types": "off",
     "react/jsx-boolean-value": "warn",

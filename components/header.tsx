@@ -20,7 +20,7 @@ export async function Header() {
       {session?.user ? (
         <div className="flex items-center">
           {/* Chat Pane */}
-          <Sidebar title="Chat History">
+          <Sidebar title="Chat History" icon="chat">
             <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
               {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
               {/* @ts-ignore */}
@@ -32,7 +32,7 @@ export async function Header() {
           </Sidebar>
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
           {/* Brains Pane */}
-          <Sidebar title="Brain Collection">
+          <Sidebar title="Brain Collection" icon="brain">
             <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
               {/* @TODO Pass the user id of the vector database */}
               {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
