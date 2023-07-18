@@ -131,6 +131,7 @@ export async function addChat() {
   }
 
   // Start new chat window logic...
+  // reset chat state in main window
 
   revalidatePath('/')
   return redirect('/')
@@ -148,6 +149,7 @@ export async function addBrain() {
   }
 
   // Add new brain dump logic...
+  // reset brains state in main window
 
   revalidatePath('/')
   return redirect('/')

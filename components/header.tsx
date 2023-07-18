@@ -12,37 +12,61 @@ import { SidebarFooter } from '@/components/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ClearData } from '@/components/clear-data'
 import { UserMenu } from '@/components/user-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 export async function Header() {
   const session = await auth()
+  const chatsButton = (
+    <Sidebar title="Chat History" icon="chat">
+      <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore */}
+        <SidebarChatList userId={session?.user?.id} />
+      </React.Suspense>
+      <SidebarFooter>
+        <ClearData clearAction={clearChats} actionTitle="Clear history" />
+      </SidebarFooter>
+    </Sidebar>
+  )
+  const brainsButton = (
+    <Sidebar title="Brain Collection" icon="brain">
+      <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
+        {/* @TODO Pass the user id of the vector database */}
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore */}
+        <SidebarBrainList userId={session?.user?.id} />
+      </React.Suspense>
+      <SidebarFooter>
+        <ClearData clearAction={clearChats} actionTitle="Delete all brains" />
+      </SidebarFooter>
+    </Sidebar>
+  )
+
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
       {session?.user ? (
         <div className="flex items-center">
-          {/* Chat Pane */}
-          <Sidebar title="Chat History" icon="chat">
-            <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-              {/* @ts-ignore */}
-              <SidebarChatList userId={session?.user?.id} />
-            </React.Suspense>
-            <SidebarFooter>
-              <ClearData clearAction={clearChats} actionTitle="Clear history" />
-            </SidebarFooter>
-          </Sidebar>
+          {/* Chats Pane */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/">
+                {chatsButton}
+                <span className="sr-only">Chat History</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Chats</TooltipContent>
+          </Tooltip>
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
           {/* Brains Pane */}
-          <Sidebar title="Brain Collection" icon="brain">
-            <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-              {/* @TODO Pass the user id of the vector database */}
-              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-              {/* @ts-ignore */}
-              <SidebarBrainList userId={session?.user?.id} />
-            </React.Suspense>
-            <SidebarFooter>
-              <ClearData clearAction={clearChats} actionTitle="Delete all brains" />
-            </SidebarFooter>
-          </Sidebar>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/">
+                {brainsButton}
+                <span className="sr-only">Brain Dump Collection</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Brains Dumps</TooltipContent>
+          </Tooltip>
         </div>
       ) : (
         // Login

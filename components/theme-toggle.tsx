@@ -8,9 +8,14 @@ import { IconMoon, IconSun } from '@/components/ui/icons'
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme()
+  const [isLoaded, setIsLoaded] = React.useState(false)
   const [_isTransitioning, startTransition] = React.useTransition()
 
-  return (
+  React.useEffect(() => {
+    setIsLoaded(true)
+  }, [])
+
+  return isLoaded ? (
     <Button
       variant="ghost"
       size="icon"
@@ -20,12 +25,12 @@ export function ThemeToggle() {
         })
       }}
     >
-      {theme === 'dark' ? (
+      {!theme || theme === 'dark' ? (
         <IconMoon className="transition-all" />
       ) : (
         <IconSun className="transition-all" />
       )}
       <span className="sr-only">Toggle theme</span>
     </Button>
-  )
+  ) : null
 }
