@@ -1,16 +1,27 @@
-import { getChats, removeChat, shareChat } from '@/app/actions'
+import { getChats, removeChat, shareChat, addChat } from '@/app/actions'
 import { SidebarActions } from '@/components/sidebar-actions'
+import { AddData } from '@/components/add-data'
 import { SidebarItem } from '@/components/sidebar-item'
 
-export interface SidebarListProps {
+export interface SidebarChatListProps {
   userId?: string
 }
 
-export async function SidebarList({ userId }: SidebarListProps) {
+export async function SidebarChatList({ userId }: SidebarChatListProps) {
   const chats = await getChats(userId)
 
   return (
     <div className="flex-1 overflow-auto">
+      {/* Add new data */}
+      <div className="flex items-center justify-center">
+        <AddData
+          addAction={addChat}
+          actionTitle="+ Add New Chat"
+          actionDescription="This will start a new chat session."
+        ></AddData>
+      </div>
+
+      {/* List of data */}
       {chats?.length ? (
         <div className="space-y-2 px-2">
           {chats.map(
@@ -23,12 +34,12 @@ export async function SidebarList({ userId }: SidebarListProps) {
                     shareChat={shareChat}
                   />
                 </SidebarItem>
-              )
+              ),
           )}
         </div>
       ) : (
         <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">No chat history</p>
+          <p className="text-sm text-muted-foreground">No Chat History</p>
         </div>
       )}
     </div>

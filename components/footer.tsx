@@ -8,16 +8,14 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       className={cn(
         'px-2 text-center text-xs leading-normal text-muted-foreground',
-        className
+        className,
       )}
       {...props}
     >
       Open source AI chatbot built with{' '}
-      <ExternalLink href="https://nextjs.org">Next.js</ExternalLink> and{' '}
-      <ExternalLink href="https://vercel.com/storage/kv">
-        Vercel KV
-      </ExternalLink>
-      .
+      <ExternalLink href="https://nextjs.org">Next.js</ExternalLink>
+      <ExternalLink href="https://vercel.com/storage/kv">Vercel KV</ExternalLink> and{' '}
+      <ExternalLink href="https://supabase.com">Supabase</ExternalLink>.
     </p>
   )
 }

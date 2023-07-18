@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
-
 import { ServerActionResult } from '@/lib/types'
+import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
+import { IconSpinner } from '@/components/ui/icons'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,33 +15,34 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { IconSpinner } from '@/components/ui/icons'
 
-interface ClearHistoryProps {
-  clearChats: () => ServerActionResult<void>
+interface AddDataProps {
+  addAction: () => ServerActionResult<void>
+  actionTitle?: string
+  actionDescription?: string
 }
 
-export function ClearHistory({ clearChats }: ClearHistoryProps) {
+export function AddData(props: AddDataProps) {
+  const { addAction, actionTitle, actionDescription } = props
+  const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
-  const router = useRouter()
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" disabled={isPending}>
           {isPending && <IconSpinner className="mr-2" />}
-          Clear history
+          {actionTitle || '+ Add New'}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>Confirm</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete your chat history and remove your data
-            from our servers.
+            {actionDescription || 'This will add new data.'}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -51,7 +52,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                const result = await clearChats()
+                const result = await addAction()
 
                 if (result && 'error' in result) {
                   toast.error(result.error)
@@ -64,7 +65,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
             }}
           >
             {isPending && <IconSpinner className="mr-2 animate-spin" />}
-            Delete
+            Add
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

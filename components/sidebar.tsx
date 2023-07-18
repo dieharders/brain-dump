@@ -8,15 +8,16 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger
+  SheetTrigger,
 } from '@/components/ui/sheet'
 import { IconSidebar } from '@/components/ui/icons'
 
 export interface SidebarProps {
   children?: React.ReactNode
+  title?: string
 }
 
-export function Sidebar({ children }: SidebarProps) {
+export function Sidebar({ children, title }: SidebarProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -27,7 +28,7 @@ export function Sidebar({ children }: SidebarProps) {
       </SheetTrigger>
       <SheetContent className="inset-y-0 flex h-auto w-[300px] flex-col p-0">
         <SheetHeader className="p-4">
-          <SheetTitle className="text-sm">Chat History</SheetTitle>
+          <SheetTitle className="text-sm">{title || 'Title'}</SheetTitle>
         </SheetHeader>
         {children}
       </SheetContent>

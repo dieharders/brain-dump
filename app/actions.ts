@@ -7,6 +7,8 @@ import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 
+// Chats
+
 export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
@@ -15,7 +17,7 @@ export async function getChats(userId?: string | null) {
   try {
     const pipeline = kv.pipeline()
     const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, {
-      rev: true
+      rev: true,
     })
 
     for (const chat of chats) {
@@ -45,7 +47,7 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 
   if (!session) {
     return {
-      error: 'Unauthorized'
+      error: 'Unauthorized',
     }
   }
 
@@ -53,7 +55,7 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 
   if (uid !== session?.user?.id) {
     return {
-      error: 'Unauthorized'
+      error: 'Unauthorized',
     }
   }
 
@@ -69,7 +71,7 @@ export async function clearChats() {
 
   if (!session?.user?.id) {
     return {
-      error: 'Unauthorized'
+      error: 'Unauthorized',
     }
   }
 
@@ -105,16 +107,48 @@ export async function shareChat(chat: Chat) {
 
   if (!session?.user?.id || session.user.id !== chat.userId) {
     return {
-      error: 'Unauthorized'
+      error: 'Unauthorized',
     }
   }
 
   const payload = {
     ...chat,
-    sharePath: `/share/${chat.id}`
+    sharePath: `/share/${chat.id}`,
   }
 
   await kv.hmset(`chat:${chat.id}`, payload)
 
   return payload
+}
+
+export async function addChat() {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: 'Unauthorized',
+    }
+  }
+
+  // Start new chat window logic...
+
+  revalidatePath('/')
+  return redirect('/')
+}
+
+// Brains
+
+export async function addBrain() {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: 'Unauthorized',
+    }
+  }
+
+  // Add new brain dump logic...
+
+  revalidatePath('/')
+  return redirect('/')
 }

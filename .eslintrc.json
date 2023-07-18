@@ -25,6 +25,7 @@
     "no-multi-spaces": ["error"],
     "no-trailing-spaces": ["warn"],
     // React
+    "react/prop-types": "off",
     "react/jsx-boolean-value": "warn",
     "react/jsx-curly-brace-presence": "warn",
     "react/jsx-fragments": "warn",

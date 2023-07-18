@@ -29,11 +29,7 @@ function IconNextChat({
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor={inverted ? 'white' : 'black'} />
-          <stop
-            offset={1}
-            stopColor={inverted ? 'white' : 'black'}
-            stopOpacity={0}
-          />
+          <stop offset={1} stopColor={inverted ? 'white' : 'black'} stopOpacity={0} />
         </linearGradient>
         <linearGradient
           id={`gradient-${id}-2`}
@@ -44,11 +40,7 @@ function IconNextChat({
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor={inverted ? 'white' : 'black'} />
-          <stop
-            offset={1}
-            stopColor={inverted ? 'white' : 'black'}
-            stopOpacity={0}
-          />
+          <stop offset={1} stopColor={inverted ? 'white' : 'black'} stopOpacity={0} />
         </linearGradient>
       </defs>
       <path
@@ -146,7 +138,7 @@ function IconSeparator({ className, ...props }: React.ComponentProps<'svg'>) {
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1"
-      viewBox="0 0 24 24"
+      viewBox="0 0 32 24"
       aria-hidden="true"
       className={cn('h-4 w-4', className)}
       {...props}
@@ -442,10 +434,7 @@ function IconUsers({ className, ...props }: React.ComponentProps<'svg'>) {
   )
 }
 
-function IconExternalLink({
-  className,
-  ...props
-}: React.ComponentProps<'svg'>) {
+function IconExternalLink({ className, ...props }: React.ComponentProps<'svg'>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -459,10 +448,7 @@ function IconExternalLink({
   )
 }
 
-function IconChevronUpDown({
-  className,
-  ...props
-}: React.ComponentProps<'svg'>) {
+function IconChevronUpDown({ className, ...props }: React.ComponentProps<'svg'>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -503,5 +489,5 @@ export {
   IconShare,
   IconUsers,
   IconExternalLink,
-  IconChevronUpDown
+  IconChevronUpDown,
 }
