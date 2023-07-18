@@ -62,10 +62,10 @@ export async function Header() {
             <TooltipTrigger asChild>
               <Link href="/">
                 {brainsButton}
-                <span className="sr-only">Brain Dump Collection</span>
+                <span className="sr-only">Brains Collection</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent>Brains Dumps</TooltipContent>
+            <TooltipContent>Brain Dumps</TooltipContent>
           </Tooltip>
         </div>
       ) : (
