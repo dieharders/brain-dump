@@ -12,18 +12,18 @@ import { Header } from '@/components/header'
 export const metadata: Metadata = {
   title: {
     default: 'Next.js AI Chatbot',
-    template: `%s - Next.js AI Chatbot`
+    template: `%s - Next.js AI Chatbot`,
   },
   description: 'An AI-powered chatbot template built with Next.js and Vercel.',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' }
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png'
-  }
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 interface RootLayoutProps {
@@ -34,19 +34,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body
-        className={cn(
-          'font-sans antialiased',
-          fontSans.variable,
-          fontMono.variable
-        )}
-      >
+      <body className={cn('font-sans antialiased', fontSans.variable, fontMono.variable)}>
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex min-h-screen flex-col overflow-hidden">
+            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
             {/* @ts-ignore */}
             <Header />
-            <main className="flex flex-col flex-1 bg-muted/50">{children}</main>
+            <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
           </div>
           <TailwindIndicator />
         </Providers>
