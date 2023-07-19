@@ -164,7 +164,3 @@ export async function getBrain(_id: string, _userId: string) {
 
   return { id: '' }
 }
-
-export async function getSettings(_id: string, _userId: string) {
-  return { clientId: '' }
-}

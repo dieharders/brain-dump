@@ -1,16 +1,5 @@
-import { auth } from '@/auth'
-import { getSettings } from '@/app/actions'
-import { Settings } from '@/components/settings'
+import { Settings } from '@/components/features/settings/index'
 
-export interface SettingsPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default async function SettingsPage({ params }: SettingsPageProps) {
-  const session = await auth()
-  const settings = await getSettings(params.id, session.user.id)
-
-  return <Settings settings={settings} />
+export default async function SettingsPage() {
+  return <Settings />
 }

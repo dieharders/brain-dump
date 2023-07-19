@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import Link from 'next/link'
 import {
   Dialog,
@@ -11,47 +10,39 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuLabel,
-} from './ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu'
+import { useSettings } from '@/components/features/settings/hooks'
 
-type Provider = 'openai' | 'anthropic' | 'tii' | 'meta' | 'huggingface'
-type OpenAIModel = 'gpt-3.5-turbo' | 'gpt-4'
-
-export interface SettingsProps {
-  settings: { clientId: string }
-}
-
-export function Settings({ settings }: SettingsProps) {
-  const [provider, setProvider] = useState<Provider>('openai')
-  const [model, setModel] = useState<OpenAIModel>('gpt-3.5-turbo')
+export function Settings() {
+  const {
+    provider,
+    setProvider,
+    aiToken,
+    setAIToken,
+    chatDBToken,
+    setChatDBToken,
+    documentDBToken,
+    setDocumentDBToken,
+    model,
+    setModel,
+  } = useSettings()
   // AI Model input
   const [modelDialog, setModelDialog] = useState(false)
-  const [openaiToken, setOpenaiToken] = useLocalStorage<string | null>(
-    'openai-token',
-    null,
-  )
-  const [openaiTokenInput, setOpenaiTokenInput] = useState(openaiToken ?? '')
+  const [aiTokenInput, setAITokenInput] = useState(aiToken ?? '')
   // Chat backend input
   const [chatDBDialog, setChatDBDialog] = useState(false)
-  const [vercelKVToken, setVercelKVToken] = useLocalStorage<string | null>(
-    'chat-db-token',
-    null,
-  )
-  const [vercelKVTokenInput, setVercelKVTokenInput] = useState(vercelKVToken ?? '')
+  const [chatDBInput, setChatDBInput] = useState(chatDBToken ?? '')
   // Uploads backend input
-  const [vectorDBDialog, setVectorDBDialog] = useState(false)
-  const [supabaseToken, setSupabaseToken] = useLocalStorage<string | null>(
-    'vector-db-token',
-    null,
-  )
-  const [supabaseTokenInput, setSupabaseTokenInput] = useState(supabaseToken ?? '')
+  const [documentDBDialog, setDocumentDBDialog] = useState(false)
+  const [documentDBInput, setDocumentDBInput] = useState(documentDBToken ?? '')
 
   return (
     <div className="mx-auto flex w-96 flex-col justify-center gap-16 p-4">
@@ -120,14 +111,14 @@ export function Settings({ settings }: SettingsProps) {
               </DialogDescription>
             </DialogHeader>
             <Input
-              value={openaiTokenInput}
+              value={aiTokenInput}
               placeholder="OpenAI API key"
-              onChange={e => setOpenaiTokenInput(e.target.value)}
+              onChange={e => setAITokenInput(e.target.value)}
             />
             <DialogFooter className="items-center">
               <Button
                 onClick={() => {
-                  setOpenaiToken(openaiToken)
+                  setAIToken(aiTokenInput)
                   setModelDialog(false)
                 }}
               >
@@ -159,14 +150,14 @@ export function Settings({ settings }: SettingsProps) {
               </DialogDescription>
             </DialogHeader>
             <Input
-              value={vercelKVTokenInput}
+              value={chatDBInput}
               placeholder="Vercel KV API key"
-              onChange={e => setVercelKVTokenInput(e.target.value)}
+              onChange={e => setChatDBInput(e.target.value)}
             />
             <DialogFooter className="items-center">
               <Button
                 onClick={() => {
-                  setVercelKVToken(vercelKVToken)
+                  setChatDBToken(chatDBInput)
                   setChatDBDialog(false)
                 }}
               >
@@ -175,8 +166,8 @@ export function Settings({ settings }: SettingsProps) {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Button onClick={() => setVectorDBDialog(true)}>Configure Uploads</Button>
-        <Dialog open={vectorDBDialog} onOpenChange={setVectorDBDialog}>
+        <Button onClick={() => setDocumentDBDialog(true)}>Configure Uploads</Button>
+        <Dialog open={documentDBDialog} onOpenChange={setDocumentDBDialog}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Enter your uploads database key</DialogTitle>
@@ -192,15 +183,15 @@ export function Settings({ settings }: SettingsProps) {
               </DialogDescription>
             </DialogHeader>
             <Input
-              value={supabaseTokenInput}
+              value={documentDBInput}
               placeholder="Supabase API key"
-              onChange={e => setSupabaseTokenInput(e.target.value)}
+              onChange={e => setDocumentDBInput(e.target.value)}
             />
             <DialogFooter className="items-center">
               <Button
                 onClick={() => {
-                  setSupabaseToken(supabaseToken)
-                  setVectorDBDialog(false)
+                  setDocumentDBToken(documentDBInput)
+                  setDocumentDBDialog(false)
                 }}
               >
                 Save Token
