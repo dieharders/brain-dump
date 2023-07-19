@@ -154,3 +154,17 @@ export async function addBrain() {
   revalidatePath('/')
   return redirect('/')
 }
+
+export async function getBrain(_id: string, _userId: string) {
+  // const chat = await kv.hgetall<Chat>(`chat:${id}`)
+
+  // if (!chat || (userId && chat.userId !== userId)) {
+  //   return null
+  // }
+
+  return { id: '' }
+}
+
+export async function getSettings(_id: string, _userId: string) {
+  return { clientId: '' }
+}

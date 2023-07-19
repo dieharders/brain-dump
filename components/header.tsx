@@ -29,7 +29,7 @@ export async function Header() {
     </Sidebar>
   )
   const brainsButton = (
-    <Sidebar title="Brain Collection" icon="brain">
+    <Sidebar title="Knowledge Base" icon="brain">
       <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
@@ -49,10 +49,10 @@ export async function Header() {
           {/* Chats Pane */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link href="/">
+              <div>
                 {chatsButton}
                 <span className="sr-only">Chat History</span>
-              </Link>
+              </div>
             </TooltipTrigger>
             <TooltipContent>Chats</TooltipContent>
           </Tooltip>
@@ -60,12 +60,12 @@ export async function Header() {
           {/* Brains Pane */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link href="/">
+              <div>
                 {brainsButton}
-                <span className="sr-only">Brains Collection</span>
-              </Link>
+                <span className="sr-only">Uploads</span>
+              </div>
             </TooltipTrigger>
-            <TooltipContent>Brain Dumps</TooltipContent>
+            <TooltipContent>Uploads</TooltipContent>
           </Tooltip>
         </div>
       ) : (
@@ -78,7 +78,7 @@ export async function Header() {
 
       {/* Right side */}
       <div className="flex items-center justify-end space-x-2">
-        {/* Account */}
+        {/* Account Menu */}
         {session?.user ? (
           <UserMenu user={session.user} />
         ) : (

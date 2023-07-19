@@ -52,7 +52,7 @@ export function UserMenu({ user }: UserMenuProps) {
           {/* Docs link */}
           <DropdownMenuItem asChild>
             <a
-              href="https://vercel.com"
+              href="https://github.com/dieharders/brain-dump"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-full items-center justify-between text-xs"
@@ -64,8 +64,7 @@ export function UserMenu({ user }: UserMenuProps) {
           {/* Settings link */}
           <DropdownMenuItem asChild>
             <a
-              href="https://vercel.com"
-              target="_blank"
+              href="/settings"
               rel="noopener noreferrer"
               className="inline-flex w-full items-center justify-between text-xs"
             >
