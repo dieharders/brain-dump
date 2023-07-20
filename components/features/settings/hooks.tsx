@@ -6,7 +6,7 @@ type OpenAIModel = 'gpt-3.5-turbo' | 'gpt-4'
 type HuggingFaceModel =
   | 'facebook/blenderbot-1B-distill'
   | 'TheBloke/vicuna-13B-1.1-GPTQ-4bit-128g'
-  | 'VMware/open-llama-0.7T-7B-open-instruct-v1.1'
+  | 'openlm-research/open_llama_3b_v2'
   | 'meta-llama/Llama-2-70b-chat-hf'
   | 'gpt2'
   | 'tiiuae/falcon-7b-instruct'

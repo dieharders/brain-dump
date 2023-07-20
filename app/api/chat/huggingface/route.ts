@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   const response = await Hf.textGenerationStream({
     model: model || 'OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5',
     // inputs: experimental_buildOpenAssistantPrompt(messages),
-    inputs: messages,
+    inputs: JSON.stringify(messages),
     parameters: {
       max_new_tokens: 200,
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */

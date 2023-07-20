@@ -64,10 +64,8 @@ export function Settings() {
         <DropdownMenuItem onClick={() => setModel('tiiuae/falcon-7b-instruct')}>
           Falcon-7b
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setModel('VMware/open-llama-0.7T-7B-open-instruct-v1.1')}
-        >
-          Open-Llama-7B-open-instruct
+        <DropdownMenuItem onClick={() => setModel('openlm-research/open_llama_3b_v2')}>
+          Open-Llama-3b-v2
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setModel('meta-llama/Llama-2-70b-chat-hf')}>
           Llama-2-70b-chat-hf (local)
