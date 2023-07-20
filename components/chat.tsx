@@ -24,7 +24,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       token: aiToken,
       model,
     },
-    api: `api/chat/${provider}`,
+    api: `/api/chat/${provider}`,
     onResponse(response) {
       if (response.status === 401) {
         toast.error(response.statusText)
