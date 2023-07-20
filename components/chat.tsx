@@ -7,6 +7,7 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
+import { useSettings } from './features/settings/hooks'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -15,13 +16,16 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 }
 
 export function Chat({ id, initialMessages, token, className }: ChatProps) {
+  const { model, provider } = useSettings()
   const { messages, append, reload, stop, isLoading, input, setInput } = useChat({
     initialMessages,
     id,
     body: {
       id,
       token,
+      model,
     },
+    api: `api/chat/${provider}`,
     onResponse(response) {
       if (response.status === 401) {
         toast.error(response.statusText)

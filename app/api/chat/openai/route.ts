@@ -8,7 +8,7 @@ import { nanoid } from '@/lib/utils'
 export const runtime = 'edge'
 
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 })
 
 const openai = new OpenAIApi(configuration)
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
   if (!userId) {
     return new Response('Unauthorized', {
-      status: 401
+      status: 401,
     })
   }
 
@@ -29,10 +29,11 @@ export async function POST(req: Request) {
   }
 
   const res = await openai.createChatCompletion({
+    // @TODO Get the model and pass here
     model: 'gpt-3.5-turbo',
     messages,
     temperature: 0.7,
-    stream: true
+    stream: true,
   })
 
   const stream = OpenAIStream(res, {
@@ -51,16 +52,16 @@ export async function POST(req: Request) {
           ...messages,
           {
             content: completion,
-            role: 'assistant'
-          }
-        ]
+            role: 'assistant',
+          },
+        ],
       }
       await kv.hmset(`chat:${id}`, payload)
       await kv.zadd(`user:chat:${userId}`, {
         score: createdAt,
-        member: `chat:${id}`
+        member: `chat:${id}`,
       })
-    }
+    },
   })
 
   return new StreamingTextResponse(stream)

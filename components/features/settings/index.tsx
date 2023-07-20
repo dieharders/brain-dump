@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Dialog,
@@ -33,10 +33,64 @@ export function Settings() {
     setDocumentDBToken,
     model,
     setModel,
+    clearData,
   } = useSettings()
   // AI Model input
   const [modelDialog, setModelDialog] = useState(false)
   const [aiTokenInput, setAITokenInput] = useState(aiToken ?? '')
+  const renderOpenAIOptions = useCallback(
+    () => (
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => setModel('gpt-3.5-turbo')}>
+          GPT-3.5-turbo
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setModel('gpt-4')}>GPT-4</DropdownMenuItem>
+      </DropdownMenuContent>
+    ),
+    [setModel],
+  )
+  const renderHuggingfaceOptions = useCallback(
+    () => (
+      <DropdownMenuContent>
+        <DropdownMenuItem
+          onClick={() => setModel('OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5')}
+        >
+          OpenAssistant
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setModel('gpt2')}>GPT-2</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setModel('facebook/blenderbot-1B-distill')}>
+          BlenderBot
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setModel('tiiuae/falcon-7b-instruct')}>
+          Falcon-7b
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setModel('VMware/open-llama-0.7T-7B-open-instruct-v1.1')}
+        >
+          Open-Llama-7B-open-instruct
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setModel('meta-llama/Llama-2-70b-chat-hf')}>
+          Llama-2-70b-chat-hf (local)
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setModel('TheBloke/vicuna-13B-1.1-GPTQ-4bit-128g')}
+        >
+          Vicuna (local)
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    ),
+    [setModel],
+  )
+  const renderModeloptions = useCallback(() => {
+    switch (provider) {
+      case 'openai':
+        return renderOpenAIOptions()
+      case 'huggingface':
+        return renderHuggingfaceOptions()
+      default:
+        return null
+    }
+  }, [provider, renderHuggingfaceOptions, renderOpenAIOptions])
   // Chat backend input
   const [chatDBDialog, setChatDBDialog] = useState(false)
   const [chatDBInput, setChatDBInput] = useState(chatDBToken ?? '')
@@ -89,17 +143,12 @@ export function Settings() {
           <DropdownMenuTrigger asChild>
             <Button>{model}</Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setModel('gpt-3.5-turbo')}>
-              GPT-3.5-turbo
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setModel('gpt-4')}>GPT-4</DropdownMenuItem>
-          </DropdownMenuContent>
+          {renderModeloptions()}
         </DropdownMenu>
         <Dialog open={modelDialog} onOpenChange={setModelDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Enter your OpenAI key</DialogTitle>
+              <DialogTitle>Enter your API key</DialogTitle>
               <DialogDescription>
                 If you have not obtained your OpenAI API key, you can do so by{' '}
                 <a href="https://platform.openai.com/signup/" className="underline">
@@ -205,18 +254,16 @@ export function Settings() {
         <p className="text-center">Privacy</p>
         <hr className="h-4 border-neutral-500"></hr>
         <Button
-          className="bg-red-600 text-red-50 hover:bg-white hover:text-black"
-          onClick={() => {}}
+          className="bg-red-600 text-red-50 hover:bg-white hover:text-red-700"
+          onClick={clearData}
         >
           Clear All Config Data
         </Button>
       </div>
       {/* Exit button */}
-      <Button className="self-end" onClick={() => {}}>
-        <Link href="/" rel="noopener noreferrer" className="px-2">
-          Done
-        </Link>
-      </Button>
+      <Link href="/" rel="noopener noreferrer" className="self-end px-2">
+        <Button>Done</Button>
+      </Link>
     </div>
   )
 }
