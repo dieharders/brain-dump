@@ -1,4 +1,6 @@
 import { auth } from '@/auth'
+import { kv } from '@vercel/kv'
+import { nanoid } from '@/lib/utils'
 import { HfInference } from '@huggingface/inference'
 import { HuggingFaceStream, StreamingTextResponse } from 'ai'
 // import { experimental_buildOpenAssistantPrompt } from 'ai/prompts'
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
   }
 
   // Extract the `messages` from the body of the request
-  const { messages, model } = await req.json()
+  const { messages, model, id: chatId } = await req.json()
 
   // Initialize a text-generation stream using the Hugging Face Inference SDK
   const response = await Hf.textGenerationStream({
@@ -45,11 +47,34 @@ export async function POST(req: Request) {
     },
   })
 
-  // @TODO Need to save chat history logic here...
-  console.log('@@ response', response)
-
   // Convert the async generator into a friendly text-stream
-  const stream = HuggingFaceStream(response)
+  const stream = HuggingFaceStream(response, {
+    async onCompletion(completion) {
+      const title = messages[0].content.substring(0, 100)
+      const id = chatId ?? nanoid()
+      const createdAt = Date.now()
+      const path = `/chat/${id}`
+      const payload = {
+        id,
+        title,
+        userId,
+        createdAt,
+        path,
+        messages: [
+          ...messages,
+          {
+            content: completion,
+            role: 'assistant',
+          },
+        ],
+      }
+      await kv.hmset(`chat:${id}`, payload)
+      await kv.zadd(`user:chat:${userId}`, {
+        score: createdAt,
+        member: `chat:${id}`,
+      })
+    },
+  })
 
   // Respond with the stream, enabling the client to consume the response
   return new StreamingTextResponse(stream)

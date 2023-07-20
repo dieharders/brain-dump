@@ -12,17 +12,16 @@ import { useSettings } from './features/settings/hooks'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
-  token?: string | null
 }
 
-export function Chat({ id, initialMessages, token, className }: ChatProps) {
-  const { model, provider } = useSettings()
+export function Chat({ id, initialMessages, className }: ChatProps) {
+  const { model, provider, aiToken } = useSettings()
   const { messages, append, reload, stop, isLoading, input, setInput } = useChat({
     initialMessages,
     id,
     body: {
       id,
-      token,
+      token: aiToken,
       model,
     },
     api: `api/chat/${provider}`,

@@ -3,7 +3,6 @@ import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getChat } from '@/app/actions'
-import { useSettings } from '@/components/features/settings/hooks'
 import { Chat } from '@/components/chat'
 
 export const runtime = 'edge'
@@ -30,7 +29,6 @@ export async function generateMetadata({ params }: ChatPageProps): Promise<Metad
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const session = await auth()
-  const { aiToken } = await useSettings()
 
   if (!session?.user) {
     redirect(`/sign-in?next=/chat/${params.id}`)
@@ -46,5 +44,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  return <Chat id={chat.id} initialMessages={chat.messages} token={aiToken} />
+  return <Chat id={chat.id} initialMessages={chat.messages} />
 }
