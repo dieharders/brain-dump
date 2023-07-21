@@ -129,9 +129,6 @@ export async function newChat() {
     }
   }
 
-  // Start new chat window logic...
-  // reset chat state in main window
-
   revalidatePath('/')
   return redirect('/')
 }
@@ -146,9 +143,6 @@ export async function newBrain() {
       error: 'Unauthorized',
     }
   }
-
-  // Add new brain dump logic...
-  // reset brains state in main window
 
   revalidatePath('/')
   return redirect('/')

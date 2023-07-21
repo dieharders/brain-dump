@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Link from 'next/link'
-
 import { auth } from '@/auth'
 import { clearChats } from '@/app/actions'
 import { Button } from '@/components/ui/button'
@@ -19,8 +18,6 @@ export async function Header() {
   const chatsButton = (
     <Sidebar title="Chat History" icon="chat">
       <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-        {/* @ts-ignore */}
         <SidebarChatList userId={session?.user?.id} />
       </React.Suspense>
       <SidebarFooter>
@@ -32,8 +29,6 @@ export async function Header() {
     <Sidebar title="Knowledge Base" icon="brain">
       <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-        {/* @ts-ignore */}
         <SidebarBrainList userId={session?.user?.id} />
       </React.Suspense>
       <SidebarFooter>

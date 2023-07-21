@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
 import { ServerActionResult } from '@/lib/types'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
@@ -26,7 +25,6 @@ interface I_Props {
 
 export function NewItem(props: I_Props) {
   const { action, actionTitle, actionDescription } = props
-  const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
 
@@ -60,7 +58,6 @@ export function NewItem(props: I_Props) {
                 }
 
                 setOpen(false)
-                router.push('/')
               })
             }}
           >
