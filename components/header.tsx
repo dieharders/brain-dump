@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Sidebar } from '@/components/sidebar'
 import { SidebarChatList } from '@/components/sidebar-chatlist'
 import { SidebarBrainList } from '@/components/sidebar-brainlist'
-import { IconNextChat, IconSeparator } from '@/components/ui/icons'
+import { IconNextChat } from '@/components/ui/icons'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ClearData } from '@/components/clear-data'
@@ -38,10 +38,10 @@ export async function Header() {
   )
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background/70 px-4 backdrop-blur-xl">
       {session?.user ? (
         <div className="flex items-center">
-          {/* Chats Pane */}
+          {/* Chats Pane Button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -51,8 +51,7 @@ export async function Header() {
             </TooltipTrigger>
             <TooltipContent>Chats</TooltipContent>
           </Tooltip>
-          <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
-          {/* Brains Pane */}
+          {/* Brains Pane Button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -70,18 +69,17 @@ export async function Header() {
           <IconNextChat className="mr-2 hidden h-6 w-6 dark:block" />
         </Link>
       )}
-
       {/* Right side */}
-      <div className="flex items-center justify-end space-x-2">
+      <div className="flex items-center justify-end gap-x-2">
         {/* Account Menu */}
         {session?.user ? (
           <UserMenu user={session.user} />
         ) : (
-          <Button variant="link" asChild className="-ml-2">
+          <Button variant="link" asChild>
             <Link href="/sign-in?callbackUrl=/">Login</Link>
           </Button>
         )}
-        {/* Dark Mode Toggle */}
+        {/* Light/Dark Mode */}
         <ThemeToggle />
       </div>
     </header>

@@ -35,7 +35,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={cn('font-sans antialiased', fontSans.variable, fontMono.variable)}>
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex min-h-screen flex-col overflow-hidden">
+          <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
           </div>
