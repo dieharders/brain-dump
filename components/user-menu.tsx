@@ -28,7 +28,8 @@ export function UserMenu({ user }: UserMenuProps) {
     <div className="flex items-center justify-between">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="pl-0">
+          <Button variant="ghost" className="px-0">
+            {/* User badge */}
             {user?.image ? (
               <Image
                 className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
@@ -40,7 +41,8 @@ export function UserMenu({ user }: UserMenuProps) {
                 {user?.name ? getUserInitials(user?.name) : null}
               </div>
             )}
-            <span className="ml-2">{user?.name}</span>
+            {/* User name */}
+            <span className="mx-2 hidden sm:block">{user?.name}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">
