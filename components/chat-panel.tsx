@@ -1,5 +1,4 @@
 import { type UseChatHelpers } from 'ai/react'
-
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
@@ -12,6 +11,7 @@ export interface ChatPanelProps
     'append' | 'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
   > {
   id?: string
+  theme: string | undefined
 }
 
 export function ChatPanel({
@@ -23,10 +23,15 @@ export function ChatPanel({
   input,
   setInput,
   messages,
+  theme,
 }: ChatPanelProps) {
+  const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
+  const colorTo = theme === 'light' ? 'to-muted/0' : 'to-muted/150'
   return (
-    // eslint-disable-next-line tailwindcss/classnames-order
-    <div className="fixed inset-x-0 bottom-0 bg-gradient-to-t from-neutral-900 from-85% to-muted/150 to-100%">
+    <div
+      // eslint-disable-next-line tailwindcss/classnames-order
+      className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-85% ${colorTo} to-100%`}
+    >
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-10 items-center justify-center">

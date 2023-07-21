@@ -1,6 +1,7 @@
 'use client'
 
 import { useChat, type Message } from 'ai/react'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
@@ -16,6 +17,7 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const { model, provider, aiToken } = useSettings()
+  const { theme } = useTheme()
   const { messages, append, reload, stop, isLoading, input, setInput } = useChat({
     initialMessages,
     id,
@@ -53,6 +55,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         messages={messages}
         input={input}
         setInput={setInput}
+        theme={theme}
       />
     </>
   )
