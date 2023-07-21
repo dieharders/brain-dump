@@ -1,4 +1,4 @@
-import { getChats, removeChat, shareChat, newChat } from '@/app/actions'
+import { getChats, removeChat, shareChat } from '@/app/actions'
 import { SidebarActions } from '@/components/sidebar-item-actions'
 import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item'
@@ -15,7 +15,6 @@ export async function SidebarChatList({ userId }: SidebarChatListProps) {
       {/* Add new data */}
       <div className="flex items-center justify-center">
         <NewItem
-          action={newChat}
           actionTitle="+ Add New Chat"
           actionDescription="This will start a new chat session."
         ></NewItem>

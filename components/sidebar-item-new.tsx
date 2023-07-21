@@ -5,6 +5,7 @@ import { ServerActionResult } from '@/lib/types'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { IconSpinner } from '@/components/ui/icons'
+import Link from 'next/link'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,13 +19,13 @@ import {
 } from '@/components/ui/alert-dialog'
 
 interface I_Props {
-  action: () => ServerActionResult<void>
+  action?: () => ServerActionResult<void>
   actionTitle?: string
   actionDescription?: string
 }
 
 export function NewItem(props: I_Props) {
-  const { action, actionTitle, actionDescription } = props
+  const { action = () => Promise, actionTitle, actionDescription } = props
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
 
@@ -61,8 +62,10 @@ export function NewItem(props: I_Props) {
               })
             }}
           >
-            {isPending && <IconSpinner className="mr-2 animate-spin" />}
-            Add
+            <Link href="/">
+              {isPending && <IconSpinner className="mr-2 animate-spin" />}
+              Add
+            </Link>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,30 +1,19 @@
 import * as React from 'react'
-import Link from 'next/link'
 import Textarea from 'react-textarea-autosize'
 import { UseChatHelpers } from 'ai/react'
 
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
 
-export interface PromptProps
-  extends Pick<UseChatHelpers, 'input' | 'setInput'> {
+export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => Promise<void>
   isLoading: boolean
 }
 
-export function PromptForm({
-  onSubmit,
-  input,
-  setInput,
-  isLoading
-}: PromptProps) {
+export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps) {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
 
@@ -49,18 +38,17 @@ export function PromptForm({
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link
-              href="/"
+            <Button
               className={cn(
                 buttonVariants({ size: 'sm', variant: 'outline' }),
-                'absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4'
+                'absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4',
               )}
             >
-              <IconPlus />
-              <span className="sr-only">New Chat</span>
-            </Link>
+              <IconPlus className="text-foreground" />
+              <span className="sr-only">Options</span>
+            </Button>
           </TooltipTrigger>
-          <TooltipContent>New Chat</TooltipContent>
+          <TooltipContent>Options</TooltipContent>
         </Tooltip>
         <Textarea
           ref={inputRef}
@@ -76,11 +64,7 @@ export function PromptForm({
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                type="submit"
-                size="icon"
-                disabled={isLoading || input === ''}
-              >
+              <Button type="submit" size="icon" disabled={isLoading || input === ''}>
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>
               </Button>
