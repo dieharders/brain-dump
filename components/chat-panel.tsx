@@ -9,13 +9,7 @@ import { FooterText } from '@/components/footer'
 export interface ChatPanelProps
   extends Pick<
     UseChatHelpers,
-    | 'append'
-    | 'isLoading'
-    | 'reload'
-    | 'messages'
-    | 'stop'
-    | 'input'
-    | 'setInput'
+    'append' | 'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
   > {
   id?: string
 }
@@ -28,19 +22,16 @@ export function ChatPanel({
   reload,
   input,
   setInput,
-  messages
+  messages,
 }: ChatPanelProps) {
   return (
-    <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
+    // eslint-disable-next-line tailwindcss/classnames-order
+    <div className="fixed inset-x-0 bottom-0 bg-gradient-to-t from-neutral-900 from-85% to-muted/150 to-100%">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-10 items-center justify-center">
           {isLoading ? (
-            <Button
-              variant="outline"
-              onClick={() => stop()}
-              className="bg-background"
-            >
+            <Button variant="outline" onClick={() => stop()} className="bg-background">
               <IconStop className="mr-2" />
               Stop generating
             </Button>
@@ -63,7 +54,7 @@ export function ChatPanel({
               await append({
                 id,
                 content: value,
-                role: 'user'
+                role: 'user',
               })
             }}
             input={input}
