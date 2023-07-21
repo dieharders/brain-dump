@@ -3,7 +3,6 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-
 import { type Chat, ServerActionResult } from '@/lib/types'
 import { cn, formatDate } from '@/lib/utils'
 import {
@@ -14,7 +13,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,33 +22,21 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  IconShare,
-  IconSpinner,
-  IconTrash,
-  IconUsers
-} from '@/components/ui/icons'
+import { IconShare, IconSpinner, IconTrash, IconUsers } from '@/components/ui/icons'
 import Link from 'next/link'
 import { badgeVariants } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-interface SidebarActionsProps {
+interface I_Props {
   chat: Chat
   removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
   shareChat: (chat: Chat) => ServerActionResult<Chat>
 }
 
-export function SidebarActions({
-  chat,
-  removeChat,
-  shareChat
-}: SidebarActionsProps) {
+export function SidebarActions(props: I_Props) {
+  const { chat, removeChat, shareChat } = props
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
@@ -70,12 +57,12 @@ export function SidebarActions({
         borderRadius: '10px',
         background: '#333',
         color: '#fff',
-        fontSize: '14px'
+        fontSize: '14px',
       },
       iconTheme: {
         primary: 'white',
-        secondary: 'black'
-      }
+        secondary: 'black',
+      },
     })
   }, [])
 
@@ -128,10 +115,7 @@ export function SidebarActions({
             {chat.sharePath && (
               <Link
                 href={chat.sharePath}
-                className={cn(
-                  badgeVariants({ variant: 'secondary' }),
-                  'mr-auto'
-                )}
+                className={cn(badgeVariants({ variant: 'secondary' }), 'mr-auto')}
                 target="_blank"
               >
                 <IconUsers className="mr-2" />
@@ -176,14 +160,12 @@ export function SidebarActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete your chat message and remove your
-              data from our servers.
+              This will permanently delete your chat message and remove your data from our
+              servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isRemovePending}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={isRemovePending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               disabled={isRemovePending}
               onClick={event => {
@@ -191,7 +173,7 @@ export function SidebarActions({
                 startRemoveTransition(async () => {
                   const result = await removeChat({
                     id: chat.id,
-                    path: chat.path
+                    path: chat.path,
                   })
 
                   if (result && 'error' in result) {

@@ -1,6 +1,6 @@
-import { getChats, removeChat, shareChat, addBrain } from '@/app/actions'
-import { SidebarActions } from '@/components/sidebar-actions'
-import { AddData } from '@/components/add-data'
+import { getChats, removeChat, shareChat, newBrain } from '@/app/actions'
+import { SidebarActions } from '@/components/sidebar-item-actions'
+import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item'
 
 export interface SidebarBrainListProps {
@@ -14,15 +14,15 @@ export async function SidebarBrainList({ userId }: SidebarBrainListProps) {
     <div className="flex-1 overflow-auto">
       {/* Add new data */}
       <div className="flex items-center justify-center">
-        <AddData
-          addAction={addBrain}
+        <NewItem
+          action={newBrain}
           actionTitle="+ Add New Brain"
           actionDescription="This will add a new brain dump to your collection."
-        ></AddData>
+        ></NewItem>
       </div>
       {/* List of data */}
       {chats?.length ? (
-        <div className="space-y-2 px-2">
+        <div className="mt-4 space-y-2 px-2">
           {chats.map(
             chat =>
               chat && (

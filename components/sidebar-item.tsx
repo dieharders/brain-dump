@@ -7,11 +7,7 @@ import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconMessage, IconUsers } from '@/components/ui/icons'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface SidebarItemProps {
   chat: Chat
@@ -46,11 +42,11 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full pl-8 pr-16',
-          isActive && 'bg-accent'
+          isActive && 'bg-accent',
         )}
       >
         <div
-          className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all"
+          className="relative block max-h-5 flex-1 select-none overflow-hidden text-ellipsis"
           title={chat.title}
         >
           <span className="whitespace-nowrap">{chat.title}</span>

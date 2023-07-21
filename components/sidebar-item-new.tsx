@@ -18,14 +18,14 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
-interface AddDataProps {
-  addAction: () => ServerActionResult<void>
+interface I_Props {
+  action: () => ServerActionResult<void>
   actionTitle?: string
   actionDescription?: string
 }
 
-export function AddData(props: AddDataProps) {
-  const { addAction, actionTitle, actionDescription } = props
+export function NewItem(props: I_Props) {
+  const { action, actionTitle, actionDescription } = props
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
@@ -52,7 +52,7 @@ export function AddData(props: AddDataProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                const result = await addAction()
+                const result = await action()
 
                 if (result && 'error' in result) {
                   toast.error(result.error)

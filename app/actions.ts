@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { kv } from '@vercel/kv'
-
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 
@@ -121,7 +120,7 @@ export async function shareChat(chat: Chat) {
   return payload
 }
 
-export async function addChat() {
+export async function newChat() {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -139,7 +138,7 @@ export async function addChat() {
 
 // Brains
 
-export async function addBrain() {
+export async function newBrain() {
   const session = await auth()
 
   if (!session?.user?.id) {

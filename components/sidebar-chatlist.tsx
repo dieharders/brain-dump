@@ -1,6 +1,6 @@
-import { getChats, removeChat, shareChat, addChat } from '@/app/actions'
-import { SidebarActions } from '@/components/sidebar-actions'
-import { AddData } from '@/components/add-data'
+import { getChats, removeChat, shareChat, newChat } from '@/app/actions'
+import { SidebarActions } from '@/components/sidebar-item-actions'
+import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item'
 
 export interface SidebarChatListProps {
@@ -14,16 +14,15 @@ export async function SidebarChatList({ userId }: SidebarChatListProps) {
     <div className="flex-1 overflow-auto">
       {/* Add new data */}
       <div className="flex items-center justify-center">
-        <AddData
-          addAction={addChat}
+        <NewItem
+          action={newChat}
           actionTitle="+ Add New Chat"
           actionDescription="This will start a new chat session."
-        ></AddData>
+        ></NewItem>
       </div>
-
       {/* List of data */}
       {chats?.length ? (
-        <div className="space-y-2 px-2">
+        <div className="mt-4 space-y-2 px-2">
           {chats.map(
             chat =>
               chat && (
