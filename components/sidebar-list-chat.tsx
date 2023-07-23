@@ -1,7 +1,7 @@
 import { getChats, removeChat, shareChat } from '@/app/actions'
-import { SidebarActions } from '@/components/sidebar-item-actions'
+import { SidebarActions } from '@/components/sidebar-actions-chat'
 import { NewItem } from '@/components/sidebar-item-new'
-import { SidebarItem } from '@/components/sidebar-item'
+import { SidebarItem } from '@/components/sidebar-item-chat'
 
 export interface SidebarChatListProps {
   userId?: string

@@ -29,7 +29,7 @@ import { badgeVariants } from '@/components/ui/badge'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-import { copyShareLink } from '@/components/sidebar-item-actions'
+import { copyShareLink } from '@/components/sidebar-actions-chat'
 
 interface I_Props {
   brain: Brain
