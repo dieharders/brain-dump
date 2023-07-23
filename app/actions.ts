@@ -160,7 +160,34 @@ export async function getBrains(
       title: 'Chemical research in reactive states of H2 and Hydrogen Sulfide',
       createdAt: new Date(),
       userId: '1',
-      documents: [{}, {}],
+      documents: [
+        {
+          id: '0',
+          title: 'Developing sulfides for space travel vol. 3',
+        },
+        {
+          id: '1',
+          title: 'Getting to the Moon and beyond by Arthur Douglas McAdams Esquire',
+        },
+      ],
+      sharePath: '',
+    },
+    {
+      id: '1b',
+      title:
+        'Biological, electrical research imperative ordained by the state of California',
+      createdAt: new Date(),
+      userId: '1',
+      documents: [
+        {
+          id: '0',
+          title: 'Engineering imperatives vol. 1',
+        },
+        {
+          id: '1',
+          title: 'How to engineer new elements DIY style',
+        },
+      ],
       sharePath: '',
     },
   ]

@@ -12,12 +12,19 @@ export interface Chat extends Record<string, any> {
   sharePath?: string
 }
 
+export type T_FileMedia = {
+  id: string
+  title: string
+  size?: string
+  type?: 'document' | 'image' | 'audio' | 'other'
+}
+
 export interface Brain extends Record<string, any> {
   id: string
   title: string
   createdAt: Date
   userId: string
-  documents: object[] // @TODO Make a type
+  documents: T_FileMedia[]
   sharePath?: string
 }
 

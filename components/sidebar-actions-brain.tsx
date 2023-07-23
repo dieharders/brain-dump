@@ -1,9 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import { Brain, ServerActionResult } from '@/lib/types'
-import { Button } from '@/components/ui/button'
-import { IconEdit, IconShare, IconTrash } from '@/components/ui/icons'
+import { Brain, ServerActionResult, T_FileMedia } from '@/lib/types'
+import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  IconEdit,
+  IconOpenAI,
+  IconRefresh,
+  IconShare,
+  IconTrash,
+} from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   AlertDialog,
@@ -30,6 +36,8 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { copyShareLink } from '@/components/sidebar-actions-chat'
+import { IconDocument } from '@/components/ui/icons'
+import { Separator } from '@/components/ui/separator'
 
 interface I_Props {
   brain: Brain
@@ -40,6 +48,7 @@ interface I_Props {
 export function SidebarActions(props: I_Props) {
   const router = useRouter()
   const { brain, remove, share } = props
+  const { documents } = brain
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
@@ -47,6 +56,93 @@ export function SidebarActions(props: I_Props) {
   const [exploreDialogOpen, setExploreDialogOpen] = React.useState(false)
   const [isUploadPending, setIsUploadPending] = React.useState(false)
 
+  const BrainDocument = ({ file }: { file: T_FileMedia }) => {
+    const [isActive, setIsActive] = React.useState(false)
+
+    return (
+      <div
+        className="relative flex-1 overflow-auto"
+        onMouseEnter={() => {
+          setIsActive(true)
+        }}
+        onMouseLeave={() => {
+          setIsActive(false)
+        }}
+      >
+        <Link
+          className={cn(
+            buttonVariants({ variant: 'secondary' }),
+            'hover-bg-accent relative flex h-8 w-full flex-1 select-none overflow-hidden pl-8 pr-2',
+          )}
+          href="/"
+        >
+          {/* Title */}
+          <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
+            {file.title}
+          </span>
+          {/* Button actions */}
+          {isActive && (
+            <div className="flex items-center justify-between space-x-1">
+              {/* Context Template Button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="h-6 w-6 p-0 hover:bg-background"
+                    disabled={isUploadPending}
+                    onClick={() => {
+                      // @TODO
+                    }}
+                  >
+                    <IconOpenAI />
+                    <span className="sr-only">Add context template</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Add context template</TooltipContent>
+              </Tooltip>
+              {/* Refresh Button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="h-6 w-6 p-0 hover:bg-background"
+                    disabled={isUploadPending}
+                    onClick={() => {
+                      // @TODO
+                    }}
+                  >
+                    <IconRefresh />
+                    <span className="sr-only">Refresh file</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Refresh</TooltipContent>
+              </Tooltip>
+              {/* Delete Button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="h-6 w-6 p-0 hover:bg-background"
+                    disabled={isUploadPending}
+                    onClick={() => {
+                      // @TODO
+                    }}
+                  >
+                    <IconTrash />
+                    <span className="sr-only">Delete file</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Delete</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </Link>
+        <div className="pointer-events-none absolute left-2 top-2 flex w-6 items-center justify-center">
+          <IconDocument className="mr-2" />
+        </div>
+      </div>
+    )
+  }
   const deleteMenu = (
     <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
       <AlertDialogContent>
@@ -158,8 +254,24 @@ export function SidebarActions(props: I_Props) {
             a context template to each file to aid in inference.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <Separator className="my-4 md:my-8" />
         {/* List of files */}
-        {/* ... */}
+        {documents.length > 0 ? (
+          documents.map(file => <BrainDocument key={file.id} file={file} />)
+        ) : (
+          <span className="text-center">No files uploaded yet.</span>
+        )}
+        {/* Upload Area */}
+        <Button
+          className="align-center flex justify-center"
+          onClick={() => {
+            // @TODO Pre-Process media and send to backend
+            // ...
+          }}
+        >
+          Upload media files (5mb each)
+        </Button>
+        <Separator className="my-4 md:my-8" />
         <AlertDialogFooter>
           <AlertDialogCancel
             onClick={() => {
@@ -224,7 +336,6 @@ export function SidebarActions(props: I_Props) {
             disabled={isRemovePending}
             onClick={() => {
               setDeleteDialogOpen(true)
-              console.log('@@ clicked delete')
             }}
           >
             <IconTrash />
