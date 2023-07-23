@@ -25,17 +25,16 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         href={chat.path}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'group w-full pl-8 pr-16',
+          'relative flex h-8 w-full flex-1 overflow-hidden pl-8 pr-2 text-left',
           isActive && 'bg-accent',
         )}
       >
         {/* Chat title */}
-        <div
-          className="relative block max-h-5 flex-1 select-none overflow-hidden text-ellipsis"
-          title={chat.title}
-        >
-          <span className="whitespace-nowrap">{chat.title}</span>
-        </div>
+        <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          {chat.title}
+        </span>
+        {/* Action buttons */}
+        {isActive && <div className="w-fit">{children}</div>}
         {/* Convo type icon */}
         <div className="absolute left-2 top-1 flex h-6 w-6 items-center justify-center">
           {chat.sharePath ? (
@@ -53,8 +52,6 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
           )}
         </div>
       </Link>
-      {/* Action buttons */}
-      {isActive && <div className="absolute right-2 top-1">{children}</div>}
     </div>
   )
 }

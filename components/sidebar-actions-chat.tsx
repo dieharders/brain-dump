@@ -72,7 +72,7 @@ export function SidebarActions(props: I_Props) {
 
   return (
     <>
-      <div className="space-x-1">
+      <div className="flex justify-between space-x-1">
         {/* Share Button */}
         <Tooltip>
           <TooltipTrigger asChild>
