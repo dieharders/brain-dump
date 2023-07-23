@@ -63,7 +63,7 @@ export const CharmMenu = () => {
           <IconConversationType className={classnameIcon} />
         </CharmItem>
         <DropdownMenuSeparator />
-        {/* Prompt Template - You are an expert researcher. Includes presets as well as a custom form to write your own */}
+        {/* Prompt Template - You are an expert researcher/coder/generalist/etc. Includes presets as well as a custom form to write your own */}
         <CharmItem>
           <IconPromptTemplate className={classnameIcon} />
         </CharmItem>

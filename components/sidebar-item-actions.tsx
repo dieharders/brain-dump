@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { type Chat, ServerActionResult } from '@/lib/types'
+import { type Chat, ServerActionResult, Brain } from '@/lib/types'
 import { cn, formatDate } from '@/lib/utils'
 import {
   AlertDialog,
@@ -35,6 +35,33 @@ interface I_Props {
   shareChat: (chat: Chat) => ServerActionResult<Chat>
 }
 
+export const copyShareLink = (props: {
+  data: Chat | Brain
+  setDialogOpen: (b: boolean) => void
+}) => {
+  const { data, setDialogOpen } = props
+  if (!data.sharePath) {
+    return toast.error('Could not copy share link to clipboard')
+  }
+
+  const url = new URL(window.location.href)
+  url.pathname = data.sharePath
+  navigator.clipboard.writeText(url.toString())
+  setDialogOpen(false)
+  toast.success('Share link copied to clipboard', {
+    style: {
+      borderRadius: '10px',
+      background: '#333',
+      color: '#fff',
+      fontSize: '14px',
+    },
+    iconTheme: {
+      primary: 'white',
+      secondary: 'black',
+    },
+  })
+}
+
 export function SidebarActions(props: I_Props) {
   const { chat, removeChat, shareChat } = props
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
@@ -43,32 +70,10 @@ export function SidebarActions(props: I_Props) {
   const [isSharePending, startShareTransition] = React.useTransition()
   const router = useRouter()
 
-  const copyShareLink = React.useCallback(async (chat: Chat) => {
-    if (!chat.sharePath) {
-      return toast.error('Could not copy share link to clipboard')
-    }
-
-    const url = new URL(window.location.href)
-    url.pathname = chat.sharePath
-    navigator.clipboard.writeText(url.toString())
-    setShareDialogOpen(false)
-    toast.success('Share link copied to clipboard', {
-      style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        fontSize: '14px',
-      },
-      iconTheme: {
-        primary: 'white',
-        secondary: 'black',
-      },
-    })
-  }, [])
-
   return (
     <>
       <div className="space-x-1">
+        {/* Share Button */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -82,6 +87,7 @@ export function SidebarActions(props: I_Props) {
           </TooltipTrigger>
           <TooltipContent>Share chat</TooltipContent>
         </Tooltip>
+        {/* Delete Button */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -97,6 +103,7 @@ export function SidebarActions(props: I_Props) {
           <TooltipContent>Delete chat</TooltipContent>
         </Tooltip>
       </div>
+      {/* Share Menu */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -128,7 +135,7 @@ export function SidebarActions(props: I_Props) {
                 startShareTransition(async () => {
                   if (chat.sharePath) {
                     await new Promise(resolve => setTimeout(resolve, 500))
-                    copyShareLink(chat)
+                    copyShareLink({ data: chat, setDialogOpen: setShareDialogOpen })
                     return
                   }
 
@@ -139,7 +146,7 @@ export function SidebarActions(props: I_Props) {
                     return
                   }
 
-                  copyShareLink(result)
+                  copyShareLink({ data: result, setDialogOpen: setShareDialogOpen })
                 })
               }}
             >
@@ -155,6 +162,7 @@ export function SidebarActions(props: I_Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Delete Menu */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

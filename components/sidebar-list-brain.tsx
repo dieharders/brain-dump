@@ -1,14 +1,14 @@
-import { getChats, removeChat, shareChat, newBrain } from '@/app/actions'
-import { SidebarActions } from '@/components/sidebar-item-actions'
+import { getBrains, removeBrain, shareBrain, newBrain } from '@/app/actions'
+import { SidebarActions } from '@/components/sidebar-actions-brain'
 import { NewItem } from '@/components/sidebar-item-new'
-import { SidebarItem } from '@/components/sidebar-item'
+import { SidebarItem } from '@/components/sidebar-item-brain'
 
 export interface SidebarBrainListProps {
   userId?: string
 }
 
 export async function SidebarBrainList({ userId }: SidebarBrainListProps) {
-  const chats = await getChats(userId)
+  const brains = await getBrains(userId)
 
   return (
     <div className="flex-1 overflow-auto">
@@ -21,17 +21,13 @@ export async function SidebarBrainList({ userId }: SidebarBrainListProps) {
         ></NewItem>
       </div>
       {/* List of data */}
-      {chats?.length ? (
+      {brains?.length ? (
         <div className="mt-4 space-y-2 px-2">
-          {chats.map(
-            chat =>
-              chat && (
-                <SidebarItem key={chat?.id} chat={chat}>
-                  <SidebarActions
-                    chat={chat}
-                    removeChat={removeChat}
-                    shareChat={shareChat}
-                  />
+          {brains.map(
+            brain =>
+              brain && (
+                <SidebarItem key={brain?.id} brain={brain}>
+                  <SidebarActions brain={brain} remove={removeBrain} share={shareBrain} />
                 </SidebarItem>
               ),
           )}

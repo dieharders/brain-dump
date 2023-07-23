@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { type Message } from 'ai'
 
 export interface Chat extends Record<string, any> {
@@ -7,6 +9,15 @@ export interface Chat extends Record<string, any> {
   userId: string
   path: string
   messages: Message[]
+  sharePath?: string
+}
+
+export interface Brain extends Record<string, any> {
+  id: string
+  title: string
+  createdAt: Date
+  userId: string
+  documents: object[] // @TODO Make a type
   sharePath?: string
 }
 
