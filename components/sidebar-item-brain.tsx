@@ -42,10 +42,10 @@ export function SidebarItem({ brain, children }: SidebarItemProps) {
           {brain.title}
         </span>
         {/* Button actions */}
-        {isActive && <span className="w-full">{children}</span>}
+        {isActive && <span className="w-fit">{children}</span>}
       </Link>
       {/* Icon */}
-      <div className="pointer-events-none absolute left-2 top-2 flex w-6 items-center justify-center">
+      <div className="absolute left-2 top-2 flex w-6 cursor-pointer items-center justify-center">
         {brain.sharePath ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger

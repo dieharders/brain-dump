@@ -137,9 +137,15 @@ export function SidebarActions(props: I_Props) {
             </div>
           )}
         </Link>
-        <div className="pointer-events-none absolute left-2 top-2 flex w-6 items-center justify-center">
-          <IconDocument className="mr-2" />
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="absolute left-2 top-2 flex w-6 cursor-pointer items-center justify-center">
+              <IconDocument className="mr-2" />
+              <span className="sr-only">File type: document</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>Document</TooltipContent>
+        </Tooltip>
       </div>
     )
   }
