@@ -21,6 +21,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
 
   return (
     <div className="relative">
+      {/* @TODO This may be causing premature fetches of chat data each time we hover over links */}
       <Link
         href={chat.path}
         className={cn(
