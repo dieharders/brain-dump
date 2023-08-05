@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
-type Provider = 'openai' | 'anthropic' | 'tii' | 'meta' | 'huggingface'
+type Provider = 'openai' | 'anthropic' | 'tii' | 'meta' | 'huggingface' | 'local'
 type OpenAIModel = 'gpt-3.5-turbo' | 'gpt-4'
 type HuggingFaceModel =
   | 'facebook/blenderbot-1B-distill'
@@ -38,6 +38,7 @@ export function useSettings() {
     tii: tiiToken,
     meta: metaToken,
     huggingface: huggingfaceToken,
+    local: null,
   }
 
   const setAIToken = useCallback(
@@ -53,6 +54,8 @@ export function useSettings() {
           return setMetaToken(value)
         case 'tii':
           return setTIIToken(value)
+        case 'local':
+          return ''
         default:
           return null
       }

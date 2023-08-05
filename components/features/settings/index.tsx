@@ -132,6 +132,9 @@ export function Settings() {
             <DropdownMenuItem onClick={() => setProvider('huggingface')}>
               Hugging Face
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setProvider('local')}>
+              Local
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>
