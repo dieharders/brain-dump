@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useChat, type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
@@ -9,13 +10,15 @@ import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
 import { useSettings } from './features/settings/hooks'
+import { AIModels } from '@/components/features/settings/hooks'
 
-export interface ChatProps extends React.ComponentProps<'div'> {
+interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
+  modelId: AIModels
 }
 
-export function Chat({ id, initialMessages, className }: ChatProps) {
+export function CloudChat({ id, initialMessages, modelId, className }: IProps) {
   const { model, provider, aiToken } = useSettings()
   const { theme } = useTheme()
   const { messages, append, reload, stop, isLoading, input, setInput } = useChat({
@@ -33,6 +36,10 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       }
     },
   })
+
+  useEffect(() => {
+    console.log('@@ [cloud] modelId:', modelId)
+  }, [modelId])
 
   return (
     <>

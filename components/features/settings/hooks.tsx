@@ -1,8 +1,16 @@
 import { useCallback } from 'react'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
+import { ModelID } from '@/components/features/settings/types'
 
-type Provider = 'openai' | 'anthropic' | 'tii' | 'meta' | 'huggingface' | 'local'
-type OpenAIModel = 'gpt-3.5-turbo' | 'gpt-4'
+type Provider =
+  | 'openai'
+  | 'anthropic'
+  | 'tii'
+  | 'meta'
+  | 'huggingface'
+  | 'local'
+  | DefaultProviderMsg
+type OpenAIModel = 'gpt3.5' | 'gpt4'
 type HuggingFaceModel =
   | 'facebook/blenderbot-1B-distill'
   | 'TheBloke/vicuna-13B-1.1-GPTQ-4bit-128g'
@@ -11,11 +19,15 @@ type HuggingFaceModel =
   | 'gpt2'
   | 'tiiuae/falcon-7b-instruct'
   | 'OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5'
-type DefaultMsg = 'no model selected'
-type AIModels = OpenAIModel | HuggingFaceModel | DefaultMsg
+type DefaulModeltMsg = 'no model selected'
+type DefaultProviderMsg = 'no provider selected'
+export type AIModels = OpenAIModel | HuggingFaceModel | ModelID | DefaulModeltMsg
 
 export function useSettings() {
-  const [provider, setProvider] = useLocalStorage<Provider>('llm-provider', 'openai')
+  const [provider, setProvider] = useLocalStorage<Provider>(
+    'llm-provider',
+    'no provider selected',
+  )
   // AI Model
   const [model, setModel] = useLocalStorage<AIModels>('llm-model', 'no model selected')
   const [openaiToken, setOpenaiToken] = useLocalStorage<string | null>(
@@ -39,6 +51,7 @@ export function useSettings() {
     meta: metaToken,
     huggingface: huggingfaceToken,
     local: null,
+    ['no provider selected']: null,
   }
 
   const setAIToken = useCallback(
@@ -70,7 +83,7 @@ export function useSettings() {
     ],
   )
 
-  const aiToken = aiTokens[provider]
+  const aiToken = aiTokens?.[provider] || ''
   // Chat backend
   const [chatDBToken, setChatDBToken] = useLocalStorage<string | null>(
     'chat-db-token',

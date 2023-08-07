@@ -1,9 +1,8 @@
 import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
-
 import { auth } from '@/auth'
 import { getChat } from '@/app/actions'
-import { Chat } from '@/components/chat'
+import { ChatContainer } from '@/components/chat-container'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -44,5 +43,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  return <Chat id={chat.id} initialMessages={chat.messages} />
+  return <ChatContainer id={chat.id} initialMessages={chat.messages} />
 }

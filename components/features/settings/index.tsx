@@ -41,10 +41,10 @@ export function Settings() {
   const renderOpenAIOptions = useCallback(
     () => (
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => setModel('gpt-3.5-turbo')}>
+        <DropdownMenuItem onClick={() => setModel('gpt3.5')}>
           GPT-3.5-turbo
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('gpt-4')}>GPT-4</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setModel('gpt4')}>GPT-4</DropdownMenuItem>
       </DropdownMenuContent>
     ),
     [setModel],
