@@ -9,7 +9,6 @@ interface I_Endpoint {
 interface I_API {
   name: string
   port: number
-  baseUrl: string
   endpoints: Array<I_Endpoint>
 }
 
@@ -36,7 +35,9 @@ interface I_ServiceApis {
   }
 }
 
+// These will eventually be passed in from our server picker helper
 const PORT = 8008
+const hostname = 'http://localhost:'
 
 const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   const options = {
@@ -47,7 +48,7 @@ const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   }
 
   try {
-    const res = await fetch(`http://0.0.0.0:${PORT}/v1/connect`, options)
+    const res = await fetch(`${hostname}${PORT}/v1/connect`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
     return res.json()
   } catch (err) {
@@ -65,8 +66,8 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 
   try {
-    // Maybe this api url could come from the /connect ?
-    const res = await fetch(`http://0.0.0.0:${PORT}/v1/services/api`, options)
+    // @TODO This api url could come from the /connect endpoint
+    const res = await fetch(`${hostname}${PORT}/v1/services/api`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
     return res.json()
   } catch (err) {
@@ -115,7 +116,7 @@ export const useHomebrew = () => {
     const res = await getAPIConfig()
     const serviceApis: any = {}
     res?.forEach(api => {
-      const origin = `${api.baseUrl}${api.port}`
+      const origin = `${hostname}${api.port}`
       const apiName = api.name
       const endpoints: any = {}
       // Parse endpoint urls

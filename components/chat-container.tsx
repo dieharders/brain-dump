@@ -28,7 +28,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       if (selectedProvider === ModelID.Local) {
         const res = await connectToLocalProvider()
         if (res?.success) {
-          toast.success(`<-Connected to local provider->`)
+          toast.success(`Connected to local provider 🎉`)
           setModelId(selectedProvider as AIModels)
           // @TODO Temp, test completions here...
           await apis?.['text-inference'].completions({

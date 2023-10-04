@@ -32,7 +32,8 @@ export const useLocalInference = ({
   const getCompletion = async (
     options: CompletionOptions,
   ): Promise<Response | undefined> => {
-    const ip = 'http://localhost:8000/completions' // @TODO This should be set in settings menu
+    // @TODO Pass a completions() func here from useHomebrew hook's api object
+    const ip = 'http://localhost:8000/completions'
     try {
       const response = await fetch(ip, {
         method: 'POST',
