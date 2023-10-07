@@ -6,19 +6,27 @@ import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
 import { ModelID } from '@/components/features/settings/types'
+import { I_ServiceApis } from '@/lib/homebrew'
 
 interface CompletionOptions {
+  // messages: Message[]
+  prompt: string
+  stream?: boolean
   temperature?: number
-  numOutputs?: number
-  maxTokens?: number
-  stopSequences?: string[]
+  num_outputs?: number
+  max_tokens?: number
+  stop?: string[]
+  echo?: boolean
   model?: ModelID
+  seed?: number
 }
 
 export const useLocalInference = ({
   initialMessages = [],
+  apis,
 }: {
-  initialMessages: Message[] | undefined
+  initialMessages: Message[] | undefined,
+  apis: I_ServiceApis | null
 }) => {
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
@@ -32,34 +40,17 @@ export const useLocalInference = ({
   const getCompletion = async (
     options: CompletionOptions,
   ): Promise<Response | undefined> => {
-    // @TODO Pass a completions() func here from useHomebrew hook's api object
-    const ip = 'http://localhost:8000/completions'
+
     try {
-      const response = await fetch(ip, {
-        method: 'POST',
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(options),
-      })
-      if (response.ok === true) {
-        return response
-      } else {
-        toast.error(`Prompt completion error: ${response.statusText}`)
-        return
-      }
+      return apis?.['text-inference'].completions(options)
     } catch (error) {
-      toast.error(`${error}`)
+      toast.error(`Prompt completion error: ${error}`)
       return
     }
   }
 
   const onStreamResult = async (result: string) => {
+    if (!result) return
     const parsedResult = JSON.parse(result)
     const text = parsedResult?.choices?.[0]?.text
 
@@ -96,9 +87,9 @@ export const useLocalInference = ({
       setResponseText('')
       abortRef.current = false
       // @TODO Delete prev assistant response
-      const foo = await Promise.resolve('') // @TODO implement, re-call append() with new prompt
+      const res = await Promise.resolve('') // @TODO implement, re-call append() with new prompt
       setIsLoading(false)
-      return foo
+      return res
     } catch (error) {
       setIsLoading(false)
       return null
@@ -109,16 +100,39 @@ export const useLocalInference = ({
     if (!prompt) return
     setResponseId(nanoid())
 
-    const options = {
+    // @TODO Inject a structure around or before the prompt to give instructions example to follow. This is required by some models and must be correct.
+    // @TODO This template only applies to "completions" and not "chat/completions"
+    const promptTemplate = `\n\n### Instructions:\n${prompt.content}\n\n### Response:\n`
+    // Create new message for user's prompt
+    const newUserMsg: Message = {
+      id: prompt.id || nanoid(),
+      role: prompt.role || 'user',
+      content: prompt.content, // always assign prompt content w/o template
+    }
+    messages.current = [...messages.current, newUserMsg]
+    // @TODO Pass some options from the user.
+    const options: CompletionOptions = {
+      prompt: promptTemplate,
+      stop: [
+        '\n',
+        '###',
+        '[DONE]',
+        'stop',
+      ],
       stream: true,
-      prompt: prompt.content,
-      messages: [...messages.current, { role: 'user', content: prompt.content }],
-      temperature: 1.0,
-      numOutputs: 1,
-      // seed: 99, // needs support from local.ai server
-      // maxTokens: 2048,
-      // model: 'local', // ModelID
-      stopSequences: ['[DONE]'],
+      echo: true,
+      max_tokens: 1024,
+      temperature: 0.79, // 1.0 more accurate, 0.0 more creative
+      seed: 0, // 0=random
+      // top_p: 0.7,
+      // suffix: '', // A suffix to append to the generated text. If None, no suffix is appended. Useful for chatbots.
+      // presence_penalty: [1.0],
+      // frequency_penalty: [1.0],
+      // num_outputs: 1,
+      // model: 'local', // renames model alias
+      // llama.cpp specific
+      // repeat_penalty: 1.0,
+      // top_k: 1,
     }
 
     try {
@@ -126,25 +140,20 @@ export const useLocalInference = ({
       setResponseText('')
       setIsLoading(true)
       abortRef.current = false
-      // Create new message for user's prompt
-      const newUserMsg: Message = {
-        id: prompt.id || nanoid(),
-        role: prompt.role,
-        content: prompt.content,
-      }
-      console.log('@@ sending request to inference server...', newUserMsg)
-      messages.current = [...messages.current, newUserMsg]
-      // Request completion for prompt
+      // Send request completion for prompt
+      console.log('[UI] Sending request to inference server...', newUserMsg)
       const response = await getCompletion(options)
+      console.log('[UI] Prompt response', response)
+      if (!response) throw new Error('No prompt response.')
+
       // Process the stream into text tokens
-      if (!response) return
       await processSseStream(
         response,
-        options.stopSequences,
+        options.stop,
         {
           onData: (res: string) => onStreamResult(res),
           onFinish: async () => {
-            console.log('@@ stream finished!')
+            console.log('[UI] stream finished!')
             setIsLoading(false)
           },
           onEvent: async str => {
@@ -152,14 +161,14 @@ export const useLocalInference = ({
           },
           onComment: async str => {
             // @TODO Render this state on screen
-            console.log('@@ onComment', str)
+            console.log('[UI] onComment', str)
           },
         },
         abortRef,
       )
     } catch (err) {
       setIsLoading(false)
-      toast.error(`Prompt request error${err}`)
+      toast.error(`Prompt request error: \n ${err}`)
       return null
     }
   }

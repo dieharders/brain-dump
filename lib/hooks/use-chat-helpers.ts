@@ -60,7 +60,7 @@ const processSseStream = async (
         }
       }
     } catch (err) {
-      console.log('@@ Error reading stream data buffer:', err)
+      console.log('[UI] Error reading stream data buffer:', err)
     }
 
     readingBuffer = await reader.read()

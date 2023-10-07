@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import { type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
@@ -10,23 +9,22 @@ import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { AIModels } from '@/components/features/settings/hooks'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
+import { I_ServiceApis } from '@/lib/homebrew'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   modelId: AIModels | undefined
+  apis: I_ServiceApis | null
 }
 
-export const LocalChat = ({ id, initialMessages, modelId, className }: IProps) => {
+export const LocalChat = ({ id, initialMessages, modelId, apis, className }: IProps) => {
   const { theme } = useTheme()
   const { append, messages, reload, stop, input, setInput, isLoading } =
     useLocalInference({
       initialMessages,
+      apis,
     })
-
-  useEffect(() => {
-    console.log('@@ [local component] modelId:', modelId)
-  }, [modelId])
 
   return (
     <>

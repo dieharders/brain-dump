@@ -26,7 +26,7 @@ interface I_ConnectResponse {
 
 type T_APIRequest = (props: any) => Promise<any | null>
 
-interface I_ServiceApis {
+export interface I_ServiceApis {
   'text-inference': {
     completions: T_APIRequest
     embeddings: T_APIRequest
@@ -50,6 +50,7 @@ const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   try {
     const res = await fetch(`${hostname}${PORT}/v1/connect`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
+    if (!res) throw new Error('[homebrew] No response received.')
     return res.json()
   } catch (err) {
     console.log('[homebrew] connectToServer error:', err)
@@ -67,8 +68,10 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
 
   try {
     // @TODO This api url could come from the /connect endpoint
-    const res = await fetch(`${hostname}${PORT}/v1/services/api`, options)
+    const endpoint = '/v1/services/api'
+    const res = await fetch(`${hostname}${PORT}${endpoint}`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
+    if (!res) throw new Error(`[homebrew] No response from ${endpoint}`)
     return res.json()
   } catch (err) {
     console.log('[homebrew] fetchAPIConfig error:', err)
@@ -102,7 +105,7 @@ export const getAPIConfig = async () => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  const [apis, setAPI] = useState<I_ServiceApis | null>()
+  const [apis, setAPI] = useState<I_ServiceApis | null>(null)
 
   const connect = async () => {
     const result = await connectToLocalProvider()
@@ -118,31 +121,46 @@ export const useHomebrew = () => {
     res?.forEach(api => {
       const origin = `${hostname}${api.port}`
       const apiName = api.name
-      const endpoints: any = {}
+      const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
       // Parse endpoint urls
       api.endpoints.forEach(endpoint => {
         const url = `${origin}${endpoint.urlPath}`
         const method = endpoint.method
-        const request = async (args: any): Promise<any | null> => {
+        const request = async (args: any) => {
           try {
+            // Normal fetch
             const res = await fetch(url, {
               method,
               mode: 'cors', // no-cors, *, cors, same-origin
               cache: 'no-cache',
+              credentials: 'same-origin',
               headers: {
                 'Content-Type': 'application/json',
               },
               redirect: 'follow',
               referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-              body: JSON.stringify(args),
+              ...(method !== 'GET' && { body: JSON.stringify(args) }),
             })
-            if (!res.ok)
-              throw new Error(
-                `[homebrew] ${endpoint.name} HTTP error! Status: ${res.status}`,
-              )
-            return res.json()
+            if (!res)
+              throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
+            if (!res.ok) {
+              const parsed = await res.json()
+              if (parsed.error) {
+                const error = new Error(`[homebrew] ${parsed.error}`) as Error & {
+                  status: number
+                }
+                error.status = res.status
+                throw error
+              } else {
+                throw new Error(
+                  `[homebrew] ${endpoint.name} An unexpected error occurred! Status: ${res.status}`,
+                )
+              }
+            }
+
+            return res
           } catch (err) {
-            console.log(`[homebrew] ${endpoint.name} error:`, err)
+            console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
             return null
           }
         }
