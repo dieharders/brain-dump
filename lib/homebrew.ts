@@ -101,12 +101,77 @@ export const getAPIConfig = async () => {
   return apis
 }
 
+const parseServices = (response: I_API[] | null): I_ServiceApis | null => {
+  if (!response) return null
+
+  const serviceApis: any = {}
+  response?.forEach(api => {
+    const origin = `${hostname}${api.port}`
+    const apiName = api.name
+    const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
+    // Parse endpoint urls
+    api.endpoints.forEach(endpoint => {
+      const url = `${origin}${endpoint.urlPath}`
+      const method = endpoint.method
+      const headers = {
+        'Content-Type': 'application/json',
+      }
+      const request = async (args: any) => {
+        try {
+          // Normal fetch
+          const body = { body: JSON.stringify(args) }
+          const res = await fetch(url, {
+            method,
+            mode: 'cors', // no-cors, *, cors, same-origin
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers,
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            ...(method !== 'GET' && body),
+          })
+          if (!res)
+            throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
+          if (!res.ok) {
+            const parsed = await res.json()
+            if (parsed.error) {
+              const error = new Error(`[homebrew] ${parsed.error}`) as Error & {
+                status: number
+              }
+              error.status = res.status
+              throw error
+            } else {
+              throw new Error(
+                `[homebrew] ${endpoint.name} An unexpected error occurred! Status: ${res.status}`,
+              )
+            }
+          }
+
+          return res
+        } catch (err) {
+          console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
+          return null
+        }
+      }
+
+      endpoints[endpoint.name] = request
+    })
+    // Set callbacks
+    serviceApis[apiName] = endpoints
+  })
+
+  return serviceApis
+}
+
 /**
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
   const [apis, setAPI] = useState<I_ServiceApis | null>(null)
 
+  /**
+   * Attempt to connect to homebrew api.
+   */
   const connect = async () => {
     const result = await connectToLocalProvider()
     if (!result?.success) return null
@@ -115,6 +180,9 @@ export const useHomebrew = () => {
     return result
   }
 
+  /**
+   * Attempt to connect to text inference server.
+   */
   const connectTextService = useCallback(async () => {
     try {
       const req = apis?.['text-inference']?.models
@@ -133,63 +201,12 @@ export const useHomebrew = () => {
     }
   }, [apis])
 
+  /**
+   * Get all api configs for services.
+   */
   const getServices = async () => {
     const res = await getAPIConfig()
-    const serviceApis: any = {}
-    res?.forEach(api => {
-      const origin = `${hostname}${api.port}`
-      const apiName = api.name
-      const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
-      // Parse endpoint urls
-      api.endpoints.forEach(endpoint => {
-        const url = `${origin}${endpoint.urlPath}`
-        const method = endpoint.method
-        const headers = {
-          'Content-Type': 'application/json',
-        }
-        const request = async (args: any) => {
-          try {
-            // Normal fetch
-            const body = { body: JSON.stringify(args) }
-            const res = await fetch(url, {
-              method,
-              mode: 'cors', // no-cors, *, cors, same-origin
-              cache: 'no-cache',
-              credentials: 'same-origin',
-              headers,
-              redirect: 'follow',
-              referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-              ...(method !== 'GET' && body),
-            })
-            if (!res)
-              throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
-            if (!res.ok) {
-              const parsed = await res.json()
-              if (parsed.error) {
-                const error = new Error(`[homebrew] ${parsed.error}`) as Error & {
-                  status: number
-                }
-                error.status = res.status
-                throw error
-              } else {
-                throw new Error(
-                  `[homebrew] ${endpoint.name} An unexpected error occurred! Status: ${res.status}`,
-                )
-              }
-            }
-
-            return res
-          } catch (err) {
-            console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
-            return null
-          }
-        }
-
-        endpoints[endpoint.name] = request
-      })
-      // Set callbacks
-      serviceApis[apiName] = endpoints
-    })
+    const serviceApis = parseServices(res)
     setAPI(serviceApis)
     return
   }

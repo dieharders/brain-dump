@@ -66,11 +66,11 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   useEffect(() => {
     if (!connectOnce) {
       if (selectedProvider === 'no provider selected') return
-      const doConn = async () => {
+      const dispatchAction = async () => {
         const success = await connect()
         if (success) setConnectOnce(true)
       }
-      doConn()
+      dispatchAction()
     }
   }, [selectedProvider, connectOnce, connect])
 
