@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 interface I_Endpoint {
   name: string
@@ -24,7 +24,7 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
-type T_APIRequest = (props: any) => Promise<any | null>
+type T_APIRequest = (props?: any) => Promise<any | null>
 
 export interface I_ServiceApis {
   'text-inference': {
@@ -115,6 +115,24 @@ export const useHomebrew = () => {
     return result
   }
 
+  const connectTextService = useCallback(async () => {
+    try {
+      const req = apis?.['text-inference']?.models
+      if (!req) return
+
+      const res = await req()
+      if (!res) throw new Error('Failed to connect to Ai.')
+
+      const json = await res?.json()
+      const data = json?.data
+
+      return data
+    } catch (error) {
+      console.log(`[homebrew] connectTextService: ${error}`)
+      return
+    }
+  }, [apis])
+
   const getServices = async () => {
     const res = await getAPIConfig()
     const serviceApis: any = {}
@@ -126,20 +144,22 @@ export const useHomebrew = () => {
       api.endpoints.forEach(endpoint => {
         const url = `${origin}${endpoint.urlPath}`
         const method = endpoint.method
+        const headers = {
+          'Content-Type': 'application/json',
+        }
         const request = async (args: any) => {
           try {
             // Normal fetch
+            const body = { body: JSON.stringify(args) }
             const res = await fetch(url, {
               method,
               mode: 'cors', // no-cors, *, cors, same-origin
               cache: 'no-cache',
               credentials: 'same-origin',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers,
               redirect: 'follow',
               referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-              ...(method !== 'GET' && { body: JSON.stringify(args) }),
+              ...(method !== 'GET' && body),
             })
             if (!res)
               throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
@@ -174,5 +194,5 @@ export const useHomebrew = () => {
     return
   }
 
-  return { connect, getServices, apis }
+  return { connect, connectTextService, getServices, apis }
 }

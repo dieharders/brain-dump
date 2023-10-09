@@ -38,7 +38,7 @@ export function CloudChat({ id, initialMessages, modelId, className }: IProps) {
   })
 
   useEffect(() => {
-    console.log('@@ [cloud] modelId:', modelId)
+    console.log('[cloud] modelId:', modelId)
   }, [modelId])
 
   return (
