@@ -4,6 +4,8 @@ interface I_Endpoint {
   name: string
   urlPath: string
   method: string
+  // completions
+  promptTemplate?: string
 }
 
 interface I_API {
@@ -27,10 +29,10 @@ interface I_ConnectResponse {
 type T_APIRequest = (props?: any) => Promise<any | null>
 
 export interface I_ServiceApis {
-  'text-inference': {
+  textInference: {
     completions: T_APIRequest
     embeddings: T_APIRequest
-    'chat-completions': T_APIRequest
+    chatCompletions: T_APIRequest
     models: T_APIRequest
   }
 }
@@ -101,7 +103,7 @@ export const getAPIConfig = async () => {
   return apis
 }
 
-const parseServices = (response: I_API[] | null): I_ServiceApis | null => {
+const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   if (!response) return null
 
   const serviceApis: any = {}
@@ -130,8 +132,10 @@ const parseServices = (response: I_API[] | null): I_ServiceApis | null => {
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
             ...(method !== 'GET' && body),
           })
+          // Check no response
           if (!res)
             throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
+          // Check errored response
           if (!res.ok) {
             const parsed = await res.json()
             if (parsed.error) {
@@ -154,9 +158,17 @@ const parseServices = (response: I_API[] | null): I_ServiceApis | null => {
         }
       }
 
-      endpoints[endpoint.name] = request
+      // Add request function
+      const reqFunction = async (args: any) => {
+        // This is specific to constructing prompts, only applies to "completions"
+        const prompt = endpoint?.promptTemplate?.replace('{{PROMPT}}', args?.prompt)
+        const newArgs = args?.prompt ? { ...args, prompt } : args
+
+        return request(newArgs)
+      }
+      endpoints[endpoint.name] = reqFunction
     })
-    // Set callbacks
+    // Set api callbacks
     serviceApis[apiName] = endpoints
   })
 
@@ -185,7 +197,7 @@ export const useHomebrew = () => {
    */
   const connectTextService = useCallback(async () => {
     try {
-      const req = apis?.['text-inference']?.models
+      const req = apis?.textInference?.models
       if (!req) return
 
       const res = await req()
@@ -206,7 +218,7 @@ export const useHomebrew = () => {
    */
   const getServices = async () => {
     const res = await getAPIConfig()
-    const serviceApis = parseServices(res)
+    const serviceApis = createServices(res)
     setAPI(serviceApis)
     return
   }

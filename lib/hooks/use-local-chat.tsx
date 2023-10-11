@@ -21,13 +21,15 @@ interface CompletionOptions {
   seed?: number
 }
 
+interface IProps {
+  initialMessages: Message[] | undefined,
+  apis: I_ServiceApis | null
+}
+
 export const useLocalInference = ({
   initialMessages = [],
   apis,
-}: {
-  initialMessages: Message[] | undefined,
-  apis: I_ServiceApis | null
-}) => {
+}: IProps) => {
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
   const [input, setInput] = useState('')
@@ -42,7 +44,7 @@ export const useLocalInference = ({
   ): Promise<Response | undefined> => {
 
     try {
-      return apis?.['text-inference'].completions(options)
+      return apis?.textInference.completions(options)
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
@@ -64,10 +66,10 @@ export const useLocalInference = ({
     // @TODO Render these states on screen
     switch (eventName) {
       case 'FEEDING_PROMPT':
-        console.log('@@ onEvent FEEDING_PROMPT...')
+        console.log('[Chat] onEvent FEEDING_PROMPT...')
         break
       case 'GENERATING_TOKENS':
-        console.log('@@ onEvent GENERATING_TOKENS...')
+        console.log('[Chat] onEvent GENERATING_TOKENS...')
         break
       default:
         break
@@ -99,10 +101,6 @@ export const useLocalInference = ({
   const append = async (prompt: Message | CreateMessage) => {
     if (!prompt) return
     setResponseId(nanoid())
-
-    // @TODO Inject a structure around or before the prompt to give instructions example to follow. This is required by some models and must be correct.
-    // @TODO This template only applies to "completions" and not "chat/completions"
-    const promptTemplate = `\n\n### Instructions:\n${prompt.content}\n\n### Response:\n`
     // Create new message for user's prompt
     const newUserMsg: Message = {
       id: prompt.id || nanoid(),
@@ -112,7 +110,7 @@ export const useLocalInference = ({
     messages.current = [...messages.current, newUserMsg]
     // @TODO Pass some options from the user.
     const options: CompletionOptions = {
-      prompt: promptTemplate,
+      prompt: prompt.content,
       stop: [
         '\n',
         '###',
@@ -132,7 +130,7 @@ export const useLocalInference = ({
       // model: 'local', // renames model alias
       // llama.cpp specific
       // repeat_penalty: 1.0,
-      // top_k: 1,
+      // top_k: 1.0,
     }
 
     try {
