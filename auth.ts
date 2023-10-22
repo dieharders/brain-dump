@@ -24,15 +24,13 @@ export const {
 } = NextAuth({
   providers: [Anonymous, GitHub, Google],
   callbacks: {
-    // async jwt({ token, profile }) {
-    //   console.log('@@ token', profile)
-
-    //   if (profile) {
-    //     token.id = profile.id
-    //     token.image = profile.picture
-    //   }
-    //   return token
-    // },
+    async jwt({ token, profile }) {
+      if (profile) {
+        token.id = profile.id
+        token.image = profile.picture
+      }
+      return token
+    },
     authorized({ auth }) {
       return !!auth?.user?.name // this ensures there is a logged in user for -every- request
     },
@@ -48,5 +46,5 @@ export const {
   // pages: {
   //   signIn: '/sign-in', // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
   // },
-  // session: { strategy: 'jwt' },
+  session: { strategy: 'jwt' },
 })
