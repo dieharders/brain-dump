@@ -8,12 +8,13 @@ export function cn(...inputs: ClassValue[]) {
 
 export const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-  7
+  7,
 ) // 7-character random string
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function fetcher<JSON = any>(
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<JSON> {
   const res = await fetch(input, init)
 
@@ -38,6 +39,6 @@ export function formatDate(input: string | number | Date): string {
   return date.toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
-    year: 'numeric'
+    year: 'numeric',
   })
 }
