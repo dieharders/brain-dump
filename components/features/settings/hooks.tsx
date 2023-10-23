@@ -26,7 +26,7 @@ export type AIModels = OpenAIModel | HuggingFaceModel | ModelID | DefaulModeltMs
 export function useSettings() {
   const [provider, setProvider] = useLocalStorage<Provider>(
     'llm-provider',
-    'no provider selected',
+    'local',
   )
   // AI Model
   const [model, setModel] = useLocalStorage<AIModels>('llm-model', 'no model selected')
