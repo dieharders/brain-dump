@@ -80,13 +80,11 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     if (apis) connectTextServiceAction()
   }, [apis, connectTextServiceAction])
 
+  const isLocalSelected = selectedProvider === 'local'
+  const isCloudSelected = selectedModel !== 'no model selected' && !!modelId
+
   // Render
-  if (
-    selectedProvider === 'no provider selected' ||
-    selectedModel === 'no model selected' ||
-    !modelId ||
-    !selectedModel
-  )
+  if (!isLocalSelected && !isCloudSelected)
     return (<>
       {!isConnecting && connectOnce && <Button
         className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
