@@ -7,18 +7,16 @@ import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { AIModels } from '@/components/features/settings/hooks'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
 import { I_ServiceApis } from '@/lib/homebrew'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
-  modelId: AIModels | undefined
   apis: I_ServiceApis | null
 }
 
-export const LocalChat = ({ id, initialMessages, modelId, apis, className }: IProps) => {
+export const LocalChat = ({ id, initialMessages, apis, className }: IProps) => {
   const { theme } = useTheme()
   const { append, messages, reload, stop, input, setInput, isLoading } =
     useLocalInference({
