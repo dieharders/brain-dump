@@ -1,4 +1,4 @@
-# HomeBrewAi Chat Discovery
+# 🍺HomeBrewAi Chat Discovery
 
 Chat with your documents and knowledgebase. A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).
 
