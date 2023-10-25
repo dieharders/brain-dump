@@ -9,6 +9,10 @@ import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
 
+declare global {
+  interface Window { hasChatMounted: boolean }
+}
+
 interface IProps {
   id?: string
   initialMessages?: Message[]
@@ -60,23 +64,32 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     return result
   }, [connectTextService])
 
-  // Do initial connection to homebrew api
+  // Attempt initial connection to homebrew api
   useEffect(() => {
-    if (!hasHBConnected) {
-      if (selectedProvider === 'no provider selected') return
+    if (selectedProvider === 'no provider selected' || !selectedProvider) return
+    if (!hasHBConnected && !isConnecting && !window.hasChatMounted) {
+      // @TODO Why does this execute multiple times? B/c we need global state.
+      // @TODO Maybe move the connection code to a component that only mounts once.
       const dispatchAction = async () => {
+        setIsConnecting(true)
         const success = await connect()
         if (success) setHasHBConnected(true)
+        setIsConnecting(false)
       }
+
       dispatchAction()
+      window.hasChatMounted = true
     }
-  }, [selectedProvider, hasHBConnected, connect])
+  }, [hasHBConnected, connect, isConnecting, selectedProvider])
 
   // Connect to text inference
   useEffect(() => {
     // Attempt to connect to text inference service
-    if (apis) connectTextServiceAction()
-  }, [apis, connectTextServiceAction])
+    if (apis && !isConnecting) {
+      console.log('@@ connn to text service')
+      connectTextServiceAction()
+    }
+  }, [apis, connectTextServiceAction, isConnecting])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
