@@ -134,24 +134,28 @@ export async function newChat() {
 }
 
 // Brains
+export interface IBrainDetails {
+  file: File
+  title: string
+  description?: string
+  tags?: string
+}
+export async function newBrain(details: IBrainDetails) {
+  // @TODO Need to fix user.id then re-apply this.
+  // const session = await auth()
+  // if (!session?.user?.id) {
+  //   return {
+  //     success: false,
+  //     error: 'Unauthorized',
+  //   }
+  // }
 
-export async function newBrain() {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return {
-      error: 'Unauthorized',
-    }
-  }
-
-  revalidatePath('/')
-  return redirect('/')
+  // @TODO Send details to POST /pre-process endpoint
+  return { success: true }
 }
 
-export async function getBrains(
-  userId: string | undefined,
-): Promise<Brain[] | undefined> {
-  if (!userId) return
+export async function getBrains(userId: string | undefined): Promise<Brain[]> {
+  if (!userId) return []
 
   // @TODO Temp data. Replace with call to vercel kv database
   return [

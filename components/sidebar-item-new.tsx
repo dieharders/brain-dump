@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import { useState, useTransition } from 'react'
 import { ServerActionResult } from '@/lib/types'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
@@ -19,15 +19,15 @@ import {
 } from '@/components/ui/alert-dialog'
 
 interface I_Props {
-  action?: () => ServerActionResult<void>
+  action?: () => ServerActionResult<void> | (() => Promise<void>)
   actionTitle?: string
   actionDescription?: string
 }
 
 export function NewItem(props: I_Props) {
-  const { action = () => Promise, actionTitle, actionDescription } = props
-  const [open, setOpen] = React.useState(false)
-  const [isPending, startTransition] = React.useTransition()
+  const { action = async () => { }, actionTitle, actionDescription } = props
+  const [open, setOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
