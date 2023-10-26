@@ -192,9 +192,6 @@ export const useHomebrew = () => {
     const result = await connectToLocalProvider()
     if (!result?.success) return null
 
-    // Track that we have successfully connected
-    window.homebrewai.connected = true
-
     // Return api services
     await getServices()
 

@@ -12,7 +12,6 @@ import { toast } from 'react-hot-toast'
 declare global {
   interface Window {
     homebrewai?: {
-      connected?: boolean,
       hasInitConnection?: boolean,
     }
   }
@@ -24,25 +23,34 @@ interface IProps {
 }
 
 export const ChatContainer = ({ id, initialMessages }: IProps) => {
-  const isConnected = window?.homebrewai?.connected
-  const hasInitConnection = window?.homebrewai?.hasInitConnection
-  const { provider: selectedProvider, model: selectedModel } = useSettings()
+  const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
+  const { provider: selectedProvider, model: selectedModel } = useSettings()
   const { connect: connectToHomebrew, connectTextService, apis } = useHomebrew()
 
   const connect = useCallback(async () => {
+    setIsConnecting(true)
+
     // Attempt to verify the local provider and text inference service exists.
     if (selectedProvider === ModelID.Local) {
       const res = await connectToHomebrew()
 
+      // Record the attempt
+      setIsConnecting(false)
+      if (!window?.homebrewai) window.homebrewai = {}
+      window.homebrewai.hasInitConnection = true
+
       if (res?.success) {
         toast.success(`Connected to local provider...waiting for Ai connection...`)
+        setIsConnected(true)
         return true
       }
       toast.error(`Failed to connect to local provider.`)
       return false
     }
+
+    setIsConnecting(false)
     return false
   }, [connectToHomebrew, selectedProvider])
 
@@ -72,27 +80,14 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
 
   // Attempt initial connection to homebrew api
   useEffect(() => {
-    if (!isConnected && !hasInitConnection) {
-      const dispatchAction = async () => {
-        setIsConnecting(true)
-        await connect()
-        setIsConnecting(false)
-      }
-
-      if (!window?.homebrewai) window.homebrewai = {}
-      window.homebrewai.hasInitConnection = true
-
-      dispatchAction()
-    }
-  }, [connect, hasInitConnection, isConnected])
+    if (!isConnected && !window?.homebrewai?.hasInitConnection) connect()
+  }, [connect, isConnected])
 
   // Connect to text inference
   useEffect(() => {
     // Attempt to connect to text inference service
-    if (!apis && !isConnecting) {
-      connectTextServiceAction()
-    }
-  }, [apis, connectTextServiceAction, isConnecting])
+    if (apis && !isConnecting && isConnected && !hasTextServiceConnected) connectTextServiceAction()
+  }, [apis, connectTextServiceAction, hasTextServiceConnected, isConnected, isConnecting])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
@@ -101,12 +96,23 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   if (!isConnecting) {
     // Render "Waiting..." feedback
     if (!isConnected)
-      return <div className="m-4 text-center">Waiting for server...</div>
+      return (
+        <>
+          <div className="m-4 text-center">Waiting for server...</div>
+          <Button
+            className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
+            onClick={connect}
+            disabled={isConnecting}
+          >
+            Connect to HomeBrewAi
+          </Button>
+        </>
+      )
     // Render Connect button
     if (!hasTextServiceConnected)
       return (
         <>
-          <div className="m-4 text-center">Connected to HomebrewAi server. Waiting for Ai engine to start.</div>
+          <div className="m-4 text-center">Connected to HomebrewAi server.<br />Waiting for Ai engine to start...</div>
           <Button
             className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
             onClick={connectTextServiceAction}
