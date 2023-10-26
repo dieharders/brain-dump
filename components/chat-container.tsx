@@ -9,30 +9,46 @@ import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
 
+declare global {
+  interface Window {
+    homebrewai?: {
+      hasInitConnection?: boolean,
+    }
+  }
+}
+
 interface IProps {
   id?: string
   initialMessages?: Message[]
 }
 
 export const ChatContainer = ({ id, initialMessages }: IProps) => {
-  const { provider: selectedProvider, model: selectedModel } = useSettings()
+  const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
-  const [hasHBConnected, setHasHBConnected] = useState(false)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
+  const { provider: selectedProvider, model: selectedModel } = useSettings()
   const { connect: connectToHomebrew, connectTextService, apis } = useHomebrew()
 
   const connect = useCallback(async () => {
+    setIsConnecting(true)
+
     // Attempt to verify the local provider and text inference service exists.
     if (selectedProvider === ModelID.Local) {
       const res = await connectToHomebrew()
 
+      // Record the attempt
+      setIsConnecting(false)
+
       if (res?.success) {
         toast.success(`Connected to local provider...waiting for Ai connection...`)
+        setIsConnected(true)
         return true
       }
       toast.error(`Failed to connect to local provider.`)
       return false
     }
+
+    setIsConnecting(false)
     return false
   }, [connectToHomebrew, selectedProvider])
 
@@ -46,6 +62,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           setHasTextServiceConnected(true)
           toast.success(`Connected to Ai model [${id}]`)
           return true
+        } else {
+          toast.error(`Failed to connect to Ai model`)
         }
         return false
       } catch (error) {
@@ -60,23 +78,10 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     return result
   }, [connectTextService])
 
-  // Do initial connection to homebrew api
+  // Attempt initial connection to homebrew api
   useEffect(() => {
-    if (!hasHBConnected) {
-      if (selectedProvider === 'no provider selected') return
-      const dispatchAction = async () => {
-        const success = await connect()
-        if (success) setHasHBConnected(true)
-      }
-      dispatchAction()
-    }
-  }, [selectedProvider, hasHBConnected, connect])
-
-  // Connect to text inference
-  useEffect(() => {
-    // Attempt to connect to text inference service
-    if (apis) connectTextServiceAction()
-  }, [apis, connectTextServiceAction])
+    if (!isConnected && !window?.homebrewai?.hasInitConnection) connect()
+  }, [connect, isConnected])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
@@ -84,13 +89,24 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   // Render connection UI
   if (!isConnecting) {
     // Render "Waiting..." feedback
-    if (!hasHBConnected)
-      return <div className="m-4 text-center">Waiting for server...</div>
-    // Render Connect button
+    if (!isConnected)
+      return (
+        <>
+          <div className="m-4 text-center">Waiting for server...</div>
+          <Button
+            className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
+            onClick={connect}
+            disabled={isConnecting}
+          >
+            Connect to HomeBrewAi
+          </Button>
+        </>
+      )
+    // Render "Connect Ai" button
     if (!hasTextServiceConnected)
       return (
         <>
-          <div className="m-4 text-center">Connected to HomebrewAi server. Waiting for Ai engine to start.</div>
+          <div className="m-4 text-center">Connected to HomebrewAi server.<br />Waiting for Ai engine to start...</div>
           <Button
             className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
             onClick={connectTextServiceAction}
@@ -102,10 +118,10 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       )
   }
   // Render "Connecting..." feedback
-  if (isConnecting && !hasHBConnected)
+  if (isConnecting && !isConnected)
     return <div className="m-4 text-center">Connecting to server...</div>
   // Connected
-  if (!isConnecting && hasHBConnected) {
+  if (!isConnecting && isConnected) {
     // Render chat UI (Local)
     if (isLocalSelected)
       return <LocalChat id={id} initialMessages={initialMessages} apis={apis} />

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface I_Endpoint {
   name: string
@@ -104,10 +104,10 @@ export const getAPIConfig = async () => {
 }
 
 const createServices = (response: I_API[] | null): I_ServiceApis | null => {
-  if (!response) return null
+  if (!response || response.length === 0) return null
 
   const serviceApis: any = {}
-  response?.forEach(api => {
+  response.forEach(api => {
     const origin = `${hostname}${api.port}`
     const apiName = api.name
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
@@ -185,10 +185,15 @@ export const useHomebrew = () => {
    * Attempt to connect to homebrew api.
    */
   const connect = async () => {
+    // Track the initial attempt at a connection
+    if (window?.homebrewai) window.homebrewai.hasInitConnection = true
+
     const result = await connectToLocalProvider()
     if (!result?.success) return null
 
+    // Attempt to return api services
     await getServices()
+
     return result
   }
 
@@ -197,7 +202,10 @@ export const useHomebrew = () => {
    */
   const connectTextService = useCallback(async () => {
     try {
-      const req = apis?.textInference?.models
+      // Return api services
+      const servicesResponse = await getServices()
+
+      const req = servicesResponse?.textInference?.models
       if (!req) return
 
       const res = await req()
@@ -211,7 +219,7 @@ export const useHomebrew = () => {
       console.log(`[homebrew] connectTextService: ${error}`)
       return
     }
-  }, [apis])
+  }, [])
 
   /**
    * Get all api configs for services.
@@ -220,8 +228,13 @@ export const useHomebrew = () => {
     const res = await getAPIConfig()
     const serviceApis = createServices(res)
     setAPI(serviceApis)
-    return
+    return serviceApis
   }
+
+  // Make sure homebrewai object exists
+  useEffect(() => {
+    if (!window?.homebrewai) window.homebrewai = {}
+  }, [])
 
   return { connect, connectTextService, getServices, apis }
 }
