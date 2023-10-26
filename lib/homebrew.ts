@@ -185,10 +185,19 @@ export const useHomebrew = () => {
    * Attempt to connect to homebrew api.
    */
   const connect = async () => {
+    if (!window?.homebrewai) window.homebrewai = {}
+    // Track the initial attempt at a connection
+    window.homebrewai.hasInitConnection = true
+
     const result = await connectToLocalProvider()
     if (!result?.success) return null
 
+    // Track that we have successfully connected
+    window.homebrewai.connected = true
+
+    // Return api services
     await getServices()
+
     return result
   }
 
@@ -220,7 +229,7 @@ export const useHomebrew = () => {
     const res = await getAPIConfig()
     const serviceApis = createServices(res)
     setAPI(serviceApis)
-    return
+    return res
   }
 
   return { connect, connectTextService, getServices, apis }

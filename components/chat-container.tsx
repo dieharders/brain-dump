@@ -10,7 +10,12 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
 
 declare global {
-  interface Window { hasChatMounted: boolean }
+  interface Window {
+    homebrewai?: {
+      connected?: boolean,
+      hasInitConnection?: boolean,
+    }
+  }
 }
 
 interface IProps {
@@ -19,9 +24,10 @@ interface IProps {
 }
 
 export const ChatContainer = ({ id, initialMessages }: IProps) => {
+  const isConnected = window?.homebrewai?.connected
+  const hasInitConnection = window?.homebrewai?.hasInitConnection
   const { provider: selectedProvider, model: selectedModel } = useSettings()
   const [isConnecting, setIsConnecting] = useState(false)
-  const [hasHBConnected, setHasHBConnected] = useState(false)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { connect: connectToHomebrew, connectTextService, apis } = useHomebrew()
 
@@ -66,27 +72,24 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
 
   // Attempt initial connection to homebrew api
   useEffect(() => {
-    if (selectedProvider === 'no provider selected' || !selectedProvider) return
-    if (!hasHBConnected && !isConnecting && !window.hasChatMounted) {
-      // @TODO Why does this execute multiple times? B/c we need global state.
-      // @TODO Maybe move the connection code to a component that only mounts once.
+    if (!isConnected && !hasInitConnection) {
       const dispatchAction = async () => {
         setIsConnecting(true)
-        const success = await connect()
-        if (success) setHasHBConnected(true)
+        await connect()
         setIsConnecting(false)
       }
 
+      if (!window?.homebrewai) window.homebrewai = {}
+      window.homebrewai.hasInitConnection = true
+
       dispatchAction()
-      window.hasChatMounted = true
     }
-  }, [hasHBConnected, connect, isConnecting, selectedProvider])
+  }, [connect, hasInitConnection, isConnected])
 
   // Connect to text inference
   useEffect(() => {
     // Attempt to connect to text inference service
-    if (apis && !isConnecting) {
-      console.log('@@ connn to text service')
+    if (!apis && !isConnecting) {
       connectTextServiceAction()
     }
   }, [apis, connectTextServiceAction, isConnecting])
@@ -97,7 +100,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   // Render connection UI
   if (!isConnecting) {
     // Render "Waiting..." feedback
-    if (!hasHBConnected)
+    if (!isConnected)
       return <div className="m-4 text-center">Waiting for server...</div>
     // Render Connect button
     if (!hasTextServiceConnected)
@@ -115,10 +118,10 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       )
   }
   // Render "Connecting..." feedback
-  if (isConnecting && !hasHBConnected)
+  if (isConnecting && !isConnected)
     return <div className="m-4 text-center">Connecting to server...</div>
   // Connected
-  if (!isConnecting && hasHBConnected) {
+  if (!isConnecting && isConnected) {
     // Render chat UI (Local)
     if (isLocalSelected)
       return <LocalChat id={id} initialMessages={initialMessages} apis={apis} />
