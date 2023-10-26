@@ -38,8 +38,6 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
 
       // Record the attempt
       setIsConnecting(false)
-      if (!window?.homebrewai) window.homebrewai = {}
-      window.homebrewai.hasInitConnection = true
 
       if (res?.success) {
         toast.success(`Connected to local provider...waiting for Ai connection...`)
