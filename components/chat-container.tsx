@@ -83,12 +83,6 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     if (!isConnected && !window?.homebrewai?.hasInitConnection) connect()
   }, [connect, isConnected])
 
-  // Connect to text inference
-  useEffect(() => {
-    // Attempt to connect to text inference service
-    if (apis && !isConnecting && isConnected && !hasTextServiceConnected) connectTextServiceAction()
-  }, [apis, connectTextServiceAction, hasTextServiceConnected, isConnected, isConnecting])
-
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
 
@@ -108,7 +102,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           </Button>
         </>
       )
-    // Render Connect button
+    // Render "Connect Ai" button
     if (!hasTextServiceConnected)
       return (
         <>
