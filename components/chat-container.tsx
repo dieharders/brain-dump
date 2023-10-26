@@ -62,6 +62,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           setHasTextServiceConnected(true)
           toast.success(`Connected to Ai model [${id}]`)
           return true
+        } else {
+          toast.error(`Failed to connect to Ai model`)
         }
         return false
       } catch (error) {
