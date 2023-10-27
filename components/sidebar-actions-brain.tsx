@@ -155,8 +155,7 @@ export function SidebarActions(props: I_Props) {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete your chat message and remove your data from our
-            servers.
+            This will permanently delete your data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
