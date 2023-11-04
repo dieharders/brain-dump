@@ -20,18 +20,21 @@ interface IProps {
 
 export const DialogCreateBrain = (props: IProps) => {
   const { dialogOpen, setDialogOpen } = props
+  const [disableForm, setDisableForm] = useState(false)
+  const [nameValue, setNameValue] = useState('')
   const [titleValue, setTitleValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  // @TODO Get the endpoint from lib/homebrew.ts
+  const endpoint = '/v1/memory/create'
   // @TODO Get the server IP from the currently connected host from window.homebrewai.host.ip
-  const endpoint = '/v1/embeddings/pre-process' // @TODO v1/embeddings/memorize ? an endpoint that does multiple steps?
   const uploadUrl = `http://localhost:8008${endpoint}`
 
   // Send form to backend
   const onSubmit = async () => {
     // Send form input values (everything except file) as url query params
-    const formInputs = { title: titleValue, description: descrValue, tags: tagsValue }
+    const formInputs = { name: nameValue, title: titleValue, description: descrValue, tags: tagsValue }
     const queryParams = new URLSearchParams(formInputs).toString()
     // Create a form with our selected file attached
     const formData = new FormData()
@@ -56,6 +59,8 @@ export const DialogCreateBrain = (props: IProps) => {
       const errMsg = result?.message ?? 'Something went horribly wrong'
       toast.error(`File upload failed: ${errMsg}`)
     }
+    // Reset form
+    setDisableForm(false)
   }
   // Store ref to our selected file
   const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -79,7 +84,14 @@ export const DialogCreateBrain = (props: IProps) => {
         <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
           {/* File picker */}
           <input type="file" name="file" onChange={handleFileSelected} />
-          {/* Title */}
+          {/* Collection Name */}
+          <Input
+            name="name"
+            value={nameValue}
+            placeholder="Collection name"
+            onChange={e => setNameValue(e.target.value)}
+          />
+          {/* Document Title */}
           <Input
             name="title"
             value={titleValue}
@@ -103,15 +115,21 @@ export const DialogCreateBrain = (props: IProps) => {
         </form>
         <DialogFooter className="items-center">
           <Button
+            disabled={disableForm}
             variant="ghost"
             onClick={() => {
               setDialogOpen(false)
+              setDisableForm(false)
             }}
           >
             Cancel
           </Button>
           <Button
-            onClick={onSubmit}
+            disabled={disableForm}
+            onClick={() => {
+              onSubmit()
+              setDisableForm(true)
+            }}
           >
             Save
           </Button>
