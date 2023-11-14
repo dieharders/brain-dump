@@ -8,6 +8,7 @@ import { SidebarItem } from '@/components/sidebar-item-brain'
 import { DialogCreateBrain } from '@/components/dialog-create-brain'
 import { Brain } from '@/lib/types'
 import { Button } from '@/components/ui/button'
+import { RefreshButton } from '@/components/features/refresh/refresh-button'
 
 export interface SidebarBrainListProps {
   userId?: string
@@ -30,14 +31,15 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       {/* Modal Form */}
       <DialogCreateBrain dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
       {/* Modal activation button */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2 px-4">
         {/* <NewItem
           action={async () => setDialogOpen(true)}
           actionTitle="+ New Brain"
           actionDescription="This will add a new brain to your collection."
         ></NewItem> */}
         {/* @TODO Make this work with NewItem so it can show pending progress. Pass the form as prop. */}
-        <Button onClick={() => setDialogOpen(true)} >+ New Brain</Button>
+        <Button className="flex-1 text-center" onClick={() => setDialogOpen(true)} >+ New Collection</Button>
+        <RefreshButton />
       </div>
       {/* List of data */}
       {brains?.length ? (
@@ -53,7 +55,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         </div>
       ) : (
         <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">No Brains Found</p>
+          <p className="text-sm text-muted-foreground">No Collections Found</p>
         </div>
       )}
     </div>

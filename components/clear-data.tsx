@@ -32,7 +32,7 @@ export function ClearData(props: ClearDataProps) {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger className="w-full" asChild>
         <Button variant="ghost" disabled={isPending}>
           {isPending && <IconSpinner className="mr-2" />}
           {actionTitle || 'Delete data'}
