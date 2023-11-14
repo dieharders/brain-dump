@@ -32,7 +32,7 @@ export async function Header() {
         <SidebarBrainList userId={session?.user?.id} />
       </React.Suspense>
       <SidebarFooter>
-        <ClearData clearAction={clearChats} actionTitle="Delete all brains" />
+        <ClearData clearAction={clearChats} actionTitle="Delete all collections" />
       </SidebarFooter>
     </Sidebar>
   )
