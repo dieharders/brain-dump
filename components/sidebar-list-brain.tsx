@@ -17,23 +17,23 @@ export interface SidebarBrainListProps {
 }
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
-  const [brains, setBrains] = useState<Array<Brain>>([])
+  const [hasMounted, setHasMounted] = useState(false)
+  const [collections, setCollections] = useState<Array<Brain>>([])
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
-  const { getServices, apis } = useHomebrew() // @TODO Get "apis" passed to us from global scope
+  const { getServices, apis } = useHomebrew()
   const removeBrain = async (id: string) => { return { message: '', success: true } as unknown as Response }
   const shareBrain = async (brain: Brain) => brain
 
   const refreshAction = useCallback(async () => {
     try {
-      const apis = await getServices()
-      const req = await apis?.memory.getAllCollections()
+      const services = await getServices()
+      const req = await services?.memory.getAllCollections()
       const response = await req?.json()
       if (!response.success) throw Error('Unsuccessful')
 
-      const collections = response.data
-      setBrains(collections)
-      return collections
+      const data = response.data
+      setCollections(data)
+      return data
     } catch (error) {
       toast.error(`Failed to fetch collections from knowledge base: ${error}`)
       return
@@ -41,12 +41,13 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
 
   }, [getServices])
 
+  // Fetch collections
   useEffect(() => {
-    if (!isMounted) {
+    if (!hasMounted) {
       refreshAction()
-      setIsMounted(true)
+      setHasMounted(true)
     }
-  }, [isMounted, refreshAction])
+  }, [hasMounted, refreshAction])
 
   return (
     <div className="flex-1 overflow-auto">
@@ -64,12 +65,12 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <RefreshButton action={refreshAction} />
       </div>
       {/* List of data */}
-      {brains?.length ? (
+      {collections?.length ? (
         <div className="mt-4 space-y-2 px-2">
-          {brains.map(
-            brain => (
-              <SidebarItem key={brain?.id} brain={brain}>
-                <SidebarActions brain={brain} remove={removeBrain} share={shareBrain} />
+          {collections.map(
+            collection => (
+              <SidebarItem key={collection?.id} brain={collection} apis={apis}>
+                <SidebarActions collection={collection} remove={removeBrain} share={shareBrain} apis={apis} />
               </SidebarItem>
             )
           )}

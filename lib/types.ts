@@ -12,11 +12,11 @@ export interface Chat extends Record<string, any> {
   sharePath?: string
 }
 
-export type T_FileMedia = {
+export type T_Chunk = {
   id: string
-  title: string
-  size?: string
-  type?: 'document' | 'image' | 'audio' | 'other'
+  embedding: Array<[]>
+  document: string
+  metadata: any
 }
 
 export interface Brain extends Record<string, any> {
@@ -24,7 +24,7 @@ export interface Brain extends Record<string, any> {
   title: string
   createdAt: Date
   userId: string
-  documents: T_FileMedia[]
+  documents: T_Chunk[]
   sharePath?: string
 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Brain, T_FileMedia } from '@/lib/types'
+import { Brain, T_Chunk } from '@/lib/types'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   IconEdit,
@@ -38,17 +38,20 @@ import { useRouter } from 'next/navigation'
 import { copyShareLink } from '@/components/sidebar-actions-chat'
 import { IconDocument } from '@/components/ui/icons'
 import { Separator } from '@/components/ui/separator'
+import { I_ServiceApis } from '@/lib/homebrew'
 
 interface I_Props {
-  brain: Brain
+  collection: Brain
   remove: (id: string) => Promise<Response>
-  share: (brain: Brain) => Promise<Brain>
+  share: (collection: Brain) => Promise<Brain>
+  apis: I_ServiceApis | null
 }
 
 export function SidebarActions(props: I_Props) {
   const router = useRouter()
-  const { brain, remove, share } = props
-  const { documents } = brain
+  const { collection, remove, share, apis } = props
+  const [documentIds, setDocumentIds] = React.useState<string[]>([])
+  const [documents, setDocuments] = React.useState<T_Chunk[]>([])
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
@@ -56,7 +59,52 @@ export function SidebarActions(props: I_Props) {
   const [exploreDialogOpen, setExploreDialogOpen] = React.useState(false)
   const [isUploadPending, setIsUploadPending] = React.useState(false)
 
-  const BrainDocument = ({ file }: { file: T_FileMedia }) => {
+  // Fetch the current collection and all its' document ids
+  const fetchCollection = async () => {
+    try {
+      const req = await apis?.memory.getCollection({ id: collection.name })
+      const res = await req?.json()
+      const document_ids = res?.data.documents.ids
+      if (res?.success && document_ids.length) {
+        setDocumentIds(document_ids)
+        return document_ids
+      }
+      throw Error(`Failed to fetch Collection ${collection.name}`)
+    } catch (err) {
+      return false
+    }
+  }
+
+  // Fetch all documents for collection (actually returning the chunks of the document)
+  const fetchAllDocuments = async () => {
+    try {
+      const req = await apis?.memory.getDocument({ collection_id: collection.name, document_ids: documentIds })
+      const res = await req?.json()
+      const len = res?.data?.documents.length || 0
+      const parsedDocs = []
+
+      if (!res?.success || len === 0) throw Error(`Failed to fetch Documents:\n${documentIds}`)
+
+      for (let index = 0; index < len; index++) {
+        const metadata = res?.data?.metadatas?.[index]
+        metadata._node_content = JSON.parse(metadata?._node_content || '')
+
+        parsedDocs.push({
+          id: res?.data?.ids?.[index],
+          document: res?.data?.documents?.[index],
+          embedding: res?.data?.embeddings?.[index],
+          metadata, // @TODO Add a document_name field to document metadata
+        })
+      }
+
+      setDocuments(parsedDocs)
+      return parsedDocs
+    } catch (err) {
+      return false
+    }
+  }
+
+  const BrainDocument = ({ file }: { file: T_Chunk }) => {
     const [isActive, setIsActive] = React.useState(false)
 
     return (
@@ -78,7 +126,7 @@ export function SidebarActions(props: I_Props) {
         >
           {/* Title */}
           <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {file.title}
+            {file.metadata.document_name}
           </span>
           {/* Button actions */}
           {isActive && (
@@ -149,6 +197,7 @@ export function SidebarActions(props: I_Props) {
       </div>
     )
   }
+
   const deleteMenu = (
     <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
       <AlertDialogContent>
@@ -165,7 +214,7 @@ export function SidebarActions(props: I_Props) {
             onClick={event => {
               event.preventDefault()
               startRemoveTransition(async () => {
-                const result = await remove(brain.id)
+                const result = await remove(collection.id)
                 const success = await result.json()
 
                 if (!success.ok) {
@@ -187,43 +236,44 @@ export function SidebarActions(props: I_Props) {
       </AlertDialogContent>
     </AlertDialog>
   )
+
   const shareMenu = (
     <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Share link to your brain</DialogTitle>
+          <DialogTitle>Share link to your collection</DialogTitle>
           <DialogDescription>
-            Anyone with the URL will be able to view this shared brain.
+            Anyone with the URL will be able to view this shared collection.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-1 rounded-md border p-4 text-sm">
-          <div className="font-medium">{brain.title}</div>
+          <div className="font-medium">{collection.title}</div>
           <div className="text-muted-foreground">
-            {formatDate(brain?.createdAt)} · {brain?.documents?.length} brains
+            {formatDate(collection?.createdAt)} · {collection?.documents?.length} brains
           </div>
         </div>
         <DialogFooter className="items-center">
-          {brain.sharePath && (
+          {collection.sharePath && (
             <Link
-              href={brain.sharePath}
+              href={collection.sharePath}
               className={cn(badgeVariants({ variant: 'secondary' }), 'mr-auto')}
               target="_blank"
             >
               <IconUsers className="mr-2" />
-              {brain.sharePath}
+              {collection.sharePath}
             </Link>
           )}
           <Button
             disabled={isSharePending}
             onClick={() => {
               startShareTransition(async () => {
-                if (brain.sharePath) {
+                if (collection.sharePath) {
                   await new Promise(resolve => setTimeout(resolve, 500))
-                  copyShareLink({ data: brain, setDialogOpen: setShareDialogOpen })
+                  copyShareLink({ data: collection, setDialogOpen: setShareDialogOpen })
                   return
                 }
 
-                const result = await share(brain)
+                const result = await share(collection)
 
                 if (result && 'error' in result) {
                   toast.error(result.error)
@@ -247,14 +297,16 @@ export function SidebarActions(props: I_Props) {
       </DialogContent>
     </Dialog>
   )
+
+  // Show a list of documents in collection
   const exploreMenu = (
     <AlertDialog open={exploreDialogOpen} onOpenChange={setExploreDialogOpen}>
       <AlertDialogContent>
         {/* Title/Descr */}
         <AlertDialogHeader>
-          <AlertDialogTitle>Explore files in this brain</AlertDialogTitle>
+          <AlertDialogTitle>Explore files in this collection</AlertDialogTitle>
           <AlertDialogDescription>
-            Upload, remove, and update files contained in this brain. Also optionally add
+            Upload, remove, and update files contained in this collection. Also optionally add
             a context template to each file to aid in inference.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -269,7 +321,8 @@ export function SidebarActions(props: I_Props) {
         <Button
           className="align-center flex justify-center"
           onClick={() => {
-            // @TODO Pre-Process media and send to backend
+            // @TODO Pre-Process media and send to backend.
+            // Copy the code over from the embedding form.
             // ...
           }}
         >
@@ -309,10 +362,15 @@ export function SidebarActions(props: I_Props) {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => setExploreDialogOpen(true)}
+            onClick={async () => {
+              setExploreDialogOpen(true)
+              const success = await fetchCollection()
+              if (!success) return
+              await fetchAllDocuments()
+            }}
           >
             <IconEdit />
-            <span className="sr-only">Edit brain</span>
+            <span className="sr-only">Edit collection</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Edit</TooltipContent>
@@ -326,7 +384,7 @@ export function SidebarActions(props: I_Props) {
             onClick={() => setShareDialogOpen(true)}
           >
             <IconShare />
-            <span className="sr-only">Share brain</span>
+            <span className="sr-only">Share collection</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Share</TooltipContent>
@@ -343,7 +401,7 @@ export function SidebarActions(props: I_Props) {
             }}
           >
             <IconTrash />
-            <span className="sr-only">Delete brain</span>
+            <span className="sr-only">Delete collection</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Delete</TooltipContent>

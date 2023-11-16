@@ -55,6 +55,8 @@ export interface I_ServiceApis {
   memory: {
     create: T_GenericAPIRequest
     getAllCollections: T_GenericAPIRequest
+    getCollection: T_GenericAPIRequest
+    getDocument: T_GenericAPIRequest
   }
 }
 
@@ -134,14 +136,16 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
-      const url = `${origin}${endpoint.urlPath}`
       const method = endpoint.method
-      const headers = {
-        'Content-Type': 'application/json',
-      }
+
+      const contentType = { 'Content-Type': 'application/json' }
+      const headers = { ...(method === 'POST' && contentType) }
       const request = async (args: any) => {
         try {
           // Normal fetch
+          const queryParams = new URLSearchParams(args).toString()
+          const queryUrl = method === 'GET' && queryParams ? `?${queryParams}` : ''
+          const url = `${origin}${endpoint.urlPath}${queryUrl}` // If method=GET then add args as query params to end of url
           const body = { body: JSON.stringify(args) }
           const res = await fetch(url, {
             method,
@@ -151,7 +155,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             headers,
             redirect: 'follow',
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            ...(method !== 'GET' && body),
+            ...(method === 'POST' && body),
           })
           // Check no response
           if (!res)
