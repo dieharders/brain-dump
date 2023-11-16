@@ -26,18 +26,39 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
-type T_APIRequest = (props?: any) => Promise<any | null>
+type T_EndpointStruct = {
+  name: string
+  urlPath: string
+  method: string
+}
+type T_APIStruct = {
+  name: string
+  port: number
+  endpoints: T_EndpointStruct[]
+}
+type T_DataStruct = { [api_key: string]: T_APIStruct }
+interface I_GenericAPIResponse extends Response {
+  success: boolean
+  message: string
+  data: T_DataStruct[]
+}
+
+type T_GenericAPIRequest = (props?: any) => Promise<I_GenericAPIResponse | null>
 
 export interface I_ServiceApis {
   textInference: {
-    completions: T_APIRequest
-    embeddings: T_APIRequest
-    chatCompletions: T_APIRequest
-    models: T_APIRequest
+    completions: T_GenericAPIRequest
+    embeddings: T_GenericAPIRequest
+    chatCompletions: T_GenericAPIRequest
+    models: T_GenericAPIRequest
+  }
+  memory: {
+    create: T_GenericAPIRequest
+    getAllCollections: T_GenericAPIRequest
   }
 }
 
-// These will eventually be passed in from our server picker helper
+// @TODO These will eventually be passed in from our server picker helper
 const PORT = 8008
 const hostname = 'http://localhost:'
 
@@ -69,7 +90,7 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 
   try {
-    // @TODO This api url could come from the /connect endpoint
+    // @TODO This api url should come from the /connect endpoint
     const endpoint = '/v1/services/api'
     const res = await fetch(`${hostname}${PORT}${endpoint}`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
@@ -210,9 +231,7 @@ export const useHomebrew = () => {
 
       const res = await req()
       if (!res) throw new Error('Failed to connect to Ai.')
-
-      const json = await res?.json()
-      const data = json?.data
+      const data = res?.data
 
       return data
     } catch (error) {

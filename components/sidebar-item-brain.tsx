@@ -38,8 +38,8 @@ export function SidebarItem({ brain, children }: SidebarItemProps) {
         href="/"
       >
         {/* Card name */}
-        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-          {brain.title}
+        <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          {brain.name}
         </span>
         {/* Button actions */}
         {isActive && <span className="w-fit">{children}</span>}

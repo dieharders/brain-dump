@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
 
-export const RefreshButton = () => {
-    return <Button className="flex-none text-center" onClick={() => { console.log('@@ refresh clicked') }}>Refresh</Button>
+export const RefreshButton = ({ action }: { action?: () => void }) => {
+    return <Button className="flex-none text-center" onClick={action}>Refresh</Button>
 }

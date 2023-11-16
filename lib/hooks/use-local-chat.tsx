@@ -41,8 +41,7 @@ export const useLocalInference = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: CompletionOptions,
-  ): Promise<Response | undefined> => {
-
+  ) => {
     try {
       return apis?.textInference.completions(options)
     } catch (error) {

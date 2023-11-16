@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Brain, ServerActionResult, T_FileMedia } from '@/lib/types'
+import { Brain, T_FileMedia } from '@/lib/types'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   IconEdit,
@@ -41,8 +41,8 @@ import { Separator } from '@/components/ui/separator'
 
 interface I_Props {
   brain: Brain
-  remove: (args: { id: string }) => ServerActionResult<void>
-  share: (brain: Brain) => ServerActionResult<Brain>
+  remove: (id: string) => Promise<Response>
+  share: (brain: Brain) => Promise<Brain>
 }
 
 export function SidebarActions(props: I_Props) {
@@ -165,12 +165,11 @@ export function SidebarActions(props: I_Props) {
             onClick={event => {
               event.preventDefault()
               startRemoveTransition(async () => {
-                const result = await remove({
-                  id: brain.id,
-                })
+                const result = await remove(brain.id)
+                const success = await result.json()
 
-                if (result && 'error' in result) {
-                  toast.error(result.error)
+                if (!success.ok) {
+                  // toast.error(result.message)
                   return
                 }
 
@@ -200,7 +199,7 @@ export function SidebarActions(props: I_Props) {
         <div className="space-y-1 rounded-md border p-4 text-sm">
           <div className="font-medium">{brain.title}</div>
           <div className="text-muted-foreground">
-            {formatDate(brain.createdAt)} · {brain.documents.length} brains
+            {formatDate(brain?.createdAt)} · {brain?.documents?.length} brains
           </div>
         </div>
         <DialogFooter className="items-center">
@@ -261,8 +260,8 @@ export function SidebarActions(props: I_Props) {
         </AlertDialogHeader>
         <Separator className="my-4 md:my-8" />
         {/* List of files */}
-        {documents.length > 0 ? (
-          documents.map(file => <BrainDocument key={file.id} file={file} />)
+        {documents?.length > 0 ? (
+          documents?.map(file => <BrainDocument key={file.id} file={file} />)
         ) : (
           <span className="text-center">No files uploaded yet.</span>
         )}
