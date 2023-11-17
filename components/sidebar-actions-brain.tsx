@@ -1,11 +1,13 @@
 'use client'
 
-import * as React from 'react'
+import { ChangeEvent, useState, useTransition } from 'react'
 import { Brain, T_Chunk } from '@/lib/types'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   IconEdit,
   IconOpenAI,
+  IconPlus,
   IconRefresh,
   IconShare,
   IconTrash,
@@ -42,6 +44,7 @@ import { I_ServiceApis } from '@/lib/homebrew'
 
 interface I_Props {
   collection: Brain
+  add: (id: string, payload: any) => Promise<Response>
   remove: (id: string) => Promise<Response>
   share: (collection: Brain) => Promise<Brain>
   apis: I_ServiceApis | null
@@ -49,15 +52,21 @@ interface I_Props {
 
 export function SidebarActions(props: I_Props) {
   const router = useRouter()
-  const { collection, remove, share, apis } = props
-  const [documentIds, setDocumentIds] = React.useState<string[]>([])
-  const [documents, setDocuments] = React.useState<T_Chunk[]>([])
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
-  const [isRemovePending, startRemoveTransition] = React.useTransition()
-  const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
-  const [isSharePending, startShareTransition] = React.useTransition()
-  const [exploreDialogOpen, setExploreDialogOpen] = React.useState(false)
-  const [isUploadPending, setIsUploadPending] = React.useState(false)
+  const { collection, add, remove, share, apis } = props
+  const [nameValue, setNameValue] = useState('')
+  const [descrValue, setDescrValue] = useState('')
+  const [tagsValue, setTagsValue] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [documentIds, setDocumentIds] = useState<string[]>([])
+  const [documents, setDocuments] = useState<T_Chunk[]>([])
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isRemovePending, startRemoveTransition] = useTransition()
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [isSharePending, startShareTransition] = useTransition()
+  const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
+  const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [disableForm, setDisableForm] = useState(false)
 
   // Fetch the current collection and all its' document ids
   const fetchCollection = async () => {
@@ -105,7 +114,7 @@ export function SidebarActions(props: I_Props) {
   }
 
   const BrainDocument = ({ file }: { file: T_Chunk }) => {
-    const [isActive, setIsActive] = React.useState(false)
+    const [isActive, setIsActive] = useState(false)
 
     return (
       <div
@@ -137,7 +146,7 @@ export function SidebarActions(props: I_Props) {
                   <Button
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-background"
-                    disabled={isUploadPending}
+                    disabled={isProcessing}
                     onClick={() => {
                       // @TODO
                     }}
@@ -154,7 +163,7 @@ export function SidebarActions(props: I_Props) {
                   <Button
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-background"
-                    disabled={isUploadPending}
+                    disabled={isProcessing}
                     onClick={() => {
                       // @TODO
                     }}
@@ -171,7 +180,7 @@ export function SidebarActions(props: I_Props) {
                   <Button
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-background"
-                    disabled={isUploadPending}
+                    disabled={isProcessing}
                     onClick={() => {
                       // @TODO
                     }}
@@ -298,6 +307,105 @@ export function SidebarActions(props: I_Props) {
     </Dialog>
   )
 
+  // Send form to backend
+  const onSubmit = async () => {
+    try {
+      // Send form input values (everything except file) as url query params
+      const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
+      // Create a form with our selected file attached
+      const formData = new FormData()
+      formData.append('file', selectedFile!, selectedFile!.name)
+      // Send request
+      const response = await add(nameValue, { queryParams: formInputs, ...formData })
+      const result = await response.json()
+      // Verify
+      if (result.success) {
+        toast.success(`File upload successful: ${result.message}`)
+      }
+      else {
+        // Something went wrong
+        const msg = result.message ? `File upload failed: ${result.message}` : 'Something went horribly wrong'
+        throw Error(msg)
+      }
+      return result.success
+    } catch (err) {
+      toast.error(`Error: ${err}`)
+      return false
+    }
+  }
+
+  // Store ref to our selected file
+  const handleFileSelected = (e: ChangeEvent<HTMLInputElement>): void => {
+    if (!e.target?.files) return
+    const files = Array.from(e.target.files)
+    // Only send one file
+    setSelectedFile(files[0])
+  }
+
+  // A menu to upload files and add metadata for a new document
+  const addDocumentMenu = (
+    <Dialog open={addDocumentDialogOpen} onOpenChange={setAddDocumentDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Embed a file into memory</DialogTitle>
+          <DialogDescription>
+            Select a file you want the AI to memorize. Give it a short description and tags to help the Ai understand and recall it better.
+          </DialogDescription>
+        </DialogHeader>
+        {/* File Upload */}
+        <DialogTitle className="text-sm">Add text, image, audio or video</DialogTitle>
+        <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
+          {/* File picker */}
+          <input type="file" name="file" onChange={handleFileSelected} />
+          {/* Document Name */}
+          <Input
+            name="name"
+            value={nameValue}
+            placeholder="Name (3-63 chars)"
+            onChange={e => setNameValue(e.target.value)}
+          />
+          {/* Description */}
+          <Input
+            name="description"
+            value={descrValue}
+            placeholder="Description (optional, 100 chars)"
+            onChange={e => setDescrValue(e.target.value)}
+          />
+          {/* Tags */}
+          <Input
+            name="tags"
+            value={tagsValue}
+            placeholder="Tags (optional, 10 max)"
+            onChange={e => setTagsValue(e.target.value)}
+          />
+        </form>
+        <DialogFooter className="items-center">
+          <Button
+            disabled={disableForm}
+            variant="ghost"
+            onClick={() => {
+              setAddDocumentDialogOpen(false)
+              setDisableForm(false)
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            disabled={disableForm}
+            onClick={async () => {
+              setDisableForm(true)
+              const success = await onSubmit()
+              success && setAddDocumentDialogOpen(false)
+              setDisableForm(false)
+            }}
+          >
+            {disableForm && <IconSpinner className="mr-2 animate-spin" />}
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>)
+
   // Show a list of documents in collection
   const exploreMenu = (
     <AlertDialog open={exploreDialogOpen} onOpenChange={setExploreDialogOpen}>
@@ -306,7 +414,7 @@ export function SidebarActions(props: I_Props) {
         <AlertDialogHeader>
           <AlertDialogTitle>Explore files in this collection</AlertDialogTitle>
           <AlertDialogDescription>
-            Upload, remove, and update files contained in this collection. Also optionally add
+            Preview, update and remove files contained in this collection. Add
             a context template to each file to aid in inference.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -317,36 +425,19 @@ export function SidebarActions(props: I_Props) {
         ) : (
           <span className="text-center">No files uploaded yet.</span>
         )}
-        {/* Upload Area */}
-        <Button
-          className="align-center flex justify-center"
-          onClick={() => {
-            // @TODO Pre-Process media and send to backend.
-            // Copy the code over from the embedding form.
-            // ...
-          }}
-        >
-          Upload media files (5mb each)
-        </Button>
         <Separator className="my-4 md:my-8" />
         <AlertDialogFooter>
           <AlertDialogCancel
-            onClick={() => {
-              // Cancel upload process
-              // ...
-              setIsUploadPending(false)
-            }}
+            onClick={() => setExploreDialogOpen(false)}
           >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            disabled={isUploadPending}
             onClick={event => {
               event.preventDefault()
               setExploreDialogOpen(false)
             }}
           >
-            {isUploadPending && <IconSpinner className="mr-2 animate-spin" />}
             Finish
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -356,6 +447,20 @@ export function SidebarActions(props: I_Props) {
 
   return (
     <div className="flex justify-between space-x-1">
+      {/* Add Document Button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            className="h-6 w-6 p-0 hover:bg-background"
+            onClick={() => setAddDocumentDialogOpen(true)}
+          >
+            <IconPlus />
+            <span className="sr-only">Add document</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Add</TooltipContent>
+      </Tooltip>
       {/* Edit Button */}
       <Tooltip>
         <TooltipTrigger asChild>
@@ -407,6 +512,7 @@ export function SidebarActions(props: I_Props) {
         <TooltipContent>Delete</TooltipContent>
       </Tooltip>
       {/* Pop-Up Menus */}
+      {addDocumentMenu}
       {exploreMenu}
       {shareMenu}
       {deleteMenu}

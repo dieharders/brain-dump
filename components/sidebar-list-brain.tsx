@@ -21,6 +21,11 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const [collections, setCollections] = useState<Array<Brain>>([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const { getServices, apis } = useHomebrew()
+  const addDocument = async (id: string, payload: any) => {
+    const req = await apis?.memory.create({ collection_name: id, ...payload })
+    const result = await req?.json()
+    return result
+  }
   const removeBrain = async (id: string) => { return { message: '', success: true } as unknown as Response }
   const shareBrain = async (brain: Brain) => brain
 
@@ -52,7 +57,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   return (
     <div className="flex-1 overflow-auto">
       {/* Modal Form */}
-      <DialogCreateBrain dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
+      <DialogCreateBrain dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} apis={apis} />
       {/* Modal activation button */}
       <div className="flex items-center justify-center gap-2 px-4">
         {/* <NewItem
@@ -70,7 +75,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
           {collections.map(
             collection => (
               <SidebarItem key={collection?.id} brain={collection} apis={apis}>
-                <SidebarActions collection={collection} remove={removeBrain} share={shareBrain} apis={apis} />
+                <SidebarActions collection={collection} add={addDocument} remove={removeBrain} share={shareBrain} apis={apis} />
               </SidebarItem>
             )
           )}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { I_ServiceApis } from '@/lib/homebrew'
 import { toast } from 'react-hot-toast'
 import {
   Dialog,
@@ -16,87 +17,56 @@ import {
 interface IProps {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
+  apis: I_ServiceApis | null
 }
 
 export const DialogCreateBrain = (props: IProps) => {
-  const { dialogOpen, setDialogOpen } = props
+  const { dialogOpen, setDialogOpen, apis } = props
   const [disableForm, setDisableForm] = useState(false)
   const [nameValue, setNameValue] = useState('')
-  const [titleValue, setTitleValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  // @TODO Get the endpoint from lib/homebrew.ts
-  const endpoint = '/v1/memory/create'
-  // @TODO Get the server IP from the currently connected host from window.homebrewai.host.ip
-  const uploadUrl = `http://localhost:8008${endpoint}`
 
   // Send form to backend
   const onSubmit = async () => {
-    // Send form input values (everything except file) as url query params
-    const formInputs = { name: nameValue, title: titleValue, description: descrValue, tags: tagsValue }
-    const queryParams = new URLSearchParams(formInputs).toString()
-    // Create a form with our selected file attached
-    const formData = new FormData()
-    formData.append('file', selectedFile!, selectedFile!.name)
-    // Create request
-    const reqURL = `${uploadUrl}?${queryParams}`
-    const response = await fetch(reqURL, {
-      method: 'POST',
-      cache: 'no-cache',
-      // headers: { 'Content-Type': 'multipart/form-data' }, // Browser will set this appropriatly for us
-      body: formData, // Send file via the request.body
-    })
-    // Send request
-    const result = await response.json()
-    // Verify
-    if (result.success) {
-      setDialogOpen(false)
-      toast.success(`File upload successful: ${result.message}`)
+    try {
+      // Send form input as url query params
+      const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
+      // Send request
+      const req = await apis?.memory.addCollection({ queryParams: formInputs })
+      const result = await req?.json()
+      // Verify
+      if (result.success) {
+        toast.success(`🎉 Success: ${result.message}`)
+      }
+      else {
+        // Something went wrong
+        const errMsg = result.message || 'Something went horribly wrong'
+        throw Error(errMsg)
+      }
+      return result.success
+    } catch (err) {
+      toast.error(`Error: ${err}`)
+      return false
     }
-    else {
-      // Something went wrong
-      const errMsg = result?.message ?? 'Something went horribly wrong'
-      toast.error(`File upload failed: ${errMsg}`)
-    }
-    // Reset form
-    setDisableForm(false)
-  }
-  // Store ref to our selected file
-  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    if (!e.target?.files) return
-    const files = Array.from(e.target.files)
-    // Only send one file
-    setSelectedFile(files[0])
   }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Embed a file into memory</DialogTitle>
+          <DialogTitle>Create a collection of memories</DialogTitle>
           <DialogDescription>
-            Select a file you want the LLM to memorize. Giving it a short description and tags help the LLM understand and recall it faster.
+            Adding a short description and tags helps the Ai understand better.
           </DialogDescription>
         </DialogHeader>
-        {/* File Upload */}
-        <DialogTitle className="text-sm">Add text, image, audio or video</DialogTitle>
         <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
-          {/* File picker */}
-          <input type="file" name="file" onChange={handleFileSelected} />
           {/* Collection Name */}
           <Input
             name="name"
             value={nameValue}
-            placeholder="Collection name"
+            placeholder="Collection name (3-63 chars)"
             onChange={e => setNameValue(e.target.value)}
-          />
-          {/* Document Title */}
-          <Input
-            name="title"
-            value={titleValue}
-            placeholder="Title"
-            onChange={e => setTitleValue(e.target.value)}
           />
           {/* Description */}
           <Input
@@ -126,9 +96,11 @@ export const DialogCreateBrain = (props: IProps) => {
           </Button>
           <Button
             disabled={disableForm}
-            onClick={() => {
-              onSubmit()
+            onClick={async () => {
               setDisableForm(true)
+              const success = await onSubmit()
+              success && setDialogOpen(false)
+              setDisableForm(false)
             }}
           >
             Save

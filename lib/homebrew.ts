@@ -54,6 +54,7 @@ export interface I_ServiceApis {
   }
   memory: {
     create: T_GenericAPIRequest
+    addCollection: T_GenericAPIRequest
     getAllCollections: T_GenericAPIRequest
     getCollection: T_GenericAPIRequest
     getDocument: T_GenericAPIRequest
@@ -143,8 +144,10 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
       const request = async (args: any) => {
         try {
           // Normal fetch
-          const queryParams = new URLSearchParams(args).toString()
-          const queryUrl = method === 'GET' && queryParams ? `?${queryParams}` : ''
+          const queryParams = args?.queryParams
+            ? new URLSearchParams(args?.queryParams).toString()
+            : null
+          const queryUrl = queryParams ? `?${queryParams}` : ''
           const url = `${origin}${endpoint.urlPath}${queryUrl}` // If method=GET then add args as query params to end of url
           const body = { body: JSON.stringify(args) }
           const res = await fetch(url, {
