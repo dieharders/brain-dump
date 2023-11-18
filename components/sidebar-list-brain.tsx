@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { useHomebrew } from '@/lib/homebrew'
+import { I_GenericAPIRequestParams, I_GenericAPIResponse, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item-brain'
 import { SidebarActions } from '@/components/sidebar-actions-brain'
@@ -30,23 +30,21 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
 
-  const addDocument = async (id: string, payload: any) => {
-    const req = await apis?.memory.create({ collection_name: id, ...payload })
-    const result = await req?.json()
-    return result
+  const addDocument = async (payload: I_GenericAPIRequestParams) => {
+    const res = await apis?.memory.create(payload) as I_GenericAPIResponse
+    return res || {}
   }
-  const removeCollection = async (id: string) => { return { message: '', success: true } as unknown as Response }
+  const removeCollection = async (id: string) => { return { message: '', success: true } as I_GenericAPIResponse }
   const shareCollection = async (brain: Brain) => brain
 
   const refreshAction = useCallback(async () => {
     try {
       const services = await getServices()
-      const req = await services?.memory.getAllCollections()
-      const response = await req?.json()
-      if (!response.success) throw Error('Unsuccessful')
+      const response = await services?.memory.getAllCollections()
+      if (!response?.success) throw new Error('Failed to refresh documents')
 
       const data = response.data
-      setCollections(data)
+      data && setCollections(data)
       return data
     } catch (error) {
       toast.error(`Failed to fetch collections from knowledge base: ${error}`)
@@ -67,7 +65,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     <div className="flex-1 overflow-auto">
       {/* Pop-Up Menus */}
       <DialogCreateCollection dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} apis={apis} />
-      <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} />
+      <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
       <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
       <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
       <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} apis={apis} />

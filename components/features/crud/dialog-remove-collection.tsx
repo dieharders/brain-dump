@@ -15,10 +15,11 @@ import {
 import toast from 'react-hot-toast'
 import { IconSpinner } from '@/components/ui/icons'
 import { Brain } from '@/lib/types'
+import { I_GenericAPIResponse } from '@/lib/homebrew'
 
 interface I_Props {
   collection: Brain | null
-  action: (id: string) => Promise<Response>
+  action: (id: string) => Promise<I_GenericAPIResponse>
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
 }
@@ -46,11 +47,10 @@ export const DialogRemoveCollection = (props: I_Props) => {
               startRemoveTransition(async () => {
                 if (!collection) return
 
-                const req = await action(collection.id)
-                const res = await req.json()
+                const res = await action(collection.id)
 
-                if (!res.success) {
-                  toast.error(res.message)
+                if (!res?.success) {
+                  toast.error(res?.message)
                   return
                 }
 

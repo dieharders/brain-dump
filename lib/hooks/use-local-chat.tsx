@@ -43,7 +43,7 @@ export const useLocalInference = ({
     options: CompletionOptions,
   ) => {
     try {
-      return apis?.textInference.completions(options)
+      return apis?.textInference.completions({ body: options })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return

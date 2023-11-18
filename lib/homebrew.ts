@@ -26,34 +26,39 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
-type T_EndpointStruct = {
-  name: string
-  urlPath: string
-  method: string
-}
-type T_APIStruct = {
-  name: string
-  port: number
-  endpoints: T_EndpointStruct[]
-}
-type T_DataStruct = { [api_key: string]: T_APIStruct }
-interface I_GenericAPIResponse extends Response {
+type T_DataStruct = any
+
+export interface I_GenericAPIResponse extends Response {
   success: boolean
   message: string
-  data: T_DataStruct[]
+  data: T_DataStruct
 }
 
-type T_GenericAPIRequest = (props?: any) => Promise<I_GenericAPIResponse | null>
+export interface I_GenericAPIRequestParams {
+  queryParams?: { [key: string]: any }
+  formData?: FormData
+  body?: { [key: string]: any }
+}
+
+type T_GenericAPIRequest = (
+  props?: I_GenericAPIRequestParams,
+) => Promise<I_GenericAPIResponse | null>
 
 export interface I_ServiceApis {
+  /**
+   * Use to query the text inference engine
+   */
   textInference: {
     completions: T_GenericAPIRequest
     embeddings: T_GenericAPIRequest
     chatCompletions: T_GenericAPIRequest
     models: T_GenericAPIRequest
   }
+  /**
+   * Use to add/create/update/delete embeddings from database
+   */
   memory: {
-    create: T_GenericAPIRequest
+    create: T_GenericAPIRequest // @TODO Rename to addDocument
     addCollection: T_GenericAPIRequest
     getAllCollections: T_GenericAPIRequest
     getCollection: T_GenericAPIRequest
@@ -137,49 +142,49 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
-      const method = endpoint.method
-
-      const contentType = { 'Content-Type': 'application/json' }
-      const headers = { ...(method === 'POST' && contentType) }
-      const request = async (args: any) => {
+      // Create a re-usable fetch function
+      const request = async (args: I_GenericAPIRequestParams) => {
         try {
-          // Normal fetch
+          const contentType = { 'Content-Type': 'application/json' }
+          const method = endpoint.method
+          const headers = { ...(method === 'POST' && !args?.formData && contentType) }
+          const body = args?.formData ? args.formData : JSON.stringify(args?.body)
           const queryParams = args?.queryParams
             ? new URLSearchParams(args?.queryParams).toString()
             : null
           const queryUrl = queryParams ? `?${queryParams}` : ''
-          const url = `${origin}${endpoint.urlPath}${queryUrl}` // If method=GET then add args as query params to end of url
-          const body = { body: JSON.stringify(args) }
+          const url = `${origin}${endpoint.urlPath}${queryUrl}`
           const res = await fetch(url, {
             method,
             mode: 'cors', // no-cors, *, cors, same-origin
             cache: 'no-cache',
             credentials: 'same-origin',
-            headers,
+            headers, // { 'Content-Type': 'multipart/form-data' }, // Browser will set this automatically for us for "formData"
             redirect: 'follow',
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            ...(method === 'POST' && body),
+            body,
           })
           // Check no response
-          if (!res)
-            throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
+          if (!res) throw new Error(`No response for endpoint ${endpoint.name}.`)
           // Check errored response
-          if (!res.ok) {
-            const parsed = await res.json()
-            if (parsed.error) {
-              const error = new Error(`[homebrew] ${parsed.error}`) as Error & {
+          if (res.json) {
+            const result = await res.json()
+            if (result?.error) {
+              const error = new Error(`${result?.error}`) as Error & {
                 status: number
               }
               error.status = res.status
               throw error
-            } else {
-              throw new Error(
-                `[homebrew] ${endpoint.name} An unexpected error occurred! Status: ${res.status}`,
-              )
             }
+            if (!result?.success)
+              throw new Error(
+                `${endpoint.name} An unexpected error occurred: ${result?.message}`,
+              )
+            return result
           }
-
-          return res
+          // Check success
+          if (res.ok) return res
+          throw new Error('Something went wrong')
         } catch (err) {
           console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
           return null
@@ -187,10 +192,14 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
       }
 
       // Add request function
-      const reqFunction = async (args: any) => {
+      const reqFunction = async (args: I_GenericAPIRequestParams) => {
         // This is specific to constructing prompts, only applies to "completions"
-        const prompt = endpoint?.promptTemplate?.replace('{{PROMPT}}', args?.prompt)
-        const newArgs = args?.prompt ? { ...args, prompt } : args
+        const prompt = args?.body?.prompt
+          ? endpoint?.promptTemplate?.replace('{{PROMPT}}', args.body.prompt)
+          : ''
+        const newArgs = prompt
+          ? { body: { ...args.body, prompt }, queryParams: args?.queryParams }
+          : args
 
         return request(newArgs)
       }

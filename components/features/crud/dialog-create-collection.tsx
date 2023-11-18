@@ -33,16 +33,15 @@ export const DialogCreateCollection = (props: IProps) => {
       // Send form input as url query params
       const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
       // Send request
-      const req = await apis?.memory.addCollection({ queryParams: formInputs })
-      const result = await req?.json()
+      const result = await apis?.memory.addCollection({ queryParams: formInputs })
       // Verify
-      if (result.success) {
+      if (result?.success) {
         toast.success(`🎉 Success: ${result.message}`)
       }
       else {
         // Something went wrong
-        const errMsg = result.message || 'Something went horribly wrong'
-        throw Error(errMsg)
+        const errMsg = result?.message || 'Something went horribly wrong'
+        throw new Error(errMsg)
       }
       return result.success
     } catch (err) {

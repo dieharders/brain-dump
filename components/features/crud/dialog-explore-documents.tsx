@@ -42,15 +42,16 @@ export const DialogExploreDocuments = (props: I_Props) => {
   // Fetch the current collection and all its' document ids
   const fetchCollection = useCallback(async () => {
     try {
-      if (!collection) throw Error('No collection specified')
+      if (!collection) throw new Error('No collection specified')
 
-      const req = await apis?.memory.getCollection({ id: collection?.name })
-      const res = await req?.json()
-      const document_ids = res?.data.documents.ids
+      const body = { id: collection?.name }
+      const res = await apis?.memory.getCollection({ body })
+
+      const document_ids = res?.data?.documents.ids
       if (res?.success && document_ids.length) {
         return document_ids
       }
-      throw Error(`Failed to fetch Collection ${collection?.name}`)
+      throw new Error(`Failed to fetch Collection ${collection?.name}`)
     } catch (err) {
       return false
     }
@@ -59,14 +60,14 @@ export const DialogExploreDocuments = (props: I_Props) => {
   // Fetch all documents for collection (actually returning the chunks of the document)
   const fetchAllDocuments = useCallback(async (docIds: string[]) => {
     try {
-      if (!collection) throw Error('No collection or document ids specified')
+      if (!collection) throw new Error('No collection or document ids specified')
 
-      const req = await apis?.memory.getDocument({ collection_id: collection?.name, document_ids: docIds })
-      const res = await req?.json()
+      const body = { collection_id: collection?.name, document_ids: docIds }
+      const res = await apis?.memory.getDocument({ body })
       const len = res?.data?.documents.length
       const parsedDocs = []
 
-      if (!res?.success || !len || len === 0) throw Error(`No documents found:\n${docIds}`)
+      if (!res?.success || !len || len === 0) throw new Error(`No documents found:\n${docIds}`)
 
       for (let index = 0; index < len; index++) {
         const metadata = res?.data?.metadatas?.[index]
