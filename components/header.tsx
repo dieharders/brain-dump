@@ -26,7 +26,7 @@ export async function Header() {
     </Sidebar>
   )
   const brainsButton = (
-    <Sidebar title="Knowledge Base" icon="brain">
+    <Sidebar title="Knowledge Graph" icon="brain">
       <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         <SidebarBrainList userId={session?.user?.id} />

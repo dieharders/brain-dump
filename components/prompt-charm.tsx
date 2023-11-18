@@ -53,7 +53,7 @@ export const CharmMenu = () => {
           event.preventDefault()
         }}
       >
-        {/* Target Brain -  which knowledge bases to use as context */}
+        {/* Target Brain - which memory collection to use as context */}
         <CharmItem>
           <IconBrain className={classnameIcon} />
         </CharmItem>

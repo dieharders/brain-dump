@@ -47,7 +47,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       data && setCollections(data)
       return data
     } catch (error) {
-      toast.error(`Failed to fetch collections from knowledge base: ${error}`)
+      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
       return
     }
 

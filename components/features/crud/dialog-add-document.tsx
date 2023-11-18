@@ -43,7 +43,8 @@ export const DialogAddDocument = (props: I_Props) => {
   const onSubmit = async () => {
     try {
       // Send form input values (everything except file) as url query params
-      const formInputs = { collection_name: collection?.name, name: nameValue, description: descrValue, tags: tagsValue }
+      const parsedTags = tagsValue // @TODO Parse the value to be a space-seperated string of words. Remove any special chars, commas.
+      const formInputs = { collection_name: collection?.name, name: nameValue, description: descrValue, tags: parsedTags }
       // Create a form with our selected file attached
       const formData = new FormData()
       formData.append('file', selectedFile!, selectedFile!.name)
