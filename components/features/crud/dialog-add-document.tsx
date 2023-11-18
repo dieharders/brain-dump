@@ -1,10 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { I_ServiceApis } from '@/lib/homebrew'
-import { toast } from 'react-hot-toast'
+import { ChangeEvent, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -13,36 +9,53 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import toast from 'react-hot-toast'
+import { IconSpinner } from '@/components/ui/icons'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
-interface IProps {
-  dialogOpen: boolean
-  setDialogOpen: (open: boolean) => void
-  apis: I_ServiceApis | null
+interface I_Props {
+  dialogOpen: boolean,
+  setDialogOpen: (open: boolean) => void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  action: (id: string, payload: any) => Promise<Response>
 }
-
-export const DialogCreateBrain = (props: IProps) => {
-  const { dialogOpen, setDialogOpen, apis } = props
-  const [disableForm, setDisableForm] = useState(false)
+// A menu to upload files and add metadata for a new document
+export const DialogAddDocument = (props: I_Props) => {
+  const { action, dialogOpen, setDialogOpen } = props
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [disableForm, setDisableForm] = useState(false)
+
+  // Store ref to our selected file
+  const handleFileSelected = (e: ChangeEvent<HTMLInputElement>): void => {
+    if (!e.target?.files) return
+    const files = Array.from(e.target.files)
+    // Only send one file
+    setSelectedFile(files[0])
+  }
 
   // Send form to backend
   const onSubmit = async () => {
     try {
-      // Send form input as url query params
+      // Send form input values (everything except file) as url query params
       const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
-      // Send request
-      const req = await apis?.memory.addCollection({ queryParams: formInputs })
-      const result = await req?.json()
+      // Create a form with our selected file attached
+      const formData = new FormData()
+      formData.append('file', selectedFile!, selectedFile!.name)
+      // Send request (Add new document)
+      const response = await action(nameValue, { queryParams: formInputs, ...formData })
+      const result = await response.json()
       // Verify
       if (result.success) {
-        toast.success(`🎉 Success: ${result.message}`)
+        toast.success(`File upload successful: ${result.message}`)
       }
       else {
         // Something went wrong
-        const errMsg = result.message || 'Something went horribly wrong'
-        throw Error(errMsg)
+        const msg = result.message ? `File upload failed: ${result.message}` : 'Something went horribly wrong'
+        throw Error(msg)
       }
       return result.success
     } catch (err) {
@@ -55,17 +68,20 @@ export const DialogCreateBrain = (props: IProps) => {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a collection of memories</DialogTitle>
+          <DialogTitle>Embed a file into memory</DialogTitle>
           <DialogDescription>
-            Adding a short description and tags helps the Ai understand better.
+            Select a file you want the AI to memorize. Give it a short description and tags to help the Ai understand and recall it better.
           </DialogDescription>
         </DialogHeader>
         <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
-          {/* Collection Name */}
+          {/* File Upload */}
+          <label htmlFor="file"><DialogTitle className="text-sm">Add text, image, audio or video</DialogTitle></label>
+          <input type="file" name="file" onChange={handleFileSelected} />
+          {/* Document Name */}
           <Input
             name="name"
             value={nameValue}
-            placeholder="Collection name (3-63 chars)"
+            placeholder="Name (3-63 chars)"
             onChange={e => setNameValue(e.target.value)}
           />
           {/* Description */}
@@ -103,6 +119,7 @@ export const DialogCreateBrain = (props: IProps) => {
               setDisableForm(false)
             }}
           >
+            {disableForm && <IconSpinner className="mr-2 animate-spin" />}
             Save
           </Button>
         </DialogFooter>
