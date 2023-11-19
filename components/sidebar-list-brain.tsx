@@ -70,7 +70,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
       <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} apis={apis} />
       {/* "Add New" and "Refresh" buttons */}
-      <div className="flex items-center justify-center gap-2 px-4">
+      <div className="mt-8 flex items-center justify-center gap-2 px-4">
         {/* <NewItem
           action={async () => setDialogOpen(true)}
           actionTitle="+ New Brain"

@@ -220,18 +220,13 @@ export const DialogExploreDocuments = (props: I_Props) => {
         )}
         <Separator className="my-4 md:my-8" />
         <AlertDialogFooter>
-          <AlertDialogCancel
-            onClick={() => setDialogOpen(false)}
-          >
-            Cancel
-          </AlertDialogCancel>
           <AlertDialogAction
             onClick={event => {
               event.preventDefault()
               setDialogOpen(false)
             }}
           >
-            Finish
+            Close
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
