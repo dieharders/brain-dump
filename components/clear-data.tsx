@@ -4,7 +4,6 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
-import { ServerActionResult } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -20,7 +19,7 @@ import {
 import { IconSpinner } from '@/components/ui/icons'
 
 interface ClearDataProps {
-  clearAction: () => ServerActionResult<void>
+  clearAction: () => Promise<Response | any>
   actionTitle?: string
 }
 
@@ -55,7 +54,7 @@ export function ClearData(props: ClearDataProps) {
                 const result = await clearAction()
 
                 if (result && 'error' in result) {
-                  toast.error(result.error)
+                  toast.error(result?.message)
                   return
                 }
 

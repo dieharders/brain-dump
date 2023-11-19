@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -28,14 +27,14 @@ import { toast } from 'react-hot-toast'
 
 interface I_Props {
   collection: Brain | null
-  apis: I_ServiceApis | null
+  services: I_ServiceApis | null
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
 }
 
 // Show a list of documents in collection
 export const DialogExploreDocuments = (props: I_Props) => {
-  const { collection, apis, dialogOpen, setDialogOpen } = props
+  const { collection, services, dialogOpen, setDialogOpen } = props
   const [isProcessing, setIsProcessing] = useState(false)
   const [documents, setDocuments] = useState<T_Chunk[]>([])
 
@@ -45,7 +44,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
       if (!collection) throw new Error('No collection specified')
 
       const body = { id: collection?.name }
-      const res = await apis?.memory.getCollection({ body })
+      const res = await services?.memory.getCollection({ body })
 
       const document_ids = res?.data?.documents.ids
       if (res?.success && document_ids.length) {
@@ -55,7 +54,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
     } catch (err) {
       return false
     }
-  }, [apis?.memory, collection])
+  }, [collection, services?.memory])
 
   // Fetch all documents for collection (actually returning the chunks of the document)
   const fetchAllDocuments = useCallback(async (docIds: string[]) => {
@@ -63,7 +62,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
       if (!collection) throw new Error('No collection or document ids specified')
 
       const body = { collection_id: collection?.name, document_ids: docIds }
-      const res = await apis?.memory.getDocument({ body })
+      const res = await services?.memory.getDocument({ body })
       const len = res?.data?.documents.length
       const parsedDocs = []
 
@@ -87,7 +86,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
       toast.error(`Failed to fetch documents: ${err}`)
       return false
     }
-  }, [apis?.memory, collection])
+  }, [collection, services?.memory])
 
   const fetchAll = useCallback(async () => {
     const docIds = await fetchCollection()

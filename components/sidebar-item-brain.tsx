@@ -6,19 +6,17 @@ import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconUsers, IconBrain } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { I_ServiceApis } from '@/lib/homebrew'
 import Link from 'next/link'
 
 interface SidebarItemProps {
   brain: Brain
   children: React.ReactNode
-  apis: I_ServiceApis | null
 }
 
 /**
  * A container for collection of documents
  */
-export function SidebarItem({ brain, apis, children }: SidebarItemProps) {
+export function SidebarItem({ brain, children }: SidebarItemProps) {
   const [isActive, setIsActive] = useState(false)
 
   return (

@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useState } from 'react'
-
 interface I_Endpoint {
   name: string
   urlPath: string
@@ -62,7 +60,9 @@ export interface I_ServiceApis {
     addCollection: T_GenericAPIRequest
     getAllCollections: T_GenericAPIRequest
     getCollection: T_GenericAPIRequest
+    deleteCollection: T_GenericAPIRequest
     getDocument: T_GenericAPIRequest
+    wipe: T_GenericAPIRequest
   }
 }
 
@@ -216,8 +216,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  const [apis, setAPI] = useState<I_ServiceApis | null>(null)
-
   /**
    * Attempt to connect to homebrew api.
    */
@@ -237,7 +235,7 @@ export const useHomebrew = () => {
   /**
    * Attempt to connect to text inference server.
    */
-  const connectTextService = useCallback(async () => {
+  const connectTextService = async () => {
     try {
       // Return api services
       const servicesResponse = await getServices()
@@ -254,7 +252,7 @@ export const useHomebrew = () => {
       console.log(`[homebrew] connectTextService: ${error}`)
       return
     }
-  }, [])
+  }
 
   /**
    * Get all api configs for services.
@@ -262,14 +260,8 @@ export const useHomebrew = () => {
   const getServices = async () => {
     const res = await getAPIConfig()
     const serviceApis = createServices(res)
-    setAPI(serviceApis)
     return serviceApis
   }
 
-  // Make sure homebrewai object exists
-  useEffect(() => {
-    if (!window?.homebrewai) window.homebrewai = {}
-  }, [])
-
-  return { connect, connectTextService, getServices, apis }
+  return { connect, connectTextService, getServices }
 }

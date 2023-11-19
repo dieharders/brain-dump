@@ -23,12 +23,12 @@ interface CompletionOptions {
 
 interface IProps {
   initialMessages: Message[] | undefined,
-  apis: I_ServiceApis | null
+  services: I_ServiceApis | null
 }
 
 export const useLocalInference = ({
   initialMessages = [],
-  apis,
+  services,
 }: IProps) => {
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
@@ -43,7 +43,7 @@ export const useLocalInference = ({
     options: CompletionOptions,
   ) => {
     try {
-      return apis?.textInference.completions({ body: options })
+      return services?.textInference.completions({ body: options })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return

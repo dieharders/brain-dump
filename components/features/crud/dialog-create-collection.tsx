@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { I_ServiceApis } from '@/lib/homebrew'
@@ -17,23 +17,23 @@ import {
 interface IProps {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  apis: I_ServiceApis | null
+  services: I_ServiceApis | null
 }
 
 export const DialogCreateCollection = (props: IProps) => {
-  const { dialogOpen, setDialogOpen, apis } = props
+  const { dialogOpen, setDialogOpen, services } = props
   const [disableForm, setDisableForm] = useState(false)
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
 
   // Send form to backend
-  const onSubmit = async () => {
+  const onSubmit = useCallback(async () => {
     try {
       // Send form input as url query params
       const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
       // Send request
-      const result = await apis?.memory.addCollection({ queryParams: formInputs })
+      const result = await services?.memory.addCollection({ queryParams: formInputs })
       // Verify
       if (result?.success) {
         toast.success(`🎉 Success: ${result.message}`)
@@ -48,7 +48,7 @@ export const DialogCreateCollection = (props: IProps) => {
       toast.error(`Error: ${err}`)
       return false
     }
-  }
+  }, [descrValue, nameValue, services?.memory, tagsValue])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

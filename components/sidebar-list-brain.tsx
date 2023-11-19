@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { I_GenericAPIRequestParams, I_GenericAPIResponse, useHomebrew } from '@/lib/homebrew'
+import { I_GenericAPIRequestParams, I_GenericAPIResponse, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item-brain'
 import { SidebarActions } from '@/components/sidebar-actions-brain'
@@ -20,7 +20,8 @@ export interface SidebarBrainListProps {
 }
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
-  const { getServices, apis } = useHomebrew()
+  const { getServices } = useHomebrew()
+  const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasMounted, setHasMounted] = useState(false)
   const [collections, setCollections] = useState<Array<Brain>>([])
   const [selectedCollection, setSelectedCollection] = useState<Brain | null>(null)
@@ -30,17 +31,21 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
 
-  const addDocument = async (payload: I_GenericAPIRequestParams) => {
-    const res = await apis?.memory.create(payload) as I_GenericAPIResponse
+  const addDocument = useCallback(async (payload: I_GenericAPIRequestParams) => {
+    const res = await services?.memory.create(payload) as I_GenericAPIResponse
     return res || {}
+  }, [services?.memory])
+
+  const removeCollection = async (id: string) => {
+    await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
+    return { message: '', success: true } as I_GenericAPIResponse
   }
-  const removeCollection = async (id: string) => { return { message: '', success: true } as I_GenericAPIResponse }
   const shareCollection = async (brain: Brain) => brain
 
-  const refreshAction = useCallback(async () => {
+  const refreshAction = useCallback(async (apis: I_ServiceApis | null) => {
     try {
-      const services = await getServices()
-      const response = await services?.memory.getAllCollections()
+      const response = await apis?.memory.getAllCollections()
+
       if (!response?.success) throw new Error('Failed to refresh documents')
 
       const data = response.data
@@ -51,24 +56,30 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       return
     }
 
-  }, [getServices])
+  }, [])
 
   // Fetch collections
   useEffect(() => {
-    if (!hasMounted) {
-      refreshAction()
-      setHasMounted(true)
+    const action = async () => {
+      const res = await getServices()
+
+      if (res) {
+        setServices(res)
+        refreshAction(res)
+        setHasMounted(true)
+      }
     }
-  }, [hasMounted, refreshAction])
+    if (!hasMounted) action()
+  }, [getServices, hasMounted, refreshAction])
 
   return (
     <div className="flex-1 overflow-auto">
       {/* Pop-Up Menus */}
-      <DialogCreateCollection dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} apis={apis} />
+      <DialogCreateCollection dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} services={services} />
       <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
       <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
       <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
-      <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} apis={apis} />
+      <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} services={services} />
       {/* "Add New" and "Refresh" buttons */}
       <div className="mt-8 flex items-center justify-center gap-2 px-4">
         {/* <NewItem
@@ -78,14 +89,14 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         ></NewItem> */}
         {/* @TODO Make this work with NewItem so it can show pending progress. Pass the form as prop. */}
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
-        <RefreshButton action={refreshAction} />
+        <RefreshButton action={() => refreshAction(services)} />
       </div>
       {/* List of data */}
       {collections?.length ? (
         <div className="mt-4 space-y-2 px-2">
           {collections.map(
             collection => (
-              <SidebarItem key={collection?.id} brain={collection} apis={apis}>
+              <SidebarItem key={collection?.id} brain={collection}>
                 <SidebarActions
                   setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                   setExploreDialogOpen={setExploreDialogOpen}

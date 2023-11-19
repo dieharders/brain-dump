@@ -45,19 +45,21 @@ export const DialogRemoveCollection = (props: I_Props) => {
             onClick={event => {
               event.preventDefault()
               startRemoveTransition(async () => {
-                if (!collection) return
+                try {
+                  if (!collection) throw new Error('No collection exists')
+                  const res = await action(collection?.name)
 
-                const res = await action(collection.id)
+                  if (!res?.success) throw new Error(res?.message)
 
-                if (!res?.success) {
-                  toast.error(res?.message)
+                  setDialogOpen(false)
+                  router.refresh()
+                  router.push('/')
+                  toast.success(`Brain [${collection?.name}] deleted`)
+                  return
+                } catch (err) {
+                  toast.error(`Error: ${err}`)
                   return
                 }
-
-                setDialogOpen(false)
-                router.refresh()
-                router.push('/')
-                toast.success('Brain deleted')
               })
             }}
           >
