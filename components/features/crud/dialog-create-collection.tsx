@@ -34,18 +34,16 @@ export const DialogCreateCollection = (props: IProps) => {
       const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
       // Send request
       const result = await services?.memory.addCollection({ queryParams: formInputs })
-      // Verify
-      if (result?.success) {
-        toast.success(`🎉 Success: ${result.message}`)
-      }
-      else {
-        // Something went wrong
-        const errMsg = result?.message || 'Something went horribly wrong'
+      // Something went wrong
+      if (!result?.success) {
+        const errMsg = result?.message ?? 'Something went horribly wrong'
         throw new Error(errMsg)
       }
-      return result.success
+      // Success
+      toast.success(`🎉 Success: ${result?.message}`)
+      return true
     } catch (err) {
-      toast.error(`Error: ${err}`)
+      toast.error(`${err}`)
       return false
     }
   }, [descrValue, nameValue, services?.memory, tagsValue])

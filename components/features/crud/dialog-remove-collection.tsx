@@ -57,7 +57,7 @@ export const DialogRemoveCollection = (props: I_Props) => {
                   toast.success(`Brain [${collection?.name}] deleted`)
                   return
                 } catch (err) {
-                  toast.error(`Error: ${err}`)
+                  toast.error(`${err}`)
                   return
                 }
               })

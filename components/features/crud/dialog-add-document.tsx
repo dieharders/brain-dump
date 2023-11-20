@@ -61,7 +61,7 @@ export const DialogAddDocument = (props: I_Props) => {
       }
       return result.success
     } catch (err) {
-      toast.error(`Error: ${err}`)
+      toast.error(`${err}`)
       return false
     }
   }

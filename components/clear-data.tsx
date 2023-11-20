@@ -2,8 +2,6 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
-
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -19,7 +17,7 @@ import {
 import { IconSpinner } from '@/components/ui/icons'
 
 interface ClearDataProps {
-  clearAction: () => Promise<Response | any>
+  clearAction: () => Promise<void>
   actionTitle?: string
 }
 
@@ -41,7 +39,7 @@ export function ClearData(props: ClearDataProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently remove your data from our servers.
+            This will permanently remove all your memories from storage.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -51,13 +49,7 @@ export function ClearData(props: ClearDataProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                const result = await clearAction()
-
-                if (result && 'error' in result) {
-                  toast.error(result?.message)
-                  return
-                }
-
+                await clearAction()
                 setOpen(false)
                 router.push('/')
               })

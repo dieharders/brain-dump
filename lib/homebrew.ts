@@ -187,7 +187,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
           throw new Error('Something went wrong')
         } catch (err) {
           console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
-          return null
+          return { success: false, message: err }
         }
       }
 

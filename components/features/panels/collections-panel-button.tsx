@@ -7,6 +7,7 @@ import { SidebarBrainList } from '@/components/sidebar-list-brain'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ClearData } from '@/components/clear-data'
 import { useHomebrew } from '@/lib/homebrew'
+import { toast } from 'react-hot-toast'
 
 export const CollectionsButton = ({ session }: { session: Session }) => {
   const { getServices } = useHomebrew()
@@ -15,8 +16,16 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
    * Wipe entire vector database
    */
   const clearCollections = async () => {
-    const services = await getServices()
-    await services?.memory.wipe()
+    try {
+      const services = await getServices()
+      const result = await services?.memory.wipe()
+      if (!result?.success) throw new Error(result?.message)
+      toast.success('All memories successfully removed')
+      return
+    } catch (err) {
+      toast.error(`${err}`)
+      return
+    }
   }
 
   return (
