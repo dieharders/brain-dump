@@ -100,6 +100,7 @@ export interface I_ServiceApis {
     deleteCollection: T_GenericAPIRequest<T_GenericDataRes>
     deleteDocuments: T_GenericAPIRequest<T_GenericDataRes>
     getDocument: T_GenericAPIRequest<T_GenericDataRes>
+    fileExplore: T_GenericAPIRequest<T_GenericDataRes>
     wipe: T_GenericAPIRequest<T_GenericDataRes>
   }
 }

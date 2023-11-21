@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import {
+  IconExternalLink,
   IconOpenAI,
   IconRefresh,
   IconTrash,
@@ -121,18 +122,17 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-background"
                     disabled={isProcessing}
-                    onClick={() => {
-                      // @TODO
-                      // setIsProcessing(true)
-                      // await
-                      // setIsProcessing(false)
+                    onClick={async () => {
+                      setIsProcessing(true)
+                      await services?.memory.fileExplore({ queryParams: { filePath: document.filePath } })
+                      setIsProcessing(false)
                     }}
                   >
-                    <IconOpenAI />
-                    <span className="sr-only">Add context template</span>
+                    <IconExternalLink />
+                    <span className="sr-only">Open source file</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Add context template</TooltipContent>
+                <TooltipContent>Open file in explorer</TooltipContent>
               </Tooltip>
               {/* Refresh Button */}
               <Tooltip>
