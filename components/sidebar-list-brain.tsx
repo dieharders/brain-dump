@@ -38,7 +38,11 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     return
   }, [selectedCollection?.name, services?.memory])
 
-  const shareCollection = async (collection: I_Collection) => collection
+  const shareCollection = async (collection: I_Collection) => {
+    const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
+    toast(msg, { icon: '💰' })
+    return collection
+  }
 
   const refreshAction = useCallback(async (apis: I_ServiceApis | null) => {
     try {

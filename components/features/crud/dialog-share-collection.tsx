@@ -63,11 +63,13 @@ export const DialogShareCollection = (props: I_Props) => {
               startShareTransition(async () => {
                 if (!collection) return
 
-                if (sharePath) {
-                  await new Promise(resolve => setTimeout(resolve, 500))
-                  copyShareLink({ data: collection, setDialogOpen })
-                  return
-                }
+                // @TODO Implement a share feature for memories
+
+                // if (sharePath) {
+                //   await new Promise(resolve => setTimeout(resolve, 500))
+                //   copyShareLink({ data: collection, setDialogOpen })
+                //   return
+                // }
 
                 const result = await action(collection)
 
@@ -76,7 +78,7 @@ export const DialogShareCollection = (props: I_Props) => {
                   return
                 }
 
-                copyShareLink({ data: result, setDialogOpen })
+                // copyShareLink({ data: result, setDialogOpen })
               })
             }}
           >
