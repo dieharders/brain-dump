@@ -24,12 +24,12 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
-type T_DataStruct = any
+export type T_GenericDataRes = any
 
-export interface I_GenericAPIResponse extends Response {
+export interface I_GenericAPIResponse<DataResType> extends Response {
   success: boolean
   message: string
-  data: T_DataStruct
+  data: DataResType
 }
 
 export interface I_GenericAPIRequestParams {
@@ -38,31 +38,69 @@ export interface I_GenericAPIRequestParams {
   body?: { [key: string]: any }
 }
 
-type T_GenericAPIRequest = (
+// Pass in the type of response.data we expect
+export type T_GenericAPIRequest<DataResType> = (
   props?: I_GenericAPIRequestParams,
-) => Promise<I_GenericAPIResponse | null>
+) => Promise<I_GenericAPIResponse<DataResType> | null>
+
+// These are the sources (documents) kept track by a collection
+export interface I_DocSource {
+  id: string // Globally unique id
+  name: string // Source id
+  processing: 'pending' | 'complete' // Update processing flag for this document
+  filePath: string // Update sources paths (where original uploaded files are stored)
+  description: string
+  tags: string
+  createdAt: string
+  checksum: string
+}
+
+export interface I_Document {
+  ids: string[]
+  documents: string[]
+  embeddings: Array<number[]>
+  metadatas: I_DocSource[]
+}
+
+export interface I_Collection {
+  id: string
+  name: string
+  metadata: {
+    sources: I_DocSource[]
+    description: string
+    tags: string
+    createdAt?: string
+    sharePath?: string
+  }
+}
+
+export interface I_GetCollectionData {
+  collection: I_Collection
+  numItems: number
+}
 
 export interface I_ServiceApis {
   /**
    * Use to query the text inference engine
    */
   textInference: {
-    completions: T_GenericAPIRequest
-    embeddings: T_GenericAPIRequest
-    chatCompletions: T_GenericAPIRequest
-    models: T_GenericAPIRequest
+    completions: T_GenericAPIRequest<T_GenericDataRes>
+    embeddings: T_GenericAPIRequest<T_GenericDataRes>
+    chatCompletions: T_GenericAPIRequest<T_GenericDataRes>
+    models: T_GenericAPIRequest<T_GenericDataRes>
   }
   /**
    * Use to add/create/update/delete embeddings from database
    */
   memory: {
-    create: T_GenericAPIRequest // @TODO Rename to addDocument
-    addCollection: T_GenericAPIRequest
-    getAllCollections: T_GenericAPIRequest
-    getCollection: T_GenericAPIRequest
-    deleteCollection: T_GenericAPIRequest
-    getDocument: T_GenericAPIRequest
-    wipe: T_GenericAPIRequest
+    create: T_GenericAPIRequest<T_GenericDataRes> // @TODO Rename to addDocument
+    addCollection: T_GenericAPIRequest<T_GenericDataRes>
+    getAllCollections: T_GenericAPIRequest<T_GenericDataRes>
+    getCollection: T_GenericAPIRequest<I_GetCollectionData>
+    deleteCollection: T_GenericAPIRequest<T_GenericDataRes>
+    deleteDocuments: T_GenericAPIRequest<T_GenericDataRes>
+    getDocument: T_GenericAPIRequest<T_GenericDataRes>
+    wipe: T_GenericAPIRequest<T_GenericDataRes>
   }
 }
 
@@ -136,6 +174,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   if (!response || response.length === 0) return null
 
   const serviceApis: any = {}
+
   response.forEach(api => {
     const origin = `${hostname}${api.port}`
     const apiName = api.name

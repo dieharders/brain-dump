@@ -1,7 +1,6 @@
 'use client'
 
 import { useTransition } from 'react'
-import { Brain } from '@/lib/types'
 import {
   Dialog,
   DialogContent,
@@ -16,17 +15,21 @@ import { cn, formatDate } from '@/lib/utils'
 import { badgeVariants } from '@/components/ui/badge'
 import { IconSpinner, IconUsers } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { I_Collection } from '@/lib/homebrew'
 import Link from 'next/link'
 
 interface I_Props {
-  collection: Brain | null
-  action: (collection: Brain) => Promise<Brain>
+  collection: I_Collection | null
+  action: (collection: I_Collection) => Promise<I_Collection>
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
 }
 export const DialogShareCollection = (props: I_Props) => {
   const { action, collection, dialogOpen, setDialogOpen } = props
   const [isSharePending, startShareTransition] = useTransition()
+  const sharePath = collection?.metadata?.sharePath
+  const createdAt = collection?.metadata?.createdAt
+  const sources = collection?.metadata?.sources
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -38,20 +41,20 @@ export const DialogShareCollection = (props: I_Props) => {
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-1 rounded-md border p-4 text-sm">
-          <div className="font-medium">{collection?.title}</div>
+          <div className="font-medium">{collection?.name}</div>
           <div className="text-muted-foreground">
-            {formatDate(collection?.createdAt || '')} · {collection?.documents?.length} brains
+            {formatDate(createdAt || '')} · {sources?.length} collections
           </div>
         </div>
         <DialogFooter className="items-center">
-          {collection?.sharePath && (
+          {sharePath && (
             <Link
-              href={collection.sharePath}
+              href={sharePath}
               className={cn(badgeVariants({ variant: 'secondary' }), 'mr-auto')}
               target="_blank"
             >
               <IconUsers className="mr-2" />
-              {collection.sharePath}
+              {sharePath}
             </Link>
           )}
           <Button
@@ -60,7 +63,7 @@ export const DialogShareCollection = (props: I_Props) => {
               startShareTransition(async () => {
                 if (!collection) return
 
-                if (collection.sharePath) {
+                if (sharePath) {
                   await new Promise(resolve => setTimeout(resolve, 500))
                   copyShareLink({ data: collection, setDialogOpen })
                   return
@@ -69,7 +72,7 @@ export const DialogShareCollection = (props: I_Props) => {
                 const result = await action(collection)
 
                 if (result && 'error' in result) {
-                  toast.error(result.error)
+                  toast.error(`${result.error}`)
                   return
                 }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,18 +16,16 @@ import {
   IconRefresh,
   IconTrash,
 } from '@/components/ui/icons'
-import { Brain, T_Chunk } from '@/lib/types'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
 import { IconDocument } from '@/components/ui/icons'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { I_ServiceApis } from '@/lib/homebrew'
-import { toast } from 'react-hot-toast'
+import { I_DocSource, I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
+import Link from 'next/link'
 
 interface I_Props {
-  collection: Brain | null
+  collection: I_Collection | null
   services: I_ServiceApis | null
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
@@ -36,9 +35,9 @@ interface I_Props {
 export const DialogExploreDocuments = (props: I_Props) => {
   const { collection, services, dialogOpen, setDialogOpen } = props
   const [isProcessing, setIsProcessing] = useState(false)
-  const [documents, setDocuments] = useState<T_Chunk[]>([])
+  const [documents, setDocuments] = useState<I_DocSource[]>([])
 
-  // Fetch the current collection and all its' document ids
+  // Fetch the current collection and all its' source ids
   const fetchCollection = useCallback(async () => {
     try {
       if (!collection) throw new Error('No collection specified')
@@ -46,42 +45,29 @@ export const DialogExploreDocuments = (props: I_Props) => {
       const body = { id: collection?.name }
       const res = await services?.memory.getCollection({ body })
 
-      const document_ids = res?.data?.documents.ids
-      if (res?.success && document_ids.length) {
-        return document_ids
+      if (res?.success) {
+        const docs = res?.data?.collection?.metadata?.sources
+        setDocuments(docs)
+        return res?.data
       }
-      throw new Error(`Failed to fetch Collection ${collection?.name}`)
+      throw new Error(`Failed to fetch Collection [${collection?.name}]: ${res?.message}`)
     } catch (err) {
+      toast.error(`${err}`)
       return false
     }
   }, [collection, services?.memory])
 
-  // Fetch all documents for collection (actually returning the chunks of the document)
-  const fetchAllDocuments = useCallback(async (docIds: string[]) => {
+  // Fetch all documents for collection
+  const fetchAllDocuments = useCallback(async (docIds: string[]): Promise<I_Document | boolean> => {
     try {
       if (!collection) throw new Error('No collection or document ids specified')
 
-      const body = { collection_id: collection?.name, document_ids: docIds }
+      const body = { collection_id: collection?.name, document_ids: docIds, include: ['documents', 'metadatas'] }
       const res = await services?.memory.getDocument({ body })
-      const len = res?.data?.documents.length
-      const parsedDocs = []
+      if (!res?.success) throw new Error(`No documents found:\n${docIds}`)
 
-      if (!res?.success || !len || len === 0) throw new Error(`No documents found:\n${docIds}`)
-
-      for (let index = 0; index < len; index++) {
-        const metadata = res?.data?.metadatas?.[index]
-        metadata._node_content = JSON.parse(metadata?._node_content || '')
-
-        parsedDocs.push({
-          id: res?.data?.ids?.[index],
-          document: res?.data?.documents?.[index],
-          embedding: res?.data?.embeddings?.[index],
-          metadata, // @TODO Add a document_name field to document metadata
-        })
-      }
-
-      setDocuments(parsedDocs)
-      return parsedDocs
+      const docs = res?.data || []
+      return docs
     } catch (err) {
       toast.error(`Failed to fetch documents: ${err}`)
       return false
@@ -89,7 +75,11 @@ export const DialogExploreDocuments = (props: I_Props) => {
   }, [collection, services?.memory])
 
   const fetchAll = useCallback(async () => {
-    const docIds = await fetchCollection()
+    const collection_data = await fetchCollection()
+    if (!collection_data) return false
+
+    const sources = collection_data?.collection?.metadata?.sources
+    const docIds = sources?.map((item: I_DocSource) => item.name)
 
     if (!docIds || docIds.length === 0) return false
 
@@ -97,7 +87,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
     return res
   }, [fetchAllDocuments, fetchCollection])
 
-  const BrainDocument = ({ file }: { file: T_Chunk }) => {
+  const BrainDocument = ({ document }: { document: I_DocSource }) => {
     const [isActive, setIsActive] = useState(false)
 
     return (
@@ -119,7 +109,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         >
           {/* Title */}
           <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {file.metadata.document_name}
+            {document.name}
           </span>
           {/* Button actions */}
           {isActive && (
@@ -133,7 +123,9 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     disabled={isProcessing}
                     onClick={() => {
                       // @TODO
-                      setIsProcessing(true)
+                      // setIsProcessing(true)
+                      // await
+                      // setIsProcessing(false)
                     }}
                   >
                     <IconOpenAI />
@@ -151,7 +143,9 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     disabled={isProcessing}
                     onClick={() => {
                       // @TODO
-                      setIsProcessing(true)
+                      // setIsProcessing(true)
+                      // await
+                      // setIsProcessing(false)
                     }}
                   >
                     <IconRefresh />
@@ -167,9 +161,15 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-background"
                     disabled={isProcessing}
-                    onClick={() => {
-                      // @TODO
+                    onClick={async () => {
                       setIsProcessing(true)
+                      await services?.memory.deleteDocuments({
+                        body: {
+                          collection_id: collection?.name,
+                          document_ids: [document.name],
+                        }
+                      })
+                      setIsProcessing(false)
                     }}
                   >
                     <IconTrash />
@@ -180,6 +180,14 @@ export const DialogExploreDocuments = (props: I_Props) => {
               </Tooltip>
             </div>
           )}
+          {/* Description */}
+          <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
+            {document.description}
+          </p>
+          {/* Tags */}
+          <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
+            {document.tags}
+          </p>
         </Link>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -213,7 +221,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <Separator className="my-4 md:my-8" />
         {/* List of files */}
         {documents?.length > 0 ? (
-          documents?.map(file => <BrainDocument key={file.id} file={file} />)
+          documents?.map(doc => <BrainDocument key={doc.id} document={doc} />)
         ) : (
           <span className="text-center">No files uploaded yet.</span>
         )}

@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,14 +13,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import toast from 'react-hot-toast'
 import { IconSpinner } from '@/components/ui/icons'
-import { Brain } from '@/lib/types'
-import { I_GenericAPIResponse } from '@/lib/homebrew'
+import { I_Collection } from '@/lib/homebrew'
 
 interface I_Props {
-  collection: Brain | null
-  action: (id: string) => Promise<I_GenericAPIResponse>
+  collection: I_Collection | null
+  action: () => Promise<void>
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
 }
@@ -35,7 +34,7 @@ export const DialogRemoveCollection = (props: I_Props) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete your data from our servers.
+            This will permanently delete this collection from your device.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -47,14 +46,11 @@ export const DialogRemoveCollection = (props: I_Props) => {
               startRemoveTransition(async () => {
                 try {
                   if (!collection) throw new Error('No collection exists')
-                  const res = await action(collection?.name)
-
-                  if (!res?.success) throw new Error(res?.message)
-
+                  await action()
                   setDialogOpen(false)
-                  router.refresh()
-                  router.push('/')
-                  toast.success(`Brain [${collection?.name}] deleted`)
+                  // router.refresh()
+                  // router.push('/')
+                  toast.success(`Collection [${collection?.name}] deleted`)
                   return
                 } catch (err) {
                   toast.error(`${err}`)

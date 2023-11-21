@@ -10,21 +10,20 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
-import { I_GenericAPIRequestParams, I_GenericAPIResponse } from '@/lib/homebrew'
+import { T_GenericDataRes, T_GenericAPIRequest, I_Collection } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Brain } from '@/lib/types'
 
 interface I_Props {
-  collection: Brain | null,
+  collection: I_Collection | null,
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
-  action: (payload: I_GenericAPIRequestParams) => Promise<I_GenericAPIResponse>
+  action: T_GenericAPIRequest<T_GenericDataRes> | undefined
 }
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
-  const { action, collection, dialogOpen, setDialogOpen } = props
+  const { action = () => { }, collection, dialogOpen, setDialogOpen } = props
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
@@ -51,12 +50,12 @@ export const DialogAddDocument = (props: I_Props) => {
       // Send request (Add new document)
       const result = await action({ queryParams: formInputs, formData })
       // Verify
-      if (result.success) {
+      if (result?.success) {
         toast.success(`File upload successful: ${result.message}`)
       }
       else {
         // Something went wrong
-        const msg = result.message ? `File upload failed: ${result.message}` : 'Something went horribly wrong'
+        const msg = result?.message ? `File upload failed: ${result?.message}` : 'Something went horribly wrong'
         throw new Error(msg)
       }
       return result.success

@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { I_GenericAPIRequestParams, I_GenericAPIResponse, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_Collection, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item-brain'
 import { SidebarActions } from '@/components/sidebar-actions-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
-import { Brain } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
@@ -23,24 +22,23 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const { getServices } = useHomebrew()
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasMounted, setHasMounted] = useState(false)
-  const [collections, setCollections] = useState<Array<Brain>>([])
-  const [selectedCollection, setSelectedCollection] = useState<Brain | null>(null)
+  const [collections, setCollections] = useState<Array<I_Collection>>([])
+  const [selectedCollection, setSelectedCollection] = useState<I_Collection | null>(null)
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
 
-  const addDocument = useCallback(async (payload: I_GenericAPIRequestParams) => {
-    const res = await services?.memory.create(payload) as I_GenericAPIResponse
-    return res || {}
-  }, [services?.memory])
+  const addDocument = services?.memory.create
 
-  const removeCollection = async (id: string) => {
-    await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
-    return { message: '', success: true } as I_GenericAPIResponse
-  }
-  const shareCollection = async (brain: Brain) => brain
+  const removeCollection = useCallback(async () => {
+    const id = selectedCollection?.name || ''
+    const _res = await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
+    return
+  }, [selectedCollection?.name, services?.memory])
+
+  const shareCollection = async (collection: I_Collection) => collection
 
   const refreshAction = useCallback(async (apis: I_ServiceApis | null) => {
     try {
@@ -96,7 +94,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <div className="mt-4 space-y-2 px-2">
           {collections.map(
             collection => (
-              <SidebarItem key={collection?.id} brain={collection}>
+              <SidebarItem key={collection?.id} collection={collection}>
                 <SidebarActions
                   setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                   setExploreDialogOpen={setExploreDialogOpen}
