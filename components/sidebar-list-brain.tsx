@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { I_Collection, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_Collection, I_GenericAPIResponse, I_ServiceApis, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item-brain'
 import { SidebarActions } from '@/components/sidebar-actions-brain'
@@ -30,21 +30,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
 
-  const addDocument = services?.memory.create
-
-  const removeCollection = useCallback(async () => {
-    const id = selectedCollection?.name || ''
-    const _res = await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
-    return
-  }, [selectedCollection?.name, services?.memory])
-
-  const shareCollection = async (collection: I_Collection) => {
-    const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
-    toast(msg, { icon: '💰' })
-    return collection
-  }
-
-  const refreshAction = useCallback(async (apis: I_ServiceApis | null) => {
+  const updateListAction = useCallback(async (apis: I_ServiceApis | null) => {
     try {
       const response = await apis?.memory.getAllCollections()
 
@@ -57,8 +43,49 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
       return
     }
-
   }, [])
+
+  const addCollection: T_GenericAPIRequest<T_GenericDataRes> = useCallback(async (args) => {
+    const promise = new Promise((resolve, reject) => {
+      const action = async () => {
+        const result = await services?.memory.addCollection(args)
+        // Error
+        if (!result?.success) reject(result)
+        // Success
+        await updateListAction(services)
+        resolve(result)
+      }
+      action()
+    })
+
+    toast.promise(
+      promise,
+      {
+        loading: 'Adding collection...',
+        success: <b>Collection saved!</b>,
+        error: <b>Could not save collection 😐</b>,
+      }
+    )
+
+    return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
+  }, [updateListAction, services])
+
+  const addDocument: T_GenericAPIRequest<T_GenericDataRes> = useCallback(async (args) => {
+    return services?.memory.create(args)
+  }, [services?.memory])
+
+  const removeCollection = useCallback(async () => {
+    const id = selectedCollection?.name || ''
+    await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
+    updateListAction(services)
+    return
+  }, [updateListAction, selectedCollection?.name, services])
+
+  const shareCollection = async (collection: I_Collection) => {
+    const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
+    toast(msg, { icon: '💰' })
+    return collection
+  }
 
   // Fetch collections
   useEffect(() => {
@@ -67,17 +94,17 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
 
       if (res) {
         setServices(res)
-        refreshAction(res)
+        updateListAction(res)
         setHasMounted(true)
       }
     }
     if (!hasMounted) action()
-  }, [getServices, hasMounted, refreshAction])
+  }, [getServices, hasMounted, updateListAction])
 
   return (
     <div className="flex-1 overflow-auto">
       {/* Pop-Up Menus */}
-      <DialogCreateCollection dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} services={services} />
+      <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
       <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
       <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
       <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
@@ -91,7 +118,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         ></NewItem> */}
         {/* @TODO Make this work with NewItem so it can show pending progress. Pass the form as prop. */}
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
-        <RefreshButton action={() => refreshAction(services)} />
+        <RefreshButton action={() => updateListAction(services)} />
       </div>
       {/* List of data */}
       {collections?.length ? (

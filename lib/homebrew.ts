@@ -41,7 +41,7 @@ export interface I_GenericAPIRequestParams {
 // Pass in the type of response.data we expect
 export type T_GenericAPIRequest<DataResType> = (
   props?: I_GenericAPIRequestParams,
-) => Promise<I_GenericAPIResponse<DataResType> | null>
+) => Promise<I_GenericAPIResponse<DataResType> | null | void>
 
 // These are the sources (documents) kept track by a collection
 export interface I_DocSource {

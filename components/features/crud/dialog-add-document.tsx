@@ -19,11 +19,11 @@ interface I_Props {
   collection: I_Collection | null,
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
-  action: T_GenericAPIRequest<T_GenericDataRes> | undefined
+  action: T_GenericAPIRequest<T_GenericDataRes>
 }
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
-  const { action = () => { }, collection, dialogOpen, setDialogOpen } = props
+  const { action, collection, dialogOpen, setDialogOpen } = props
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
