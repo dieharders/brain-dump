@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import {
   AlertDialog,
@@ -14,18 +14,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
-import { I_Collection } from '@/lib/homebrew'
+import { I_Collection, T_GenericAPIRequest, T_GenericDataRes } from '@/lib/homebrew'
 
 interface I_Props {
   collection: I_Collection | null
-  action: () => Promise<void>
+  action: T_GenericAPIRequest<T_GenericDataRes>
   dialogOpen: boolean,
-  setDialogOpen: (open: boolean) => void,
+  setDialogOpen: (open: boolean) => void
 }
 
 export const DialogRemoveCollection = (props: I_Props) => {
   const { action, collection, dialogOpen, setDialogOpen } = props
-  const router = useRouter()
+  // const router = useRouter()
   const [isRemovePending, startRemoveTransition] = useTransition()
 
   return (
@@ -46,10 +46,11 @@ export const DialogRemoveCollection = (props: I_Props) => {
               startRemoveTransition(async () => {
                 try {
                   if (!collection) throw new Error('No collection exists')
-                  await action()
+                  const res = await action()
                   setDialogOpen(false)
                   // router.refresh()
                   // router.push('/')
+                  if (!res?.success) throw new Error(res?.message)
                   toast.success(`Collection [${collection?.name}] deleted`)
                   return
                 } catch (err) {

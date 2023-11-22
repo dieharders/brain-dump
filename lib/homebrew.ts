@@ -49,6 +49,7 @@ export interface I_DocSource {
   name: string // Source id
   processing: 'pending' | 'complete' // Update processing flag for this document
   filePath: string // Update sources paths (where original uploaded files are stored)
+  urlPath: string
   description: string
   tags: string
   createdAt: string
@@ -93,13 +94,14 @@ export interface I_ServiceApis {
    * Use to add/create/update/delete embeddings from database
    */
   memory: {
-    create: T_GenericAPIRequest<T_GenericDataRes> // @TODO Rename to addDocument
-    addCollection: T_GenericAPIRequest<T_GenericDataRes>
+    addDocument: T_GenericAPIRequest<T_GenericDataRes>
+    getDocument: T_GenericAPIRequest<T_GenericDataRes>
+    updateDocument: T_GenericAPIRequest<T_GenericDataRes>
+    deleteDocuments: T_GenericAPIRequest<T_GenericDataRes>
     getAllCollections: T_GenericAPIRequest<T_GenericDataRes>
+    addCollection: T_GenericAPIRequest<T_GenericDataRes>
     getCollection: T_GenericAPIRequest<I_GetCollectionData>
     deleteCollection: T_GenericAPIRequest<T_GenericDataRes>
-    deleteDocuments: T_GenericAPIRequest<T_GenericDataRes>
-    getDocument: T_GenericAPIRequest<T_GenericDataRes>
     fileExplore: T_GenericAPIRequest<T_GenericDataRes>
     wipe: T_GenericAPIRequest<T_GenericDataRes>
   }

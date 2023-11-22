@@ -28,6 +28,7 @@ export const DialogAddDocument = (props: I_Props) => {
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [urlValue, setUrlValue] = useState('')
   const [disableForm, setDisableForm] = useState(false)
 
   // Store ref to our selected file
@@ -43,7 +44,7 @@ export const DialogAddDocument = (props: I_Props) => {
     try {
       // Send form input values (everything except file) as url query params
       const parsedTags = tagsValue // @TODO Parse the value to be a space-seperated string of words. Remove any special chars, commas.
-      const formInputs = { collection_name: collection?.name, name: nameValue, description: descrValue, tags: parsedTags }
+      const formInputs = { collection_name: collection?.name, name: nameValue, description: descrValue, tags: parsedTags, urlPath: urlValue }
       // Create a form with our selected file attached
       const formData = new FormData()
       formData.append('file', selectedFile!, selectedFile!.name)
@@ -71,18 +72,26 @@ export const DialogAddDocument = (props: I_Props) => {
         <DialogHeader>
           <DialogTitle>Embed a file into memory</DialogTitle>
           <DialogDescription>
-            Select a file you want the AI to memorize. Give it a short description and tags to help the Ai understand and recall it better.
+            Provide a file you want the AI to memorize. Give it a short description and tags to help the Ai understand it better.
           </DialogDescription>
         </DialogHeader>
         <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
-          {/* File Upload */}
-          <label htmlFor="file"><DialogTitle className="text-sm">Add text, image, audio or video</DialogTitle></label>
-          <input type="file" name="file" onChange={handleFileSelected} />
+          {/* File upload from network */}
+          <label htmlFor="url"><DialogTitle className="text-sm">Add a URL to text, image, audio, video</DialogTitle></label>
+          <Input
+            name="url"
+            value={urlValue}
+            placeholder="URL (https://some-server.com/file.txt)"
+            onChange={e => setUrlValue(e.target.value)}
+          />
+          {/* File upload from disk */}
+          <label htmlFor="file"><DialogTitle className="text-sm">Or select a file from local disk below 👇</DialogTitle></label>
+          <input disabled={urlValue.length > 0} type="file" name="file" onChange={handleFileSelected} />
           {/* Document Name */}
           <Input
             name="name"
             value={nameValue}
-            placeholder="Name (3-63 chars)"
+            placeholder="Name (3-63 lowercase chars)"
             onChange={e => setNameValue(e.target.value)}
           />
           {/* Description */}

@@ -30,10 +30,10 @@ export async function Header() {
             <TooltipTrigger asChild>
               <div>
                 <CollectionsButton session={session} />
-                <span className="sr-only">Uploads</span>
+                <span className="sr-only">Explore Ai memories</span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>Uploads</TooltipContent>
+            <TooltipContent>Memories</TooltipContent>
           </Tooltip>
         </div>
       ) : (

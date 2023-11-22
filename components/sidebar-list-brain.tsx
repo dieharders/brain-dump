@@ -71,14 +71,14 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   }, [updateListAction, services])
 
   const addDocument: T_GenericAPIRequest<T_GenericDataRes> = useCallback(async (args) => {
-    return services?.memory.create(args)
+    return services?.memory.addDocument(args)
   }, [services?.memory])
 
   const removeCollection = useCallback(async () => {
     const id = selectedCollection?.name || ''
-    await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
+    const res = await services?.memory.deleteCollection({ queryParams: { collection_id: id } })
     updateListAction(services)
-    return
+    return res
   }, [updateListAction, selectedCollection?.name, services])
 
   const shareCollection = async (collection: I_Collection) => {

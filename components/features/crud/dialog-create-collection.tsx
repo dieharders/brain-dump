@@ -53,7 +53,7 @@ export const DialogCreateCollection = (props: IProps) => {
           <Input
             name="name"
             value={nameValue}
-            placeholder="Collection name (3-63 chars)"
+            placeholder="Collection name (3-63 lowercase chars)"
             onChange={e => setNameValue(e.target.value)}
           />
           {/* Description */}

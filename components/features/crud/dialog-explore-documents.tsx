@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import {
   IconExternalLink,
-  IconOpenAI,
   IconRefresh,
   IconTrash,
 } from '@/components/ui/icons'
@@ -115,7 +114,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
           {/* Button actions */}
           {isActive && (
             <div className="flex items-center justify-between space-x-1">
-              {/* Context Template Button */}
+              {/* File Explorer Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -134,25 +133,33 @@ export const DialogExploreDocuments = (props: I_Props) => {
                 </TooltipTrigger>
                 <TooltipContent>Open file in explorer</TooltipContent>
               </Tooltip>
-              {/* Refresh Button */}
+              {/* Update Memory Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-background"
                     disabled={isProcessing}
-                    onClick={() => {
-                      // @TODO
-                      // setIsProcessing(true)
-                      // await
-                      // setIsProcessing(false)
+                    onClick={async () => {
+                      setIsProcessing(true)
+                      await services?.memory.updateDocument(
+                        {
+                          body: {
+                            collectionName: collection?.name,
+                            documentName: document.name,
+                            // urlPath: document.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
+                            filePath: document.filePath // optional
+                            // metadata: {}, // optional, if we want to upload new ones from a form
+                          }
+                        })
+                      setIsProcessing(false)
                     }}
                   >
                     <IconRefresh />
-                    <span className="sr-only">Refresh file</span>
+                    <span className="sr-only">Update memory</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Refresh</TooltipContent>
+                <TooltipContent>Update</TooltipContent>
               </Tooltip>
               {/* Delete Button */}
               <Tooltip>
@@ -214,8 +221,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Explore files in this collection</AlertDialogTitle>
           <AlertDialogDescription>
-            Preview, update and remove files contained in this collection. Add
-            a context template to each file to aid in inference.
+            Preview, update and remove files contained in this collection.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Separator className="my-4 md:my-8" />
@@ -223,7 +229,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         {documents?.length > 0 ? (
           documents?.map(doc => <BrainDocument key={doc.id} document={doc} />)
         ) : (
-          <span className="text-center">No files uploaded yet.</span>
+          <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
         )}
         <Separator className="my-4 md:my-8" />
         <AlertDialogFooter>
