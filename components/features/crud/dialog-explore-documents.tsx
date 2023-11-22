@@ -35,7 +35,7 @@ interface I_Props {
 export const DialogExploreDocuments = (props: I_Props) => {
   const { collection, services, dialogOpen, setDialogOpen } = props
   const [isProcessing, setIsProcessing] = useState(false)
-  const [documents, setDocuments] = useState<I_DocSource[]>([])
+  const [documents, setDocuments] = useState<I_Document[]>([])
 
   // Fetch the current collection and all its' source ids
   const fetchCollection = useCallback(async () => {
@@ -45,11 +45,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
       const body = { id: collection?.name }
       const res = await services?.memory.getCollection({ body })
 
-      if (res?.success) {
-        const docs = res?.data?.collection?.metadata?.sources
-        setDocuments(docs)
-        return res?.data
-      }
+      if (res?.success) return res?.data
       throw new Error(`Failed to fetch Collection [${collection?.name}]: ${res?.message}`)
     } catch (err) {
       toast.error(`${err}`)
@@ -58,7 +54,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
   }, [collection, services?.memory])
 
   // Fetch all documents for collection
-  const fetchAllDocuments = useCallback(async (docIds: string[]): Promise<I_Document | boolean> => {
+  const fetchAllDocuments = useCallback(async (docIds: string[]): Promise<I_Document[] | null> => {
     try {
       if (!collection) throw new Error('No collection or document ids specified')
 
@@ -67,10 +63,12 @@ export const DialogExploreDocuments = (props: I_Props) => {
       if (!res?.success) throw new Error(`No documents found:\n${docIds}`)
 
       const docs = res?.data || []
+      setDocuments(docs)
+
       return docs
     } catch (err) {
       toast.error(`Failed to fetch documents: ${err}`)
-      return false
+      return null
     }
   }, [collection, services?.memory])
 
@@ -87,7 +85,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
     return res
   }, [fetchAllDocuments, fetchCollection])
 
-  const BrainDocument = ({ document }: { document: I_DocSource }) => {
+  const BrainDocument = ({ document }: { document: I_Document }) => {
     const [isActive, setIsActive] = useState(false)
 
     return (
@@ -109,7 +107,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         >
           {/* Title */}
           <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {document.name}
+            {document.metadata.name}
           </span>
           {/* Button actions */}
           {isActive && (
@@ -123,7 +121,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     disabled={isProcessing}
                     onClick={async () => {
                       setIsProcessing(true)
-                      await services?.memory.fileExplore({ queryParams: { filePath: document.filePath } })
+                      await services?.memory.fileExplore({ queryParams: { filePath: document.metadata.filePath } })
                       setIsProcessing(false)
                     }}
                   >
@@ -142,16 +140,17 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     disabled={isProcessing}
                     onClick={async () => {
                       setIsProcessing(true)
-                      await services?.memory.updateDocument(
+                      const res = await services?.memory.updateDocument(
                         {
                           body: {
                             collectionName: collection?.name,
-                            documentName: document.name,
+                            documentName: document.metadata.name,
                             // urlPath: document.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
-                            filePath: document.filePath // optional
+                            filePath: document.metadata.filePath // optional
                             // metadata: {}, // optional, if we want to upload new ones from a form
                           }
                         })
+                      if (!res?.success) toast.error(`Error ${res?.message}`)
                       setIsProcessing(false)
                     }}
                   >
@@ -170,12 +169,13 @@ export const DialogExploreDocuments = (props: I_Props) => {
                     disabled={isProcessing}
                     onClick={async () => {
                       setIsProcessing(true)
-                      await services?.memory.deleteDocuments({
+                      const res = await services?.memory.deleteDocuments({
                         body: {
                           collection_id: collection?.name,
-                          document_ids: [document.name],
+                          document_ids: [document.metadata.name],
                         }
                       })
+                      if (!res?.success) toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)
                       setIsProcessing(false)
                     }}
                   >
@@ -189,11 +189,11 @@ export const DialogExploreDocuments = (props: I_Props) => {
           )}
           {/* Description */}
           <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {document.description}
+            {document.metadata.description}
           </p>
           {/* Tags */}
           <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {document.tags}
+            {document.metadata.tags}
           </p>
         </Link>
         <Tooltip>
@@ -227,7 +227,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <Separator className="my-4 md:my-8" />
         {/* List of files */}
         {documents?.length > 0 ? (
-          documents?.map(doc => <BrainDocument key={doc.id} document={doc} />)
+          documents?.map(doc => <BrainDocument key={doc.metadata.id} document={doc} />)
         ) : (
           <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
         )}

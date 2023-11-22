@@ -57,10 +57,10 @@ export interface I_DocSource {
 }
 
 export interface I_Document {
-  ids: string[]
-  documents: string[]
-  embeddings: Array<number[]>
-  metadatas: I_DocSource[]
+  ids: string
+  documents: string
+  embeddings: number[]
+  metadata: I_DocSource
 }
 
 export interface I_Collection {
