@@ -1,41 +1,15 @@
-import * as React from 'react'
 import Link from 'next/link'
 import { auth } from '@/auth'
-import { clearChats } from '@/app/actions'
 import { Button } from '@/components/ui/button'
-import { Sidebar } from '@/components/sidebar'
-import { SidebarChatList } from '@/components/sidebar-list-chat'
-import { SidebarBrainList } from '@/components/sidebar-list-brain'
 import { IconNextChat } from '@/components/ui/icons'
-import { SidebarFooter } from '@/components/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { ClearData } from '@/components/clear-data'
 import { UserMenu } from '@/components/user-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ChatsButton } from '@/components/features/panels/chats-panel-button'
+import { CollectionsButton } from '@/components/features/panels/collections-panel-button'
 
 export async function Header() {
   const session = await auth()
-  const chatsButton = (
-    <Sidebar title="Chat History" icon="chat">
-      <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-        <SidebarChatList userId={session?.user?.id} />
-      </React.Suspense>
-      <SidebarFooter>
-        <ClearData clearAction={clearChats} actionTitle="Clear history" />
-      </SidebarFooter>
-    </Sidebar>
-  )
-  const brainsButton = (
-    <Sidebar title="Knowledge Base" icon="brain">
-      <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-        {/* @TODO Pass the user id of the vector database */}
-        <SidebarBrainList userId={session?.user?.id} />
-      </React.Suspense>
-      <SidebarFooter>
-        <ClearData clearAction={clearChats} actionTitle="Delete all collections" />
-      </SidebarFooter>
-    </Sidebar>
-  )
 
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background/70 px-4 backdrop-blur-xl">
@@ -45,7 +19,7 @@ export async function Header() {
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
-                {chatsButton}
+                <ChatsButton session={session} />
                 <span className="sr-only">Chat History</span>
               </div>
             </TooltipTrigger>
@@ -55,11 +29,11 @@ export async function Header() {
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
-                {brainsButton}
-                <span className="sr-only">Uploads</span>
+                <CollectionsButton session={session} />
+                <span className="sr-only">Explore Ai memories</span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>Uploads</TooltipContent>
+            <TooltipContent>Memories</TooltipContent>
           </Tooltip>
         </div>
       ) : (

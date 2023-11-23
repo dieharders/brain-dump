@@ -13,15 +13,15 @@ import { I_ServiceApis } from '@/lib/homebrew'
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
-  apis: I_ServiceApis | null
+  services: I_ServiceApis | null
 }
 
-export const LocalChat = ({ id, initialMessages, apis, className }: IProps) => {
+export const LocalChat = ({ id, initialMessages, services, className }: IProps) => {
   const { theme } = useTheme()
   const { append, messages, reload, stop, input, setInput, isLoading } =
     useLocalInference({
       initialMessages,
-      apis,
+      services,
     })
 
   return (

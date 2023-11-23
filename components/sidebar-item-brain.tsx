@@ -1,22 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { type Brain } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconUsers, IconBrain } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { I_Collection } from '@/lib/homebrew'
 import Link from 'next/link'
 
 interface SidebarItemProps {
-  brain: Brain
+  collection: I_Collection
   children: React.ReactNode
 }
 
-export function SidebarItem({ brain, children }: SidebarItemProps) {
+/**
+ * A container for collection of documents
+ */
+export function SidebarItem({ collection, children }: SidebarItemProps) {
   const [isActive, setIsActive] = useState(false)
-
-  if (!brain?.id) return null
 
   return (
     <div
@@ -38,15 +39,15 @@ export function SidebarItem({ brain, children }: SidebarItemProps) {
         href="/"
       >
         {/* Card name */}
-        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-          {brain.title}
+        <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          {collection.name}
         </span>
         {/* Button actions */}
         {isActive && <span className="w-fit">{children}</span>}
       </Link>
       {/* Icon */}
       <div className="absolute left-2 top-2 flex w-6 cursor-pointer items-center justify-center">
-        {brain.sharePath ? (
+        {collection.metadata?.sharePath ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
               tabIndex={-1}

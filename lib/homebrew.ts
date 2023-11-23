@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useState } from 'react'
-
 interface I_Endpoint {
   name: string
   urlPath: string
@@ -26,18 +24,90 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
-type T_APIRequest = (props?: any) => Promise<any | null>
+export type T_GenericDataRes = any
 
-export interface I_ServiceApis {
-  textInference: {
-    completions: T_APIRequest
-    embeddings: T_APIRequest
-    chatCompletions: T_APIRequest
-    models: T_APIRequest
+export interface I_GenericAPIResponse<DataResType> extends Response {
+  success: boolean
+  message: string
+  data: DataResType
+}
+
+export interface I_GenericAPIRequestParams {
+  queryParams?: { [key: string]: any }
+  formData?: FormData
+  body?: { [key: string]: any }
+}
+
+// Pass in the type of response.data we expect
+export type T_GenericAPIRequest<DataResType> = (
+  props?: I_GenericAPIRequestParams,
+) => Promise<I_GenericAPIResponse<DataResType> | null>
+
+// These are the sources (documents) kept track by a collection
+export interface I_DocSource {
+  id: string // Globally unique id
+  name: string // Source id
+  processing: 'pending' | 'complete' // Update processing flag for this document
+  filePath: string // Update sources paths (where original uploaded files are stored)
+  urlPath: string
+  description: string
+  tags: string
+  createdAt: string
+  checksum: string
+}
+
+export interface I_Document {
+  ids: string
+  documents: string
+  embeddings: number[]
+  metadata: I_DocSource
+}
+
+export interface I_Collection {
+  id: string
+  name: string
+  metadata: {
+    sources: I_DocSource[]
+    description: string
+    tags: string
+    createdAt?: string
+    sharePath?: string
   }
 }
 
-// These will eventually be passed in from our server picker helper
+export interface I_GetCollectionData {
+  collection: I_Collection
+  numItems: number
+}
+
+export interface I_ServiceApis {
+  /**
+   * Use to query the text inference engine
+   */
+  textInference: {
+    completions: T_GenericAPIRequest<T_GenericDataRes>
+    embeddings: T_GenericAPIRequest<T_GenericDataRes>
+    chatCompletions: T_GenericAPIRequest<T_GenericDataRes>
+    models: T_GenericAPIRequest<T_GenericDataRes>
+  }
+  /**
+   * Use to add/create/update/delete embeddings from database
+   */
+  memory: {
+    addDocument: T_GenericAPIRequest<T_GenericDataRes>
+    getDocument: T_GenericAPIRequest<T_GenericDataRes>
+    updateDocument: T_GenericAPIRequest<T_GenericDataRes>
+    deleteDocuments: T_GenericAPIRequest<T_GenericDataRes>
+    getAllCollections: T_GenericAPIRequest<T_GenericDataRes>
+    addCollection: T_GenericAPIRequest<T_GenericDataRes>
+    getCollection: T_GenericAPIRequest<I_GetCollectionData>
+    deleteCollection: T_GenericAPIRequest<T_GenericDataRes>
+    fileExplore: T_GenericAPIRequest<T_GenericDataRes>
+    wipe: T_GenericAPIRequest<T_GenericDataRes>
+  }
+}
+
+// @TODO These will eventually be passed in from our server picker helper
 const PORT = 8008
 const hostname = 'http://localhost:'
 
@@ -69,7 +139,7 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 
   try {
-    // @TODO This api url could come from the /connect endpoint
+    // @TODO This api url should come from the /connect endpoint
     const endpoint = '/v1/services/api'
     const res = await fetch(`${hostname}${PORT}${endpoint}`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
@@ -107,62 +177,71 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   if (!response || response.length === 0) return null
 
   const serviceApis: any = {}
+
   response.forEach(api => {
     const origin = `${hostname}${api.port}`
     const apiName = api.name
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
-      const url = `${origin}${endpoint.urlPath}`
-      const method = endpoint.method
-      const headers = {
-        'Content-Type': 'application/json',
-      }
-      const request = async (args: any) => {
+      // Create a re-usable fetch function
+      const request = async (args: I_GenericAPIRequestParams) => {
         try {
-          // Normal fetch
-          const body = { body: JSON.stringify(args) }
+          const contentType = { 'Content-Type': 'application/json' }
+          const method = endpoint.method
+          const headers = { ...(method === 'POST' && !args?.formData && contentType) }
+          const body = args?.formData ? args.formData : JSON.stringify(args?.body)
+          const queryParams = args?.queryParams
+            ? new URLSearchParams(args?.queryParams).toString()
+            : null
+          const queryUrl = queryParams ? `?${queryParams}` : ''
+          const url = `${origin}${endpoint.urlPath}${queryUrl}`
           const res = await fetch(url, {
             method,
             mode: 'cors', // no-cors, *, cors, same-origin
             cache: 'no-cache',
             credentials: 'same-origin',
-            headers,
+            headers, // { 'Content-Type': 'multipart/form-data' }, // Browser will set this automatically for us for "formData"
             redirect: 'follow',
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            ...(method !== 'GET' && body),
+            body,
           })
           // Check no response
-          if (!res)
-            throw new Error(`[homebrew] No response for endpoint ${endpoint.name}.`)
+          if (!res) throw new Error(`No response for endpoint ${endpoint.name}.`)
           // Check errored response
-          if (!res.ok) {
-            const parsed = await res.json()
-            if (parsed.error) {
-              const error = new Error(`[homebrew] ${parsed.error}`) as Error & {
+          if (res.json) {
+            const result = await res.json()
+            if (result?.error) {
+              const error = new Error(`${result?.error}`) as Error & {
                 status: number
               }
               error.status = res.status
               throw error
-            } else {
-              throw new Error(
-                `[homebrew] ${endpoint.name} An unexpected error occurred! Status: ${res.status}`,
-              )
             }
+            if (!result?.success)
+              throw new Error(
+                `${endpoint.name} An unexpected error occurred: ${result?.message}`,
+              )
+            return result
           }
-
-          return res
+          // Check success
+          if (res.ok) return res
+          throw new Error('Something went wrong')
         } catch (err) {
           console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
-          return null
+          return { success: false, message: err }
         }
       }
 
       // Add request function
-      const reqFunction = async (args: any) => {
+      const reqFunction = async (args: I_GenericAPIRequestParams) => {
         // This is specific to constructing prompts, only applies to "completions"
-        const prompt = endpoint?.promptTemplate?.replace('{{PROMPT}}', args?.prompt)
-        const newArgs = args?.prompt ? { ...args, prompt } : args
+        const prompt = args?.body?.prompt
+          ? endpoint?.promptTemplate?.replace('{{PROMPT}}', args.body.prompt)
+          : ''
+        const newArgs = prompt
+          ? { body: { ...args.body, prompt }, queryParams: args?.queryParams }
+          : args
 
         return request(newArgs)
       }
@@ -179,8 +258,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  const [apis, setAPI] = useState<I_ServiceApis | null>(null)
-
   /**
    * Attempt to connect to homebrew api.
    */
@@ -200,7 +277,7 @@ export const useHomebrew = () => {
   /**
    * Attempt to connect to text inference server.
    */
-  const connectTextService = useCallback(async () => {
+  const connectTextService = async () => {
     try {
       // Return api services
       const servicesResponse = await getServices()
@@ -210,16 +287,14 @@ export const useHomebrew = () => {
 
       const res = await req()
       if (!res) throw new Error('Failed to connect to Ai.')
-
-      const json = await res?.json()
-      const data = json?.data
+      const data = res?.data
 
       return data
     } catch (error) {
       console.log(`[homebrew] connectTextService: ${error}`)
       return
     }
-  }, [])
+  }
 
   /**
    * Get all api configs for services.
@@ -227,14 +302,8 @@ export const useHomebrew = () => {
   const getServices = async () => {
     const res = await getAPIConfig()
     const serviceApis = createServices(res)
-    setAPI(serviceApis)
     return serviceApis
   }
 
-  // Make sure homebrewai object exists
-  useEffect(() => {
-    if (!window?.homebrewai) window.homebrewai = {}
-  }, [])
-
-  return { connect, connectTextService, getServices, apis }
+  return { connect, connectTextService, getServices }
 }

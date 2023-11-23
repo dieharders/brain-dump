@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { type Chat, ServerActionResult, Brain } from '@/lib/types'
+import { type Chat, ServerActionResult } from '@/lib/types'
 import { cn, formatDate } from '@/lib/utils'
 import {
   AlertDialog,
@@ -28,6 +28,7 @@ import { IconShare, IconSpinner, IconTrash, IconUsers } from '@/components/ui/ic
 import Link from 'next/link'
 import { badgeVariants } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { I_Collection } from '@/lib/homebrew'
 
 interface I_Props {
   chat: Chat
@@ -36,16 +37,16 @@ interface I_Props {
 }
 
 export const copyShareLink = (props: {
-  data: Chat | Brain
+  data: Chat | I_Collection
   setDialogOpen: (b: boolean) => void
 }) => {
   const { data, setDialogOpen } = props
-  if (!data.sharePath) {
+  if (!data.metadata?.sharePath) {
     return toast.error('Could not copy share link to clipboard')
   }
 
   const url = new URL(window.location.href)
-  url.pathname = data.sharePath
+  url.pathname = data.metadata?.sharePath
   navigator.clipboard.writeText(url.toString())
   setDialogOpen(false)
   toast.success('Share link copied to clipboard', {
@@ -168,8 +169,7 @@ export function SidebarActions(props: I_Props) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete your chat message and remove your data from our
-              servers.
+              This will permanently delete your messages from your device
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

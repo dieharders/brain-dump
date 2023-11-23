@@ -216,11 +216,11 @@ export function Settings() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Button onClick={() => setDocumentDBDialog(true)}>Configure Uploads</Button>
+        <Button onClick={() => setDocumentDBDialog(true)}>Configure Memories</Button>
         <Dialog open={documentDBDialog} onOpenChange={setDocumentDBDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Enter your uploads database key</DialogTitle>
+              <DialogTitle>Enter your database key for memories</DialogTitle>
               <DialogDescription>
                 This database is responsible for uploaded documents storage. If you have
                 not obtained your Supabase API key, you can do so by{' '}

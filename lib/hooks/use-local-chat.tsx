@@ -23,12 +23,12 @@ interface CompletionOptions {
 
 interface IProps {
   initialMessages: Message[] | undefined,
-  apis: I_ServiceApis | null
+  services: I_ServiceApis | null
 }
 
 export const useLocalInference = ({
   initialMessages = [],
-  apis,
+  services,
 }: IProps) => {
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
@@ -41,10 +41,9 @@ export const useLocalInference = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: CompletionOptions,
-  ): Promise<Response | undefined> => {
-
+  ) => {
     try {
-      return apis?.textInference.completions(options)
+      return services?.textInference.completions({ body: options })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
