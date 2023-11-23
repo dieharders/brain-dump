@@ -53,7 +53,7 @@ export const SidebarActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={async () => setExploreDialogOpen(true)}
+            onClick={() => setExploreDialogOpen(true)}
           >
             <IconEdit />
             <span className="sr-only">Edit collection</span>

@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
-import { copyShareLink } from '@/components/sidebar-actions-chat'
+// import { copyShareLink } from '@/components/sidebar-actions-chat'
 import { cn, formatDate } from '@/lib/utils'
 import { badgeVariants } from '@/components/ui/badge'
 import { IconSpinner, IconUsers } from '@/components/ui/icons'
