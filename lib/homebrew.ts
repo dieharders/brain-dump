@@ -47,7 +47,6 @@ export type T_GenericAPIRequest<DataResType> = (
 export interface I_DocSource {
   id: string // Globally unique id
   name: string // Source id
-  processing: 'pending' | 'complete' // Update processing flag for this document
   filePath: string // Update sources paths (where original uploaded files are stored)
   urlPath: string
   description: string
@@ -67,7 +66,7 @@ export interface I_Collection {
   id: string
   name: string
   metadata: {
-    sources: I_DocSource[]
+    sources: string[]
     description: string
     tags: string
     createdAt?: string

@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 import { IconDocument } from '@/components/ui/icons'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { I_DocSource, I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
+import { I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
 import Link from 'next/link'
 
 interface I_Props {
@@ -54,13 +54,13 @@ export const DialogExploreDocuments = (props: I_Props) => {
   }, [collection, services?.memory])
 
   // Fetch all documents for collection
-  const fetchAllDocuments = useCallback(async (docIds: string[]): Promise<I_Document[] | null> => {
+  const fetchAllDocuments = useCallback(async (document_ids: string[]): Promise<I_Document[]> => {
     try {
       if (!collection) throw new Error('No collection or document ids specified')
 
-      const body = { collection_id: collection?.name, document_ids: docIds, include: ['documents', 'metadatas'] }
+      const body = { collection_id: collection?.name, document_ids, include: ['documents', 'metadatas'] }
       const res = await services?.memory.getDocument({ body })
-      if (!res?.success) throw new Error(`No documents found:\n${docIds}`)
+      if (!res?.success) throw new Error(`No documents found:\n${document_ids}`)
 
       const docs = res?.data || []
       setDocuments(docs)
@@ -68,20 +68,19 @@ export const DialogExploreDocuments = (props: I_Props) => {
       return docs
     } catch (err) {
       toast.error(`Failed to fetch documents: ${err}`)
-      return null
+      return []
     }
   }, [collection, services?.memory])
 
   const fetchAll = useCallback(async () => {
     const collection_data = await fetchCollection()
-    if (!collection_data) return false
+    if (!collection_data) return null
 
     const sources = collection_data?.collection?.metadata?.sources
-    const docIds = sources?.map((item: I_DocSource) => item.name)
 
-    if (!docIds || docIds.length === 0) return false
+    if (!sources || sources.length === 0) return null
 
-    const res = await fetchAllDocuments(docIds)
+    const res = await fetchAllDocuments(sources)
     return res
   }, [fetchAllDocuments, fetchCollection])
 
@@ -145,7 +144,8 @@ export const DialogExploreDocuments = (props: I_Props) => {
                           body: {
                             collectionName: collection?.name,
                             documentName: document.metadata.name,
-                            // urlPath: document.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
+                            documentId: document.metadata.id,
+                            // urlPath: document.metadata.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
                             filePath: document.metadata.filePath // optional
                             // metadata: {}, // optional, if we want to upload new ones from a form
                           }
@@ -172,7 +172,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
                       const res = await services?.memory.deleteDocuments({
                         body: {
                           collection_id: collection?.name,
-                          document_ids: [document.metadata.name],
+                          document_ids: [document.metadata.id],
                         }
                       })
                       if (!res?.success) toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)

@@ -36,7 +36,8 @@ export const DialogAddDocument = (props: I_Props) => {
     if (!e.target?.files) return
     const files = Array.from(e.target.files)
     // Only send one file
-    setSelectedFile(files[0])
+    const file = files?.[0]
+    file && setSelectedFile(file)
   }
 
   // Send form to backend
@@ -47,9 +48,9 @@ export const DialogAddDocument = (props: I_Props) => {
       const formInputs = { collection_name: collection?.name, document_name: nameValue, description: descrValue, tags: parsedTags, urlPath: urlValue }
       // Create a form with our selected file attached
       const formData = new FormData()
-      formData.append('file', selectedFile!, selectedFile!.name)
+      if (selectedFile) formData.append('file', selectedFile, selectedFile.name)
       // Send request (Add new document)
-      const result = await action({ queryParams: formInputs, formData })
+      const result = await action({ queryParams: formInputs, ...(!urlValue && { formData }) })
       // Verify
       if (result?.success) {
         toast.success(`File upload successful: ${result.message}`)
@@ -81,7 +82,7 @@ export const DialogAddDocument = (props: I_Props) => {
           <Input
             name="url"
             value={urlValue}
-            placeholder="URL (https://some-server.com/file.txt)"
+            placeholder="https://example.com/file.txt"
             onChange={e => setUrlValue(e.target.value)}
           />
           {/* File upload from disk */}
