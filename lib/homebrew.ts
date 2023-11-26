@@ -219,7 +219,9 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             }
             if (!result?.success)
               throw new Error(
-                `${endpoint.name} An unexpected error occurred: ${result?.message}`,
+                `${endpoint.name} An unexpected error occurred: ${
+                  result?.message ?? result?.detail
+                }`,
               )
             return result
           }

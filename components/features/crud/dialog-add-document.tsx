@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -45,7 +45,7 @@ export const DialogAddDocument = (props: I_Props) => {
     try {
       // Send form input values (everything except file) as url query params
       const parsedTags = tagsValue // @TODO Parse the value to be a space-seperated string of words. Remove any special chars, commas.
-      const formInputs = { collection_name: collection?.name, document_name: nameValue, description: descrValue, tags: parsedTags, urlPath: urlValue }
+      const formInputs = { collectionName: collection?.name, documentName: nameValue, description: descrValue, tags: parsedTags, urlPath: urlValue }
       // Create a form with our selected file attached
       const formData = new FormData()
       if (selectedFile) formData.append('file', selectedFile, selectedFile.name)
@@ -67,6 +67,17 @@ export const DialogAddDocument = (props: I_Props) => {
     }
   }
 
+  // Reset menu inputs when menu is open/closed
+  useEffect(() => {
+    return () => {
+      if (!dialogOpen) {
+        setSelectedFile(null)
+        setUrlValue('')
+        setNameValue('')
+      }
+    }
+  }, [dialogOpen])
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
@@ -78,7 +89,7 @@ export const DialogAddDocument = (props: I_Props) => {
         </DialogHeader>
         <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
           {/* File upload from network */}
-          <label htmlFor="url"><DialogTitle className="text-sm">Add a URL to text, image, audio, video</DialogTitle></label>
+          <label htmlFor="url"><DialogTitle className="text-sm">Add a URL to text, image, audio, video file</DialogTitle></label>
           <Input
             name="url"
             value={urlValue}
@@ -86,7 +97,7 @@ export const DialogAddDocument = (props: I_Props) => {
             onChange={e => setUrlValue(e.target.value)}
           />
           {/* File upload from disk */}
-          <label htmlFor="file"><DialogTitle className="text-sm">Or select a file from local disk below 👇</DialogTitle></label>
+          <label htmlFor="file"><DialogTitle className="text-sm">Or select a file from local storage</DialogTitle></label>
           <input disabled={urlValue.length > 0} type="file" name="file" onChange={handleFileSelected} />
           {/* Document Name */}
           <Input
