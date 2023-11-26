@@ -30,7 +30,7 @@ export const DialogCreateCollection = (props: IProps) => {
   const onSubmit = useCallback(async () => {
     try {
       // Send form input as url query params
-      const formInputs = { name: nameValue, description: descrValue, tags: tagsValue }
+      const formInputs = { collectionName: nameValue, description: descrValue, tags: tagsValue }
       // Send request
       const result = await action({ queryParams: formInputs })
       return result?.success
@@ -51,7 +51,7 @@ export const DialogCreateCollection = (props: IProps) => {
         <form className="grid w-full gap-4" method="POST" encType="multipart/form-data">
           {/* Collection Name */}
           <Input
-            name="name"
+            name="collectionName"
             value={nameValue}
             placeholder="Collection name (3-63 lowercase chars)"
             onChange={e => setNameValue(e.target.value)}
