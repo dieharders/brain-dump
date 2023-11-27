@@ -84,7 +84,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
     return res
   }, [fetchAllDocuments, fetchCollection])
 
-  const BrainDocument = ({ document }: { document: I_Document }) => {
+  const BrainDocument = ({ document, index }: { document: I_Document, index: number }) => {
     const [isActive, setIsActive] = useState(false)
 
     return (
@@ -160,7 +160,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
                 </TooltipTrigger>
                 <TooltipContent>Update</TooltipContent>
               </Tooltip>
-              {/* Delete Button */}
+              {/* Delete Document Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -176,6 +176,12 @@ export const DialogExploreDocuments = (props: I_Props) => {
                         }
                       })
                       if (!res?.success) toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)
+                      else {
+                        // Remove ourselves from list when successful
+                        const newList = [...documents]
+                        newList.splice(index, 1)
+                        setDocuments(newList)
+                      }
                       setIsProcessing(false)
                     }}
                   >
@@ -227,7 +233,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <Separator className="my-4 md:my-8" />
         {/* List of files */}
         {documents?.length > 0 ? (
-          documents?.map(doc => <BrainDocument key={doc.metadata.id} document={doc} />)
+          documents?.map((doc, index) => <BrainDocument key={doc.metadata.id} document={doc} index={index} />)
         ) : (
           <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
         )}
