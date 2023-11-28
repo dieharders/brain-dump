@@ -11,18 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import {
-  IconExternalLink,
-  IconRefresh,
-  IconTrash,
-} from '@/components/ui/icons'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { IconDocument } from '@/components/ui/icons'
 import { Separator } from '@/components/ui/separator'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
-import Link from 'next/link'
+import DocumentCard from '@/components/features/cards/card-document'
 
 interface I_Props {
   collection: I_Collection | null
@@ -34,8 +25,45 @@ interface I_Props {
 // Show a list of documents in collection
 export const DialogExploreDocuments = (props: I_Props) => {
   const { collection, services, dialogOpen, setDialogOpen } = props
-  const [isProcessing, setIsProcessing] = useState(false)
   const [documents, setDocuments] = useState<I_Document[]>([])
+
+  const fileExploreAction = async (document: I_Document) => {
+    await services?.memory.fileExplore({ queryParams: { filePath: document.metadata.filePath } })
+    return
+  }
+
+  const updateAction = async (document: I_Document) => {
+    const res = await services?.memory.updateDocument(
+      {
+        body: {
+          collectionName: collection?.name,
+          documentName: document.metadata.name,
+          documentId: document.metadata.id,
+          // urlPath: document.metadata.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
+          filePath: document.metadata.filePath // optional
+          // metadata: {}, // optional, if we want to upload new ones from a form
+        }
+      })
+    if (!res?.success) toast.error(`Error ${res?.message}`)
+    return
+  }
+
+  const deleteAction = async (document: I_Document, index: number) => {
+    const res = await services?.memory.deleteDocuments({
+      body: {
+        collection_id: collection?.name,
+        document_ids: [document.metadata.id],
+      }
+    })
+    if (!res?.success) toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)
+    else {
+      // Remove ourselves from list when successful
+      const newList = [...documents]
+      newList.splice(index, 1)
+      setDocuments(newList)
+    }
+    return
+  }
 
   // Fetch the current collection and all its' source ids
   const fetchCollection = useCallback(async () => {
@@ -84,137 +112,6 @@ export const DialogExploreDocuments = (props: I_Props) => {
     return res
   }, [fetchAllDocuments, fetchCollection])
 
-  const BrainDocument = ({ document, index }: { document: I_Document, index: number }) => {
-    const [isActive, setIsActive] = useState(false)
-
-    return (
-      <div
-        className="relative flex-1 overflow-auto"
-        onMouseEnter={() => {
-          setIsActive(true)
-        }}
-        onMouseLeave={() => {
-          setIsActive(false)
-        }}
-      >
-        <Link
-          className={cn(
-            buttonVariants({ variant: 'secondary' }),
-            'hover-bg-accent relative flex h-8 w-full flex-1 select-none overflow-hidden pl-8 pr-2',
-          )}
-          href="/"
-        >
-          {/* Title */}
-          <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {document.metadata.name}
-          </span>
-          {/* Button actions */}
-          {isActive && (
-            <div className="flex items-center justify-between space-x-1">
-              {/* File Explorer Button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-6 w-6 p-0 hover:bg-background"
-                    disabled={isProcessing}
-                    onClick={async () => {
-                      setIsProcessing(true)
-                      await services?.memory.fileExplore({ queryParams: { filePath: document.metadata.filePath } })
-                      setIsProcessing(false)
-                    }}
-                  >
-                    <IconExternalLink />
-                    <span className="sr-only">Open source file</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Open file in explorer</TooltipContent>
-              </Tooltip>
-              {/* Update Memory Button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-6 w-6 p-0 hover:bg-background"
-                    disabled={isProcessing}
-                    onClick={async () => {
-                      setIsProcessing(true)
-                      const res = await services?.memory.updateDocument(
-                        {
-                          body: {
-                            collectionName: collection?.name,
-                            documentName: document.metadata.name,
-                            documentId: document.metadata.id,
-                            // urlPath: document.metadata.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
-                            filePath: document.metadata.filePath // optional
-                            // metadata: {}, // optional, if we want to upload new ones from a form
-                          }
-                        })
-                      if (!res?.success) toast.error(`Error ${res?.message}`)
-                      setIsProcessing(false)
-                    }}
-                  >
-                    <IconRefresh />
-                    <span className="sr-only">Update memory</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Update</TooltipContent>
-              </Tooltip>
-              {/* Delete Document Button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-6 w-6 p-0 hover:bg-background"
-                    disabled={isProcessing}
-                    onClick={async () => {
-                      setIsProcessing(true)
-                      const res = await services?.memory.deleteDocuments({
-                        body: {
-                          collection_id: collection?.name,
-                          document_ids: [document.metadata.id],
-                        }
-                      })
-                      if (!res?.success) toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)
-                      else {
-                        // Remove ourselves from list when successful
-                        const newList = [...documents]
-                        newList.splice(index, 1)
-                        setDocuments(newList)
-                      }
-                      setIsProcessing(false)
-                    }}
-                  >
-                    <IconTrash />
-                    <span className="sr-only">Delete file</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
-              </Tooltip>
-            </div>
-          )}
-          {/* Description */}
-          <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {document.metadata.description}
-          </p>
-          {/* Tags */}
-          <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-left">
-            {document.metadata.tags}
-          </p>
-        </Link>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="absolute left-2 top-2 flex w-6 cursor-pointer items-center justify-center">
-              <IconDocument className="mr-2" />
-              <span className="sr-only">File type: document</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>Document</TooltipContent>
-        </Tooltip>
-      </div>
-    )
-  }
-
   // Fetch documents only when we are open and on every collection change
   useEffect(() => {
     if (dialogOpen && collection) fetchAll()
@@ -233,7 +130,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <Separator className="my-4 md:my-8" />
         {/* List of files */}
         {documents?.length > 0 ? (
-          documents?.map((doc, index) => <BrainDocument key={doc.metadata.id} document={doc} index={index} />)
+          documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
         ) : (
           <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
         )}
