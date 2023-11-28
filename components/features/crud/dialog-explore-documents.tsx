@@ -122,19 +122,36 @@ export const DialogExploreDocuments = (props: I_Props) => {
       <AlertDialogContent>
         {/* Title/Descr */}
         <AlertDialogHeader>
-          <AlertDialogTitle>Explore files in this collection</AlertDialogTitle>
+          <AlertDialogTitle className="uppercase" >{collection?.name || "Explore files in this collection"}</AlertDialogTitle>
           <AlertDialogDescription>
             Preview, update and remove files contained in this collection.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <Separator className="my-4 md:my-8" />
+        {/* Info */}
+        <AlertDialogTitle>💡 Info</AlertDialogTitle>
+        <AlertDialogDescription className="w-full flex-col flex-wrap items-center justify-between space-x-2">
+          <div className="inline w-fit flex-1">Last Modified: {collection?.metadata?.createdAt || "???"}</div>
+          <div className="inline w-fit flex-1">| Sources: {collection?.metadata?.sources?.length || 0}</div>
+        </AlertDialogDescription>
+        {/* Description */}
+        <AlertDialogTitle >📄 Description</AlertDialogTitle>
+        <AlertDialogDescription>
+          {collection?.metadata?.description || "Add a detailed description of the contents..."}
+        </AlertDialogDescription>
+        {/* Tags */}
+        <AlertDialogTitle >🔖 Tags</AlertDialogTitle>
+        <AlertDialogDescription>
+          {collection?.metadata?.tags || "Add hashtags to link similar memories."}
+        </AlertDialogDescription>
+        <Separator className="my-4" />
         {/* List of files */}
         {documents?.length > 0 ? (
           documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
         ) : (
           <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
         )}
-        <Separator className="my-4 md:my-8" />
+        <Separator className="my-4" />
+        {/* Menu buttons */}
         <AlertDialogFooter>
           <AlertDialogAction
             onClick={event => {

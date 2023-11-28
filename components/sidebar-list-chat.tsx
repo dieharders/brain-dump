@@ -7,7 +7,7 @@ export interface SidebarChatListProps {
   userId?: string
 }
 
-export async function SidebarChatList({ userId }: SidebarChatListProps) {
+export async function SidebarChatList({ userId = '' }: SidebarChatListProps) {
   const chats = await getChats(userId)
 
   return (

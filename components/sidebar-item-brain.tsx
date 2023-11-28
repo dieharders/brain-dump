@@ -18,6 +18,10 @@ interface SidebarItemProps {
  */
 export function SidebarItem({ collection, children }: SidebarItemProps) {
   const [isActive, setIsActive] = useState(false)
+  const numFavorites = collection?.metadata?.favorites || 0
+  const numTags = collection?.metadata?.tags?.split(' ').length || 0
+  const numSources = collection?.metadata?.sources?.length || 0
+  const hasDescription = collection?.metadata?.description ? '✔' : '❌'
 
   return (
     <div
@@ -33,20 +37,37 @@ export function SidebarItem({ collection, children }: SidebarItemProps) {
       <Link
         className={cn(
           buttonVariants({ variant: 'outline' }),
-          'hover-bg-accent relative flex h-8 w-full flex-1 select-none overflow-hidden pl-8 pr-2 text-left',
+          'hover-bg-accent relative h-fit w-full select-none flex-col space-y-1 pl-8 pr-2 text-left',
           isActive && 'bg-accent',
         )}
         href="/"
       >
-        {/* Card name */}
-        <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-          {collection.name}
-        </span>
-        {/* Button actions */}
-        {isActive && <span className="w-fit">{children}</span>}
+        <div className="flex w-full flex-1 overflow-hidden">
+          {/* Card name */}
+          <span className="m-0 h-6 w-full overflow-hidden text-ellipsis whitespace-nowrap">
+            {collection.name}
+          </span>
+          {/* Button actions */}
+          {isActive && <span className="m-0 h-6 w-fit">{children}</span>}
+        </div>
+        {/* Stats */}
+        <div className="flex h-fit w-full justify-start space-x-4 text-gray-400">
+          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            📂: {numSources}
+          </span>
+          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            ⭐: {numFavorites}
+          </span>
+          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            🔖: {numTags}
+          </span>
+          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            📄: {hasDescription}
+          </span>
+        </div>
       </Link>
       {/* Icon */}
-      <div className="absolute left-2 top-2 flex w-6 cursor-pointer items-center justify-center">
+      <div className="absolute left-2 top-3 flex w-6 cursor-pointer items-center justify-center">
         {collection.metadata?.sharePath ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
