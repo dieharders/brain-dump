@@ -71,6 +71,7 @@ export interface I_Collection {
     tags: string
     createdAt?: string
     sharePath?: string
+    favorites?: number
   }
 }
 

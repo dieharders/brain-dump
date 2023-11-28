@@ -1,14 +1,33 @@
-import { getChats, removeChat, shareChat } from '@/app/actions'
+import { removeChat, shareChat } from '@/app/actions'
 import { SidebarActions } from '@/components/sidebar-actions-chat'
 import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item-chat'
+import { Chat } from '@/lib/types'
 
 export interface SidebarChatListProps {
   userId?: string
 }
 
+const getExampleChatsAction = async (userId: string): Promise<Chat[]> => {
+  return [
+    {
+      id: '10101-101',
+      title: 'Some title',
+      createdAt: new Date(),
+      userId,
+      path: '/',
+      messages: [{
+        id: 'msg-101',
+        createdAt: new Date(),
+        content: 'This is a first part of conversation.',
+        role: 'assistant',
+      }],
+    }
+  ]
+}
+
 export async function SidebarChatList({ userId }: SidebarChatListProps) {
-  const chats = await getChats(userId)
+  const chats = await getExampleChatsAction(userId || 'rob') // await getChats(userId)
 
   return (
     <div className="flex-1 overflow-auto">
