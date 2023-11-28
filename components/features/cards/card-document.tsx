@@ -89,7 +89,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
 
   return (
     <div
-      className="relative flex-1 overflow-auto"
+      className="relative flex-1"
       onMouseEnter={() => {
         setIsActive(true)
       }}
@@ -100,16 +100,16 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
       <Link
         className={cn(
           buttonVariants({ variant: 'secondary' }),
-          'hover-bg-accent relative h-full w-full select-none flex-col overflow-hidden px-4',
+          'hover-bg-accent relative h-[10rem] w-full select-none flex-col overflow-hidden px-4',
         )}
         href="/"
       >
-        <div className="flex h-8 w-full overflow-hidden">
+        <div className="flex h-fit w-full overflow-hidden">
           {/* File type icon */}
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex w-6 cursor-pointer items-center justify-self-start">
-                <IconDocument className="mb-1 h-6" />
+                <IconDocument className="h-6" />
                 <span className="sr-only">File type: document</span>
               </div>
             </TooltipTrigger>
@@ -127,15 +127,18 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
           )}
         </div>
         {/* Description */}
-        <p className="text-md h-auto max-h-16 w-full overflow-hidden py-1 text-left">
-          {document.metadata.description}
+        <p className="text-md line-clamp-2 h-full w-full flex-1 overflow-hidden text-ellipsis py-2 text-left text-gray-400">
+          {document.metadata.description || "Add a description..."}
         </p>
         {/* Tags */}
-        <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap py-1 text-left font-semibold">
-          {document.metadata.tags}
+        <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap py-1 text-left font-semibold text-gray-400">
+          {document.metadata.tags || "Add some hashtags..."}
         </p>
+        {/* Other info */}
+        <span className="h-fit w-full overflow-hidden text-ellipsis whitespace-nowrap py-2 text-left text-sm text-gray-400">
+          📅: {document.metadata.createdAt || "???"} | 📁: {document.metadata.filePath || "???"}
+        </span>
       </Link>
-
     </div>
   )
 }

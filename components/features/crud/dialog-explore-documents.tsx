@@ -143,13 +143,15 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <AlertDialogDescription>
           {collection?.metadata?.tags || "Add hashtags to link similar memories."}
         </AlertDialogDescription>
-        <Separator className="my-4" />
         {/* List of files */}
-        {documents?.length > 0 ? (
-          documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
-        ) : (
-          <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
-        )}
+        <Separator className="my-4" />
+        <div className="max-h-[32rem] flex-row items-center justify-center space-y-4 overflow-x-hidden overflow-y-scroll pr-4">
+          {documents?.length > 0 ? (
+            documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
+          ) : (
+            <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
+          )}
+        </div>
         <Separator className="my-4" />
         {/* Menu buttons */}
         <AlertDialogFooter>

@@ -10,13 +10,15 @@ import Link from 'next/link'
 
 interface SidebarItemProps {
   collection: I_Collection
+  onClick: (open: boolean) => void
   children: React.ReactNode
 }
 
 /**
  * A container for collection of documents
  */
-export function SidebarItem({ collection, children }: SidebarItemProps) {
+export function SidebarItem(props: SidebarItemProps) {
+  const { collection, onClick, children } = props
   const [isActive, setIsActive] = useState(false)
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags?.split(' ').length || 0
@@ -25,6 +27,7 @@ export function SidebarItem({ collection, children }: SidebarItemProps) {
 
   return (
     <div
+      onClick={() => onClick(true)}
       onMouseEnter={() => {
         setIsActive(true)
       }}
