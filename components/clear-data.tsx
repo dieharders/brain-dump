@@ -17,7 +17,7 @@ import {
 import { IconSpinner } from '@/components/ui/icons'
 
 interface ClearDataProps {
-  clearAction: () => Promise<void>
+  clearAction: () => Promise<boolean>
   actionTitle?: string
 }
 

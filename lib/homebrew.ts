@@ -26,6 +26,7 @@ interface I_ConnectResponse {
 
 export type T_GenericDataRes = any
 
+// @TODO Remove the extends once text inference is rolled into our own response schema
 export interface I_GenericAPIResponse<DataResType> extends Response {
   success: boolean
   message: string
@@ -80,6 +81,18 @@ export interface I_GetCollectionData {
   numItems: number
 }
 
+type T_TextModelsData = {
+  id: string // path to model on disk
+  object: string // what type it is
+  owned_by: string
+  permissions: string[]
+}
+
+interface I_ConnectTextInferenceData {
+  object: string
+  data: T_TextModelsData[]
+}
+
 export interface I_ServiceApis {
   /**
    * Use to query the text inference engine
@@ -88,7 +101,7 @@ export interface I_ServiceApis {
     completions: T_GenericAPIRequest<T_GenericDataRes>
     embeddings: T_GenericAPIRequest<T_GenericDataRes>
     chatCompletions: T_GenericAPIRequest<T_GenericDataRes>
-    models: T_GenericAPIRequest<T_GenericDataRes>
+    models: () => Promise<I_ConnectTextInferenceData>
   }
   /**
    * Use to add/create/update/delete embeddings from database
@@ -208,9 +221,13 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
           })
           // Check no response
           if (!res) throw new Error(`No response for endpoint ${endpoint.name}.`)
-          // Check errored response
+          // Check json response
           if (res.json) {
             const result = await res.json()
+
+            // Check success from llama-cpp-python server first
+            if (res?.ok) return result
+
             if (result?.error) {
               const error = new Error(`${result?.error}`) as Error & {
                 status: number
@@ -218,6 +235,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
               error.status = res.status
               throw error
             }
+            // Check failure from homebrew api last
             if (!result?.success)
               throw new Error(
                 `${endpoint.name} An unexpected error occurred: ${
@@ -226,8 +244,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
               )
             return result
           }
-          // Check success
-          if (res.ok) return res
           throw new Error('Something went wrong')
         } catch (err) {
           console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
@@ -277,24 +293,39 @@ export const useHomebrew = () => {
   }
 
   /**
-   * Attempt to connect to text inference server.
+   * Attempt to connect to text inference server and return api services.
    */
-  const connectTextService = async () => {
+  interface I_ConnectTextResponse {
+    success: boolean
+    message: string
+    data: T_TextModelsData[]
+  }
+  const connectTextService = async (): Promise<I_ConnectTextResponse> => {
     try {
-      // Return api services
       const servicesResponse = await getServices()
-
       const req = servicesResponse?.textInference?.models
-      if (!req) return
+      if (!req)
+        return {
+          success: false,
+          message: '',
+          data: [],
+        }
 
       const res = await req()
-      if (!res) throw new Error('Failed to connect to Ai.')
-      const data = res?.data
 
-      return data
+      return {
+        success: true,
+        message: `Found ${res.data?.length} models`,
+        data: res.data,
+      }
     } catch (error) {
-      console.log(`[homebrew] connectTextService: ${error}`)
-      return
+      const errMsg = `${error}`
+      console.log(`[homebrew] connectTextService: ${errMsg}`)
+      return {
+        success: false,
+        message: errMsg,
+        data: [],
+      }
     }
   }
 
