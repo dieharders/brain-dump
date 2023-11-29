@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
+import { CharmMenu } from '@/components/features/prompt/prompt-charm-menu'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
 
@@ -25,8 +27,11 @@ export function ChatPanel({
   messages,
   theme,
 }: ChatPanelProps) {
+  // @TODO from-neutral-900 does not match the chat-page's bg color
   const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-muted/0' : 'to-muted/150'
+  const [charmMenuOpen, setCharmMenuOpen] = useState(false)
+
   return (
     <div
       // eslint-disable-next-line tailwindcss/classnames-order
@@ -54,6 +59,8 @@ export function ChatPanel({
           )}
         </div>
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
+          <CharmMenu open={charmMenuOpen} />
+
           <PromptForm
             onSubmit={async value => {
               await append({
@@ -65,6 +72,7 @@ export function ChatPanel({
             input={input}
             setInput={setInput}
             isLoading={isLoading}
+            onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
           />
           <FooterText className="hidden sm:block" />
         </div>

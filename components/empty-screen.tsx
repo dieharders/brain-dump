@@ -26,9 +26,6 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
           Chat with your brain
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
-          Talk to a language model about your data.
-        </p>
-        <p className="leading-normal text-muted-foreground">
           Enter a prompt below to start a conversation or try the following examples:
         </p>
         <div className="mt-4 flex flex-col items-start space-y-2">
