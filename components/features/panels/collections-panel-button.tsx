@@ -21,10 +21,10 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
       const result = await services?.memory.wipe()
       if (!result?.success) throw new Error(result?.message)
       toast.success('All memories successfully removed')
-      return
+      return true
     } catch (err) {
       toast.error(`${err}`)
-      return
+      return false
     }
   }
 
