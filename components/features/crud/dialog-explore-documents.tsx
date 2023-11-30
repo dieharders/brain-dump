@@ -122,16 +122,16 @@ export const DialogExploreDocuments = (props: I_Props) => {
       <DialogContent>
         {/* Title/Descr */}
         <DialogHeader>
-          <DialogTitle className="uppercase" >{collection?.name || "Explore files in this collection"}</DialogTitle>
+          <DialogTitle className="mb-1 uppercase" >{collection?.name || "Explore files in this collection"}</DialogTitle>
           <DialogDescription>
             Preview, update and remove files contained in this collection.
           </DialogDescription>
         </DialogHeader>
         {/* Info */}
         <DialogTitle>💡 Info</DialogTitle>
-        <DialogDescription className="w-full flex-col flex-wrap items-center justify-between space-x-2">
-          <div className="inline w-fit flex-1">Last Modified: {collection?.metadata?.createdAt || "???"}</div>
-          <div className="inline w-fit flex-1">| Sources: {collection?.metadata?.sources?.length || 0}</div>
+        <DialogDescription className="w-full flex-col flex-wrap items-center justify-between space-x-4">
+          <span className="inline w-fit flex-1">Sources: <span className="text-white">{collection?.metadata?.sources?.length || 0}</span></span>
+          <span className="inline w-fit flex-1">Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "???"}</span></span>
         </DialogDescription>
         {/* Description */}
         <DialogTitle >📄 Description</DialogTitle>
