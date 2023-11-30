@@ -125,7 +125,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <div className="mt-4 space-y-4 px-2">
           {collections.map(
             collection => (
-              <SidebarItem key={collection?.id} collection={collection} onClick={setExploreDialogOpen}>
+              <SidebarItem key={collection?.id} collection={collection}>
                 <SidebarActions
                   setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                   setExploreDialogOpen={setExploreDialogOpen}

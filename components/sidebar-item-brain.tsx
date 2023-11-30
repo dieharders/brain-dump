@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 interface SidebarItemProps {
   collection: I_Collection
-  onClick: (open: boolean) => void
+  onClick?: (open: boolean) => void
   children: React.ReactNode
 }
 
@@ -27,7 +27,7 @@ export function SidebarItem(props: SidebarItemProps) {
 
   return (
     <div
-      onClick={() => onClick(true)}
+      onClick={() => onClick && onClick(true)}
       onMouseEnter={() => {
         setIsActive(true)
       }}
