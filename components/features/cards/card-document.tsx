@@ -179,9 +179,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
           {document.metadata.description || "Add a description..."}
         </p>
         {/* Tags */}
-        <div className="flexwrap flex w-full flex-row justify-start space-x-2 overflow-hidden py-1 text-gray-400">
-          <span className="">🔖:{' '}</span>{renderTags(document.metadata.tags)}
-        </div>
+        <span className="flexwrap flex w-full flex-row justify-start space-x-2 overflow-hidden py-1 text-gray-400">🔖:&nbsp;{renderTags(document.metadata.tags)}</span>
         {/* Other info */}
         <span className="h-fit w-full py-2 text-left text-sm text-gray-400">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap">📅:{' '}{document.metadata.createdAt || "???"}</p>
