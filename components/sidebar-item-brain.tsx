@@ -46,7 +46,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
         href="/"
       >
         {/* Header */}
-        <div className="flex w-full items-stretch justify-between overflow-hidden">
+        <div className="flex w-full items-stretch overflow-hidden">
           {/* Icon */}
           <div className="h-100 flex cursor-pointer items-center justify-center">
             <Tooltip delayDuration={1000}>
@@ -60,7 +60,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             </Tooltip>
           </div>
           {/* Card name */}
-          <span className="h-100 flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="h-100 my-auto w-full overflow-hidden text-ellipsis whitespace-nowrap">
             {collection.name}
           </span>
           {/* Button actions */}
