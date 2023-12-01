@@ -152,7 +152,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
       <Link
         className={cn(
           buttonVariants({ variant: 'secondary' }),
-          'hover-bg-accent relative h-auto w-full select-none flex-col overflow-hidden',
+          'hover-bg-accent relative h-auto w-full select-none flex-col overflow-hidden px-4',
         )}
         href="/"
       >
