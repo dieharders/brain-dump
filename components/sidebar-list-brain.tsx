@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { I_Collection, I_GenericAPIResponse, I_ServiceApis, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
-import { SidebarItem } from '@/components/sidebar-item-brain'
+import { CollectionCard } from '@/components/sidebar-item-brain'
 import { SidebarActions } from '@/components/sidebar-actions-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
 import { Button } from '@/components/ui/button'
@@ -125,7 +125,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <div className="mt-4 space-y-4 px-2">
           {collections.map(
             collection => (
-              <SidebarItem key={collection?.id} collection={collection}>
+              <CollectionCard key={collection?.id} collection={collection}>
                 <SidebarActions
                   setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                   setExploreDialogOpen={setExploreDialogOpen}
@@ -133,7 +133,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
                   setDeleteDialogOpen={setDeleteDialogOpen}
                   setSelectedCollection={() => setSelectedCollection(collection)}
                 />
-              </SidebarItem>
+              </CollectionCard>
             )
           )}
         </div>

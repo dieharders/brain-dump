@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { IconUsers, IconBrain } from '@/components/ui/icons'
+import { IconBrain } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { I_Collection } from '@/lib/homebrew'
 import Link from 'next/link'
@@ -17,7 +17,7 @@ interface SidebarItemProps {
 /**
  * A container for collection of documents
  */
-export function SidebarItem(props: SidebarItemProps) {
+export const CollectionCard = (props: SidebarItemProps) => {
   const { collection, onClick, children } = props
   const [isActive, setIsActive] = useState(false)
   const numFavorites = collection?.metadata?.favorites || 0
@@ -40,15 +40,15 @@ export function SidebarItem(props: SidebarItemProps) {
       <Link
         className={cn(
           buttonVariants({ variant: 'outline' }),
-          'hover-bg-accent relative h-fit w-full select-none flex-col space-y-2 text-left',
+          'hover-bg-accent relative h-fit w-full select-none flex-col space-y-4 py-3 text-left',
           isActive && 'bg-accent',
         )}
         href="/"
       >
         {/* Header */}
-        <div className="flex w-full flex-1 overflow-hidden">
+        <div className="flex w-full items-stretch justify-between overflow-hidden">
           {/* Icon */}
-          <div className="flex h-5 w-6 cursor-pointer items-center justify-center">
+          <div className="h-100 flex cursor-pointer items-center justify-center">
             <Tooltip delayDuration={1000}>
               <TooltipTrigger
                 tabIndex={-1}
@@ -60,12 +60,21 @@ export function SidebarItem(props: SidebarItemProps) {
             </Tooltip>
           </div>
           {/* Card name */}
-          <span className="h-6 w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="h-100 flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap">
             {collection.name}
           </span>
           {/* Button actions */}
-          {isActive && <span className="m-0 h-6 w-fit">{children}</span>}
+          <span className="flex h-8 w-fit items-center">{isActive && children}</span>
         </div>
+
+        {/* Description */}
+        <div className="my-2 flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
+          {/* Card name */}
+          <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
+            {collection.metadata?.description || 'No description...'}
+          </span>
+        </div>
+
         {/* Stats */}
         <div className="flex h-fit w-full justify-between space-x-4 text-gray-400">
           <Tooltip delayDuration={1000}>
