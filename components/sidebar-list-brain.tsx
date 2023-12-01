@@ -102,15 +102,9 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   }, [getServices, hasMounted, updateListAction])
 
   return (
-    <div className="flex-1">
-      {/* Pop-Up Menus */}
-      <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
-      <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
-      <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
-      <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
-      <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} services={services} />
+    <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
       {/* "Add New" and "Refresh" buttons */}
-      <div className="mt-8 flex items-center justify-center gap-2 px-4">
+      <div className="flex items-center justify-center gap-4 px-4">
         {/* <NewItem
           action={async () => setDialogOpen(true)}
           actionTitle="+ New Brain"
@@ -120,28 +114,37 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
         <RefreshButton action={() => updateListAction(services)} />
       </div>
-      {/* List of data */}
-      {collections?.length ? (
-        <div className="mt-4 space-y-4 px-2">
-          {collections.map(
-            collection => (
-              <CollectionCard key={collection?.id} collection={collection}>
-                <SidebarActions
-                  setAddDocumentDialogOpen={setAddDocumentDialogOpen}
-                  setExploreDialogOpen={setExploreDialogOpen}
-                  setShareDialogOpen={setShareDialogOpen}
-                  setDeleteDialogOpen={setDeleteDialogOpen}
-                  setSelectedCollection={() => setSelectedCollection(collection)}
-                />
-              </CollectionCard>
-            )
-          )}
-        </div>
-      ) : (
-        <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">No Collections Found</p>
-        </div>
-      )}
+      {/* Collections */}
+      <div className="overflow-x-hidden px-4">
+        {/* Pop-Up Menus */}
+        <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
+        <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
+        <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
+        <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
+        <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} services={services} />
+        {/* List of data */}
+        {collections?.length ? (
+          <div className="space-y-4">
+            {collections.map(
+              collection => (
+                <CollectionCard key={collection?.id} collection={collection}>
+                  <SidebarActions
+                    setAddDocumentDialogOpen={setAddDocumentDialogOpen}
+                    setExploreDialogOpen={setExploreDialogOpen}
+                    setShareDialogOpen={setShareDialogOpen}
+                    setDeleteDialogOpen={setDeleteDialogOpen}
+                    setSelectedCollection={() => setSelectedCollection(collection)}
+                  />
+                </CollectionCard>
+              )
+            )}
+          </div>
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-sm text-muted-foreground">No Collections Found</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

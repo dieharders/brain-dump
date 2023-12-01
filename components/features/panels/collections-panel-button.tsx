@@ -34,7 +34,8 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
         {/* @TODO Pass the user id of the vector database */}
         <SidebarBrainList userId={session?.user?.id} />
       </Suspense>
-      <SidebarFooter>
+      {/* Align footer to bottom of panel */}
+      <SidebarFooter className="mt-auto">
         <ClearData clearAction={clearCollections} actionTitle="Delete all collections" />
       </SidebarFooter>
     </Sidebar>
