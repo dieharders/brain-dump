@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { I_Document } from "@/lib/homebrew"
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -28,33 +28,35 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
   const metaLen = document.metadata.tags.length
   const tagColor = metaLen ? 'text-white' : defaultGray
   const tagUnderline = metaLen ? 'underline decoration-2' : ''
-  const tagUnderlineColorTable = ['decoration-white-500', 'decoration-indigo-500', 'decoration-cyan-500', 'decoration-green-500', 'decoration-pink-500', 'decoration-purple-500', 'decoration-fuchsia-500', 'decoration-blue-500', 'decoration-yellow-500', 'decoration-orange-500', 'decoration-sky-500']
+  const tagUnderlineColorTable = useMemo(() => ['decoration-red-500', 'decoration-indigo-500', 'decoration-cyan-500', 'decoration-green-500', 'decoration-pink-500', 'decoration-purple-500', 'decoration-fuchsia-500', 'decoration-blue-500', 'decoration-yellow-500', 'decoration-orange-500', 'decoration-sky-500'], [])
   const [randIndex, setRandIndex] = useState<number>(-1)
 
   const getOffsetIndex = (arr: string[], index: number, offset: number) => {
-    const newIndex = index + offset
+    if (offset < 0) offset = 0
+    let newIndex = index + offset
 
     if (newIndex >= 0 && newIndex < arr.length) {
       return newIndex
     }
 
     // Handle cases where the new index goes outside array bounds
-    if (newIndex < 0) {
-      return 0 // Adjust to the first index
-    } else {
-      return arr.length - 1 // Adjust to the last index
+    while (newIndex > arr.length - 1) {
+      newIndex = newIndex - arr.length
+      if (newIndex > 0) newIndex - 1
     }
+
+    return newIndex
   }
 
-  const getRandomTagColor = (index: number, table: string[]) => {
+  const getRandomTagColor = useCallback((index: number, table: string[]) => {
+    if (randIndex === -1) return defaultGray
     if (metaLen === 0) return defaultGray
     const offsetIndex = getOffsetIndex(table, index, randIndex)
     const randColor = table[offsetIndex]
-
     return randColor
-  }
+  }, [metaLen, randIndex])
 
-  const renderTags = (tags: string) => {
+  const renderTags = useCallback((tags: string) => {
     const result = tags.split(' ').map((tag, index) => {
       return (
         <p key={tag} className={`${tagColor} ${tagUnderline} max-w-8 w-fit overflow-hidden text-ellipsis whitespace-nowrap text-left font-semibold ${getRandomTagColor(index, tagUnderlineColorTable)}`}>
@@ -63,7 +65,9 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
       )
     })
     return result
-  }
+  }, [getRandomTagColor, tagColor, tagUnderline, tagUnderlineColorTable])
+
+  const tags = useMemo(() => renderTags(document.metadata.tags), [document.metadata.tags, renderTags])
 
   const toolButtons = (
     <>
@@ -130,10 +134,10 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
   // Set a random number for this document to offset the color index
   // This way tags colors dont all look the same
   useEffect(() => {
-    const max = 10
+    const max = tagUnderlineColorTable.length - 1
     const randomIndex = Math.floor((Math.random() * max))
     if (randIndex === -1) setRandIndex(randomIndex)
-  }, [randIndex])
+  }, [randIndex, tagUnderlineColorTable.length])
 
   return (
     <div
@@ -180,7 +184,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
           {document.metadata.description || "Add a description..."}
         </p>
         {/* Tags */}
-        <span className="my-2 flex w-full flex-row flex-wrap justify-start space-x-2 text-ellipsis text-gray-400">🔖:&nbsp;{renderTags(document.metadata.tags)}</span>
+        <span className="my-2 flex w-full flex-row flex-wrap justify-start space-x-2 text-ellipsis text-gray-400">🔖:&nbsp;{tags}</span>
         {/* Other info */}
         <span className="my-2 h-fit w-full text-left text-sm text-gray-400">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap">📅:{' '}{document.metadata.createdAt || "???"}</p>
