@@ -154,7 +154,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         </div>
         <Separator className="my-4" />
         {/* Menu buttons */}
-        <DialogFooter className="w-full items-center">
+        <DialogFooter>
           <Button
             variant="ghost"
             onClick={event => {
