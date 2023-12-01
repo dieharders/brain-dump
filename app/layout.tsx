@@ -1,4 +1,4 @@
-// import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { Toaster } from 'react-hot-toast'
 import '@/app/globals.css'
 import { fontMono, fontSans } from '@/lib/fonts'
@@ -7,22 +7,22 @@ import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 
-// export const metadata: Metadata = {
-//   title: {
-//     default: 'DocuBot',
-//     template: `%s - Document Chatbot`,
-//   },
-//   description: 'An AI-powered chatbot that understands your private data.',
-//   themeColor: [
-//     { media: '(prefers-color-scheme: light)', color: 'white' },
-//     { media: '(prefers-color-scheme: dark)', color: 'black' },
-//   ],
-//   icons: {
-//     icon: '/favicon.ico',
-//     shortcut: '/favicon-16x16.png',
-//     apple: '/apple-touch-icon.png',
-//   },
-// }
+export const metadata: Metadata = {
+  title: {
+    default: 'TskMster',
+    template: `%s - DocuBot - Your Ai Second Brain`,
+  },
+  description: 'Locally powered Ai chatbot that understands your private data.',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+}
 
 interface RootLayoutProps {
   children: React.ReactNode
