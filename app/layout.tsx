@@ -9,7 +9,7 @@ import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
   title: {
-    default: 'TskMster',
+    default: 'DocuBot',
     template: `%s - DocuBot - Your Ai Second Brain`,
   },
   description: 'Locally powered Ai chatbot that understands your private data.',
