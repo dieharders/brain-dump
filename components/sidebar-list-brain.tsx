@@ -102,7 +102,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   }, [getServices, hasMounted, updateListAction])
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1">
       {/* Pop-Up Menus */}
       <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
       <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
@@ -125,7 +125,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <div className="mt-4 space-y-4 px-2">
           {collections.map(
             collection => (
-              <SidebarItem key={collection?.id} collection={collection} onClick={setExploreDialogOpen}>
+              <SidebarItem key={collection?.id} collection={collection}>
                 <SidebarActions
                   setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                   setExploreDialogOpen={setExploreDialogOpen}

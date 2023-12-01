@@ -61,19 +61,19 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const connectTextServiceAction = useCallback(async () => {
     const action = async () => {
       try {
-        const data = await connectTextService()
-        const id = data?.[0]?.id
+        const response = await connectTextService()
 
-        if (data) {
+        if (response?.success) {
+          const id = response?.data[0]?.id
           setHasTextServiceConnected(true)
           toast.success(`Connected to Ai model [${id}]`)
           return true
         } else {
-          toast.error(`Failed to connect to Ai model`)
+          toast.error(response?.message || 'Failed to connect to Ai model.')
         }
         return false
       } catch (error) {
-        toast.error(`An unexpected error occured connecting to Ai: ${error}`)
+        toast.error(`${error}`)
         return false
       }
     }

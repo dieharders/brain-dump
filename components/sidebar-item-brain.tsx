@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 interface SidebarItemProps {
   collection: I_Collection
-  onClick: (open: boolean) => void
+  onClick?: (open: boolean) => void
   children: React.ReactNode
 }
 
@@ -27,7 +27,7 @@ export function SidebarItem(props: SidebarItemProps) {
 
   return (
     <div
-      onClick={() => onClick(true)}
+      onClick={() => onClick && onClick(true)}
       onMouseEnter={() => {
         setIsActive(true)
       }}
@@ -40,51 +40,84 @@ export function SidebarItem(props: SidebarItemProps) {
       <Link
         className={cn(
           buttonVariants({ variant: 'outline' }),
-          'hover-bg-accent relative h-fit w-full select-none flex-col space-y-1 pl-8 pr-2 text-left',
+          'hover-bg-accent relative h-fit w-full select-none flex-col space-y-2 text-left',
           isActive && 'bg-accent',
         )}
         href="/"
       >
+        {/* Header */}
         <div className="flex w-full flex-1 overflow-hidden">
+          {/* Icon */}
+          <div className="flex h-5 w-6 cursor-pointer items-center justify-center">
+            <Tooltip delayDuration={1000}>
+              <TooltipTrigger
+                tabIndex={-1}
+                className="focus:bg-muted focus:ring-1 focus:ring-ring"
+              >
+                <IconBrain className="mr-2" />
+              </TooltipTrigger>
+              <TooltipContent>Collection</TooltipContent>
+            </Tooltip>
+          </div>
           {/* Card name */}
-          <span className="m-0 h-6 w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="h-6 w-full overflow-hidden text-ellipsis whitespace-nowrap">
             {collection.name}
           </span>
           {/* Button actions */}
           {isActive && <span className="m-0 h-6 w-fit">{children}</span>}
         </div>
         {/* Stats */}
-        <div className="flex h-fit w-full justify-start space-x-4 text-gray-400">
-          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-            📂: {numSources}
-          </span>
-          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-            ⭐: {numFavorites}
-          </span>
-          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-            🔖: {numTags}
-          </span>
-          <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-            📄: {hasDescription}
-          </span>
-        </div>
-      </Link>
-      {/* Icon */}
-      <div className="absolute left-2 top-3 flex w-6 cursor-pointer items-center justify-center">
-        {collection.metadata?.sharePath ? (
+        <div className="flex h-fit w-full justify-between space-x-4 text-gray-400">
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
               tabIndex={-1}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
             >
-              <IconUsers className="mr-2" />
+              <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+                📂: {numSources}
+              </span>
             </TooltipTrigger>
-            <TooltipContent>This is a shared brain.</TooltipContent>
+            <TooltipContent>Sources</TooltipContent>
           </Tooltip>
-        ) : (
-          <IconBrain className="mr-2" />
-        )}
-      </div>
+
+          <Tooltip delayDuration={1000}>
+            <TooltipTrigger
+              tabIndex={-1}
+              className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            >
+              <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+                ⭐: {numFavorites}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>Favorites</TooltipContent>
+          </Tooltip>
+
+          <Tooltip delayDuration={1000}>
+            <TooltipTrigger
+              tabIndex={-1}
+              className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            >
+              <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+                🔖: {numTags}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>Tags</TooltipContent>
+          </Tooltip>
+
+          <Tooltip delayDuration={1000}>
+            <TooltipTrigger
+              tabIndex={-1}
+              className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            >
+              <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+                📄: {hasDescription}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>Description?</TooltipContent>
+          </Tooltip>
+
+        </div>
+      </Link>
     </div>
   )
 }

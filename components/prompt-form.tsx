@@ -5,14 +5,15 @@ import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { IconArrowElbow } from '@/components/ui/icons'
-import { CharmMenu } from '@/components/prompt-charm'
+import { CharmMenuButton } from '@/components/features/prompt/prompt-charm-button'
 
 export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => Promise<void>
+  onCharmClick: () => void
   isLoading: boolean
 }
 
-export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps) {
+export function PromptForm({ onSubmit, onCharmClick, input, setInput, isLoading }: PromptProps) {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
 
@@ -36,7 +37,7 @@ export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
         {/* Tool charm button */}
-        <CharmMenu />
+        <CharmMenuButton onClick={onCharmClick} />
         {/* Prompt text area */}
         <Textarea
           ref={inputRef}
@@ -49,6 +50,7 @@ export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />
+        {/* Submit button */}
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>

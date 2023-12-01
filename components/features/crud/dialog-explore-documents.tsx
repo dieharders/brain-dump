@@ -3,17 +3,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
 import DocumentCard from '@/components/features/cards/card-document'
+import { Button } from '@/components/ui/button'
 
 interface I_Props {
   collection: I_Collection | null
@@ -118,53 +118,54 @@ export const DialogExploreDocuments = (props: I_Props) => {
   }, [collection, dialogOpen, fetchAll])
 
   return (
-    <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <AlertDialogContent>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogContent>
         {/* Title/Descr */}
-        <AlertDialogHeader>
-          <AlertDialogTitle className="uppercase" >{collection?.name || "Explore files in this collection"}</AlertDialogTitle>
-          <AlertDialogDescription>
+        <DialogHeader>
+          <DialogTitle className="mb-1 uppercase" >{collection?.name || "Explore files in this collection"}</DialogTitle>
+          <DialogDescription>
             Preview, update and remove files contained in this collection.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          </DialogDescription>
+        </DialogHeader>
         {/* Info */}
-        <AlertDialogTitle>💡 Info</AlertDialogTitle>
-        <AlertDialogDescription className="w-full flex-col flex-wrap items-center justify-between space-x-2">
-          <div className="inline w-fit flex-1">Last Modified: {collection?.metadata?.createdAt || "???"}</div>
-          <div className="inline w-fit flex-1">| Sources: {collection?.metadata?.sources?.length || 0}</div>
-        </AlertDialogDescription>
+        <DialogTitle>💡 Info</DialogTitle>
+        <DialogDescription className="w-full flex-col flex-wrap items-center justify-between space-x-4">
+          <span className="w-fit">Sources: <span className="text-white">{collection?.metadata?.sources?.length || 0}</span></span>
+          <span className="w-fit">Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "???"}</span></span>
+        </DialogDescription>
         {/* Description */}
-        <AlertDialogTitle >📄 Description</AlertDialogTitle>
-        <AlertDialogDescription>
+        <DialogTitle >📄 Description</DialogTitle>
+        <DialogDescription>
           {collection?.metadata?.description || "Add a detailed description of the contents..."}
-        </AlertDialogDescription>
+        </DialogDescription>
         {/* Tags */}
-        <AlertDialogTitle >🔖 Tags</AlertDialogTitle>
-        <AlertDialogDescription>
+        <DialogTitle >🔖 Tags</DialogTitle>
+        <DialogDescription>
           {collection?.metadata?.tags || "Add hashtags to link similar memories..."}
-        </AlertDialogDescription>
-        {/* List of files */}
+        </DialogDescription>
         <Separator className="my-4" />
-        <div className="max-h-[32rem] flex-row items-center justify-center space-y-4 overflow-x-hidden overflow-y-scroll pr-4">
+        {/* List of files */}
+        <div className="flex h-full flex-col items-center justify-center space-y-4 overflow-hidden">
           {documents?.length > 0 ? (
             documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
           ) : (
-            <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
+            <span className="flex h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
           )}
         </div>
         <Separator className="my-4" />
         {/* Menu buttons */}
-        <AlertDialogFooter>
-          <AlertDialogAction
+        <DialogFooter>
+          <Button
+            variant="ghost"
             onClick={event => {
               event.preventDefault()
               setDialogOpen(false)
             }}
           >
             Close
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
