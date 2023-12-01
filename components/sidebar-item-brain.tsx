@@ -104,7 +104,6 @@ export function SidebarItem(props: SidebarItemProps) {
             <TooltipContent>Tags</TooltipContent>
           </Tooltip>
 
-
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
               tabIndex={-1}

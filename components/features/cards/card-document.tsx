@@ -137,7 +137,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
 
   return (
     <div
-      className="w-full"
+      className="h-fit w-full"
       onMouseEnter={() => {
         setIsActive(true)
       }}
@@ -148,16 +148,16 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
       <Link
         className={cn(
           buttonVariants({ variant: 'secondary' }),
-          'hover-bg-accent relative h-[10rem] w-full select-none flex-col overflow-hidden px-4',
+          'hover-bg-accent relative h-auto w-full select-none flex-col overflow-hidden',
         )}
         href="/"
       >
         {/* Header */}
-        <div className="flex h-fit w-full flex-row overflow-hidden">
+        <div className="my-1 flex h-fit w-full flex-row">
           {/* File type icon */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="mr-2 flex w-4 cursor-pointer items-center justify-self-start">
+              <div className="mr-2 mt-1 flex w-4 cursor-pointer items-start justify-self-start">
                 <IconDocument className="h-4" />
                 <span className="sr-only">File type: document</span>
               </div>
@@ -165,7 +165,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
             <TooltipContent>Document</TooltipContent>
           </Tooltip>
           {/* Title */}
-          <span className="w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left text-lg uppercase">
+          <span className="h-fit w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left text-lg uppercase">
             {document.metadata.name}
           </span>
           {/* Button actions toolbar */}
@@ -176,13 +176,13 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
           )}
         </div>
         {/* Description */}
-        <p className="text-md line-clamp-2 h-full w-full flex-1 overflow-hidden text-ellipsis py-2 text-left text-gray-400">
+        <p className="text-md whitespace-wrap my-2 line-clamp-3 min-h-[4rem] w-full flex-1 overflow-hidden text-ellipsis text-left text-gray-400">
           {document.metadata.description || "Add a description..."}
         </p>
         {/* Tags */}
-        <span className="flexwrap flex w-full flex-row justify-start space-x-2 overflow-hidden py-1 text-gray-400">🔖:&nbsp;{renderTags(document.metadata.tags)}</span>
+        <span className="my-2 flex w-full flex-row flex-wrap justify-start space-x-2 text-ellipsis text-gray-400">🔖:&nbsp;{renderTags(document.metadata.tags)}</span>
         {/* Other info */}
-        <span className="h-fit w-full py-2 text-left text-sm text-gray-400">
+        <span className="my-2 h-fit w-full text-left text-sm text-gray-400">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap">📅:{' '}{document.metadata.createdAt || "???"}</p>
           <p className="overflow-hidden text-ellipsis whitespace-nowrap">📁:{' '}{document.metadata.filePath || "???"}</p>
         </span>
