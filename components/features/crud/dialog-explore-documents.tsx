@@ -119,8 +119,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      {/* Remove className styles when we figure out how to scroll the entire Dialog */}
-      <DialogContent className="h-full overflow-y-auto overflow-x-hidden sm:h-3/4">
+      <DialogContent>
         {/* Title/Descr */}
         <DialogHeader>
           <DialogTitle className="mb-1 uppercase" >{collection?.name || "Explore files in this collection"}</DialogTitle>
@@ -131,8 +130,8 @@ export const DialogExploreDocuments = (props: I_Props) => {
         {/* Info */}
         <DialogTitle>💡 Info</DialogTitle>
         <DialogDescription className="w-full flex-col flex-wrap items-center justify-between space-x-4">
-          <span className="inline w-fit flex-1">Sources: <span className="text-white">{collection?.metadata?.sources?.length || 0}</span></span>
-          <span className="inline w-fit flex-1">Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "???"}</span></span>
+          <span className="w-fit">Sources: <span className="text-white">{collection?.metadata?.sources?.length || 0}</span></span>
+          <span className="w-fit">Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "???"}</span></span>
         </DialogDescription>
         {/* Description */}
         <DialogTitle >📄 Description</DialogTitle>
@@ -144,19 +143,18 @@ export const DialogExploreDocuments = (props: I_Props) => {
         <DialogDescription>
           {collection?.metadata?.tags || "Add hashtags to link similar memories..."}
         </DialogDescription>
-        {/* List of files */}
         <Separator className="my-4" />
-        {/* Remove overflow style when we figure out how to scroll the entire Dialog */}
-        <div className="flex-row items-center justify-center space-y-4 overflow-x-hidden pr-4">
+        {/* List of files */}
+        <div className="flex h-full flex-col items-center justify-center space-y-4 overflow-hidden">
           {documents?.length > 0 ? (
             documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
           ) : (
-            <span className="flex min-h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
+            <span className="flex h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
           )}
         </div>
         <Separator className="my-4" />
         {/* Menu buttons */}
-        <DialogFooter className="min-h-4 items-center">
+        <DialogFooter className="w-full items-center">
           <Button
             variant="ghost"
             onClick={event => {

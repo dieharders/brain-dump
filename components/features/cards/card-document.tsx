@@ -137,7 +137,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
 
   return (
     <div
-      className="relative flex-1"
+      className="w-full"
       onMouseEnter={() => {
         setIsActive(true)
       }}
@@ -152,7 +152,8 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
         )}
         href="/"
       >
-        <div className="flex h-fit w-full overflow-hidden">
+        {/* Header */}
+        <div className="flex h-fit w-full flex-row overflow-hidden">
           {/* File type icon */}
           <Tooltip>
             <TooltipTrigger asChild>
