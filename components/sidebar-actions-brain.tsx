@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   IconEdit,
@@ -11,25 +10,15 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface I_Props {
-  setAddDocumentDialogOpen: (open: boolean) => void
-  setExploreDialogOpen: (open: boolean) => void
-  setShareDialogOpen: (open: boolean) => void
-  setDeleteDialogOpen: (open: boolean) => void
+  setAddDocumentDialogOpen?: (open: boolean) => void
+  setExploreDialogOpen?: (open: boolean) => void
+  setShareDialogOpen?: (open: boolean) => void
+  setDeleteDialogOpen?: (open: boolean) => void
   setSelectedCollection: () => void
 }
 
 export const SidebarActions = (props: I_Props) => {
   const { setAddDocumentDialogOpen, setExploreDialogOpen, setShareDialogOpen, setDeleteDialogOpen, setSelectedCollection } = props
-  const [doOnce, setDoOnce] = useState(false)
-
-  // Tells our menus what collection to operate on
-  useEffect(() => {
-    if (!doOnce) {
-      setSelectedCollection()
-      setDoOnce(true)
-    }
-  }, [doOnce, setSelectedCollection])
-
 
   return (
     <div className="flex justify-between space-x-1">
@@ -39,7 +28,10 @@ export const SidebarActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => setAddDocumentDialogOpen(true)}
+            onClick={() => {
+              setSelectedCollection()
+              setAddDocumentDialogOpen && setAddDocumentDialogOpen(true)
+            }}
           >
             <IconPlus />
             <span className="sr-only">Add document</span>
@@ -53,7 +45,10 @@ export const SidebarActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => setExploreDialogOpen(true)}
+            onClick={() => {
+              setSelectedCollection()
+              setExploreDialogOpen && setExploreDialogOpen(true)
+            }}
           >
             <IconEdit />
             <span className="sr-only">Edit collection</span>
@@ -67,7 +62,10 @@ export const SidebarActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => setShareDialogOpen(true)}
+            onClick={() => {
+              setSelectedCollection()
+              setShareDialogOpen && setShareDialogOpen(true)
+            }}
           >
             <IconShare />
             <span className="sr-only">Share collection</span>
@@ -81,7 +79,10 @@ export const SidebarActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => setDeleteDialogOpen(true)}
+            onClick={() => {
+              setSelectedCollection()
+              setDeleteDialogOpen && setDeleteDialogOpen(true)
+            }}
           >
             <IconTrash />
             <span className="sr-only">Delete collection</span>
