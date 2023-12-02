@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import {
   Dialog,
@@ -10,10 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Separator } from '@/components/ui/separator'
-import { I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
 import DocumentCard from '@/components/features/cards/card-document'
+import { I_Collection, I_ServiceApis, I_Document } from '@/lib/homebrew'
+import { useMemoryActions } from '@/components/features/crud/actions'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 
 interface I_Props {
   collection: I_Collection | null
@@ -26,6 +27,7 @@ interface I_Props {
 export const DialogExploreDocuments = (props: I_Props) => {
   const { collection, services, dialogOpen, setDialogOpen } = props
   const [documents, setDocuments] = useState<I_Document[]>([])
+  const { fetchAll } = useMemoryActions(services)
 
   const fileExploreAction = async (document: I_Document) => {
     await services?.memory.fileExplore({ queryParams: { filePath: document.metadata.filePath } })
@@ -65,56 +67,13 @@ export const DialogExploreDocuments = (props: I_Props) => {
     return
   }
 
-  // Fetch the current collection and all its' source ids
-  const fetchCollection = useCallback(async () => {
-    try {
-      if (!collection) throw new Error('No collection specified')
-
-      const body = { id: collection?.name }
-      const res = await services?.memory.getCollection({ body })
-
-      if (res?.success) return res?.data
-      throw new Error(`Failed to fetch Collection [${collection?.name}]: ${res?.message}`)
-    } catch (err) {
-      toast.error(`${err}`)
-      return false
-    }
-  }, [collection, services?.memory])
-
-  // Fetch all documents for collection
-  const fetchAllDocuments = useCallback(async (document_ids: string[]): Promise<I_Document[]> => {
-    try {
-      if (!collection) throw new Error('No collection or document ids specified')
-
-      const body = { collection_id: collection?.name, document_ids, include: ['documents', 'metadatas'] }
-      const res = await services?.memory.getDocument({ body })
-      if (!res?.success) throw new Error(`No documents found:\n${document_ids}`)
-
-      const docs = res?.data || []
-      setDocuments(docs)
-
-      return docs
-    } catch (err) {
-      toast.error(`Failed to fetch documents: ${err}`)
-      return []
-    }
-  }, [collection, services?.memory])
-
-  const fetchAll = useCallback(async () => {
-    const collection_data = await fetchCollection()
-    if (!collection_data) return null
-
-    const sources = collection_data?.collection?.metadata?.sources
-
-    if (!sources || sources.length === 0) return null
-
-    const res = await fetchAllDocuments(sources)
-    return res
-  }, [fetchAllDocuments, fetchCollection])
-
   // Fetch documents only when we are open and on every collection change
   useEffect(() => {
-    if (dialogOpen && collection) fetchAll()
+    const action = async () => {
+      const docs = await fetchAll(collection)
+      docs && setDocuments(docs)
+    }
+    if (dialogOpen && collection) action()
   }, [collection, dialogOpen, fetchAll])
 
   // Clear documents data when menu closed
