@@ -26,7 +26,7 @@ export const CharmMenu = ({ open }: I_Props) => {
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
   const classnameIcon = 'h-16 w-16'
-  const DEFAULT_EXPLANATION = 'Use Charms to enhance Ai'
+  const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
 
   const CharmItem = (props: I_CharmItemProps) => {

@@ -117,6 +117,11 @@ export const DialogExploreDocuments = (props: I_Props) => {
     if (dialogOpen && collection) fetchAll()
   }, [collection, dialogOpen, fetchAll])
 
+  // Clear documents data when menu closed
+  useEffect(() => {
+    if (!dialogOpen) setDocuments([])
+  }, [dialogOpen])
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>

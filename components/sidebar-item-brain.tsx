@@ -23,7 +23,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags?.split(' ').length || 0
   const numSources = collection?.metadata?.sources?.length || 0
-  const hasDescription = collection?.metadata?.description ? '✔' : '❌'
+  const createdAt = collection?.metadata?.createdAt || '???'
 
   return (
     <div
@@ -119,10 +119,10 @@ export const CollectionCard = (props: SidebarItemProps) => {
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
             >
               <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-                📄: {hasDescription}
+                📆: ?
               </span>
             </TooltipTrigger>
-            <TooltipContent>Description?</TooltipContent>
+            <TooltipContent>Created at {createdAt}</TooltipContent>
           </Tooltip>
 
         </div>
