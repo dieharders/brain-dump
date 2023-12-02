@@ -50,7 +50,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       const action = async () => {
         const result = await services?.memory.addCollection(args)
         // Error
-        if (!result?.success) reject(result)
+        if (!result?.success) reject(result?.message)
         // Success
         await updateListAction(services)
         resolve(result)
@@ -63,7 +63,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       {
         loading: 'Adding collection...',
         success: <b>Collection saved!</b>,
-        error: <b>Could not save collection 😐</b>,
+        error: (err) => <p><b>Could not save collection 😐</b>{"\n"}{err}</p>,
       }
     )
 

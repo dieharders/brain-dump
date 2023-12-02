@@ -35,7 +35,7 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
         <SidebarBrainList userId={session?.user?.id} />
       </Suspense>
       {/* Align footer to bottom of panel */}
-      <SidebarFooter className="py-8 mt-auto">
+      <SidebarFooter className="mt-auto py-8">
         <ClearData clearAction={clearCollections} actionTitle="Delete all collections" />
       </SidebarFooter>
     </Sidebar>
