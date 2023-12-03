@@ -11,7 +11,7 @@ import Link from 'next/link'
 interface SidebarItemProps {
   collection: I_Collection
   onClick?: (open: boolean) => void
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 /**

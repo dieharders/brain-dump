@@ -64,7 +64,7 @@ export const CharmMenu = ({ open }: I_Props) => {
       <QueryCharmMenu dialogOpen={openQueryCharmDialog} setDialogOpen={setOpenQueryCharmDialog} fetchListAction={fetchCollections} onSubmit={() => { }} />
 
       {/* Charms */}
-      <div className={`transition-[height] duration-500 delay-150 ease-out ${sizeHeight} overflow-hidden`}>
+      <div className={`transition-[height] duration-300 ease-in-out ${sizeHeight} overflow-hidden`}>
         <div className="flex h-fit w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden py-4">
           {/* Microphone - use to input text */}
           <CharmItem actionText="Microphone - Transform speech to text">
