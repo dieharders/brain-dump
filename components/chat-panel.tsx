@@ -59,11 +59,11 @@ export function ChatPanel({
           )}
         </div>
         {/* Main Prompt Panel */}
-        <div className="flex flex-col content-start space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
+        <div className="flex flex-col justify-between space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
           <CharmMenu
             open={charmMenuOpen}
             activeCharms={activeCharms}
-            setActiveCharms={(selectedCharm: I_Charm) => {
+            addActiveCharm={(selectedCharm: I_Charm) => {
               const charmIds = activeCharms.map(i => i.id)
               const exists = charmIds.includes(selectedCharm.id)
               // Check we arent adding dupes
@@ -75,7 +75,7 @@ export function ChatPanel({
               }
               else setActiveCharms([...activeCharms, selectedCharm])
             }}
-            removeCharm={(id: T_CharmId) => {
+            removeActiveCharm={(id: T_CharmId) => {
               const ind = activeCharms.findIndex(i => i.id === id)
               if (ind === -1) return
               const newList = [...activeCharms]
@@ -85,7 +85,7 @@ export function ChatPanel({
 
           <PromptForm
             onSubmit={async value => {
-              // Call all charm.onPromptCallback in the list before sending the prompt
+              // Call all charm callbacks before sending the prompt
               let newContent = value
               activeCharms.forEach(charm => {
                 if (charm?.onPromptCallback) {

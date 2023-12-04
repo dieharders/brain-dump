@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { Root, Indicator } from '@radix-ui/react-checkbox'
-import { IconBrain, IconSpinner } from '@/components/ui/icons'
+import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { I_Collection } from '@/lib/homebrew'
 import { CollectionCard } from '@/components/sidebar-item-brain'
@@ -131,7 +131,6 @@ export const QueryCharmMenu = (props: I_Props) => {
                 id: charmId,
                 toolTipText: onPromptCallback(''),
                 onPromptCallback,
-                icon: IconBrain
               }
               onSubmit(charm)
               setDialogOpen(false)
