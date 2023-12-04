@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Textarea from 'react-textarea-autosize'
 import { UseChatHelpers } from 'ai/react'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
@@ -14,7 +14,6 @@ export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> 
 }
 
 export function PromptForm({ onSubmit, onCharmClick, input, setInput, isLoading }: PromptProps) {
-  const [activeCharms, setActiveCharms] = useState()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
 

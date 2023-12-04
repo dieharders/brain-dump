@@ -11,17 +11,18 @@ import {
 } from '@/components/ui/dialog'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { Root, Indicator } from '@radix-ui/react-checkbox'
-import { IconSpinner } from '@/components/ui/icons'
+import { IconBrain, IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { I_Collection } from '@/lib/homebrew'
 import { CollectionCard } from '@/components/sidebar-item-brain'
 import { Separator } from '@/components/ui/separator'
+import { I_Charm, T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   fetchListAction: () => Promise<I_Collection[]>
-  onSubmit: () => void
+  onSubmit: (charm: I_Charm) => void
 }
 
 // A menu to select from a list of collections
@@ -30,29 +31,30 @@ export const QueryCharmMenu = (props: I_Props) => {
   const [disableForm, setDisableForm] = useState(false)
   const [collections, setCollections] = useState<I_Collection[]>([])
   const renderDefaultMsg = <div className="font-semibold">You have not added any collections yet.</div>
-  const [checkedItems, setCheckedItems] = useState<string[]>([])
+  const [selectedMemories, setSelectedMemories] = useState<string[]>([])
 
   const CollectionsList = ({ list }: { list: I_Collection[] }) => {
     const items = list.map((item, i) => {
-      const isChecked = checkedItems.includes(item.id)
+      const itemName = item.name
+      const isChecked = selectedMemories.includes(itemName)
       const setChecked = () => {
         // add item
-        if (!isChecked) setCheckedItems([...checkedItems, item.id])
+        if (!isChecked) setSelectedMemories([...selectedMemories, itemName])
         // remove item from list
         else {
-          const index = checkedItems.indexOf(item.id)
-          const newList = [...checkedItems]
+          const index = selectedMemories.indexOf(itemName)
+          const newList = [...selectedMemories]
           newList.splice(index, 1)
-          setCheckedItems(newList)
+          setSelectedMemories(newList)
         }
       }
 
       // Render collection cards
       return (
         <span key={item.id} className="flex flex-row items-center space-x-8" >
-          <Root onCheckedChange={setChecked} checked={isChecked} className="flex h-8 w-8 items-center justify-center rounded border border-gray-800 bg-black hover:bg-gray-900 hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]" id={`c${i}`}>
+          <Root onCheckedChange={setChecked} checked={isChecked} className="flex h-6 w-6 items-center justify-center rounded border border-gray-800 bg-black hover:bg-gray-900 hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]" id={`c${i}`}>
             <Indicator>
-              <CheckIcon />
+              <CheckIcon className="h-4 w-4" />
             </Indicator>
           </Root>
           <label className="w-full flex-1" htmlFor={`c${i}`}>
@@ -65,6 +67,17 @@ export const QueryCharmMenu = (props: I_Props) => {
     return <div className="flex w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2">
       {items}
     </div>
+  }
+
+  const onPromptCallback = (inputPrompt: string) => {
+    const mentionsArr = selectedMemories.map(name => `@${name}`)
+    const mentions = mentionsArr.join(' ')
+    // We want to find all current @mentions and overwrite them
+    const regexPattern = /^@\w+(\s+@\w+)*$/
+    const strippedPrompt = inputPrompt.replace(regexPattern, '')
+    // Take the prompt and add ids as @mentions seperated by spaces
+    const outputPrompt = `${mentions} ${strippedPrompt}`
+    return outputPrompt
   }
 
   // Fetch the collections list when opened
@@ -112,7 +125,13 @@ export const QueryCharmMenu = (props: I_Props) => {
             className="w-full sm:w-32"
             onClick={async () => {
               setDisableForm(true)
-              onSubmit()
+              const charm = {
+                id: 'memory' as T_CharmId,
+                toolTipText: onPromptCallback(''),
+                onPromptCallback,
+                icon: IconBrain
+              }
+              onSubmit(charm)
               setDialogOpen(false)
               setDisableForm(false)
             }}
