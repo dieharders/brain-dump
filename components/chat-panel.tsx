@@ -3,7 +3,7 @@ import { type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { CharmMenu, I_Charm } from '@/components/features/prompt/prompt-charm-menu'
+import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
 
@@ -58,19 +58,30 @@ export function ChatPanel({
             )
           )}
         </div>
-        <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <CharmMenu open={charmMenuOpen} activeCharms={activeCharms} setActiveCharms={(selectedCharm: I_Charm) => {
-            const charmIds = activeCharms.map(i => i.id)
-            const exists = charmIds.includes(selectedCharm.id)
-            // Check we arent adding dupes
-            if (exists) {
-              const index = charmIds.indexOf(selectedCharm.id)
-              const newActiveCharms = [...activeCharms]
-              newActiveCharms.splice(index, 1)
-              setActiveCharms([...newActiveCharms, selectedCharm])
-            }
-            else setActiveCharms([...activeCharms, selectedCharm])
-          }} />
+        {/* Main Prompt Panel */}
+        <div className="flex flex-col content-start space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
+          <CharmMenu
+            open={charmMenuOpen}
+            activeCharms={activeCharms}
+            setActiveCharms={(selectedCharm: I_Charm) => {
+              const charmIds = activeCharms.map(i => i.id)
+              const exists = charmIds.includes(selectedCharm.id)
+              // Check we arent adding dupes
+              if (exists) {
+                const index = charmIds.indexOf(selectedCharm.id)
+                const newActiveCharms = [...activeCharms]
+                newActiveCharms.splice(index, 1)
+                setActiveCharms([...newActiveCharms, selectedCharm])
+              }
+              else setActiveCharms([...activeCharms, selectedCharm])
+            }}
+            removeCharm={(id: T_CharmId) => {
+              const ind = activeCharms.findIndex(i => i.id === id)
+              if (ind === -1) return
+              const newList = [...activeCharms]
+              newList.splice(ind, 1)
+              setActiveCharms(newList)
+            }} />
 
           <PromptForm
             onSubmit={async value => {

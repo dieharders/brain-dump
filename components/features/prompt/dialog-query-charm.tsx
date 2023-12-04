@@ -23,11 +23,13 @@ interface I_Props {
   setDialogOpen: (open: boolean) => void
   fetchListAction: () => Promise<I_Collection[]>
   onSubmit: (charm: I_Charm) => void
+  removeCharm: (id: T_CharmId) => void
 }
 
 // A menu to select from a list of collections
 export const QueryCharmMenu = (props: I_Props) => {
-  const { fetchListAction, dialogOpen, setDialogOpen, onSubmit } = props
+  const charmId: T_CharmId = 'memory'
+  const { fetchListAction, dialogOpen, setDialogOpen, removeCharm, onSubmit } = props
   const [disableForm, setDisableForm] = useState(false)
   const [collections, setCollections] = useState<I_Collection[]>([])
   const renderDefaultMsg = <div className="font-semibold">You have not added any collections yet.</div>
@@ -126,7 +128,7 @@ export const QueryCharmMenu = (props: I_Props) => {
             onClick={async () => {
               setDisableForm(true)
               const charm = {
-                id: 'memory' as T_CharmId,
+                id: charmId,
                 toolTipText: onPromptCallback(''),
                 onPromptCallback,
                 icon: IconBrain
@@ -138,6 +140,21 @@ export const QueryCharmMenu = (props: I_Props) => {
           >
             {disableForm && <IconSpinner className="mr-2 animate-spin" />}
             Save
+          </Button>
+          <Button
+            disabled={disableForm}
+            className="w-full sm:w-32"
+            onClick={async () => {
+              // Remove ourselves from active charm list
+              removeCharm(charmId)
+              // Uncheck reset state
+              setSelectedMemories([])
+              setDialogOpen(false)
+              setDisableForm(false)
+            }}
+          >
+            {disableForm && <IconSpinner className="mr-2 animate-spin" />}
+            Remove
           </Button>
         </DialogFooter>
       </DialogContent>

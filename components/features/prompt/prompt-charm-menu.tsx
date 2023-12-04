@@ -35,10 +35,11 @@ export interface I_Props {
   open: boolean
   activeCharms: I_Charm[]
   setActiveCharms: (charm: I_Charm) => void
+  removeCharm: (id: T_CharmId) => void
 }
 
 export const CharmMenu = (props: I_Props) => {
-  const { open, activeCharms, setActiveCharms } = props
+  const { open, activeCharms, setActiveCharms, removeCharm } = props
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
@@ -51,11 +52,8 @@ export const CharmMenu = (props: I_Props) => {
   const { getServices } = useHomebrew()
   const { fetchCollections } = useMemoryActions(services)
   const activeCharmVisibility = open ? 'opacity-0' : 'opacity-100'
-
-  const onQueryCharmSubmit = useCallback(
-    (selectedCharm: I_Charm) => {
-      if (selectedCharm) setActiveCharms(selectedCharm)
-    }, [setActiveCharms])
+  const animDelay = open ? 'delay-0' : 'delay-300'
+  const animDuration = open ? 'duration-50' : 'duration-300'
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
@@ -81,10 +79,10 @@ export const CharmMenu = (props: I_Props) => {
   return (
     <>
       {/* Items' Menus */}
-      <QueryCharmMenu dialogOpen={openQueryCharmDialog} setDialogOpen={setOpenQueryCharmDialog} fetchListAction={fetchCollections} onSubmit={onQueryCharmSubmit} />
+      <QueryCharmMenu dialogOpen={openQueryCharmDialog} setDialogOpen={setOpenQueryCharmDialog} fetchListAction={fetchCollections} onSubmit={setActiveCharms} removeCharm={removeCharm} />
       {/* Active Charms Icons */}
-      <div className={`relative w-full overflow-visible transition-opacity duration-300 ease-out ${activeCharmVisibility}`}>
-        <span className="absolute -top-4 left-0 flex w-full flex-row items-center justify-center space-x-8">
+      <div className={`relative w-full overflow-visible transition-opacity ${animDelay} ${animDuration} ease-out ${activeCharmVisibility}`}>
+        <span className="absolute -top-1 left-0 flex w-full flex-row items-center justify-center space-x-8">
           {activeCharms.map(charm => {
             const Component = charm.icon
             return (
