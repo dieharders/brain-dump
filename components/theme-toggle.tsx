@@ -17,7 +17,7 @@ export function ThemeToggle() {
   }, [])
 
   return isLoaded ? (
-    <Tooltip>
+    <Tooltip delayDuration={350}>
       <TooltipTrigger asChild>
         <Button
           variant="ghost"

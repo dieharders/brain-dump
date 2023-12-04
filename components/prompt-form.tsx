@@ -52,7 +52,7 @@ export function PromptForm({ onSubmit, onCharmClick, input, setInput, isLoading 
         />
         {/* Submit button */}
         <div className="absolute right-0 top-4 sm:right-4">
-          <Tooltip>
+          <Tooltip delayDuration={250}>
             <TooltipTrigger asChild>
               <Button type="submit" size="icon" disabled={isLoading || input === ''}>
                 <IconArrowElbow />

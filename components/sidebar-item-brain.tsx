@@ -49,7 +49,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
         <div className="flex w-full items-stretch overflow-hidden">
           {/* Icon */}
           <div className="h-100 flex cursor-pointer items-center justify-center">
-            <Tooltip delayDuration={1000}>
+            <Tooltip delayDuration={350}>
               <TooltipTrigger
                 tabIndex={-1}
                 className="focus:bg-muted focus:ring-1 focus:ring-ring"
@@ -77,7 +77,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
 
         {/* Stats */}
         <div className="flex h-fit w-full justify-between space-x-4 text-gray-400">
-          <Tooltip delayDuration={1000}>
+          <Tooltip delayDuration={350}>
             <TooltipTrigger
               tabIndex={-1}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
@@ -89,7 +89,8 @@ export const CollectionCard = (props: SidebarItemProps) => {
             <TooltipContent>Sources</TooltipContent>
           </Tooltip>
 
-          <Tooltip delayDuration={1000}>
+          {/* Number of times favorited */}
+          <Tooltip delayDuration={350}>
             <TooltipTrigger
               tabIndex={-1}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
@@ -101,7 +102,8 @@ export const CollectionCard = (props: SidebarItemProps) => {
             <TooltipContent>Favorites</TooltipContent>
           </Tooltip>
 
-          <Tooltip delayDuration={1000}>
+          {/* Number of metadata tags */}
+          <Tooltip delayDuration={350}>
             <TooltipTrigger
               tabIndex={-1}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
@@ -113,7 +115,8 @@ export const CollectionCard = (props: SidebarItemProps) => {
             <TooltipContent>Tags</TooltipContent>
           </Tooltip>
 
-          <Tooltip delayDuration={1000}>
+          {/* Creation date */}
+          <Tooltip delayDuration={350}>
             <TooltipTrigger
               tabIndex={-1}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"

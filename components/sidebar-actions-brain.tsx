@@ -25,7 +25,7 @@ export const CollectionActions = (props: I_Props) => {
   return (
     <div className="flex justify-between space-x-1">
       {/* Copy id Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -40,7 +40,7 @@ export const CollectionActions = (props: I_Props) => {
       </Tooltip>
 
       {/* Add Document Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -58,7 +58,7 @@ export const CollectionActions = (props: I_Props) => {
       </Tooltip>
 
       {/* Edit Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -76,7 +76,7 @@ export const CollectionActions = (props: I_Props) => {
       </Tooltip>
 
       {/* Share Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -94,7 +94,7 @@ export const CollectionActions = (props: I_Props) => {
       </Tooltip>
 
       {/* Delete Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"

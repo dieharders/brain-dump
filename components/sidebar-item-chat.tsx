@@ -39,7 +39,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         {/* Convo type icon */}
         <div className="absolute left-2 top-1 flex h-6 w-6 items-center justify-center">
           {chat.sharePath ? (
-            <Tooltip delayDuration={1000}>
+            <Tooltip delayDuration={350}>
               <TooltipTrigger
                 tabIndex={-1}
                 className="focus:bg-muted focus:ring-1 focus:ring-ring"
