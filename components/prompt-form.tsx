@@ -11,10 +11,11 @@ import { MouseEvent } from 'react'
 export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => Promise<void>
   onCharmClick: () => void
+  charmMenuIsOpen: boolean
   isLoading: boolean
 }
 
-export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading }: PromptProps) => {
+export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading, charmMenuIsOpen }: PromptProps) => {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -38,10 +39,12 @@ export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading 
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
         {/* Button to open charms selection menu */}
-        <CharmMenuButton onClick={(e: MouseEvent) => {
-          e.preventDefault()
-          onCharmClick()
-        }} />
+        <CharmMenuButton
+          open={charmMenuIsOpen}
+          onClick={(e: MouseEvent) => {
+            e.preventDefault()
+            onCharmClick()
+          }} />
         {/* Prompt text area */}
         <Textarea
           ref={inputRef}

@@ -85,6 +85,7 @@ export function ChatPanel({
 
           <PromptForm
             onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
+            charmMenuIsOpen={charmMenuOpen}
             onSubmit={async value => {
               // Call all charm callbacks before sending the prompt
               let newContent = value
