@@ -86,7 +86,7 @@ export const QueryCharmMenu = (props: I_Props) => {
   useEffect(() => {
     const action = async () => {
       const result = await fetchListAction()
-      setCollections(result)
+      if (result) setCollections(result)
     }
     if (dialogOpen) action()
   }, [dialogOpen, fetchListAction])
@@ -133,7 +133,7 @@ export const QueryCharmMenu = (props: I_Props) => {
         <Separator className="my-4" />
 
         {/* List of collections */}
-        {collections.length ? <CollectionsList list={collections} /> : renderDefaultMsg}
+        {collections?.length ? <CollectionsList list={collections} /> : renderDefaultMsg}
 
         <Separator className="my-4" />
 
