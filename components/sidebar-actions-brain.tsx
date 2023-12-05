@@ -6,6 +6,7 @@ import {
   IconPlus,
   IconShare,
   IconTrash,
+  IconCopy,
 } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -15,15 +16,31 @@ interface I_Props {
   setShareDialogOpen?: (open: boolean) => void
   setDeleteDialogOpen?: (open: boolean) => void
   setSelectedCollection: () => void
+  copyCollectionId: () => void
 }
 
-export const SidebarActions = (props: I_Props) => {
-  const { setAddDocumentDialogOpen, setExploreDialogOpen, setShareDialogOpen, setDeleteDialogOpen, setSelectedCollection } = props
+export const CollectionActions = (props: I_Props) => {
+  const { setAddDocumentDialogOpen, setExploreDialogOpen, setShareDialogOpen, setDeleteDialogOpen, setSelectedCollection, copyCollectionId } = props
 
   return (
     <div className="flex justify-between space-x-1">
+      {/* Copy id Button */}
+      <Tooltip delayDuration={350}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            className="h-6 w-6 p-0 hover:bg-background"
+            onClick={copyCollectionId}
+          >
+            <IconCopy />
+            <span className="sr-only">Copy collection id to clipboard</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Copy id</TooltipContent>
+      </Tooltip>
+
       {/* Add Document Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -39,8 +56,9 @@ export const SidebarActions = (props: I_Props) => {
         </TooltipTrigger>
         <TooltipContent>Add</TooltipContent>
       </Tooltip>
+
       {/* Edit Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -56,8 +74,9 @@ export const SidebarActions = (props: I_Props) => {
         </TooltipTrigger>
         <TooltipContent>Edit</TooltipContent>
       </Tooltip>
+
       {/* Share Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -73,8 +92,9 @@ export const SidebarActions = (props: I_Props) => {
         </TooltipTrigger>
         <TooltipContent>Share</TooltipContent>
       </Tooltip>
+
       {/* Delete Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"

@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast'
 import { I_Collection, I_GenericAPIResponse, I_ServiceApis, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
 import { CollectionCard } from '@/components/sidebar-item-brain'
-import { SidebarActions } from '@/components/sidebar-actions-brain'
+import { CollectionActions } from '@/components/sidebar-actions-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
@@ -87,6 +87,11 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     return collection
   }
 
+  const copyCollectionId = (id: string) => {
+    navigator.clipboard.writeText(id)
+    toast.success('Copied collection id to clipboard')
+  }
+
   // Fetch collections
   useEffect(() => {
     const action = async () => {
@@ -128,12 +133,13 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
             {collections.map(
               collection => (
                 <CollectionCard key={collection?.id} collection={collection}>
-                  <SidebarActions
+                  <CollectionActions
                     setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                     setExploreDialogOpen={setExploreDialogOpen}
                     setShareDialogOpen={setShareDialogOpen}
                     setDeleteDialogOpen={setDeleteDialogOpen}
                     setSelectedCollection={() => setSelectedCollection(collection)}
+                    copyCollectionId={() => copyCollectionId(collection?.name)}
                   />
                 </CollectionCard>
               )

@@ -72,7 +72,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
   const toolButtons = (
     <>
       {/* File Explorer Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -91,7 +91,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
         <TooltipContent>Open file in explorer</TooltipContent>
       </Tooltip>
       {/* Update Memory Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -110,7 +110,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
         <TooltipContent>Update</TooltipContent>
       </Tooltip>
       {/* Delete Document Button */}
-      <Tooltip>
+      <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -159,7 +159,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
         {/* Header */}
         <div className="my-1 flex h-fit w-full flex-row">
           {/* File type icon */}
-          <Tooltip>
+          <Tooltip delayDuration={350}>
             <TooltipTrigger asChild>
               <div className="mr-2 mt-1 flex w-4 cursor-pointer items-start justify-self-start">
                 <IconDocument className="h-4" />

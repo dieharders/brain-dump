@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useEffect, useRef } from 'react'
 import Textarea from 'react-textarea-autosize'
 import { UseChatHelpers } from 'ai/react'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { IconArrowElbow } from '@/components/ui/icons'
 import { CharmMenuButton } from '@/components/features/prompt/prompt-charm-button'
+import { MouseEvent } from 'react'
 
 export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => Promise<void>
@@ -13,11 +14,11 @@ export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> 
   isLoading: boolean
 }
 
-export function PromptForm({ onSubmit, onCharmClick, input, setInput, isLoading }: PromptProps) {
+export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading }: PromptProps) => {
   const { formRef, onKeyDown } = useEnterSubmit()
-  const inputRef = React.useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
     }
@@ -36,8 +37,11 @@ export function PromptForm({ onSubmit, onCharmClick, input, setInput, isLoading 
       ref={formRef}
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
-        {/* Tool charm button */}
-        <CharmMenuButton onClick={onCharmClick} />
+        {/* Button to open charms selection menu */}
+        <CharmMenuButton onClick={(e: MouseEvent) => {
+          e.preventDefault()
+          onCharmClick()
+        }} />
         {/* Prompt text area */}
         <Textarea
           ref={inputRef}
@@ -52,7 +56,7 @@ export function PromptForm({ onSubmit, onCharmClick, input, setInput, isLoading 
         />
         {/* Submit button */}
         <div className="absolute right-0 top-4 sm:right-4">
-          <Tooltip>
+          <Tooltip delayDuration={250}>
             <TooltipTrigger asChild>
               <Button type="submit" size="icon" disabled={isLoading || input === ''}>
                 <IconArrowElbow />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   IconUser,
   IconBrain,
@@ -10,6 +10,19 @@ import {
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
+import { QueryCharmMenu } from '@/components/features/prompt/dialog-query-charm'
+import { useMemoryActions } from '@/components/features/crud/actions'
+import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+
+export interface I_Charm {
+  id: T_CharmId
+  toolTipText?: string
+  onPromptCallback?: (inputPrompt: string) => string
+  // llmProps?: { [key: string]: string }
+}
+
+export type T_CharmId = 'memory' | 'microphone' | 'chat' | 'template' | 'accuracy'
 
 interface I_CharmItemProps {
   children: React.ReactNode
@@ -19,15 +32,28 @@ interface I_CharmItemProps {
 
 export interface I_Props {
   open: boolean
+  activeCharms: I_Charm[]
+  addActiveCharm: (charm: I_Charm) => void
+  removeActiveCharm: (id: T_CharmId) => void
 }
 
-export const CharmMenu = ({ open }: I_Props) => {
+export const CharmMenu = (props: I_Props) => {
+  const { open, activeCharms, addActiveCharm, removeActiveCharm } = props
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
-  const classnameIcon = 'h-16 w-16'
+  const classnameIcon = 'h-16 w-16 cursor-pointer'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
+  const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false)
+  const [services, setServices] = useState<I_ServiceApis | null>(null)
+  const { getServices } = useHomebrew()
+  const { fetchCollections } = useMemoryActions(services)
+  const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
+  const animDuration = open ? 'duration-150' : 'duration-500'
+  const memoryCharm = activeCharms.find(i => i.id === 'memory')
+  const memoryCharmFocused = memoryCharm ? 'shadow-[0_0_0.75rem_0.25rem_rgba(99,102,241,0.9)] ring-4' : ''
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
@@ -37,38 +63,74 @@ export const CharmMenu = ({ open }: I_Props) => {
     )
   }
 
+  // Get services
+  useEffect(() => {
+    const action = async () => {
+      const res = await getServices()
+
+      if (res) {
+        setServices(res)
+        setHasMounted(true)
+      }
+    }
+    if (!hasMounted) action()
+  }, [getServices, hasMounted])
+
   return (
-    <div className={`transition-[height] duration-500 delay-150 ease-out ${sizeHeight} overflow-hidden`}>
-      <div className="flex h-fit w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden py-4">
-        {/* Microphone - use to input text */}
-        <CharmItem actionText="Microphone - Transform speech to text">
-          <IconMicrophone className={classnameIcon} />
-        </CharmItem>
+    <>
+      {/* Items' Menus */}
+      <QueryCharmMenu
+        dialogOpen={openQueryCharmDialog}
+        setDialogOpen={setOpenQueryCharmDialog}
+        fetchListAction={fetchCollections}
+        onSubmit={addActiveCharm}
+        removeCharm={removeActiveCharm}
+      />
 
-        {/* Target Brain - which memory collection to use as context */}
-        <CharmItem actionText="Query memory - Select a collection of memories to use as context">
-          <IconBrain className={classnameIcon} />
-        </CharmItem>
+      {/* Charms Selection Menu */}
+      <div className={`transition-[height, opacity] justify-between space-y-2 ease-out ${sizeHeight} overflow-hidden ${activeCharmVisibility} ${animDuration}`}>
+        {/* Selectable Charms Buttons */}
+        <div className="flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
+          {/* Microphone - use to input text */}
+          <CharmItem actionText="Microphone - Transform speech to text">
+            <IconMicrophone className={classnameIcon} />
+          </CharmItem>
 
-        {/* Conversation Type - Q+A, Conversational, Inquisitive, Assistant, Agent? */}
-        <CharmItem actionText="Conversation Type - Q&A, Conversational, Inquisitive, Assistant, Agent">
-          <IconConversationType className={classnameIcon} />
-        </CharmItem>
+          {/* Query Memory - target a memory collection to use as context */}
+          <Tooltip delayDuration={250}>
+            <TooltipTrigger
+              tabIndex={-1}
+              className={`h-8 rounded-full ${memoryCharmFocused}`}
+            >
+              <CharmItem actionText="Query memory - Select a collection of memories to use as context">
+                <IconBrain className={classnameIcon} onClick={() => setOpenQueryCharmDialog(true)} />
+              </CharmItem>
+              <TooltipContent sideOffset={10}>Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">{memoryCharm?.toolTipText?.split(' ')?.map(i => <p key={i}>{i}</p>)}</span></TooltipContent>
+              <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
+            </TooltipTrigger>
+          </Tooltip>
 
-        {/* Prompt Template - You are an expert researcher/coder/generalist/etc. Includes presets as well as a custom form to write your own */}
-        <CharmItem actionText="Prompt Template - Tweak presets or write your own">
-          <IconPromptTemplate className={classnameIcon} />
-        </CharmItem>
+          {/* Conversation Type - Q+A, Conversational, Inquisitive, Assistant, Agent? */}
+          <CharmItem actionText="Conversation Type - Q&A, Conversational, Inquisitive, Assistant, Agent">
+            <IconConversationType className={classnameIcon} />
+          </CharmItem>
 
-        {/* Agent Presets - creative, precise, normal */}
-        <CharmItem actionText="Response Accuracy - creative, precise, normal">
-          <IconUser className={classnameIcon} />
-        </CharmItem>
+          {/* Prompt Template - You are an expert researcher/coder/generalist/etc. Includes presets as well as a custom form to write your own */}
+          <CharmItem actionText="Prompt Template - Tweak presets or write your own">
+            <IconPromptTemplate className={classnameIcon} />
+          </CharmItem>
+
+          {/* Agent Presets - creative, precise, normal */}
+          <CharmItem actionText="Response Accuracy - creative, precise, normal">
+            <IconUser className={classnameIcon} />
+          </CharmItem>
+        </div>
+
+        <DropdownMenuSeparator />
+
+        {/* Explanation of charm item when hovered */}
+        <p className="flex h-fit w-full flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation}</p>
       </div>
-
-      <DropdownMenuSeparator />
-
-      {/* Explanation of charm item when hovered */}
-      <p className="h-fit w-full p-2 text-center text-sm text-neutral-500">{explanation}</p>
-    </div>)
+    </>
+  )
 }

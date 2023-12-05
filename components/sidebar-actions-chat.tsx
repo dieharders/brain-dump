@@ -75,7 +75,7 @@ export function SidebarActions(props: I_Props) {
     <>
       <div className="flex justify-between space-x-1">
         {/* Share Button */}
-        <Tooltip>
+        <Tooltip delayDuration={350}>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
@@ -89,7 +89,7 @@ export function SidebarActions(props: I_Props) {
           <TooltipContent>Share chat</TooltipContent>
         </Tooltip>
         {/* Delete Button */}
-        <Tooltip>
+        <Tooltip delayDuration={350}>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
