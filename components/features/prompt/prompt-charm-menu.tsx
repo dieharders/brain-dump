@@ -39,7 +39,7 @@ export interface I_Props {
 
 export const CharmMenu = (props: I_Props) => {
   const { open, activeCharms, addActiveCharm, removeActiveCharm } = props
-  const MAX_HEIGHT = 'h-[6rem]'
+  const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
   const classnameIcon = 'h-16 w-16 cursor-pointer'
@@ -88,9 +88,9 @@ export const CharmMenu = (props: I_Props) => {
       />
 
       {/* Charms Selection Menu */}
-      <div className={`transition-[height, opacity] justify-between ease-out ${sizeHeight} overflow-hidden ${activeCharmVisibility} ${animDuration}`}>
+      <div className={`transition-[height, opacity] justify-between space-y-2 ease-out ${sizeHeight} overflow-hidden ${activeCharmVisibility} ${animDuration}`}>
         {/* Selectable Charms Buttons */}
-        <div className="flex h-14 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
+        <div className="flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
           {/* Microphone - use to input text */}
           <CharmItem actionText="Microphone - Transform speech to text">
             <IconMicrophone className={classnameIcon} />
@@ -105,7 +105,7 @@ export const CharmMenu = (props: I_Props) => {
               <CharmItem actionText="Query memory - Select a collection of memories to use as context">
                 <IconBrain className={classnameIcon} onClick={() => setOpenQueryCharmDialog(true)} />
               </CharmItem>
-              <TooltipContent sideOffset={10}>Memories: <span className="select-none text-indigo-400">{memoryCharm?.toolTipText}</span></TooltipContent>
+              <TooltipContent sideOffset={10}>Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">{memoryCharm?.toolTipText?.split(' ')?.map(i => <p key={i}>{i}</p>)}</span></TooltipContent>
               <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
             </TooltipTrigger>
           </Tooltip>
@@ -129,7 +129,7 @@ export const CharmMenu = (props: I_Props) => {
         <DropdownMenuSeparator />
 
         {/* Explanation of charm item when hovered */}
-        <p className="flex h-8 w-full flex-col justify-center px-2 text-center text-sm text-neutral-500">{explanation}</p>
+        <p className="flex h-fit w-full flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation}</p>
       </div>
     </>
   )

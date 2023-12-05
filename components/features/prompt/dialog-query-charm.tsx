@@ -102,6 +102,33 @@ export const QueryCharmMenu = (props: I_Props) => {
           </DialogDescription>
         </DialogHeader>
 
+        <Button
+          disabled={disableForm}
+          className="m-0 mt-4 w-full p-0"
+          onClick={async () => {
+            // Add all collections to list
+            setSelectedMemories([...collections.map(i => i.name)])
+            setDisableForm(false)
+          }}
+        >
+          {disableForm && <IconSpinner className="mr-2 animate-spin" />}
+          Add all
+        </Button>
+        <Button
+          disabled={disableForm}
+          className="m-0 w-full p-0"
+          onClick={async () => {
+            // Remove ourselves from active charm list
+            removeCharm(charmId)
+            // Reset state
+            setSelectedMemories([])
+            setDisableForm(false)
+          }}
+        >
+          {disableForm && <IconSpinner className="mr-2 animate-spin" />}
+          Remove all
+        </Button>
+
         <Separator className="my-4" />
 
         {/* List of collections */}
@@ -127,33 +154,26 @@ export const QueryCharmMenu = (props: I_Props) => {
             className="w-full sm:w-32"
             onClick={async () => {
               setDisableForm(true)
-              const charm = {
-                id: charmId,
-                toolTipText: onPromptCallback(''),
-                onPromptCallback,
+              // Only save if we selected something
+              if (selectedMemories.length) {
+                const charm = {
+                  id: charmId,
+                  toolTipText: onPromptCallback(''),
+                  onPromptCallback,
+                }
+                onSubmit(charm)
+              } else {
+                // Remove ourselves from active charm list
+                removeCharm(charmId)
+                // Reset state
+                setSelectedMemories([])
               }
-              onSubmit(charm)
               setDialogOpen(false)
               setDisableForm(false)
             }}
           >
             {disableForm && <IconSpinner className="mr-2 animate-spin" />}
             Save
-          </Button>
-          <Button
-            disabled={disableForm}
-            className="w-full sm:w-32"
-            onClick={async () => {
-              // Remove ourselves from active charm list
-              removeCharm(charmId)
-              // Uncheck reset state
-              setSelectedMemories([])
-              setDialogOpen(false)
-              setDisableForm(false)
-            }}
-          >
-            {disableForm && <IconSpinner className="mr-2 animate-spin" />}
-            Remove
           </Button>
         </DialogFooter>
       </DialogContent>
