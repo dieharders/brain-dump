@@ -26,7 +26,7 @@ export const LocalChat = ({ id, initialMessages, services, className }: IProps) 
 
   return (
     <>
-      <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
+      <div className={cn('w-full pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
             <ChatList messages={messages} />
