@@ -123,6 +123,7 @@ export const QueryCharmMenu = (props: I_Props) => {
             // Reset state
             setSelectedMemories([])
             setDisableForm(false)
+            setDialogOpen(false)
           }}
         >
           {disableForm && <IconSpinner className="mr-2 animate-spin" />}

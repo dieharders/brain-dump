@@ -84,6 +84,7 @@ export function ChatPanel({
             }} />
 
           <PromptForm
+            onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
             onSubmit={async value => {
               // Call all charm callbacks before sending the prompt
               let newContent = value
@@ -102,7 +103,6 @@ export function ChatPanel({
             input={input}
             setInput={setInput}
             isLoading={isLoading}
-            onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
           />
           <FooterText className="hidden sm:block" />
         </div>

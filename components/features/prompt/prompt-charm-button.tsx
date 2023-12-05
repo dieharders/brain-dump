@@ -1,10 +1,11 @@
 import { cn } from '@/lib/utils'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { MouseEvent } from 'react'
 
 interface I_Props {
-  onClick: () => void
+  onClick: (event: MouseEvent) => void
 }
 
 export const CharmMenuButton = ({ onClick }: I_Props) => {
