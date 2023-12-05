@@ -195,6 +195,8 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
     const origin = `${hostname}${api.port}`
     const apiName = api.name
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
+    let res: Response
+
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
       // Create a re-usable fetch function
@@ -209,7 +211,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             : null
           const queryUrl = queryParams ? `?${queryParams}` : ''
           const url = `${origin}${endpoint.urlPath}${queryUrl}`
-          const res = await fetch(url, {
+          res = await fetch(url, {
             method,
             mode: 'cors', // no-cors, *, cors, same-origin
             cache: 'no-cache',
@@ -219,32 +221,37 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
             body,
           })
+
           // Check no response
           if (!res) throw new Error(`No response for endpoint ${endpoint.name}.`)
+
           // Check json response
-          if (res.json) {
+          const responseType = res.headers.get('content-type')
+          if (res.json && !responseType?.includes('event-stream')) {
             const result = await res.json()
 
-            // Check success from llama-cpp-python server first
-            if (res?.ok) return result
-
-            if (result?.error) {
+            if (!result) throw new Error('Something went wrong')
+            // Check error from homebrew api
+            if (typeof result?.error === 'boolean' && result?.error) {
               const error = new Error(`${result?.error}`) as Error & {
                 status: number
               }
               error.status = res.status
               throw error
             }
-            // Check failure from homebrew api last
-            if (!result?.success)
+            // Check failure from homebrew api
+            if (typeof result?.success === 'boolean' && !result?.success)
               throw new Error(
                 `${endpoint.name} An unexpected error occurred: ${
                   result?.message ?? result?.detail
                 }`,
               )
+            // Success
             return result
           }
-          throw new Error('Something went wrong')
+
+          // Return raw response from llama-cpp-python server text inference
+          return res
         } catch (err) {
           console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
           return { success: false, message: err }
