@@ -112,7 +112,14 @@ export const CharmMenu = (props: I_Props) => {
               <CharmItem actionText="Query memory - Select a collection of memories to use as context" onClick={() => setOpenQueryCharmDialog(true)} >
                 <IconBrain className={classnameIcon} />
               </CharmItem>
-              <TooltipContent sideOffset={10}>Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">{memoryCharm?.toolTipText?.split(' ')?.map((i, index) => <p key={i || index}>{i}</p>)}</span></TooltipContent>
+              <TooltipContent
+                sideOffset={10}
+              >
+                {/* List of currently selected memories */}
+                Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">
+                  {memoryCharm?.toolTipText?.split(' ')?.map((i, index) => <p key={index}>{i}</p>)}
+                </span>
+              </TooltipContent>
               <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
             </TooltipTrigger>
           </Tooltip>
