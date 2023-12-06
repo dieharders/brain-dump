@@ -132,7 +132,10 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
           <div className="space-y-4">
             {collections.map(
               collection => (
-                <CollectionCard key={collection?.id} collection={collection}>
+                <CollectionCard key={collection?.id} collection={collection} onClick={() => {
+                  setSelectedCollection(collection)
+                  setExploreDialogOpen(true)
+                }}>
                   <CollectionActions
                     setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                     setExploreDialogOpen={setExploreDialogOpen}

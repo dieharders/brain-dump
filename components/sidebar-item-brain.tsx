@@ -14,7 +14,7 @@ interface SidebarItemProps {
 }
 
 /**
- * A container for collection of documents
+ * A card container for collection of documents
  */
 export const CollectionCard = (props: SidebarItemProps) => {
   const { collection, onClick, children } = props
