@@ -30,7 +30,10 @@ export const CollectionActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={copyCollectionId}
+            onClick={e => {
+              e.stopPropagation()
+              copyCollectionId()
+            }}
           >
             <IconCopy />
             <span className="sr-only">Copy collection id to clipboard</span>
@@ -45,7 +48,8 @@ export const CollectionActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation()
               setSelectedCollection()
               setAddDocumentDialogOpen && setAddDocumentDialogOpen(true)
             }}
@@ -63,7 +67,8 @@ export const CollectionActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation()
               setSelectedCollection()
               setExploreDialogOpen && setExploreDialogOpen(true)
             }}
@@ -81,7 +86,8 @@ export const CollectionActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation()
               setSelectedCollection()
               setShareDialogOpen && setShareDialogOpen(true)
             }}
@@ -99,7 +105,8 @@ export const CollectionActions = (props: I_Props) => {
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation()
               setSelectedCollection()
               setDeleteDialogOpen && setDeleteDialogOpen(true)
             }}

@@ -120,7 +120,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <RefreshButton action={() => updateListAction(services)} />
       </div>
       {/* Collections */}
-      <div className="overflow-x-hidden px-4">
+      <div className="scrollbar overflow-x-hidden px-4">
         {/* Pop-Up Menus */}
         <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
         <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />

@@ -97,7 +97,7 @@ export const CharmMenu = (props: I_Props) => {
       {/* Charms Selection Menu */}
       <div className={`transition-[height, opacity] justify-between space-y-2 ease-out ${sizeHeight} overflow-hidden ${activeCharmVisibility} ${animDuration}`}>
         {/* Selectable Charms Buttons */}
-        <div className="flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
+        <div className="scrollbar flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
           {/* Microphone - use to input text */}
           <CharmItem actionText="Microphone - Transform speech to text">
             <IconMicrophone className={classnameIcon} />
