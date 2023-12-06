@@ -12,10 +12,10 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
       )}
       {...props}
     >
-      Ai chatbot built with{' '}
+      Built with{' '}
       <ExternalLink href="https://nextjs.org">Next.js ☄</ExternalLink>{' '}
-      <ExternalLink href="https://llamaindex.ai">LLamaIndex 🦙</ExternalLink> and{' '}
-      <ExternalLink href="https://trychroma.com">ChromaDB 💾</ExternalLink>
+      <ExternalLink href="https://llamaindex.ai">LlamaIndex 🦙</ExternalLink> and{' '}
+      <ExternalLink href="https://trychroma.com">ChromaDB 🌈</ExternalLink>
     </p>
   )
 }
