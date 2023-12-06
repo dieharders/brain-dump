@@ -16,7 +16,7 @@ export async function Header() {
       {session?.user ? (
         <div className="flex items-center">
           {/* Chats Pane Button */}
-          <Tooltip delayDuration={250}>
+          <Tooltip delayDuration={450}>
             <TooltipTrigger asChild>
               <div>
                 <ChatsButton session={session} />
@@ -26,7 +26,7 @@ export async function Header() {
             <TooltipContent>Chats</TooltipContent>
           </Tooltip>
           {/* Brains Pane Button */}
-          <Tooltip delayDuration={250}>
+          <Tooltip delayDuration={450}>
             <TooltipTrigger asChild>
               <div>
                 <CollectionsButton session={session} />

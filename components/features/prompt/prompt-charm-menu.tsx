@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   IconUser,
   IconBrain,
@@ -26,7 +26,7 @@ export type T_CharmId = 'memory' | 'microphone' | 'chat' | 'template' | 'accurac
 
 interface I_CharmItemProps {
   children: React.ReactNode
-  action?: () => void
+  onClick?: () => void
   actionText?: string
 }
 
@@ -42,7 +42,7 @@ export const CharmMenu = (props: I_Props) => {
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
-  const classnameIcon = 'h-16 w-16 cursor-pointer'
+  const classnameIcon = 'h-fit w-16 cursor-pointer rounded-full text-white bg-ghost'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
@@ -53,11 +53,17 @@ export const CharmMenu = (props: I_Props) => {
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
   const memoryCharm = activeCharms.find(i => i.id === 'memory')
-  const memoryCharmFocused = memoryCharm ? 'shadow-[0_0_0.75rem_0.25rem_rgba(99,102,241,0.9)] ring-4' : ''
+  const memoryCharmFocused = memoryCharm ? 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-4 ring-purple-300' : ''
+  const selectedMemoriesList = useRef<string[]>([])
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
-      <Badge className="h-8 w-8 p-1" onClick={props?.action} onMouseEnter={() => setExplanation(props?.actionText || '')} onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}>
+      <Badge
+        className="h-10 w-10 cursor-pointer bg-black p-2 ring-2 ring-accent hover:bg-accent"
+        onClick={props?.onClick}
+        onMouseEnter={() => setExplanation(props?.actionText || '')}
+        onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}
+      >
         {props.children}
       </Badge>
     )
@@ -85,6 +91,7 @@ export const CharmMenu = (props: I_Props) => {
         fetchListAction={fetchCollections}
         onSubmit={addActiveCharm}
         removeCharm={removeActiveCharm}
+        selected={selectedMemoriesList}
       />
 
       {/* Charms Selection Menu */}
@@ -100,12 +107,12 @@ export const CharmMenu = (props: I_Props) => {
           <Tooltip delayDuration={250}>
             <TooltipTrigger
               tabIndex={-1}
-              className={`h-8 rounded-full ${memoryCharmFocused}`}
+              className={`h-10 rounded-full ${memoryCharmFocused}`}
             >
-              <CharmItem actionText="Query memory - Select a collection of memories to use as context">
-                <IconBrain className={classnameIcon} onClick={() => setOpenQueryCharmDialog(true)} />
+              <CharmItem actionText="Query memory - Select a collection of memories to use as context" onClick={() => setOpenQueryCharmDialog(true)} >
+                <IconBrain className={classnameIcon} />
               </CharmItem>
-              <TooltipContent sideOffset={10}>Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">{memoryCharm?.toolTipText?.split(' ')?.map(i => <p key={i}>{i}</p>)}</span></TooltipContent>
+              <TooltipContent sideOffset={10}>Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">{memoryCharm?.toolTipText?.split(' ')?.map((i, index) => <p key={i || index}>{i}</p>)}</span></TooltipContent>
               <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
             </TooltipTrigger>
           </Tooltip>
