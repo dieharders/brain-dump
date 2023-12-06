@@ -37,7 +37,7 @@ export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading,
       }}
       ref={formRef}
     >
-      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
+      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-12 sm:rounded-md sm:border">
         {/* Button to open charms selection menu */}
         <CharmMenuButton
           open={charmMenuIsOpen}
@@ -55,10 +55,10 @@ export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading,
           onChange={e => setInput(e.target.value)}
           placeholder="Send a message."
           spellCheck={false}
-          className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          className="scrollbar min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />
         {/* Submit button */}
-        <div className="absolute right-0 top-4 sm:right-4">
+        <div className="absolute right-4 top-4">
           <Tooltip delayDuration={250}>
             <TooltipTrigger asChild>
               <Button type="submit" size="icon" disabled={isLoading || input === ''}>

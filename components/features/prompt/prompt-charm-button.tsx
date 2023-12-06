@@ -20,7 +20,7 @@ export const CharmMenuButton = ({ open, onClick }: I_Props) => {
         onClick={onClick}
         className={cn(
           buttonVariants({ size: 'sm', variant: 'outline' }),
-          `absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 transition ease-in-out sm:left-4 ${focusStyle} ${animStyle} ${rotateStyle}`,
+          `absolute left-4 top-4 h-8 w-8 rounded-full bg-background p-0 transition ease-in-out ${focusStyle} ${animStyle} ${rotateStyle}`,
         )}
       >
         <IconPlus className="text-foreground" />

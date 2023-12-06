@@ -59,7 +59,7 @@ export function ChatPanel({
           )}
         </div>
         {/* Main Prompt Panel */}
-        <div className="flex flex-col justify-between space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
+        <div className="flex flex-col justify-between space-y-4 border-t bg-background px-0 py-2 shadow-lg sm:rounded-t-xl sm:border sm:px-4 md:py-4">
           <CharmMenu
             open={charmMenuOpen}
             activeCharms={activeCharms}
