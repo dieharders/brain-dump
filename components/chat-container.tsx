@@ -48,6 +48,9 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         setIsConnected(true)
         const homebrewServices = await getServices()
         if (homebrewServices) setServices(homebrewServices)
+        // We are setting this here temp until both homebrew and inference api servers are combined.
+        setHasTextServiceConnected(true)
+
         return true
       }
       toast.error(`Failed to connect to local provider.`)
