@@ -90,8 +90,8 @@ export const QueryCharmMenu = (props: I_Props) => {
   }
 
   const CollectionsList = ({ list }: { list: I_Collection[] }) => {
-    // List Container
-    return <div className="flex max-h-[32rem] w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2 pr-4">
+    // Scrollable List Container (fixed height)
+    return <div className="scrollbar flex max-h-[32rem] w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2 pr-4">
       {list.map((item, i) => <CollectionItem key={item.id} item={item} index={i} />)}
     </div>
   }

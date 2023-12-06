@@ -77,6 +77,34 @@
   }
 }
 
+@layer utilities {
+  .scrollbar {
+    scrollbar-color: lightgrey dimgrey;
+    scrollbar-width: thin;
+    /* scrollbar-gutter: stable both-edges; */
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    /* border-radius: 100vh; */
+    background: dimgrey;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: lightgrey;
+    /* border-radius: 100vh; */
+    /* border: 3px solid #f6f7ed; */
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: darkgray;
+  }
+}
+
 html {
   background-color: black;
 }

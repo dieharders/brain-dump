@@ -111,7 +111,15 @@ export const DialogExploreDocuments = (props: I_Props) => {
         {/* List of files */}
         <div className="flex h-full flex-col items-center justify-center space-y-4 overflow-hidden">
           {documents?.length > 0 ? (
-            documents?.map((document, index) => <DocumentCard key={document.metadata.id} document={document} index={index} fileExploreAction={fileExploreAction} updateAction={updateAction} deleteAction={deleteAction} />)
+            documents?.map((document, index) =>
+              <DocumentCard
+                key={document.metadata.id}
+                index={index}
+                document={document}
+                fileExploreAction={fileExploreAction}
+                updateAction={updateAction}
+                deleteAction={deleteAction}
+              />)
           ) : (
             <span className="flex h-[6rem] w-full items-center justify-center text-center text-lg font-bold">No files uploaded yet</span>
           )}
