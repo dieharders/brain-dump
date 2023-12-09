@@ -31,7 +31,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { provider: selectedProvider, model: selectedModel } = useSettings()
-  const { connect: connectToHomebrew, connectTextService, getServices } = useHomebrew()
+  const { connect: connectToHomebrew, getServices } = useHomebrew()
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -63,29 +63,29 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
 
   const connectTextServiceAction = useCallback(async () => {
     const action = async () => {
-      try {
-        const response = await connectTextService()
+      // try {
+      //   const response = await connectTextService()
 
-        if (response?.success) {
-          const id = response?.data[0]?.id
-          setHasTextServiceConnected(true)
-          toast.success(`Connected to Ai model [${id}]`)
-          return true
-        } else {
-          toast.error(response?.message || 'Failed to connect to Ai model.')
-        }
-        return false
-      } catch (error) {
-        toast.error(`${error}`)
-        return false
-      }
+      //   if (response?.success) {
+      //     const id = response?.data[0]?.id
+      //     setHasTextServiceConnected(true)
+      //     toast.success(`Connected to Ai model [${id}]`)
+      //     return true
+      //   } else {
+      //     toast.error(response?.message || 'Failed to connect to Ai model.')
+      //   }
+      //   return false
+      // } catch (error) {
+      //   toast.error(`${error}`)
+      //   return false
+      // }
     }
 
     setIsConnecting(true)
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [connectTextService])
+  }, [])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'

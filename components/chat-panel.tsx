@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { type UseChatHelpers } from 'ai/react'
+import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
@@ -7,16 +7,19 @@ import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/prompt/prom
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
 
+type TAppend = (message: Message | CreateMessage, collectionName?: string[]) => Promise<string | null | undefined>
+
 export interface ChatPanelProps
   extends Pick<
     UseChatHelpers,
-    'append' | 'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
+    'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
   > {
   id?: string
   theme: string | undefined
+  append: TAppend
 }
 
-export function ChatPanel({
+export const ChatPanel = ({
   id,
   isLoading,
   stop,
@@ -26,7 +29,7 @@ export function ChatPanel({
   setInput,
   messages,
   theme,
-}: ChatPanelProps) {
+}: ChatPanelProps) => {
   // @TODO from-neutral-900 does not match the chat-page's bg color
   const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-muted/0' : 'to-muted/150'
@@ -87,19 +90,15 @@ export function ChatPanel({
             onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
             charmMenuIsOpen={charmMenuOpen}
             onSubmit={async value => {
-              // Call all charm callbacks before sending the prompt
-              let newContent = value
-              activeCharms.forEach(charm => {
-                if (charm?.onPromptCallback) {
-                  newContent = charm.onPromptCallback(newContent)
-                }
-              })
+              // Call the charm callback for extra data
+              const memCharm = activeCharms.find(i => i.id === 'memory')
+              const collectionNames: string[] = memCharm?.onCallback?.() || []
               // Send prompt
               await append({
                 id,
-                content: newContent,
+                content: value,
                 role: 'user',
-              })
+              }, collectionNames)
             }}
             input={input}
             setInput={setInput}
