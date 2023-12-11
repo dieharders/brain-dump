@@ -19,6 +19,7 @@ interface CompletionOptions {
   echo?: boolean
   model?: ModelID
   seed?: number
+  mode?: string
 }
 
 interface IProps {
@@ -41,9 +42,10 @@ export const useLocalInference = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: CompletionOptions,
+    collectionNames?: string[],
   ) => {
     try {
-      return services?.textInference.completions({ body: options })
+      return services?.textInference.inference({ body: { ...options, collectionNames } })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
@@ -51,14 +53,24 @@ export const useLocalInference = ({
   }
 
   const onStreamResult = async (result: string) => {
-    if (!result) return
-    const parsedResult = JSON.parse(result)
-    const text = parsedResult?.choices?.[0]?.text
+    try {
+      // This is how the llama-cpp-python-server sends back data...
+      // const parsedResult = JSON.parse(result)
+      // const text = parsedResult?.choices?.[0]?.text
 
-    setResponseText(prevText => {
-      return (prevText += text)
-    })
-    return
+      // How Homebrew server sends data
+      const parsedResult = result ? JSON.parse(result) : null
+      const text = parsedResult?.data
+
+      setResponseText(prevText => {
+        console.log('[UI] onStreamResult:', text)
+        return (prevText += text)
+      })
+      return
+    } catch (err) {
+      console.log('[UI] onStreamResult err:', typeof result, ' | ', err)
+      return
+    }
   }
 
   const onStreamEvent = (eventName: string) => {
@@ -97,8 +109,9 @@ export const useLocalInference = ({
     }
   }, [])
 
-  const append = async (prompt: Message | CreateMessage) => {
+  const append = async (prompt: Message | CreateMessage, collectionNames?: string[]) => {
     if (!prompt) return
+
     setResponseId(nanoid())
     // Create new message for user's prompt
     const newUserMsg: Message = {
@@ -139,7 +152,7 @@ export const useLocalInference = ({
       abortRef.current = false
       // Send request completion for prompt
       console.log('[UI] Sending request to inference server...', newUserMsg)
-      const response = await getCompletion(options)
+      const response = await getCompletion(options, collectionNames)
       console.log('[UI] Prompt response', response)
       if (!response) throw new Error('No prompt response.')
 
