@@ -98,6 +98,8 @@ export const ChatPanel = ({
                 id,
                 content: value,
                 role: 'user',
+                // @TODO Perhaps add "collectionNames" as prop here
+                // so we can record in the msg what docs we were referencing.
               }, collectionNames)
             }}
             input={input}

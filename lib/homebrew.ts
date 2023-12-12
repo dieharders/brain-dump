@@ -81,24 +81,24 @@ export interface I_GetCollectionData {
   numItems: number
 }
 
-type T_TextModelsData = {
-  id: string // path to model on disk
-  object: string // what type it is
-  owned_by: string
-  permissions: string[]
-}
+// type T_TextModelsData = {
+//   id: string // path to model on disk
+//   object: string // what type it is
+//   owned_by: string
+//   permissions: string[]
+// }
 
-interface I_ConnectTextInferenceData {
-  object: string
-  data: T_TextModelsData[]
-}
+// interface I_ConnectTextInferenceData {
+//   object: string
+//   data: T_TextModelsData[]
+// }
 
 export interface I_ServiceApis {
   /**
    * Use to query the text inference engine
    */
   textInference: {
-    // llama-cpp-python-[server] version
+    // llama-cpp-python[server] version
     // models: () => Promise<I_ConnectTextInferenceData>
     // completions: T_GenericAPIRequest<T_GenericDataRes>
     // embeddings: T_GenericAPIRequest<T_GenericDataRes>
@@ -302,6 +302,43 @@ export const useHomebrew = () => {
 
     return result
   }
+
+  /**
+   * Attempt to connect to text inference server and return api services.
+   */
+  // interface I_ConnectTextResponse {
+  //   success: boolean
+  //   message: string
+  //   data: T_TextModelsData[]
+  // }
+  // const connectTextService = async (): Promise<I_ConnectTextResponse> => {
+  //   try {
+  //     const servicesResponse = await getServices()
+  //     const req = servicesResponse?.textInference?.models
+  //     if (!req)
+  //       return {
+  //         success: false,
+  //         message: '',
+  //         data: [],
+  //       }
+
+  //     const res = await req()
+
+  //     return {
+  //       success: true,
+  //       message: `Found ${res.data?.length} models`,
+  //       data: res.data,
+  //     }
+  //   } catch (error) {
+  //     const errMsg = `${error}`
+  //     console.log(`[homebrew] connectTextService: ${errMsg}`)
+  //     return {
+  //       success: false,
+  //       message: errMsg,
+  //       data: [],
+  //     }
+  //   }
+  // }
 
   /**
    * Get all api configs for services.
