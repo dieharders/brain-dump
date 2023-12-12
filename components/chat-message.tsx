@@ -39,6 +39,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             code({ node, inline, className, children, ...props }) {
               if (children.length) {
+                // @TODO Is this special char causing the multi-byte char issue ?
                 if (children[0] == '▍') {
                   return (
                     <span className="mt-1 animate-pulse cursor-default">▍</span>
@@ -69,7 +70,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             }
           }}
         >
-          {message.content}
+          {message.content || '[...]'}
         </MemoizedReactMarkdown>
         <ChatMessageActions message={message} />
       </div>

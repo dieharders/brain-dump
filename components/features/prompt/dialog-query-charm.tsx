@@ -96,16 +96,18 @@ export const QueryCharmMenu = (props: I_Props) => {
     </div>
   }
 
-  const onPromptCallback = (inputPrompt: string) => {
-    const mentionsArr = selected.current.map(name => `@${name}`)
-    const mentions = mentionsArr.join(' ')
-    // We want to find all current @mentions and overwrite them
-    const regexPattern = /^@\w+(\s+@\w+)*$/
-    const strippedPrompt = inputPrompt.replace(regexPattern, '')
-    // Take the prompt and add ids as @mentions seperated by spaces
-    const outputPrompt = `${mentions} ${strippedPrompt}`
-    return outputPrompt
-  }
+  // const onCallback = (inputPrompt: string) => {
+  //   const mentionsArr = selected.current.map(name => `@${name}`)
+  //   const mentions = mentionsArr.join(' ')
+  //   // We want to find all current @mentions and overwrite them
+  //   const regexPattern = /^@\w+(\s+@\w+)*$/
+  //   const strippedPrompt = inputPrompt.replace(regexPattern, '')
+  //   // Take the prompt and add ids as @mentions seperated by spaces
+  //   const outputPrompt = `${mentions} ${strippedPrompt}`
+  //   return outputPrompt
+  // }
+
+  const onCallback = () => selected.current
 
   // Fetch the collections list when opened
   useEffect(() => {
@@ -191,10 +193,11 @@ export const QueryCharmMenu = (props: I_Props) => {
                 // Save the list based on current checkboxes
                 selected.current = [...checkboxes.current]
                 // Make a charm struct
-                const charm = {
+                const mentions = onCallback()?.map(name => `@${name}`).join(' ')
+                const charm: I_Charm = {
                   id: charmId,
-                  toolTipText: onPromptCallback(''),
-                  onPromptCallback,
+                  toolTipText: mentions,
+                  onCallback,
                 }
                 // Add the charm to prompt
                 onSubmit(charm)

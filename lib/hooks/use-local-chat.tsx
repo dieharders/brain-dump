@@ -19,6 +19,7 @@ interface CompletionOptions {
   echo?: boolean
   model?: ModelID
   seed?: number
+  mode?: string
 }
 
 interface IProps {
@@ -41,9 +42,10 @@ export const useLocalInference = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: CompletionOptions,
+    collectionNames?: string[],
   ) => {
     try {
-      return services?.textInference.completions({ body: options })
+      return services?.textInference.inference({ body: { ...options, collectionNames } })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
@@ -51,28 +53,37 @@ export const useLocalInference = ({
   }
 
   const onStreamResult = async (result: string) => {
-    if (!result) return
-    const parsedResult = JSON.parse(result)
-    const text = parsedResult?.choices?.[0]?.text
+    try {
+      // This is how the llama-cpp-python-server sends back data...
+      // const parsedResult = JSON.parse(result)
+      // const text = parsedResult?.choices?.[0]?.text
 
-    setResponseText(prevText => {
-      return (prevText += text)
-    })
-    return
+      // How Homebrew server sends data
+      const parsedResult = result ? JSON.parse(result) : null
+      const text = parsedResult?.data
+
+      setResponseText(prevText => {
+        return (prevText += text)
+      })
+
+      return
+    } catch (err) {
+      console.log('[Chat] onStreamResult err:', typeof result, ' | ', err)
+      return
+    }
   }
 
   const onStreamEvent = (eventName: string) => {
     // @TODO Render these states on screen
     switch (eventName) {
       case 'FEEDING_PROMPT':
-        console.log('[Chat] onEvent FEEDING_PROMPT...')
         break
       case 'GENERATING_TOKENS':
-        console.log('[Chat] onEvent GENERATING_TOKENS...')
         break
       default:
         break
     }
+    console.log(`[Chat] onStreamEvent ${eventName}`)
   }
 
   const stop = useCallback(() => {
@@ -97,8 +108,9 @@ export const useLocalInference = ({
     }
   }, [])
 
-  const append = async (prompt: Message | CreateMessage) => {
+  const append = async (prompt: Message | CreateMessage, collectionNames?: string[]) => {
     if (!prompt) return
+
     setResponseId(nanoid())
     // Create new message for user's prompt
     const newUserMsg: Message = {
@@ -138,9 +150,9 @@ export const useLocalInference = ({
       setIsLoading(true)
       abortRef.current = false
       // Send request completion for prompt
-      console.log('[UI] Sending request to inference server...', newUserMsg)
-      const response = await getCompletion(options)
-      console.log('[UI] Prompt response', response)
+      console.log('[Chat] Sending request to inference server...', newUserMsg)
+      const response = await getCompletion(options, collectionNames)
+      console.log('[Chat] Prompt response', response)
       if (!response) throw new Error('No prompt response.')
 
       // Process the stream into text tokens
@@ -150,15 +162,14 @@ export const useLocalInference = ({
         {
           onData: (res: string) => onStreamResult(res),
           onFinish: async () => {
-            console.log('[UI] stream finished!')
+            console.log('[Chat] stream finished!')
             setIsLoading(false)
           },
           onEvent: async str => {
             onStreamEvent(str)
           },
           onComment: async str => {
-            // @TODO Render this state on screen
-            console.log('[UI] onComment', str)
+            console.log('[Chat] onComment', str)
           },
         },
         abortRef,

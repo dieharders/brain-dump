@@ -18,7 +18,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 export interface I_Charm {
   id: T_CharmId
   toolTipText?: string
-  onPromptCallback?: (inputPrompt: string) => string
+  onCallback?: () => any
   // llmProps?: { [key: string]: string }
 }
 
@@ -44,7 +44,7 @@ export const CharmMenu = (props: I_Props) => {
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
   const classnameIcon = 'h-fit w-16 cursor-pointer rounded-full text-white bg-ghost'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
-  const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
+  const explanation = useRef(DEFAULT_EXPLANATION)
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
@@ -55,14 +55,15 @@ export const CharmMenu = (props: I_Props) => {
   const memoryCharm = activeCharms.find(i => i.id === 'memory')
   const memoryCharmFocused = memoryCharm ? 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-4 ring-purple-300' : ''
   const selectedMemoriesList = useRef<string[]>([])
+  const selectedMemoriesText = selectedMemoriesList.current?.map((i, index) => <p key={index}>{i}</p>)
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
       <Badge
         className="h-10 w-10 cursor-pointer bg-black p-2 ring-2 ring-accent hover:bg-accent"
         onClick={props?.onClick}
-        onMouseEnter={() => setExplanation(props?.actionText || '')}
-        onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}
+        onMouseEnter={() => explanation.current = (props?.actionText || '')}
+        onMouseLeave={() => explanation.current = (DEFAULT_EXPLANATION)}
       >
         {props.children}
       </Badge>
@@ -117,7 +118,7 @@ export const CharmMenu = (props: I_Props) => {
               >
                 {/* List of currently selected memories */}
                 Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">
-                  {memoryCharm?.toolTipText?.split(' ')?.map((i, index) => <p key={index}>{i}</p>)}
+                  {selectedMemoriesText}
                 </span>
               </TooltipContent>
               <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
@@ -143,7 +144,7 @@ export const CharmMenu = (props: I_Props) => {
         <DropdownMenuSeparator />
 
         {/* Explanation of charm item when hovered */}
-        <p className="flex h-fit w-full flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation}</p>
+        <p className="flex h-fit w-full flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation.current}</p>
       </div>
     </>
   )

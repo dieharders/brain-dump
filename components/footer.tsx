@@ -14,7 +14,7 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
     >
       Built with{' '}
       <ExternalLink href="https://nextjs.org">Next.js ☄</ExternalLink>{' '}
-      <ExternalLink href="https://llamaindex.ai">LlamaIndex 🦙</ExternalLink> and{' '}
+      <ExternalLink href="https://llamaindex.ai">LlamaIndex 🦙</ExternalLink>{' '}
       <ExternalLink href="https://trychroma.com">ChromaDB 🌈</ExternalLink>
     </p>
   )

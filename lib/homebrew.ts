@@ -81,27 +81,31 @@ export interface I_GetCollectionData {
   numItems: number
 }
 
-type T_TextModelsData = {
-  id: string // path to model on disk
-  object: string // what type it is
-  owned_by: string
-  permissions: string[]
-}
+// type T_TextModelsData = {
+//   id: string // path to model on disk
+//   object: string // what type it is
+//   owned_by: string
+//   permissions: string[]
+// }
 
-interface I_ConnectTextInferenceData {
-  object: string
-  data: T_TextModelsData[]
-}
+// interface I_ConnectTextInferenceData {
+//   object: string
+//   data: T_TextModelsData[]
+// }
 
 export interface I_ServiceApis {
   /**
    * Use to query the text inference engine
    */
   textInference: {
-    completions: T_GenericAPIRequest<T_GenericDataRes>
-    embeddings: T_GenericAPIRequest<T_GenericDataRes>
-    chatCompletions: T_GenericAPIRequest<T_GenericDataRes>
-    models: () => Promise<I_ConnectTextInferenceData>
+    // llama-cpp-python[server] version
+    // models: () => Promise<I_ConnectTextInferenceData>
+    // completions: T_GenericAPIRequest<T_GenericDataRes>
+    // embeddings: T_GenericAPIRequest<T_GenericDataRes>
+    // chatCompletions: T_GenericAPIRequest<T_GenericDataRes>
+
+    // Homebrew version
+    inference: T_GenericAPIRequest<T_GenericDataRes>
   }
   /**
    * Use to add/create/update/delete embeddings from database
@@ -302,39 +306,39 @@ export const useHomebrew = () => {
   /**
    * Attempt to connect to text inference server and return api services.
    */
-  interface I_ConnectTextResponse {
-    success: boolean
-    message: string
-    data: T_TextModelsData[]
-  }
-  const connectTextService = async (): Promise<I_ConnectTextResponse> => {
-    try {
-      const servicesResponse = await getServices()
-      const req = servicesResponse?.textInference?.models
-      if (!req)
-        return {
-          success: false,
-          message: '',
-          data: [],
-        }
+  // interface I_ConnectTextResponse {
+  //   success: boolean
+  //   message: string
+  //   data: T_TextModelsData[]
+  // }
+  // const connectTextService = async (): Promise<I_ConnectTextResponse> => {
+  //   try {
+  //     const servicesResponse = await getServices()
+  //     const req = servicesResponse?.textInference?.models
+  //     if (!req)
+  //       return {
+  //         success: false,
+  //         message: '',
+  //         data: [],
+  //       }
 
-      const res = await req()
+  //     const res = await req()
 
-      return {
-        success: true,
-        message: `Found ${res.data?.length} models`,
-        data: res.data,
-      }
-    } catch (error) {
-      const errMsg = `${error}`
-      console.log(`[homebrew] connectTextService: ${errMsg}`)
-      return {
-        success: false,
-        message: errMsg,
-        data: [],
-      }
-    }
-  }
+  //     return {
+  //       success: true,
+  //       message: `Found ${res.data?.length} models`,
+  //       data: res.data,
+  //     }
+  //   } catch (error) {
+  //     const errMsg = `${error}`
+  //     console.log(`[homebrew] connectTextService: ${errMsg}`)
+  //     return {
+  //       success: false,
+  //       message: errMsg,
+  //       data: [],
+  //     }
+  //   }
+  // }
 
   /**
    * Get all api configs for services.
@@ -345,5 +349,5 @@ export const useHomebrew = () => {
     return serviceApis
   }
 
-  return { connect, connectTextService, getServices }
+  return { connect, getServices }
 }
