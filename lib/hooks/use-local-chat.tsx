@@ -63,12 +63,12 @@ export const useLocalInference = ({
       const text = parsedResult?.data
 
       setResponseText(prevText => {
-        console.log('[UI] onStreamResult:', text)
         return (prevText += text)
       })
+
       return
     } catch (err) {
-      console.log('[UI] onStreamResult err:', typeof result, ' | ', err)
+      console.log('[Chat] onStreamResult err:', typeof result, ' | ', err)
       return
     }
   }
@@ -77,14 +77,13 @@ export const useLocalInference = ({
     // @TODO Render these states on screen
     switch (eventName) {
       case 'FEEDING_PROMPT':
-        console.log('[Chat] onEvent FEEDING_PROMPT...')
         break
       case 'GENERATING_TOKENS':
-        console.log('[Chat] onEvent GENERATING_TOKENS...')
         break
       default:
         break
     }
+    console.log(`[Chat] onStreamEvent ${eventName}`)
   }
 
   const stop = useCallback(() => {
@@ -151,9 +150,9 @@ export const useLocalInference = ({
       setIsLoading(true)
       abortRef.current = false
       // Send request completion for prompt
-      console.log('[UI] Sending request to inference server...', newUserMsg)
+      console.log('[Chat] Sending request to inference server...', newUserMsg)
       const response = await getCompletion(options, collectionNames)
-      console.log('[UI] Prompt response', response)
+      console.log('[Chat] Prompt response', response)
       if (!response) throw new Error('No prompt response.')
 
       // Process the stream into text tokens
@@ -163,15 +162,14 @@ export const useLocalInference = ({
         {
           onData: (res: string) => onStreamResult(res),
           onFinish: async () => {
-            console.log('[UI] stream finished!')
+            console.log('[Chat] stream finished!')
             setIsLoading(false)
           },
           onEvent: async str => {
             onStreamEvent(str)
           },
           onComment: async str => {
-            // @TODO Render this state on screen
-            console.log('[UI] onComment', str)
+            console.log('[Chat] onComment', str)
           },
         },
         abortRef,
