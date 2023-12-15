@@ -81,31 +81,25 @@ export interface I_GetCollectionData {
   numItems: number
 }
 
-// type T_TextModelsData = {
-//   id: string // path to model on disk
-//   object: string // what type it is
-//   owned_by: string
-//   permissions: string[]
-// }
-
-// interface I_ConnectTextInferenceData {
-//   object: string
-//   data: T_TextModelsData[]
-// }
+type T_TextModelsData = {
+  id: string
+  name: string
+  path: string // path to model on disk
+  size: string
+  type?: string // what type it is
+  ownedBy: string
+  permissions: string[]
+  promptTemplate: string
+}
 
 export interface I_ServiceApis {
   /**
    * Use to query the text inference engine
    */
   textInference: {
-    // llama-cpp-python[server] version
-    // models: () => Promise<I_ConnectTextInferenceData>
-    // completions: T_GenericAPIRequest<T_GenericDataRes>
-    // embeddings: T_GenericAPIRequest<T_GenericDataRes>
-    // chatCompletions: T_GenericAPIRequest<T_GenericDataRes>
-
     // Homebrew version
     inference: T_GenericAPIRequest<T_GenericDataRes>
+    models: T_GenericAPIRequest<T_TextModelsData>
   }
   /**
    * Use to add/create/update/delete embeddings from database

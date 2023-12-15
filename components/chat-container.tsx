@@ -46,6 +46,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       if (res?.success) {
         toast.success(`Connected to local provider...waiting for Ai connection...`)
         setIsConnected(true)
+        // Get all possible server endpoints
         const homebrewServices = await getServices()
         if (homebrewServices) setServices(homebrewServices)
         // We are setting this here temp until both homebrew and inference api servers are combined.
