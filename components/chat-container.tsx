@@ -49,6 +49,9 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         // Get all possible server endpoints
         const homebrewServices = await getServices()
         if (homebrewServices) setServices(homebrewServices)
+        // Get the currently loaded text model
+        // @TODO Move this somewhere appropriate
+        // const currentModel = await homebrewServices?.textInference.models()
         // We are setting this here temp until both homebrew and inference api servers are combined.
         setHasTextServiceConnected(true)
 
