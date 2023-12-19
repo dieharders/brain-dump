@@ -13,7 +13,8 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { QuestionMarkIcon, PersonIcon, LightningBoltIcon, } from '@radix-ui/react-icons'
+import { IconConversationType } from '@/components/ui/icons'
+import { QuestionMarkIcon, PersonIcon, } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 
@@ -44,7 +45,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           {/* Conversational */}
           <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Conversational clicked')}>
-            <LightningBoltIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Conversational</span>
+            <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Conversational</span>
           </div>
           {/* Assistant */}
           <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Assistant clicked')} >
