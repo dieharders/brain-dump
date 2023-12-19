@@ -72,18 +72,21 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             name="url"
             type="number"
             // value={0.2}
+            min={0}
+            max={2}
             placeholder="0.2"
             className="w-fit"
             onChange={() => { }}
           />
         </div>
-        {/* Sampling Precision (top_k) */}
+        {/* Sampling Precision (top_k) - limit how many options we consider while sampling */}
         <div className="grid w-full gap-1">
           <Label className="text-sm font-semibold">Num K Samples</Label>
           <Input
             name="url"
             type="number"
             // value={40}
+            min={0}
             placeholder="40"
             className="w-fit"
             onChange={() => { }}
@@ -96,6 +99,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             name="url"
             type="number"
             // value={0.95}
+            min={0}
             placeholder="0.95"
             className="w-fit"
             onChange={() => { }}
@@ -107,7 +111,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             // value={"\n"}
-            placeholder="\n"
+            placeholder="stop"
             className="w-fit"
             onChange={() => { }}
           />
@@ -119,6 +123,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             name="url"
             type="number"
             // value={256}
+            min={4}
             placeholder="256"
             className="w-fit"
             onChange={() => { }}
@@ -131,6 +136,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             name="url"
             type="number"
             // value={1.1}
+            min={0}
             placeholder="1.1"
             className="w-fit"
             onChange={() => { }}
