@@ -2,15 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-  IconUser,
   IconBrain,
   IconMicrophone,
   IconPromptTemplate,
-  IconConversationType,
+  IconOpenAI,
+  IconSynth,
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { QueryCharmMenu } from '@/components/features/prompt/dialog-query-charm'
+import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
+import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -44,8 +46,10 @@ export const CharmMenu = (props: I_Props) => {
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
   const classnameIcon = 'h-fit w-16 cursor-pointer rounded-full text-white bg-ghost'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
-  const explanation = useRef(DEFAULT_EXPLANATION)
+  const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
+  const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
+  const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const { getServices } = useHomebrew()
@@ -62,8 +66,8 @@ export const CharmMenu = (props: I_Props) => {
       <Badge
         className="h-10 w-10 cursor-pointer bg-black p-2 ring-2 ring-accent hover:bg-accent"
         onClick={props?.onClick}
-        onMouseEnter={() => explanation.current = (props?.actionText || '')}
-        onMouseLeave={() => explanation.current = (DEFAULT_EXPLANATION)}
+        onMouseEnter={() => setExplanation(props?.actionText || '')}
+        onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}
       >
         {props.children}
       </Badge>
@@ -85,7 +89,7 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
-      {/* Items' Menus */}
+      {/* Collections list for Query Menu */}
       <QueryCharmMenu
         dialogOpen={openQueryCharmDialog}
         setDialogOpen={setOpenQueryCharmDialog}
@@ -93,6 +97,18 @@ export const CharmMenu = (props: I_Props) => {
         onSubmit={addActiveCharm}
         removeCharm={removeActiveCharm}
         selected={selectedMemoriesList}
+      />
+      {/* Menu for Response settings */}
+      <ResponseCharmMenu
+        dialogOpen={openResponseCharmDialog}
+        setDialogOpen={setOpenResponseCharmDialog}
+        onSubmit={() => { }}
+      />
+      {/* Menu for Prompt Template settings */}
+      <PromptTemplateCharmMenu
+        dialogOpen={openPromptCharmDialog}
+        setDialogOpen={setOpenPromptCharmDialog}
+        onSubmit={() => { }}
       />
 
       {/* Charms Selection Menu */}
@@ -102,6 +118,11 @@ export const CharmMenu = (props: I_Props) => {
           {/* Microphone - use to input text */}
           <CharmItem actionText="Microphone - Transform speech to text">
             <IconMicrophone className={classnameIcon} />
+          </CharmItem>
+
+          {/* Audio Response */}
+          <CharmItem actionText="Speak Response - Have the Ai speak back to you">
+            <IconSynth className={classnameIcon} />
           </CharmItem>
 
           {/* Query Memory - target a memory collection to use as context */}
@@ -125,26 +146,28 @@ export const CharmMenu = (props: I_Props) => {
             </TooltipTrigger>
           </Tooltip>
 
-          {/* Conversation Type - Q+A, Conversational, Inquisitive, Assistant, Agent? */}
-          <CharmItem actionText="Conversation Type - Q&A, Conversational, Inquisitive, Assistant, Agent">
-            <IconConversationType className={classnameIcon} />
+          {/* Conversation Type */}
+          <CharmItem actionText="Response Types - Q&A, Conversational, Assistant" onClick={() => setOpenResponseCharmDialog(true)} >
+            <IconOpenAI className={classnameIcon} />
           </CharmItem>
 
-          {/* Prompt Template - You are an expert researcher/coder/generalist/etc. Includes presets as well as a custom form to write your own */}
-          <CharmItem actionText="Prompt Template - Tweak presets or write your own">
+          {/* Prompt Template - You are an expert researcher/coder/generalist/etc. Includes presets, advanced settings as well as a custom form to write your own */}
+          <CharmItem actionText="Prompt Template - Use presets or write your own" onClick={() => setOpenPromptCharmDialog(true)}>
             <IconPromptTemplate className={classnameIcon} />
           </CharmItem>
 
-          {/* Agent Presets - creative, precise, normal */}
-          <CharmItem actionText="Response Accuracy - creative, precise, normal">
-            <IconUser className={classnameIcon} />
-          </CharmItem>
+          {/* Ai Mode - Completion, Chat, Data, Function, Copilot, Vision */}
+          {/* This may need to only be set at the start of the conversation */}
+          {/* <CharmItem actionText="Prompt Template - Use presets or write your own">
+            <IconPromptTemplate className={classnameIcon} />
+          </CharmItem> */}
+
         </div>
 
         <DropdownMenuSeparator />
 
         {/* Explanation of charm item when hovered */}
-        <p className="flex h-fit w-full flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation.current}</p>
+        <p className="flex h-fit w-full flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation}</p>
       </div>
     </>
   )
