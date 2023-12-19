@@ -29,7 +29,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const presetsMenu = (
     <>
       <DialogHeader className="my-8">
-        <DialogTitle>Q&A, Conversational, Assistant</DialogTitle>
+        <DialogTitle>Response Types</DialogTitle>
         <DialogDescription className="mb-4">
           Choose how you want the Ai to behave when responding.
         </DialogDescription>
@@ -39,11 +39,17 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <div className="w-full">
         <ToggleGroup label="Response Type">
           {/* Q and A */}
-          <QuestionMarkIcon className="h-10 w-10 rounded-sm bg-background p-2" />
+          <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Q and A clicked')}>
+            <QuestionMarkIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Question & Answer</span>
+          </div>
           {/* Conversational */}
-          <LightningBoltIcon className="h-10 w-10 rounded-sm bg-background p-2" />
+          <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Conversational clicked')}>
+            <LightningBoltIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Conversational</span>
+          </div>
           {/* Assistant */}
-          <PersonIcon className="h-10 w-10 rounded-sm bg-background p-2" />
+          <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Assistant clicked')} >
+            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Assistant</span>
+          </div>
         </ToggleGroup>
       </div>
 
