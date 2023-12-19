@@ -8,14 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import ToggleGroup from '@/components/ui/toggle-group'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { BarChartIcon, AccessibilityIcon, ImageIcon, } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
+import { Slider } from '@/components/ui/slider'
 
 interface I_Props {
   dialogOpen: boolean
@@ -37,15 +36,15 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       </DialogHeader>
 
       {/* Content */}
-      <div className="w-full">
-        <ToggleGroup label="Accuracy">
-          {/* Scientific */}
-          <BarChartIcon className="h-10 w-10 rounded-sm bg-background p-2" />
-          {/* Normal */}
-          <AccessibilityIcon className="h-10 w-10 rounded-sm bg-background p-2" />
-          {/* Creative */}
-          <ImageIcon className="h-10 w-10 rounded-sm bg-background p-2" />
-        </ToggleGroup>
+      <div className="flex w-full flex-col">
+        {/* Labels placed above */}
+        <div className="flex w-full flex-row justify-center justify-items-stretch text-3xl">
+          <div className="grid w-full"><p className="self-end justify-self-start">🧪</p></div>
+          <div className="grid w-full"><p className="self-end justify-self-center">😐</p></div>
+          <div className="grid w-full"><p className="self-end justify-self-end">🎨</p></div>
+        </div>
+        {/* Slider */}
+        <Slider className="px-2" label="Accuracy" defaultValue={0.2} step={0.1} max={2} />
       </div>
 
       <Separator className="my-6" />
@@ -163,7 +162,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
-        <Tabs tabs={tabs} />
+        <Tabs label="Prompt Settings" tabs={tabs} />
       </DialogContent>
     </Dialog >
   )

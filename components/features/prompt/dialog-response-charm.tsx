@@ -139,7 +139,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
-        <Tabs tabs={tabs} />
+        <Tabs label="Response Settings" tabs={tabs} />
       </DialogContent>
     </Dialog>
   )

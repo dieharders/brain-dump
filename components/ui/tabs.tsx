@@ -1,4 +1,5 @@
 import { Root, List, Trigger, Content } from '@radix-ui/react-tabs'
+import { useState } from 'react'
 
 interface I_Tab {
   label: string
@@ -6,22 +7,28 @@ interface I_Tab {
 }
 
 interface I_Props {
+  label: string
   tabs: I_Tab[]
 }
 
-export const Tabs = ({ tabs }: I_Props) => {
+export const Tabs = ({ label = 'Tabs Menu', tabs = [] }: I_Props) => {
+  const [checked, setChecked] = useState<string>(tabs?.[0]?.label || '')
+
   return (
-    <Root className="flex flex-col shadow-sm" defaultValue={tabs[0].label}>
+    <Root className="flex flex-col justify-between overflow-hidden" defaultValue={tabs[0].label} onValueChange={setChecked} >
       {/* Tabs */}
-      <List className="mt-6 flex shrink-0 rounded-none" aria-label="Settings">
+      <List className="mb-4 mt-8 flex shrink-0 rounded-none" aria-label={label}>
         {tabs.map(i => {
           return (
             <Trigger
               key={i.label}
               value={i.label}
-              className="flex h-4 flex-1 cursor-default items-center justify-center border-b-2 px-4 pb-4 text-lg font-semibold uppercase text-gray-600 hover:text-white focus:border-b-2 focus:border-b-white focus:text-white"
+              className="flex h-4 flex-1 cursor-default items-center justify-center text-lg font-semibold uppercase"
             >
-              {i.label}
+              <label className="w-full">
+                <input className="peer hidden" type="radio" checked={checked === i.label} onChange={() => { /* Prevent browser error msg */ }} name="trigger-radio-button" />
+                <div className="border-b-2 py-2 text-gray-600 hover:border-b-gray-600 hover:text-white peer-checked:border-b-white peer-checked:text-white" >{i.label}</div>
+              </label>
             </Trigger>
           )
         })}
