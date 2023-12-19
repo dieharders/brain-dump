@@ -78,7 +78,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
             name="url"
             type="number"
             // value={512}
-            min={128}
+            min={64}
+            step={1}
             placeholder="512"
             className="w-fit"
             onChange={() => { }}
@@ -92,6 +93,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             type="number"
             // value={1337}
             min={0}
+            step={1}
             placeholder="1337"
             className="w-fit"
             onChange={() => { }}
@@ -105,6 +107,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             type="number"
             // value={-1}
             min={-1}
+            step={1}
             placeholder="-1"
             className="w-fit"
             onChange={() => { }}
@@ -118,6 +121,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             type="number"
             // value={512}
             min={64}
+            step={1}
             placeholder="512"
             className="w-fit"
             onChange={() => { }}

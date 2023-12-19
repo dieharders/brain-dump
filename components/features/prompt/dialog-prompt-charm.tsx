@@ -38,10 +38,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       {/* Content */}
       <div className="flex w-full flex-col">
         {/* Labels placed above */}
-        <div className="flex w-full flex-row justify-center justify-items-stretch text-3xl">
-          <div className="grid w-full"><p className="self-end justify-self-start">🧪</p></div>
-          <div className="grid w-full"><p className="self-end justify-self-center">😐</p></div>
-          <div className="grid w-full"><p className="self-end justify-self-end">🎨</p></div>
+        <div className="flex w-full cursor-pointer select-none flex-row justify-center justify-items-stretch text-3xl">
+          <div className="grid w-full" onClick={() => console.log('@@ set slider to Scientific (0.2)')} ><p className="self-end justify-self-start">🧪</p></div>
+          <div className="grid w-full" onClick={() => console.log('@@ set slider to Normal (1)')} ><p className="self-end justify-self-center">😐</p></div>
+          <div className="grid w-full" onClick={() => console.log('@@ set slider to Creative (1.75)')} ><p className="self-end justify-self-end">🎨</p></div>
         </div>
         {/* Slider */}
         <Slider className="px-2" label="Accuracy" defaultValue={0.2} step={0.1} max={2} />
@@ -74,6 +74,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             // value={0.2}
             min={0}
             max={2}
+            step={0.1}
             placeholder="0.2"
             className="w-fit"
             onChange={() => { }}
@@ -87,6 +88,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             type="number"
             // value={40}
             min={0}
+            step={1}
             placeholder="40"
             className="w-fit"
             onChange={() => { }}
@@ -100,6 +102,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             type="number"
             // value={0.95}
             min={0}
+            step={0.01}
             placeholder="0.95"
             className="w-fit"
             onChange={() => { }}
@@ -124,6 +127,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             type="number"
             // value={256}
             min={4}
+            step={1}
             placeholder="256"
             className="w-fit"
             onChange={() => { }}
@@ -137,6 +141,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             type="number"
             // value={1.1}
             min={0}
+            step={0.1}
             placeholder="1.1"
             className="w-fit"
             onChange={() => { }}
