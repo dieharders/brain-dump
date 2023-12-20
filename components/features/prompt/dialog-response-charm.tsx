@@ -90,7 +90,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             min={64}
             step={1}
             placeholder="512"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
@@ -104,7 +104,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             min={0}
             step={1}
             placeholder="1337"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
@@ -118,7 +118,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             min={-1}
             step={1}
             placeholder="-1"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
@@ -132,7 +132,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             min={64}
             step={1}
             placeholder="512"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>

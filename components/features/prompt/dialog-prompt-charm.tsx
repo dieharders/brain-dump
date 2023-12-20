@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
+import { Highlight, Info } from '@/components/ui/info'
 
 interface I_Props {
   dialogOpen: boolean
@@ -31,6 +32,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   const defaultSystemPrompt = `[system]: You are a helpful Ai named Jerry`
   const [promptTemplate, setPromptTemplate] = useState('')
   const [systemPrompt, setSystemPrompt] = useState('')
+  const infoClass = "flex w-full flex-row gap-2"
+  const inputContainerClass = "grid w-full gap-1"
 
   const presetsMenu = (
     <>
@@ -117,8 +120,11 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       {/* Content */}
       <form className="grid-auto-flow grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
         {/* Temperature (temperature) */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Temperature</Label>
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Temperature</Label>
+            <Info label="temperature"><span><Highlight>temperature</Highlight> affects how likely the Ai is to hallucinate facts.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -127,13 +133,16 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             max={2}
             step={0.1}
             placeholder="0.2"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
-        {/* Sampling Precision (top_k) - limit how many options we consider while sampling */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Num K Samples</Label>
+        {/* Sampling Precision (top_k) */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Num K Samples</Label>
+            <Info label="top_k"><span><Highlight>top_k</Highlight> limits how many options to consider when sampling.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -141,12 +150,12 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             min={0}
             step={1}
             placeholder="40"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
         {/* Sampling Precision (top_p) */}
-        <div className="grid w-full gap-1">
+        <div className={inputContainerClass}>
           <Label className="text-sm font-semibold">Num P Samples</Label>
           <Input
             name="url"
@@ -155,23 +164,23 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             min={0}
             step={0.01}
             placeholder="0.95"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
         {/* Stop Words (stop) */}
-        <div className="grid w-full gap-1">
+        <div className={inputContainerClass}>
           <Label className="text-sm font-semibold">Stop Words</Label>
           <Input
             name="url"
             // value={"\n"}
             placeholder="stop"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
         {/* Max Number of Tokens (max_tokens) */}
-        <div className="grid w-full gap-1">
+        <div className={inputContainerClass}>
           <Label className="text-sm font-semibold">Max Response Tokens</Label>
           <Input
             name="url"
@@ -180,12 +189,12 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             min={4}
             step={1}
             placeholder="256"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
         {/* Repetition penalty (repeat_penalty) */}
-        <div className="grid w-full gap-1">
+        <div className={inputContainerClass}>
           <Label className="text-sm font-semibold">Repetition Bias</Label>
           <Input
             name="url"
@@ -194,17 +203,17 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             min={0}
             step={0.1}
             placeholder="1.1"
-            className="w-fit"
+            className="w-full"
             onChange={() => { }}
           />
         </div>
         {/* Enable Streaming (stream) */}
-        <div className="grid w-full gap-1">
+        <div className={inputContainerClass}>
           <Label className="text-sm font-semibold">Stream Response</Label>
           <Switch className="block" defaultChecked />
         </div>
         {/* Echo Prompt in Response (echo) - Only for regular Completions */}
-        <div className="grid w-full gap-1">
+        <div className={inputContainerClass}>
           <Label className="text-sm font-semibold">Echo Prompt</Label>
           <Switch className="block" />
         </div>

@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils'
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> { }
 
-// @TODO Need a way to allow limiting numbers to either ints or floats
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
