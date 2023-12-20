@@ -27,8 +27,10 @@ interface I_Props {
 export const PromptTemplateCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen } = props
   const [accuracy, setAccuracy] = useState([0.2])
-  const defaultPromptTemplate = `[assistant]: foo \n[user]: bar`
-  const [promptTemplate, setPromptTemplate] = useState(defaultPromptTemplate)
+  const defaultPromptTemplate = `[user]: {input} \n[assistant]: {ouput}`
+  const defaultSystemPrompt = `[system]: You are a helpful Ai named Jerry`
+  const [promptTemplate, setPromptTemplate] = useState('')
+  const [systemPrompt, setSystemPrompt] = useState('')
 
   const presetsMenu = (
     <>
@@ -60,9 +62,25 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      {/* Prompt Template Presets */}
+      {/* System Prompt */}
       <DialogHeader className="my-8">
-        <DialogTitle>Prompt Template Settings</DialogTitle>
+        <DialogTitle>System Prompt</DialogTitle>
+        <DialogDescription>
+          Influence the overall behavior and character of the Ai (required).
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* Content */}
+      <textarea
+        className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
+        value={systemPrompt}
+        placeholder={defaultSystemPrompt}
+        onChange={(e) => setSystemPrompt(e.target.value)}
+      />
+
+      {/* Prompt Template */}
+      <DialogHeader className="my-8">
+        <DialogTitle>Prompt Template</DialogTitle>
         <DialogDescription>
           Give your prompts structure. This will wrap every request (optional).
         </DialogDescription>
@@ -72,13 +90,16 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <textarea
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
         value={promptTemplate}
+        placeholder={defaultPromptTemplate}
         onChange={(e) => setPromptTemplate(e.target.value)}
       />
 
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => { }}>Save</Button>
+        <Button onClick={async () => {
+          setDialogOpen(false)
+        }}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -192,7 +213,9 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => { }}>Save</Button>
+        <Button onClick={async () => {
+          setDialogOpen(false)
+        }}>Save</Button>
       </DialogFooter>
     </>
   )

@@ -61,7 +61,9 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => { }}>Save</Button>
+        <Button onClick={async () => {
+          setDialogOpen(false)
+        }}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -149,7 +151,9 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => { }}>Save</Button>
+        <Button onClick={async () => {
+          setDialogOpen(false)
+        }}>Save</Button>
       </DialogFooter>
     </>
   )
