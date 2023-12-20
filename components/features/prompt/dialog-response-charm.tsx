@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -65,9 +65,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
     preset: defaultState.preset,
   })
   // Handle input state changes
-  const handleFloatChange = (propName: string, event: ChangeEvent<HTMLInputElement>) => setState(prev => ({ ...prev, [propName]: parseFloat(event.target.value) }))
-  const handleBoolChange = (propName: string, value: boolean) => setState(prev => ({ ...prev, [propName]: value }))
-  const handleStringChange = (propName: string, value: string) => setState(prev => ({ ...prev, [propName]: value }))
+  const handleFloatChange = (propName: string, value: string) => setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
+  const handleStateChange = (propName: string, value: string | boolean) => setState(prev => ({ ...prev, [propName]: value }))
   // Menus
   const presetsMenu = (
     <>
@@ -84,7 +83,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           label="Response Type"
           defaultValue={defaultState.preset}
           value={state.preset}
-          onChange={val => handleStringChange('preset', val)}
+          onChange={val => handleStateChange('preset', val)}
         >
           {/* Q and A */}
           <div id="qa" className={toggleGroupClass}>
@@ -142,7 +141,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             step={1}
             placeholder={defaultState.n_ctx.toString()}
             className="w-full"
-            onChange={event => handleFloatChange('n_ctx', event)}
+            onChange={event => handleFloatChange('n_ctx', event.target.value)}
           />
         </div>
         {/* Seed */}
@@ -161,7 +160,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             step={1}
             placeholder={defaultState.seed.toString()}
             className="w-full"
-            onChange={event => handleFloatChange('seed', event)}
+            onChange={event => handleFloatChange('seed', event.target.value)}
           />
         </div>
         {/* Number of threads (n_threads) */}
@@ -180,7 +179,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             step={1}
             placeholder={defaultState.n_threads.toString()}
             className="w-full"
-            onChange={event => handleFloatChange('n_threads', event)}
+            onChange={event => handleFloatChange('n_threads', event.target.value)}
           />
         </div>
         {/* Max Batch Number (n_batch) - Maximum number of prompt tokens to batch together when calling llama_eval */}
@@ -199,7 +198,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             step={1}
             placeholder={defaultState.n_batch.toString()}
             className="w-full"
-            onChange={event => handleFloatChange('n_batch', event)}
+            onChange={event => handleFloatChange('n_batch', event.target.value)}
           />
         </div>
         {/* Toggle precision (f16_kv) */}
@@ -212,9 +211,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            defaultChecked={defaultState.f16_kv}
             checked={state.f16_kv}
-            onCheckedChange={val => handleBoolChange('f16_kv', val)}
+            onCheckedChange={val => handleStateChange('f16_kv', val)}
           />
         </div>
         {/* Memory Lock (use_mlock) */}
@@ -227,9 +225,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            defaultChecked={defaultState.use_mlock}
             checked={state.use_mlock}
-            onCheckedChange={val => handleBoolChange('use_mlock', val)}
+            onCheckedChange={val => handleStateChange('use_mlock', val)}
           />
         </div>
       </form>
