@@ -27,7 +27,7 @@ interface I_Props {
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen } = props
-  const [accuracy, setAccuracy] = useState([0.2])
+  const [accuracy, setAccuracy] = useState([0.8])
   const defaultPromptTemplate = `[user]: {input} \n[assistant]: {ouput}`
   const defaultSystemPrompt = `[system]: You are a helpful Ai named Jerry`
   const [promptTemplate, setPromptTemplate] = useState('')
@@ -132,7 +132,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             min={0}
             max={2}
             step={0.1}
-            placeholder="0.2"
+            placeholder="0.8"
             className="w-full"
             onChange={() => { }}
           />
@@ -140,8 +140,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         {/* Sampling Precision (top_k) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
-            <Label className="text-sm font-semibold">Num K Samples</Label>
-            <Info label="top_k"><span><Highlight>top_k</Highlight> limits how many options to consider when sampling.</span></Info>
+            <Label className="text-sm font-semibold"># Token Samples</Label>
+            <Info label="top_k"><span><Highlight>top_k</Highlight> limits how many words to consider when generating the next word.</span></Info>
           </div>
           <Input
             name="url"
@@ -156,12 +156,16 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         </div>
         {/* Sampling Precision (top_p) */}
         <div className={inputContainerClass}>
-          <Label className="text-sm font-semibold">Num P Samples</Label>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Possibility Bias</Label>
+            <Info label="top_p"><span>Only consider the possibilities that equal or exceed <Highlight>top_p</Highlight>.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
             // value={0.95}
             min={0}
+            max={1}
             step={0.01}
             placeholder="0.95"
             className="w-full"
@@ -170,7 +174,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         </div>
         {/* Stop Words (stop) */}
         <div className={inputContainerClass}>
-          <Label className="text-sm font-semibold">Stop Words</Label>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Stop Words</Label>
+            <Info label="stop"><span><Highlight>stop</Highlight> words are phrases that should be excluded from the input due to high occurance.</span></Info>
+          </div>
           <Input
             name="url"
             // value={"\n"}
@@ -181,21 +188,27 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         </div>
         {/* Max Number of Tokens (max_tokens) */}
         <div className={inputContainerClass}>
-          <Label className="text-sm font-semibold">Max Response Tokens</Label>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Max Response Tokens</Label>
+            <Info label="max_tokens"><span><Highlight>max_tokens</Highlight> determines the maximum number of tokens to generate.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
-            // value={256}
+            // value={128}
             min={4}
             step={1}
-            placeholder="256"
+            placeholder="128"
             className="w-full"
             onChange={() => { }}
           />
         </div>
         {/* Repetition penalty (repeat_penalty) */}
         <div className={inputContainerClass}>
-          <Label className="text-sm font-semibold">Repetition Bias</Label>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Repeat Bias</Label>
+            <Info label="repeat_penalty"><span><Highlight>repeat_penalty</Highlight> prevents words from occuring too frequently.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -209,12 +222,18 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         </div>
         {/* Enable Streaming (stream) */}
         <div className={inputContainerClass}>
-          <Label className="text-sm font-semibold">Stream Response</Label>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Stream Response</Label>
+            <Info label="stream"><span>Enable <Highlight>stream</Highlight> to receive each token as it is generated instead of the entire response upon completion.</span></Info>
+          </div>
           <Switch className="block" defaultChecked />
         </div>
         {/* Echo Prompt in Response (echo) - Only for regular Completions */}
         <div className={inputContainerClass}>
-          <Label className="text-sm font-semibold">Echo Prompt</Label>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Echo Prompt</Label>
+            <Info label="echo"><span><Highlight>echo</Highlight> will repeat the prompt in the response.</span></Info>
+          </div>
           <Switch className="block" />
         </div>
       </form>

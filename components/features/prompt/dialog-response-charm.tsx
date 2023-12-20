@@ -18,6 +18,7 @@ import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
+import { Highlight, Info } from '@/components/ui/info'
 
 interface I_Props {
   dialogOpen: boolean
@@ -27,6 +28,8 @@ interface I_Props {
 
 export const ResponseCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen } = props
+  const infoClass = "flex w-full flex-row gap-2"
+  const inputContainerClass = "grid w-full gap-1"
 
   const presetsMenu = (
     <>
@@ -81,8 +84,11 @@ export const ResponseCharmMenu = (props: I_Props) => {
       {/* Content */}
       <form className="grid-auto-flow grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
         {/* Context Window (n_ctx) */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Context Size</Label>
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Context Size</Label>
+            <Info label="n_ctx"><span><Highlight>n_ctx</Highlight> determines the number of tokens to consider when generating a response.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -95,8 +101,11 @@ export const ResponseCharmMenu = (props: I_Props) => {
           />
         </div>
         {/* Seed */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Seed</Label>
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Seed</Label>
+            <Info label="seed"><span><Highlight>seed</Highlight> determines the randomness seed. 0 for different seed on every prompt.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -109,8 +118,11 @@ export const ResponseCharmMenu = (props: I_Props) => {
           />
         </div>
         {/* Number of threads (n_threads) */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold"># Threads</Label>
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold"># Threads</Label>
+            <Info label="n_threads"><span><Highlight>n_threads</Highlight> number of GPU threads to use when generating. If None, the number is automatically determined.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -123,8 +135,11 @@ export const ResponseCharmMenu = (props: I_Props) => {
           />
         </div>
         {/* Max Batch Number (n_batch) - Maximum number of prompt tokens to batch together when calling llama_eval */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Batch Token Size</Label>
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Batch Token Size</Label>
+            <Info label="n_batch"><span><Highlight>n_batch</Highlight> Maximum number of prompt tokens to batch together when generating.</span></Info>
+          </div>
           <Input
             name="url"
             type="number"
@@ -137,14 +152,20 @@ export const ResponseCharmMenu = (props: I_Props) => {
           />
         </div>
         {/* Toggle precision (f16_kv) */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Half-Precision</Label>
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Half-Precision</Label>
+            <Info label="f16_kv"><span><Highlight>f16_kv</Highlight> Use half-precision for key/value generation cache.</span></Info>
+          </div>
           <Switch className="block" defaultChecked />
         </div>
         {/* Memory Lock (use_mlock) */}
-        <div className="grid w-full gap-1">
-          <Label className="text-sm font-semibold">Memory Lock</Label>
-          <Switch className="block" defaultChecked />
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Memory Lock</Label>
+            <Info label="use_mlock"><span><Highlight>use_mlock</Highlight> forces the system to keep the model in RAM.</span></Info>
+          </div>
+          <Switch className="block" />
         </div>
       </form>
 
