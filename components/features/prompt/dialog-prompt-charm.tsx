@@ -1,6 +1,6 @@
 'use client'
 
-import { I_Charm } from '@/components/features/prompt/prompt-charm-menu'
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { I_Charm } from '@/components/features/prompt/prompt-charm-menu'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
@@ -24,6 +25,7 @@ interface I_Props {
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen } = props
+  const [accuracy, setAccuracy] = useState([0.2])
 
   const presetsMenu = (
     <>
@@ -31,20 +33,26 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Prompt Template Settings</DialogTitle>
         <DialogDescription>
-          Choose an accuracy that matches your desired response (Scientific, Normal, Creative).
+          Choose an accuracy that matches your desired response.
         </DialogDescription>
       </DialogHeader>
 
       {/* Content */}
       <div className="flex w-full flex-col">
-        {/* Labels placed above */}
+        {/* Icons */}
         <div className="flex w-full cursor-pointer select-none flex-row justify-center justify-items-stretch text-3xl">
-          <div className="grid w-full" onClick={() => console.log('@@ set slider to Scientific (0.2)')} ><p className="self-end justify-self-start">🧪</p></div>
-          <div className="grid w-full" onClick={() => console.log('@@ set slider to Normal (1)')} ><p className="self-end justify-self-center">😐</p></div>
-          <div className="grid w-full" onClick={() => console.log('@@ set slider to Creative (1.75)')} ><p className="self-end justify-self-end">🎨</p></div>
+          <div className="grid w-full" onClick={() => setAccuracy([0.2])}><p className="self-end justify-self-start">🧪</p></div>
+          <div className="grid w-full" onClick={() => setAccuracy([1])}><p className="self-end justify-self-center">😐</p></div>
+          <div className="grid w-full" onClick={() => setAccuracy([1.75])}><p className="self-end justify-self-end">🎨</p></div>
         </div>
         {/* Slider */}
-        <Slider className="px-2" label="Accuracy" defaultValue={0.2} step={0.1} max={2} />
+        <Slider className="px-2" label="Accuracy" step={0.1} max={2} value={accuracy} setState={setAccuracy} />
+        {/* Labels */}
+        <div className="flex w-full select-none flex-row justify-center justify-items-stretch text-sm">
+          <div className="grid w-full"><p className="self-end justify-self-start">Scientific</p></div>
+          <div className="grid w-full"><p className="self-end justify-self-center">Normal</p></div>
+          <div className="grid w-full"><p className="self-end justify-self-end">Creative</p></div>
+        </div>
       </div>
 
       <Separator className="my-6" />
