@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -26,12 +27,14 @@ interface I_Props {
 export const PromptTemplateCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen } = props
   const [accuracy, setAccuracy] = useState([0.2])
+  const defaultPromptTemplate = `[assistant]: foo \n[user]: bar`
+  const [promptTemplate, setPromptTemplate] = useState(defaultPromptTemplate)
 
   const presetsMenu = (
     <>
       {/* Accuracy Presets */}
       <DialogHeader className="my-8">
-        <DialogTitle>Prompt Template Settings</DialogTitle>
+        <DialogTitle>Accuracy Settings</DialogTitle>
         <DialogDescription>
           Choose an accuracy that matches your desired response.
         </DialogDescription>
@@ -57,7 +60,26 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      <Button onClick={async () => { }}>Save</Button>
+      {/* Prompt Template Presets */}
+      <DialogHeader className="my-8">
+        <DialogTitle>Prompt Template Settings</DialogTitle>
+        <DialogDescription>
+          Give your prompts structure. This will wrap every request (optional).
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* Content */}
+      <textarea
+        className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
+        value={promptTemplate}
+        onChange={(e) => setPromptTemplate(e.target.value)}
+      />
+
+      <Separator className="my-6" />
+
+      <DialogFooter className="items-center">
+        <Button onClick={async () => { }}>Save</Button>
+      </DialogFooter>
     </>
   )
 
@@ -169,7 +191,9 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      <Button onClick={async () => { }}>Save</Button>
+      <DialogFooter className="items-center">
+        <Button onClick={async () => { }}>Save</Button>
+      </DialogFooter>
     </>
   )
 

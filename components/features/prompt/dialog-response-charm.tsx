@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -59,7 +60,9 @@ export const ResponseCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      <Button onClick={async () => { }}>Save</Button>
+      <DialogFooter className="items-center">
+        <Button onClick={async () => { }}>Save</Button>
+      </DialogFooter>
     </>
   )
 
@@ -145,7 +148,9 @@ export const ResponseCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      <Button onClick={async () => { }}>Save</Button>
+      <DialogFooter className="items-center">
+        <Button onClick={async () => { }}>Save</Button>
+      </DialogFooter>
     </>
   )
 
