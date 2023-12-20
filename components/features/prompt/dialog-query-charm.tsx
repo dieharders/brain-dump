@@ -216,5 +216,6 @@ export const QueryCharmMenu = (props: I_Props) => {
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>)
+    </Dialog>
+  )
 }
