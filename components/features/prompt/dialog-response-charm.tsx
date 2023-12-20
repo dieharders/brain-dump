@@ -38,19 +38,22 @@ export const ResponseCharmMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className="w-full">
-        <ToggleGroup label="Response Type">
+        <ToggleGroup label="Response Type" defaultValue="1">
           {/* Q and A */}
-          <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Q and A clicked')}>
-            <QuestionMarkIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Question & Answer</span>
-          </div>
+          <>
+            <QuestionMarkIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis">Question & Answer</span>
+          </>
           {/* Conversational */}
-          <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Conversational clicked')}>
-            <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Conversational</span>
-          </div>
+          <>
+            <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis">Conversational</span>
+          </>
           {/* Assistant */}
-          <div className="flex flex-row gap-2 rounded p-2" onClick={() => console.log('@@ Assistant clicked')} >
-            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" /><span className="flex-1 self-center text-ellipsis">Assistant</span>
-          </div>
+          <>
+            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis">Assistant</span>
+          </>
         </ToggleGroup>
       </div>
 

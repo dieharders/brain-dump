@@ -27,7 +27,7 @@ export const Tabs = ({ label = 'Tabs Menu', tabs = [] }: I_Props) => {
             >
               <label className="w-full">
                 <input className="peer hidden" type="radio" checked={checked === i.label} onChange={() => { /* Prevent browser error msg */ }} name="trigger-radio-button" />
-                <div className="border-b-2 py-2 text-gray-600 hover:border-b-gray-600 hover:text-white peer-checked:border-b-white peer-checked:text-white" >{i.label}</div>
+                <div className="border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary" >{i.label}</div>
               </label>
             </Trigger>
           )
