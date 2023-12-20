@@ -56,13 +56,13 @@ export const ResponseCharmMenu = (props: I_Props) => {
   }
   // @TODO Pass in from persistent storage (upon menu open) and assign here
   const [state, setState] = useState<I_State>({
+    preset: defaultState.preset,
     n_ctx: '',
     seed: '',
     n_threads: '',
     n_batch: '',
     f16_kv: defaultState.f16_kv,
     use_mlock: defaultState.use_mlock,
-    preset: defaultState.preset,
   })
   // Handle input state changes
   const handleFloatChange = (propName: string, value: string) => setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
@@ -81,7 +81,6 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <div className="w-full">
         <ToggleGroup
           label="Response Type"
-          defaultValue={defaultState.preset}
           value={state.preset}
           onChange={val => handleStateChange('preset', val)}
         >

@@ -43,15 +43,15 @@ interface I_State {
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen } = props
-  const defaultPromptTemplate = `[user]: {input} \n[assistant]: {ouput}`
+  const defaultPromptTemplate = `[user]: {input} \n[assistant]: {output}`
   const defaultSystemPrompt = `[system]: You are a helpful Ai named Jerry`
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   // State values
   const defaultState: I_State = {
     preset: [0.8],
-    systemPrompt: '',
-    promptTemplate: '',
+    systemPrompt: defaultSystemPrompt,
+    promptTemplate: defaultPromptTemplate,
     temperature: 0.8,
     top_k: 40,
     top_p: 0.95,
@@ -64,8 +64,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   // @TODO Pass in from persistent storage (upon menu open) and assign here
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
-    systemPrompt: defaultState.systemPrompt,
-    promptTemplate: defaultState.promptTemplate,
+    systemPrompt: '',
+    promptTemplate: '',
     temperature: '',
     top_k: '',
     top_p: '',
@@ -128,7 +128,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <textarea
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
         value={state.systemPrompt}
-        placeholder={defaultSystemPrompt}
+        placeholder={defaultState.systemPrompt}
         onChange={e => handleStateChange('systemPrompt', e.target.value)}
       />
 
@@ -144,7 +144,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <textarea
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
         value={state.promptTemplate}
-        placeholder={defaultPromptTemplate}
+        placeholder={defaultState.promptTemplate}
         onChange={e => handleStateChange('promptTemplate', e.target.value)}
       />
 

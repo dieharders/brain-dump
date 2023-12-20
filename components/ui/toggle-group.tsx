@@ -6,7 +6,7 @@ export type T_ConvoTypes = 'qa' | 'conversational' | 'assistant'
 interface I_Props {
   children: React.ReactNode
   label: string
-  defaultValue: T_ConvoTypes
+  defaultValue?: T_ConvoTypes
   value: T_ConvoTypes
   onChange: (val: T_ConvoTypes) => void
 }
