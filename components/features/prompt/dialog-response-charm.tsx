@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -20,33 +20,29 @@ import { QuestionMarkIcon, PersonIcon, } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
+import { I_LLM_Init_Options, I_LLM_Options } from '@/lib/hooks/types'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  onSubmit: (charm: I_Charm) => void
+  onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
+  settings: I_State | null
 }
 
-interface I_State {
+interface I_State extends I_LLM_Init_Options {
   // Presets
-  preset: T_ConvoTypes
-  // Advanced
-  n_ctx: number | string
-  seed: number | string
-  n_threads: number | string
-  n_batch: number | string
-  f16_kv: boolean
-  use_mlock: boolean
+  preset?: T_ConvoTypes
 }
 
 export const ResponseCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings } = props
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
+  const DEFAULT_PRESET = 'conversational'
   // State values
   const defaultState: I_State = {
-    preset: 'conversational',
+    preset: DEFAULT_PRESET,
     n_ctx: 512,
     seed: 1337,
     n_threads: -1,
@@ -54,19 +50,45 @@ export const ResponseCharmMenu = (props: I_Props) => {
     f16_kv: true,
     use_mlock: false,
   }
-  // @TODO Pass in from persistent storage (upon menu open) and assign here
+
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
-    n_ctx: '',
-    seed: '',
-    n_threads: '',
-    n_batch: '',
+    n_ctx: defaultState.n_ctx,
+    seed: defaultState.seed,
+    n_threads: defaultState.n_threads,
+    n_batch: defaultState.n_batch,
     f16_kv: defaultState.f16_kv,
     use_mlock: defaultState.use_mlock,
   })
+
   // Handle input state changes
-  const handleFloatChange = (propName: string, value: string) => setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
+  const handleFloatChange = (propName: string, value: string) => setState(prev => {
+    const defState = defaultState[propName as keyof I_State]
+    const propValue = value === '' ? defState : parseFloat(value)
+    return { ...prev, [propName]: propValue }
+  })
   const handleStateChange = (propName: string, value: string | boolean) => setState(prev => ({ ...prev, [propName]: value }))
+
+  const onSave = useCallback(() => {
+    setDialogOpen(false)
+    // Save settings
+    const charm: I_Charm = { id: 'model' }
+    const saveSettings = { init: {} as any }
+    // Cleanup exported values to correct types
+    Object.entries(state)?.forEach(([key, val]) => {
+      let newVal = val
+      if (typeof val === 'string') {
+        if (key === 'n_batch') newVal = parseInt(val)
+        if (key === 'n_ctx') newVal = parseInt(val)
+        if (key === 'n_threads') newVal = parseInt(val)
+        if (key === 'seed') newVal = parseInt(val)
+        if (val.length === 0) newVal = undefined
+      }
+      saveSettings.init[key] = newVal
+    })
+    onSubmit(charm, saveSettings)
+  }, [onSubmit, setDialogOpen, state])
+
   // Menus
   const presetsMenu = (
     <>
@@ -81,7 +103,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <div className="w-full">
         <ToggleGroup
           label="Response Type"
-          value={state.preset}
+          value={state?.preset || DEFAULT_PRESET}
           onChange={val => handleStateChange('preset', val)}
         >
           {/* Q and A */}
@@ -105,9 +127,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => {
-          setDialogOpen(false)
-        }}>Save</Button>
+        <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -118,7 +138,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Advanced Settings</DialogTitle>
         <DialogDescription>
-          Override presets.
+          Overrides presets.
         </DialogDescription>
       </DialogHeader>
 
@@ -135,10 +155,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.n_ctx}
+            value={state?.n_ctx}
             min={64}
             step={1}
-            placeholder={defaultState.n_ctx.toString()}
+            placeholder={defaultState?.n_ctx?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('n_ctx', event.target.value)}
           />
@@ -154,10 +174,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.seed}
+            value={state?.seed}
             min={0}
             step={1}
-            placeholder={defaultState.seed.toString()}
+            placeholder={defaultState?.seed?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('seed', event.target.value)}
           />
@@ -173,10 +193,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.n_threads}
+            value={state?.n_threads}
             min={-1}
             step={1}
-            placeholder={defaultState.n_threads.toString()}
+            placeholder={defaultState?.n_threads?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('n_threads', event.target.value)}
           />
@@ -192,10 +212,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.n_batch}
+            value={state?.n_batch}
             min={64}
             step={1}
-            placeholder={defaultState.n_batch.toString()}
+            placeholder={defaultState?.n_batch?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('n_batch', event.target.value)}
           />
@@ -210,7 +230,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            checked={state.f16_kv}
+            checked={state?.f16_kv}
             onCheckedChange={val => handleStateChange('f16_kv', val)}
           />
         </div>
@@ -224,7 +244,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            checked={state.use_mlock}
+            checked={state?.use_mlock}
             onCheckedChange={val => handleStateChange('use_mlock', val)}
           />
         </div>
@@ -233,9 +253,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => {
-          setDialogOpen(false)
-        }}>Save</Button>
+        <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -244,6 +262,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
     { label: 'presets', content: presetsMenu },
     { label: 'advanced', content: advancedMenu },
   ]
+
+  useEffect(() => {
+    if (settings && dialogOpen) setState(prev => ({ ...prev, ...settings }))
+  }, [dialogOpen, settings])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

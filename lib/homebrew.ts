@@ -99,6 +99,7 @@ export interface I_ServiceApis {
   textInference: {
     // Homebrew version
     inference: T_GenericAPIRequest<T_GenericDataRes>
+    load: T_GenericAPIRequest<T_GenericDataRes>
     models: T_GenericAPIRequest<T_TextModelsData>
   }
   /**
@@ -115,6 +116,13 @@ export interface I_ServiceApis {
     deleteCollection: T_GenericAPIRequest<T_GenericDataRes>
     fileExplore: T_GenericAPIRequest<T_GenericDataRes>
     wipe: T_GenericAPIRequest<T_GenericDataRes>
+  }
+  /**
+   * Use to persist data
+   */
+  storage: {
+    getSettings: T_GenericAPIRequest<T_GenericDataRes>
+    saveSettings: T_GenericAPIRequest<T_GenericDataRes>
   }
 }
 

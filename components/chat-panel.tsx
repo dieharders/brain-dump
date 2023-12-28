@@ -6,6 +6,7 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
+import { I_LLM_Options } from '@/lib/hooks/types'
 
 type TAppend = (message: Message | CreateMessage, collectionName?: string[]) => Promise<string | null | undefined>
 
@@ -17,6 +18,7 @@ export interface ChatPanelProps
   id?: string
   theme: string | undefined
   append: TAppend
+  saveSettings?: (args: I_LLM_Options) => void
 }
 
 export const ChatPanel = ({
@@ -29,6 +31,7 @@ export const ChatPanel = ({
   setInput,
   messages,
   theme,
+  saveSettings,
 }: ChatPanelProps) => {
   // @TODO from-neutral-900 does not match the chat-page's bg color
   const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
@@ -65,6 +68,7 @@ export const ChatPanel = ({
         <div className="flex flex-col justify-between space-y-4 border-t bg-background px-0 py-2 shadow-lg sm:rounded-t-xl sm:border sm:px-4 md:py-4">
           <CharmMenu
             open={charmMenuOpen}
+            saveSettings={saveSettings}
             activeCharms={activeCharms}
             addActiveCharm={(selectedCharm: I_Charm) => {
               const charmIds = activeCharms.map(i => i.id)

@@ -18,7 +18,7 @@ interface IProps extends React.ComponentProps<'div'> {
 
 export const LocalChat = ({ id, initialMessages, services, className }: IProps) => {
   const { theme } = useTheme()
-  const { append, messages, reload, stop, input, setInput, isLoading } =
+  const { append, messages, reload, stop, input, setInput, isLoading, saveSettings } =
     useLocalInference({
       initialMessages,
       services,
@@ -46,6 +46,7 @@ export const LocalChat = ({ id, initialMessages, services, className }: IProps) 
         input={input}
         setInput={setInput}
         theme={theme}
+        saveSettings={saveSettings}
       />
     </>
   )

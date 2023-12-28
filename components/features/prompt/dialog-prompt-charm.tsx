@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -18,31 +18,22 @@ import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
+import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  onSubmit: (charm: I_Charm) => void
+  onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
+  settings: I_State | null
 }
 
-interface I_State {
+interface I_State extends I_LLM_Call_Options {
   // Presets
-  preset: number[] // temperature overrides preset
-  systemPrompt: string
-  promptTemplate: string
-  // Advanced
-  temperature: number | string
-  top_k: number | string
-  top_p: number | string
-  stop: string // seperate words by spaces
-  max_tokens: number | string
-  repeat_penalty: number | string
-  stream: boolean
-  echo: boolean
+  preset?: number[] // temperature overrides preset
 }
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings } = props
   const defaultPromptTemplate = `[user]: {input} \n[assistant]: {output}`
   const defaultSystemPrompt = `[system]: You are a helpful Ai named Jerry`
   const infoClass = "flex w-full flex-row gap-2"
@@ -55,29 +46,56 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     temperature: 0.8,
     top_k: 40,
     top_p: 0.95,
-    stop: 'stop',
+    stop: ['###'],
     max_tokens: 128,
     repeat_penalty: 1.1,
     stream: true,
     echo: false,
   }
-  // @TODO Pass in from persistent storage (upon menu open) and assign here
+
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
-    systemPrompt: '',
-    promptTemplate: '',
-    temperature: '',
-    top_k: '',
-    top_p: '',
-    stop: '',
-    max_tokens: '',
-    repeat_penalty: '',
+    systemPrompt: defaultState.systemPrompt,
+    promptTemplate: defaultState.promptTemplate,
+    temperature: defaultState.temperature,
+    top_k: defaultState.top_k,
+    top_p: defaultState.top_p,
+    stop: defaultState.stop,
+    max_tokens: defaultState.max_tokens,
+    repeat_penalty: defaultState.repeat_penalty,
     stream: defaultState.stream,
     echo: defaultState.echo,
   })
 
+  // Handle input state changes
   const handleStateChange = (propName: string, value: number[] | string | boolean) => setState(prev => ({ ...prev, [propName]: value }))
-  const handleFloatChange = (propName: string, value: string) => setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
+  const handleFloatChange = (propName: string, value: string) => setState(prev => {
+    const defState = defaultState[propName as keyof I_State]
+    const propValue = value === '' ? defState : parseFloat(value)
+    return { ...prev, [propName]: propValue }
+  })
+
+  const onSave = useCallback(() => {
+    setDialogOpen(false)
+    // Save settings
+    const charm: I_Charm = { id: 'prompt' }
+    const settings = { call: {} as any }
+    // Cleanup exported values to correct types
+    Object.entries(state)?.forEach(([key, val]) => {
+      let newVal = val
+      if (typeof val === 'string') {
+        if (key === 'max_tokens') newVal = parseInt(val)
+        if (key === 'repeat_penalty') newVal = parseFloat(val)
+        if (key === 'temperature') newVal = parseFloat(val)
+        if (key === 'top_k') newVal = parseInt(val)
+        if (key === 'top_p') newVal = parseFloat(val)
+        if (key === 'stop') newVal = val.split(' ')
+        if (val.length === 0) newVal = undefined
+      }
+      settings.call[key] = newVal
+    })
+    onSubmit(charm, settings)
+  }, [onSubmit, setDialogOpen, state])
 
   const presetsMenu = (
     <>
@@ -103,7 +121,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           label="Accuracy"
           step={0.1}
           max={2}
-          value={state.preset}
+          value={state?.preset || []}
           setState={val => handleStateChange('preset', val)}
         />
         {/* Labels */}
@@ -127,7 +145,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       {/* Content */}
       <textarea
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
-        value={state.systemPrompt}
+        value={state?.systemPrompt}
         placeholder={defaultState.systemPrompt}
         onChange={e => handleStateChange('systemPrompt', e.target.value)}
       />
@@ -143,7 +161,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       {/* Content */}
       <textarea
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
-        value={state.promptTemplate}
+        value={state?.promptTemplate}
         placeholder={defaultState.promptTemplate}
         onChange={e => handleStateChange('promptTemplate', e.target.value)}
       />
@@ -151,9 +169,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => {
-          setDialogOpen(false)
-        }}>Save</Button>
+        <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -164,7 +180,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Advanced Settings</DialogTitle>
         <DialogDescription>
-          Override presets.
+          Overrides Accuracy presets.
         </DialogDescription>
       </DialogHeader>
 
@@ -181,11 +197,11 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.temperature}
+            value={state?.temperature}
             min={0}
             max={2}
             step={0.1}
-            placeholder={defaultState.temperature.toString()}
+            placeholder={defaultState?.temperature?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('temperature', event.target.value)}
           />
@@ -201,10 +217,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.top_k}
+            value={state?.top_k}
             min={0}
             step={1}
-            placeholder={defaultState.top_k.toString()}
+            placeholder={defaultState?.top_k?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('top_k', event.target.value)}
           />
@@ -220,11 +236,11 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.top_p}
+            value={state?.top_p}
             min={0}
             max={1}
             step={0.01}
-            placeholder={defaultState.top_p.toString()}
+            placeholder={defaultState?.top_p?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('top_p', event.target.value)}
           />
@@ -234,13 +250,13 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Stop Words</Label>
             <Info label="stop">
-              <span><Highlight>stop</Highlight> words are phrases that should be excluded from the input due to high occurance.</span>
+              <span><Highlight>stop</Highlight> words are phrases that should be excluded from the input due to high occurance. Enter space seperated words.</span>
             </Info>
           </div>
           <Input
             name="url"
-            value={state.stop}
-            placeholder={defaultState.stop}
+            value={state?.stop?.join(',')}
+            placeholder={defaultState.stop?.join(',')}
             className="w-full"
             onChange={event => handleStateChange('stop', event.target.value)}
           />
@@ -256,10 +272,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.max_tokens}
+            value={state?.max_tokens}
             min={4}
             step={1}
-            placeholder={defaultState.max_tokens.toString()}
+            placeholder={defaultState?.max_tokens?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('max_tokens', event.target.value)}
           />
@@ -275,10 +291,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.repeat_penalty}
+            value={state?.repeat_penalty}
             min={0}
             step={0.1}
-            placeholder={defaultState.repeat_penalty.toString()}
+            placeholder={defaultState?.repeat_penalty?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('repeat_penalty', event.target.value)}
           />
@@ -293,7 +309,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            checked={state.stream}
+            checked={state?.stream}
             onCheckedChange={val => handleStateChange('stream', val)}
           />
         </div>
@@ -307,7 +323,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            checked={state.echo}
+            checked={state?.echo}
             onCheckedChange={val => handleStateChange('echo', val)}
           />
         </div>
@@ -316,9 +332,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => {
-          setDialogOpen(false)
-        }}>Save</Button>
+        <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -327,6 +341,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     { label: 'presets', content: presetsMenu },
     { label: 'advanced', content: advancedMenu },
   ]
+
+  useEffect(() => {
+    if (settings && dialogOpen) setState(prev => ({ ...prev, ...settings }))
+  }, [dialogOpen, settings])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

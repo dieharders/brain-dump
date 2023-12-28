@@ -5,22 +5,9 @@ import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
-import { ModelID } from '@/components/features/settings/types'
 import { I_ServiceApis } from '@/lib/homebrew'
+import { I_InferenceGenerateOptions, I_LLM_Options } from '@/lib/hooks/types'
 
-interface CompletionOptions {
-  // messages: Message[]
-  prompt: string
-  stream?: boolean
-  temperature?: number
-  num_outputs?: number
-  max_tokens?: number
-  stop?: string[]
-  echo?: boolean
-  model?: ModelID
-  seed?: number
-  mode?: string
-}
 
 interface IProps {
   initialMessages: Message[] | undefined,
@@ -34,14 +21,28 @@ export const useLocalInference = ({
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
   const [input, setInput] = useState('')
+  const defaultSettings = {
+    init: {},
+    call: {},
+  } as I_LLM_Options
+  const [settings, setSettings] = useState(defaultSettings)
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
   const messages = useRef<Message[]>(initialMessages || [])
   const abortRef = useRef(false)
 
+  const saveSettings = (settings: I_LLM_Options) => {
+    setSettings(prev => {
+      const result = { ...prev, ...settings }
+      // Also persist to disk
+      services?.storage.saveSettings({ body: settings })
+      return result
+    })
+  }
+
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
-    options: CompletionOptions,
+    options: I_InferenceGenerateOptions,
     collectionNames?: string[],
   ) => {
     try {
@@ -119,30 +120,6 @@ export const useLocalInference = ({
       content: prompt.content, // always assign prompt content w/o template
     }
     messages.current = [...messages.current, newUserMsg]
-    // @TODO Pass some options from the user.
-    const options: CompletionOptions = {
-      prompt: prompt.content,
-      stop: [
-        '\n',
-        '###',
-        '[DONE]',
-        'stop',
-      ],
-      stream: true,
-      echo: true,
-      max_tokens: 1024,
-      temperature: 0.79, // 1.0 more accurate, 0.0 more creative
-      seed: 0, // 0=random
-      // top_p: 0.7,
-      // suffix: '', // A suffix to append to the generated text. If None, no suffix is appended. Useful for chatbots.
-      // presence_penalty: [1.0],
-      // frequency_penalty: [1.0],
-      // num_outputs: 1,
-      // model: 'local', // renames model alias
-      // llama.cpp specific
-      // repeat_penalty: 1.0,
-      // top_k: 1.0,
-    }
 
     try {
       // Reset state
@@ -151,6 +128,7 @@ export const useLocalInference = ({
       abortRef.current = false
       // Send request completion for prompt
       console.log('[Chat] Sending request to inference server...', newUserMsg)
+      const options = { ...settings.call, prompt: prompt.content }
       const response = await getCompletion(options, collectionNames)
       console.log('[Chat] Prompt response', response)
       if (!response) throw new Error('No prompt response.')
@@ -158,7 +136,7 @@ export const useLocalInference = ({
       // Process the stream into text tokens
       await processSseStream(
         response,
-        options.stop,
+        settings?.call?.stop,
         {
           onData: (res: string) => onStreamResult(res),
           onFinish: async () => {
@@ -180,6 +158,16 @@ export const useLocalInference = ({
       return null
     }
   }
+
+  // Load inference settings
+  useEffect(() => {
+    const action = async () => {
+      const loadedSettings = await services?.storage.getSettings()
+      setSettings(loadedSettings?.data)
+    }
+    action()
+  }, [services?.storage])
+
 
   // Update messages state with results
   useEffect(() => {
@@ -212,5 +200,7 @@ export const useLocalInference = ({
     isLoading,
     input,
     setInput,
+    settings,
+    saveSettings,
   }
 }
