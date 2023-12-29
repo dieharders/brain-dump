@@ -45,7 +45,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
     preset: DEFAULT_PRESET,
     n_ctx: 512,
     seed: 1337,
-    n_threads: -1,
+    n_threads: undefined,
+    // n_gpu_layers: 0, // Number of layers to offload to GPU (-ngl). If -1, all layers are offloaded.
     n_batch: 512,
     f16_kv: true,
     use_mlock: false,
@@ -187,14 +188,14 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold"># Threads</Label>
             <Info label="n_threads">
-              <span><Highlight>n_threads</Highlight> number of GPU threads to use when generating. If None, the number is automatically determined.</span>
+              <span><Highlight>n_threads</Highlight> number of CPU threads to use when generating. If None, the number is automatically determined.</span>
             </Info>
           </div>
           <Input
             name="url"
             type="number"
-            value={state?.n_threads}
-            min={-1}
+            value={state?.n_threads ?? ''}
+            min={0}
             step={1}
             placeholder={defaultState?.n_threads?.toString()}
             className="w-full"

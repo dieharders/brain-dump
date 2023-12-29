@@ -2,8 +2,6 @@ interface I_Endpoint {
   name: string
   urlPath: string
   method: string
-  // completions
-  promptTemplate?: string
 }
 
 interface I_API {
@@ -22,6 +20,11 @@ interface I_ConnectResponse {
   success: boolean
   message: string
   data: { docs: string }
+}
+
+interface I_ConstructPrompt {
+  prompt: string
+  promptTemplate?: string
 }
 
 export type T_GenericDataRes = any
@@ -81,7 +84,7 @@ export interface I_GetCollectionData {
   numItems: number
 }
 
-type T_TextModelsData = {
+export type T_TextModelsData = {
   id: string
   name: string
   path: string // path to model on disk
@@ -264,19 +267,8 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
         }
       }
 
-      // Add request function
-      const reqFunction = async (args: I_GenericAPIRequestParams) => {
-        // This is specific to constructing prompts, only applies to "completions"
-        const prompt = args?.body?.prompt
-          ? endpoint?.promptTemplate?.replace('{{PROMPT}}', args.body.prompt)
-          : ''
-        const newArgs = prompt
-          ? { body: { ...args.body, prompt }, queryParams: args?.queryParams }
-          : args
-
-        return request(newArgs)
-      }
-      endpoints[endpoint.name] = reqFunction
+      // Add request function for this endpoint
+      endpoints[endpoint.name] = request
     })
     // Set api callbacks
     serviceApis[apiName] = endpoints
@@ -305,42 +297,9 @@ export const useHomebrew = () => {
     return result
   }
 
-  /**
-   * Attempt to connect to text inference server and return api services.
-   */
-  // interface I_ConnectTextResponse {
-  //   success: boolean
-  //   message: string
-  //   data: T_TextModelsData[]
-  // }
-  // const connectTextService = async (): Promise<I_ConnectTextResponse> => {
-  //   try {
-  //     const servicesResponse = await getServices()
-  //     const req = servicesResponse?.textInference?.models
-  //     if (!req)
-  //       return {
-  //         success: false,
-  //         message: '',
-  //         data: [],
-  //       }
-
-  //     const res = await req()
-
-  //     return {
-  //       success: true,
-  //       message: `Found ${res.data?.length} models`,
-  //       data: res.data,
-  //     }
-  //   } catch (error) {
-  //     const errMsg = `${error}`
-  //     console.log(`[homebrew] connectTextService: ${errMsg}`)
-  //     return {
-  //       success: false,
-  //       message: errMsg,
-  //       data: [],
-  //     }
-  //   }
-  // }
+  const constructPrompt = ({ prompt, promptTemplate }: I_ConstructPrompt) => {
+    return promptTemplate?.replace('{{PROMPT}}', prompt)
+  }
 
   /**
    * Get all api configs for services.
@@ -351,5 +310,5 @@ export const useHomebrew = () => {
     return serviceApis
   }
 
-  return { connect, getServices }
+  return { connect, getServices, constructPrompt }
 }

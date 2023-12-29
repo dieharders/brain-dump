@@ -32,6 +32,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { provider: selectedProvider, model: selectedModel } = useSettings()
   const { connect: connectToHomebrew, getServices } = useHomebrew()
+  const [currentTextModel, setCurrentTextModel] = useState(null)
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -49,12 +50,6 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         // Get all possible server endpoints
         const homebrewServices = await getServices()
         if (homebrewServices) setServices(homebrewServices)
-        // Get the currently loaded text model
-        // @TODO Move this somewhere appropriate
-        // const currentModel = await homebrewServices?.textInference.models()
-        // We are setting this here temp until both homebrew and inference api servers are combined.
-        setHasTextServiceConnected(true)
-
         return true
       }
       toast.error(`Failed to connect to local provider.`)
@@ -67,29 +62,46 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
 
   const connectTextServiceAction = useCallback(async () => {
     const action = async () => {
-      // try {
-      //   const response = await connectTextService()
+      try {
+        // First check if a model is already loaded, if so skip...
+        const modelResponse = await services?.textInference.models()
+        if (modelResponse?.success) {
+          toast.success(`Success: ${modelResponse?.message}`)
+          return true
+        }
+        // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
+        const settingsResponse = await services?.storage.getSettings()
+        if (!settingsResponse?.success) {
+          toast.error(`${settingsResponse?.message}`)
+        }
+        // @TODO Pass modelId from user defined input...
+        const modelId = 'llama-2-13b-chat'
+        // Remove "preset" from payload
+        const initOptions = { ...settingsResponse?.data?.init }
+        if (initOptions?.preset) delete initOptions['preset']
+        // Tell backend to load the model into memory using these args
+        const payload = { modelId, ...initOptions }
+        const response = await services?.textInference.load({ body: payload })
 
-      //   if (response?.success) {
-      //     const id = response?.data[0]?.id
-      //     setHasTextServiceConnected(true)
-      //     toast.success(`Connected to Ai model [${id}]`)
-      //     return true
-      //   } else {
-      //     toast.error(response?.message || 'Failed to connect to Ai model.')
-      //   }
-      //   return false
-      // } catch (error) {
-      //   toast.error(`${error}`)
-      //   return false
-      // }
+        if (response?.success) {
+          toast.success('Connected successfully to Ai')
+          setCurrentTextModel(response?.data)
+          return true
+        }
+
+        toast.error(response?.message || 'Failed to connect to Ai.')
+        return false
+      } catch (error) {
+        toast.error(`${error}`)
+        return false
+      }
     }
 
     setIsConnecting(true)
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [])
+  }, [services?.storage, services?.textInference])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
@@ -110,13 +122,19 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     )
 
   // Render "Connect Ai" button
+  // @TODO This should be a drop down selector for model id and a connect button
   if (!hasTextServiceConnected)
     return (
       <>
         <div className="m-4 text-center">Connected to HomebrewAi server.<br />Waiting for Ai engine to start...</div>
         <Button
           className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
-          onClick={connectTextServiceAction}
+          onClick={async () => {
+            setIsConnecting(true)
+            const isConnected = await connectTextServiceAction()
+            isConnected && setHasTextServiceConnected(true)
+            setIsConnecting(false)
+          }}
           disabled={isConnecting}
         >
           Connect to Ai
@@ -131,7 +149,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   if (!isConnecting && isConnected) {
     // Render chat UI (Local)
     if (isLocalSelected)
-      return <LocalChat id={id} initialMessages={initialMessages} services={services} />
+      return <LocalChat id={id} initialMessages={initialMessages} services={services} currentTextModel={currentTextModel} />
     // Render chat UI (cloud)
     if (isCloudSelected)
       // return <CloudChat id={id} initialMessages={initialMessages} />

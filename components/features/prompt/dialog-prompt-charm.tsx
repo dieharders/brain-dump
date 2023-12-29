@@ -255,8 +255,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           </div>
           <Input
             name="url"
-            value={state?.stop?.join(',')}
-            placeholder={defaultState.stop?.join(',')}
+            value={state?.stop?.join?.(' ')}
+            placeholder={defaultState.stop?.join(' ')}
             className="w-full"
             onChange={event => handleStateChange('stop', event.target.value)}
           />
