@@ -5,10 +5,11 @@ import * as SelectPrimitive from '@radix-ui/react-select'
 
 import { cn } from '@/lib/utils'
 import {
-  IconArrowDown,
+  // IconArrowDown,
   IconCheck,
-  IconChevronUpDown
+  // IconChevronUpDown
 } from '@/components/ui/icons'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 
 const Select = SelectPrimitive.Root
 
@@ -30,7 +31,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <IconArrowDown className="opacity-50" />
+      <ChevronDownIcon className="opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))

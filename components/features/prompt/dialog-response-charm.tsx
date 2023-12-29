@@ -144,7 +144,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       </DialogHeader>
 
       {/* Content */}
-      <form className="grid-auto-flow grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
+      <form className="grid-auto-flow grid w-full grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
         {/* Context Window (n_ctx) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
@@ -254,7 +254,13 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={onSave}>Save</Button>
+        <Button
+          className="w-full sm:w-fit"
+          onClick={() => setState(defaultState)}
+        >
+          Reset
+        </Button>
+        <Button className="w-full sm:w-fit" onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )

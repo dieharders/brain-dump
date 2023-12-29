@@ -17,6 +17,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
+import { GearIcon } from '@radix-ui/react-icons'
+import { I_LLM_Options } from '@/lib/hooks/types'
 
 declare global {
   interface Window {
@@ -44,6 +47,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const [currentTextModel, setCurrentTextModel] = useState(null)
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
   const [installedList, setInstalledList] = useState<any[]>([])
+  const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
+  const [responseSettings, setResponseSettings] = useState(null)
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -120,6 +125,10 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
 
   const installedModels = installedList?.map(item => (<SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>))
 
+  const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
+
+  const saveSettings = async (options: I_LLM_Options) => services?.storage.saveSettings({ body: options })
+
   // HomeBrewAi connection menu
   if (!isConnected)
     return (
@@ -138,39 +147,62 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
-      <div className="w-[70%]">
-        <div className="m-4 text-center">Connected to HomebrewAi server</div>
-        <div className="flex flex-row items-center justify-items-stretch">
-          <Button
-            className="text-white-50 m-4 min-w-fit flex-1 bg-blue-600 px-8 text-center hover:bg-white hover:text-blue-700"
-            onClick={async () => {
-              setIsConnecting(true)
-              const isConnected = await connectTextServiceAction()
-              isConnected && setHasTextServiceConnected(true)
-              setIsConnecting(false)
-            }}
-            disabled={isConnecting}
-          >
-            Load
-          </Button>
-          {/* Select a prev installed model to load */}
-          <Select
-            defaultValue={undefined}
-            value={selectedModelId}
-            onValueChange={setSelectedModelId}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Ai Model"></SelectValue>
-            </SelectTrigger>
-            <SelectGroup>
-              <SelectContent className="p-1">
-                <SelectLabel className="select-none">Installed</SelectLabel>
-                {installedModels}
-              </SelectContent>
-            </SelectGroup>
-          </Select>
+      <>
+        {/* Dialog Menu for Response settings */}
+        <ResponseCharmMenu
+          dialogOpen={openResponseCharmDialog}
+          setDialogOpen={setOpenResponseCharmDialog}
+          onSubmit={(charm, settings) => {
+            saveSettings(settings)
+            toast.success('Model settings saved!')
+          }}
+          settings={responseSettings}
+        />
+        {/* Model Selection Menu */}
+        <div className="flex w-full flex-col gap-16 overflow-hidden p-4 sm:w-[60%]">
+          <div className="mt-4 px-4 text-center">Connected to HomebrewAi server</div>
+          <div className="flex flex-row items-center justify-items-stretch gap-2">
+            <Button
+              className="min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-white hover:text-blue-700"
+              onClick={async () => {
+                setIsConnecting(true)
+                const isConnected = await connectTextServiceAction()
+                isConnected && setHasTextServiceConnected(true)
+                setIsConnecting(false)
+              }}
+              disabled={isConnecting}
+            >
+              Load
+            </Button>
+            {/* Select a prev installed model to load */}
+            <Select
+              defaultValue={undefined}
+              value={selectedModelId}
+              onValueChange={setSelectedModelId}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Ai Model"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup>
+                <SelectContent className="p-1">
+                  <SelectLabel className="select-none">Installed</SelectLabel>
+                  {installedModels}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+            {/* Model Settings Button */}
+            <Button
+              className="bg-accent-foreground hover:bg-accent"
+              onClick={
+                async () => {
+                  await fetchSettings().then(res => setResponseSettings(res?.data?.init))
+                  setOpenResponseCharmDialog(true)
+                }}>
+              <GearIcon className="text-foreground" />
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     )
 
   // Render "Connecting..." feedback
@@ -180,7 +212,14 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   if (!isConnecting && isConnected) {
     // Render chat UI (Local)
     if (isLocalSelected)
-      return <LocalChat id={id} initialMessages={initialMessages} services={services} currentTextModel={currentTextModel} />
+      return (
+        <LocalChat
+          id={id}
+          initialMessages={initialMessages}
+          services={services}
+          currentTextModel={currentTextModel}
+        />
+      )
     // Render chat UI (cloud)
     if (isCloudSelected)
       // return <CloudChat id={id} initialMessages={initialMessages} />

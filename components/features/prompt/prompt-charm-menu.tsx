@@ -5,13 +5,11 @@ import {
   IconBrain,
   IconMicrophone,
   IconPromptTemplate,
-  IconOpenAI,
   IconSynth,
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { QueryCharmMenu } from '@/components/features/prompt/dialog-query-charm'
-import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
 import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
@@ -50,8 +48,6 @@ export const CharmMenu = (props: I_Props) => {
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
-  const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
-  const [responseSettings, setResponseSettings] = useState(null)
   const [promptSettings, setPromptSettings] = useState(null)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
@@ -107,17 +103,6 @@ export const CharmMenu = (props: I_Props) => {
         removeCharm={removeActiveCharm}
         selected={selectedMemoriesList}
       />
-      {/* Menu for Response settings */}
-      <ResponseCharmMenu
-        dialogOpen={openResponseCharmDialog}
-        setDialogOpen={setOpenResponseCharmDialog}
-        onSubmit={(charm, settings) => {
-          addActiveCharm(charm)
-          saveSettings && saveSettings(settings)
-          toast.success('Response settings saved!')
-        }}
-        settings={responseSettings}
-      />
       {/* Menu for Prompt Template settings */}
       <PromptTemplateCharmMenu
         dialogOpen={openPromptCharmDialog}
@@ -170,17 +155,6 @@ export const CharmMenu = (props: I_Props) => {
               <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
             </TooltipTrigger>
           </Tooltip>
-
-          {/* Response Type */}
-          <CharmItem
-            className={`${emptyRingStyle} ${responseCharm && activeStyle}`}
-            actionText="Response Types - Q&A, Conversational, Assistant"
-            onClick={async () => {
-              await fetchSettings().then(res => setResponseSettings(res?.data?.init))
-              setOpenResponseCharmDialog(true)
-            }} >
-            <IconOpenAI className={iconStyle} />
-          </CharmItem>
 
           {/* Prompt Type - You are an expert researcher/coder/generalist/etc. Includes presets, advanced settings as well as a custom form to write your own */}
           <CharmItem
