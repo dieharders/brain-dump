@@ -14,7 +14,7 @@ interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   services: I_ServiceApis | null
-  currentTextModel: T_TextModelsData
+  currentTextModel: T_TextModelsData | null
 }
 
 export const LocalChat = ({ id, initialMessages, services, className, currentTextModel }: IProps) => {

@@ -104,6 +104,7 @@ export interface I_ServiceApis {
     inference: T_GenericAPIRequest<T_GenericDataRes>
     load: T_GenericAPIRequest<T_GenericDataRes>
     models: T_GenericAPIRequest<T_TextModelsData>
+    installed: T_GenericAPIRequest<T_GenericDataRes>
   }
   /**
    * Use to add/create/update/delete embeddings from database

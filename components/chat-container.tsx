@@ -8,6 +8,15 @@ import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
 declare global {
   interface Window {
@@ -33,6 +42,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const { provider: selectedProvider, model: selectedModel } = useSettings()
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const [currentTextModel, setCurrentTextModel] = useState(null)
+  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
+  const [installedList, setInstalledList] = useState<any[]>([])
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -45,11 +56,14 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       setIsConnecting(false)
 
       if (res?.success) {
-        toast.success(`Connected to local provider...waiting for Ai connection...`)
+        toast.success(`Connected to local provider`)
         setIsConnected(true)
         // Get all possible server endpoints
         const homebrewServices = await getServices()
         if (homebrewServices) setServices(homebrewServices)
+        // Get all currently installed models
+        const listResponse = await homebrewServices?.textInference.installed()
+        listResponse && setInstalledList(listResponse.data)
         return true
       }
       toast.error(`Failed to connect to local provider.`)
@@ -74,13 +88,11 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         if (!settingsResponse?.success) {
           toast.error(`${settingsResponse?.message}`)
         }
-        // @TODO Pass modelId from user defined input...
-        const modelId = 'llama-2-13b-chat'
         // Remove "preset" from payload
         const initOptions = { ...settingsResponse?.data?.init }
         if (initOptions?.preset) delete initOptions['preset']
         // Tell backend to load the model into memory using these args
-        const payload = { modelId, ...initOptions }
+        const payload = { modelId: selectedModelId, ...initOptions }
         const response = await services?.textInference.load({ body: payload })
 
         if (response?.success) {
@@ -101,16 +113,18 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [services?.storage, services?.textInference])
+  }, [selectedModelId, services?.storage, services?.textInference])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
 
-  // Render "Waiting..." feedback
+  const installedModels = installedList?.map(item => (<SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>))
+
+  // HomeBrewAi connection menu
   if (!isConnected)
     return (
       <>
-        <div className="m-4 text-center">Waiting for server...</div>
+        <div className="m-4 text-center">Waiting to connect to server</div>
         <Button
           className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
           onClick={connect}
@@ -121,25 +135,42 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       </>
     )
 
-  // Render "Connect Ai" button
-  // @TODO This should be a drop down selector for model id and a connect button
+  // Inference connection menu
   if (!hasTextServiceConnected)
     return (
-      <>
-        <div className="m-4 text-center">Connected to HomebrewAi server.<br />Waiting for Ai engine to start...</div>
-        <Button
-          className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
-          onClick={async () => {
-            setIsConnecting(true)
-            const isConnected = await connectTextServiceAction()
-            isConnected && setHasTextServiceConnected(true)
-            setIsConnecting(false)
-          }}
-          disabled={isConnecting}
-        >
-          Connect to Ai
-        </Button>
-      </>
+      <div className="w-[70%]">
+        <div className="m-4 text-center">Connected to HomebrewAi server</div>
+        <div className="flex flex-row items-center justify-items-stretch">
+          <Button
+            className="text-white-50 m-4 min-w-fit flex-1 bg-blue-600 px-8 text-center hover:bg-white hover:text-blue-700"
+            onClick={async () => {
+              setIsConnecting(true)
+              const isConnected = await connectTextServiceAction()
+              isConnected && setHasTextServiceConnected(true)
+              setIsConnecting(false)
+            }}
+            disabled={isConnecting}
+          >
+            Load
+          </Button>
+          {/* Select a prev installed model to load */}
+          <Select
+            defaultValue={undefined}
+            value={selectedModelId}
+            onValueChange={setSelectedModelId}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Ai Model"></SelectValue>
+            </SelectTrigger>
+            <SelectGroup>
+              <SelectContent className="p-1">
+                <SelectLabel className="select-none">Installed</SelectLabel>
+                {installedModels}
+              </SelectContent>
+            </SelectGroup>
+          </Select>
+        </div>
+      </div>
     )
 
   // Render "Connecting..." feedback
