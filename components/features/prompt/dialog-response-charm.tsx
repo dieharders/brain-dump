@@ -46,8 +46,9 @@ export const ResponseCharmMenu = (props: I_Props) => {
     n_ctx: 512,
     seed: 1337,
     n_threads: undefined,
-    // n_gpu_layers: 0, // Number of layers to offload to GPU (-ngl). If -1, all layers are offloaded.
     n_batch: 512,
+    offload_kqv: false,
+    n_gpu_layers: 0,
     f16_kv: true,
     use_mlock: false,
   }
@@ -58,6 +59,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
     seed: defaultState.seed,
     n_threads: defaultState.n_threads,
     n_batch: defaultState.n_batch,
+    offload_kqv: defaultState.offload_kqv,
+    n_gpu_layers: defaultState.n_gpu_layers,
     f16_kv: defaultState.f16_kv,
     use_mlock: defaultState.use_mlock,
   })
@@ -83,6 +86,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
         if (key === 'n_ctx') newVal = parseInt(val)
         if (key === 'n_threads') newVal = parseInt(val)
         if (key === 'seed') newVal = parseInt(val)
+        if (key === 'n_gpu_layers') newVal = parseInt(val)
         if (val.length === 0) newVal = undefined
       }
       saveSettings.init[key] = newVal
@@ -221,7 +225,40 @@ export const ResponseCharmMenu = (props: I_Props) => {
             onChange={event => handleFloatChange('n_batch', event.target.value)}
           />
         </div>
-        {/* Toggle precision (f16_kv) */}
+        {/* Number of GPU Layers (n_gpu_layers) - Number of layers to store in VRAM. Number of layers to offload to GPU (-ngl). If -1, all layers are offloaded. */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">GPU Layers</Label>
+            <Info label="n_gpu_layers">
+              <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. If -1 all layers are offloaded.</span>
+            </Info>
+          </div>
+          <Input
+            name="url"
+            type="number"
+            value={state?.n_gpu_layers}
+            min={-1}
+            step={1}
+            placeholder={defaultState?.n_gpu_layers?.toString()}
+            className="w-full"
+            onChange={event => handleFloatChange('n_gpu_layers', event.target.value)}
+          />
+        </div>
+        {/* Offload K, Q, V to GPU (offload_kqv) */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Offload Cache</Label>
+            <Info label="offload_kqv">
+              <span><Highlight>offload_kqv</Highlight> Whether to offload K, Q, V to GPU.</span>
+            </Info>
+          </div>
+          <Switch
+            className="block"
+            checked={state?.offload_kqv}
+            onCheckedChange={val => handleStateChange('offload_kqv', val)}
+          />
+        </div>
+        {/* Precision (f16_kv) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Half-Precision</Label>

@@ -163,7 +163,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           <div className="mt-4 px-4 text-center">Connected to HomebrewAi server</div>
           <div className="flex flex-row items-center justify-items-stretch gap-2">
             <Button
-              className="min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-white hover:text-blue-700"
+              className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-white hover:text-blue-700"
               onClick={async () => {
                 setIsConnecting(true)
                 const isConnected = await connectTextServiceAction()
@@ -180,7 +180,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
               value={selectedModelId}
               onValueChange={setSelectedModelId}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-fit w-full">
                 <SelectValue placeholder="Select Ai Model"></SelectValue>
               </SelectTrigger>
               <SelectGroup>
