@@ -29,7 +29,7 @@ interface I_Props {
 
 interface I_State extends I_LLM_Call_Options {
   // Presets
-  preset?: number[] // temperature overrides preset
+  preset?: number // preset overrides temperature
 }
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
@@ -40,7 +40,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   const inputContainerClass = "grid w-full gap-1"
   // State values
   const defaultState: I_State = {
-    preset: [0.8],
+    preset: 0.8,
     systemPrompt: defaultSystemPrompt,
     promptTemplate: defaultPromptTemplate,
     temperature: 0.8,
@@ -68,7 +68,16 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   })
 
   // Handle input state changes
-  const handleStateChange = (propName: string, value: number[] | string | boolean) => setState(prev => ({ ...prev, [propName]: value }))
+  const handleStateChange = (propName: string, value: number | string | boolean) => {
+    let presets: any
+    if (propName === 'preset') {
+      // Set advanced values for this preset
+      presets = {
+        temperature: value,
+      }
+    }
+    setState(prev => ({ ...prev, ...presets, [propName]: value }))
+  }
   const handleFloatChange = (propName: string, value: string) => setState(prev => {
     const defState = defaultState[propName as keyof I_State]
     const propValue = value === '' ? defState : parseFloat(value)
@@ -111,17 +120,18 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <div className="flex w-full flex-col">
         {/* Icons */}
         <div className="flex w-full cursor-pointer select-none flex-row justify-center justify-items-stretch text-3xl">
-          <div className="grid w-full" onClick={() => handleStateChange('preset', [0.2])}><p className="self-end justify-self-start">🧪</p></div>
-          <div className="grid w-full" onClick={() => handleStateChange('preset', [1])}><p className="self-end justify-self-center">😐</p></div>
-          <div className="grid w-full" onClick={() => handleStateChange('preset', [1.75])}><p className="self-end justify-self-end">🎨</p></div>
+          <div className="grid w-full" onClick={() => handleStateChange('preset', 0.2)}><p className="self-end justify-self-start">🧪</p></div>
+          <div className="grid w-full" onClick={() => handleStateChange('preset', 1)}><p className="self-end justify-self-center">😐</p></div>
+          <div className="grid w-full" onClick={() => handleStateChange('preset', 1.75)}><p className="self-end justify-self-end">🎨</p></div>
         </div>
         {/* Slider */}
         <Slider
           className="px-2"
           label="Accuracy"
+          min={0}
           step={0.1}
           max={2}
-          value={state?.preset || []}
+          value={state?.preset || 0}
           setState={val => handleStateChange('preset', val)}
         />
         {/* Labels */}

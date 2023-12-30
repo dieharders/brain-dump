@@ -1,22 +1,22 @@
 import { Root, Track, Range, Thumb } from '@radix-ui/react-slider'
 
 interface I_Props {
-  value: number[]
+  value: number
   defaultValue?: number
   label?: string
   step?: number
   min?: number
   max?: number
   className?: string
-  setState?: (val: number[]) => void
+  setState?: (val: number) => void
 }
 
 export const Slider = ({ value, setState = () => { }, className, label = 'Slider', step = 0.1, min = 0, max = 1, defaultValue = 0 }: I_Props) => (
   <form className={className}>
     <Root className="relative flex h-8 w-full cursor-default touch-none items-center"
       defaultValue={[defaultValue]}
-      value={value}
-      onValueChange={setState}
+      value={[value]}
+      onValueChange={(val) => val?.length && setState(val?.[0])}
       max={max}
       min={min}
       step={step}
