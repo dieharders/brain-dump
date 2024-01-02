@@ -196,7 +196,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
                 </Select>
               </div>
               {/* Model Settings Button */}
-              <Button
+              {selectedModelId && <Button
                 className="m-auto h-fit bg-accent-foreground hover:bg-accent"
                 variant="outline"
                 onClick={
@@ -205,7 +205,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
                     setOpenResponseCharmDialog(true)
                   }}>
                 <MixerHorizontalIcon className="mr-1" />Settings
-              </Button>
+              </Button>}
             </div>
           </div>
         </div>
