@@ -21,12 +21,14 @@ import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Init_Options, I_LLM_Options } from '@/lib/hooks/types'
+import { T_TextModelsData } from '@/lib/homebrew'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
   settings: I_State | null
+  modelConfig: T_TextModelsData | undefined
 }
 
 interface I_State extends I_LLM_Init_Options {
@@ -35,15 +37,16 @@ interface I_State extends I_LLM_Init_Options {
 }
 
 export const ResponseCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings, modelConfig } = props
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const DEFAULT_PRESET = 'conversational'
+
   // State values
   const defaultState: I_State = {
     preset: DEFAULT_PRESET,
-    n_ctx: 512,
+    n_ctx: modelConfig?.n_ctx || 1000,
     seed: 1337,
     n_threads: undefined,
     n_batch: 512,

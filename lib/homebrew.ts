@@ -93,6 +93,8 @@ export type T_TextModelsData = {
   ownedBy: string
   permissions: string[]
   promptTemplate: string
+  systemPrompt: string
+  n_ctx: number
 }
 
 export interface I_ServiceApis {
@@ -103,7 +105,7 @@ export interface I_ServiceApis {
     // Homebrew version
     inference: T_GenericAPIRequest<T_GenericDataRes>
     load: T_GenericAPIRequest<T_GenericDataRes>
-    models: T_GenericAPIRequest<T_TextModelsData>
+    model: T_GenericAPIRequest<T_TextModelsData>
     installed: T_GenericAPIRequest<T_GenericDataRes>
   }
   /**
@@ -127,6 +129,7 @@ export interface I_ServiceApis {
   storage: {
     getSettings: T_GenericAPIRequest<T_GenericDataRes>
     saveSettings: T_GenericAPIRequest<T_GenericDataRes>
+    // getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>
   }
 }
 

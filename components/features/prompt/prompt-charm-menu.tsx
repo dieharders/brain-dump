@@ -130,7 +130,7 @@ export const CharmMenu = (props: I_Props) => {
           {/* Audio Response */}
           <CharmItem
             className={`${emptyRingStyle}`}
-            actionText="Speak Response - Have the Ai speak back to you"
+            actionText="Speak - Have the Ai speak back to you"
           >
             <IconSynth className={iconStyle} />
           </CharmItem>
@@ -141,7 +141,7 @@ export const CharmMenu = (props: I_Props) => {
               tabIndex={-1}
               className={`h-10 rounded-full ${emptyRingStyle} ${memoryCharm && activeStyle}`}
             >
-              <CharmItem actionText="Query memory - Select a collection of memories to use as context" onClick={() => setOpenQueryCharmDialog(true)} >
+              <CharmItem actionText="Query Memory - Select a memory to use as context" onClick={() => setOpenQueryCharmDialog(true)} >
                 <IconBrain className={iconStyle} />
               </CharmItem>
               <TooltipContent

@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react'
 import { type Message } from 'ai/react'
 import { LocalChat } from '@/components/local-chat'
-import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_ServiceApis, T_TextModelsData, useHomebrew } from '@/lib/homebrew'
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
-import { GearIcon } from '@radix-ui/react-icons'
+import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { I_LLM_Options } from '@/lib/hooks/types'
 
 declare global {
@@ -46,7 +46,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const [currentTextModel, setCurrentTextModel] = useState(null)
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
-  const [installedList, setInstalledList] = useState<any[]>([])
+  const [installedList, setInstalledList] = useState<T_TextModelsData[]>([])
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const [responseSettings, setResponseSettings] = useState(null)
 
@@ -68,7 +68,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         if (homebrewServices) setServices(homebrewServices)
         // Get all currently installed models
         const listResponse = await homebrewServices?.textInference.installed()
-        listResponse && setInstalledList(listResponse.data)
+        listResponse?.data && setInstalledList(listResponse.data)
         return true
       }
       toast.error(`Failed to connect to local provider.`)
@@ -83,7 +83,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     const action = async () => {
       try {
         // First check if a model is already loaded, if so skip...
-        const modelResponse = await services?.textInference.models()
+        const modelResponse = await services?.textInference.model()
         if (modelResponse?.success) {
           toast.success(`Success: ${modelResponse?.message}`)
           return true
@@ -157,13 +157,15 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
             toast.success('Model settings saved!')
           }}
           settings={responseSettings}
+          modelConfig={installedList?.find(i => i.id === selectedModelId)}
         />
         {/* Model Selection Menu */}
-        <div className="flex w-full flex-col gap-16 overflow-hidden p-4 sm:w-[60%]">
+        <div className="flex w-full flex-col gap-16 overflow-hidden p-4 sm:w-[50%]">
           <div className="mt-4 px-4 text-center">Connected to HomebrewAi server</div>
-          <div className="flex flex-row items-center justify-items-stretch gap-2">
+          <div className="flex flex-col items-stretch justify-items-stretch gap-4">
+            {/* Load */}
             <Button
-              className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-white hover:text-blue-700"
+              className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-700"
               onClick={async () => {
                 setIsConnecting(true)
                 const isConnected = await connectTextServiceAction()
@@ -172,34 +174,39 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
               }}
               disabled={isConnecting}
             >
-              Load
+              <LightningBoltIcon className="mr-1" />Load
             </Button>
-            {/* Select a prev installed model to load */}
-            <Select
-              defaultValue={undefined}
-              value={selectedModelId}
-              onValueChange={setSelectedModelId}
-            >
-              <SelectTrigger className="h-fit w-full">
-                <SelectValue placeholder="Select Ai Model"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup>
-                <SelectContent className="p-1">
-                  <SelectLabel className="select-none">Installed</SelectLabel>
-                  {installedModels}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
-            {/* Model Settings Button */}
-            <Button
-              className="bg-accent-foreground hover:bg-accent"
-              onClick={
-                async () => {
-                  await fetchSettings().then(res => setResponseSettings(res?.data?.init))
-                  setOpenResponseCharmDialog(true)
-                }}>
-              <GearIcon className="text-foreground" />
-            </Button>
+            <div className="flex flex-row gap-2">
+              {/* Select a prev installed model to load */}
+              <div className="w-full">
+                <Select
+                  defaultValue={undefined}
+                  value={selectedModelId}
+                  onValueChange={setSelectedModelId}
+                >
+                  <SelectTrigger className="w-full flex-1">
+                    <SelectValue placeholder="Select Ai Model"></SelectValue>
+                  </SelectTrigger>
+                  <SelectGroup>
+                    <SelectContent className="p-1">
+                      <SelectLabel className="select-none">Installed</SelectLabel>
+                      {installedModels}
+                    </SelectContent>
+                  </SelectGroup>
+                </Select>
+              </div>
+              {/* Model Settings Button */}
+              <Button
+                className="m-auto h-fit bg-accent-foreground hover:bg-accent"
+                variant="outline"
+                onClick={
+                  async () => {
+                    await fetchSettings().then(res => setResponseSettings(res?.data?.init))
+                    setOpenResponseCharmDialog(true)
+                  }}>
+                <MixerHorizontalIcon className="mr-1" />Settings
+              </Button>
+            </div>
           </div>
         </div>
       </>
