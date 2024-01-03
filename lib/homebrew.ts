@@ -97,6 +97,34 @@ export type T_TextModelsData = {
   n_ctx: number
 }
 
+type T_PromptTemplate = {
+  id: string
+  name: string
+  text: string
+}
+
+export type T_RAGPromptTemplate = {
+  id: string
+  name: string
+  text: string
+  type: string
+}
+
+export type T_SystemPrompt = {
+  id: string
+  name: string
+  text: string
+}
+
+export type T_PromptTemplates = {
+  rag_presets: { [key: string]: T_RAGPromptTemplate[] }
+  normal_presets: { [key: string]: T_PromptTemplate[] }
+}
+
+export type T_SystemPrompts = {
+  presets: { [key: string]: T_SystemPrompt[] }
+}
+
 export interface I_ServiceApis {
   /**
    * Use to query the text inference engine
@@ -302,7 +330,7 @@ export const useHomebrew = () => {
   }
 
   const constructPrompt = ({ prompt, promptTemplate }: I_ConstructPrompt) => {
-    return promptTemplate?.replace('{{PROMPT}}', prompt)
+    return promptTemplate?.replace('{query_str}', prompt)
   }
 
   /**

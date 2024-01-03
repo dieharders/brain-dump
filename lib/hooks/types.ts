@@ -1,5 +1,6 @@
 import { type Message } from 'ai/react'
 import { ModelID } from '@/components/features/settings/types'
+import { T_RAGPromptTemplate } from '@/lib/homebrew'
 
 export interface I_InferenceGenerateOptions extends I_LLM_Call_Options {
   mode?: 'completion' | 'chat'
@@ -38,6 +39,7 @@ export interface I_LLM_Call_Options {
   model?: ModelID
   promptTemplate?: string
   systemPrompt?: string
+  ragPromptTemplate: T_RAGPromptTemplate
   // grammar?: string
 }
 

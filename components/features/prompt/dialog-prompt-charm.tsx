@@ -9,6 +9,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { I_Charm } from '@/components/features/prompt/prompt-charm-menu'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -19,12 +28,16 @@ import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
+import { T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts, T_TextModelsData } from '@/lib/homebrew'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
   settings: I_State | null
+  modelConfig: T_TextModelsData | undefined
+  promptTemplates: T_PromptTemplates | undefined
+  systemPrompts: T_SystemPrompts | undefined
 }
 
 interface I_State extends I_LLM_Call_Options {
@@ -32,17 +45,24 @@ interface I_State extends I_LLM_Call_Options {
   preset?: number // preset overrides temperature
 }
 
+type T_TemplateSource = 'model' | 'custom'
+
 export const PromptTemplateCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings } = props
-  const defaultPromptTemplate = `[user]: {input} \n[assistant]: {output}`
-  const defaultSystemPrompt = `[system]: You are a helpful Ai named Jerry`
+  const { dialogOpen, setDialogOpen, onSubmit, settings, modelConfig, promptTemplates, systemPrompts } = props
+  const defaultSystemPrompt = 'You are an AI assistant that helps people find information.'
+  const defaultPromptTemplate = '{query_str}'
+  const defaultRAGPromptTemplate = { id: 'simple_input', name: 'Basic Input', text: '{query_str}', type: 'SIMPLE_INPUT' }
+  const [systemPromptSource, setSystemPromptSource] = useState<string>()
+  const [promptTemplateSource, setPromptTemplateSource] = useState<T_TemplateSource>()
+  const [ragPromptSource, setRagPromptSource] = useState<string>() // llama-index prompts
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
-  // State values
+  // Default state values
   const defaultState: I_State = {
     preset: 0.8,
     systemPrompt: defaultSystemPrompt,
     promptTemplate: defaultPromptTemplate,
+    ragPromptTemplate: defaultRAGPromptTemplate,
     temperature: 0.8,
     top_k: 40,
     top_p: 0.95,
@@ -52,11 +72,12 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     stream: true,
     echo: false,
   }
-
+  // State values
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
     systemPrompt: defaultState.systemPrompt,
     promptTemplate: defaultState.promptTemplate,
+    ragPromptTemplate: defaultState.ragPromptTemplate,
     temperature: defaultState.temperature,
     top_k: defaultState.top_k,
     top_p: defaultState.top_p,
@@ -106,6 +127,51 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     onSubmit(charm, settings)
   }, [onSubmit, setDialogOpen, state])
 
+  const constructOptionsGroups = (config: { [key: string]: Array<T_SystemPrompt | T_RAGPromptTemplate> }) => {
+    const groups = Object.keys(config)
+    return groups.map((groupName) => {
+      const configs = config[groupName]
+      const items = configs.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)
+      return (
+        <SelectGroup key={groupName}>
+          <SelectLabel className="select-none">{groupName}</SelectLabel>
+          {/* We should specify which templates are for "chat" or "completion" */}
+          {items}
+        </SelectGroup>
+      )
+    })
+  }
+
+  const ragPromptTemplateOptions = useCallback(() => {
+    const config = promptTemplates?.rag_presets ?? {}
+    const presets = constructOptionsGroups(config)
+    const customGroup = (
+      <SelectGroup key="custom">
+        <SelectLabel className="select-none">Custom</SelectLabel>
+        <SelectItem value="custom_default">Custom (Default)</SelectItem>
+      </SelectGroup>
+    )
+    return [customGroup, ...presets]
+  }, [promptTemplates?.rag_presets])
+
+  const systemPromptOptions = useCallback(() => {
+    const config = systemPrompts?.presets ?? {}
+    const presets = constructOptionsGroups(config)
+    const customGroup = (
+      <SelectGroup key="custom">
+        <SelectLabel className="select-none">Custom</SelectLabel>
+        <SelectItem value="custom_default">Custom (Default)</SelectItem>
+      </SelectGroup>
+    )
+    const modelGroup = (
+      <SelectGroup key="model">
+        <SelectLabel className="select-none">Load from</SelectLabel>
+        <SelectItem value="model">Model Config</SelectItem>
+      </SelectGroup>
+    )
+    return [modelGroup, customGroup, ...presets]
+  }, [systemPrompts?.presets])
+
   const presetsMenu = (
     <>
       {/* Accuracy Presets */}
@@ -148,32 +214,140 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>System Prompt</DialogTitle>
         <DialogDescription>
-          Influence the overall behavior and character of the Ai (required).
+          Prepare the Ai by giving a description of its role and overall behavior.
         </DialogDescription>
       </DialogHeader>
 
+      {/* Select where to load from */}
+      <div className="mb-2 w-full">
+        <Select
+          value={systemPromptSource}
+          onValueChange={val => {
+            val && setSystemPromptSource(val as T_TemplateSource)
+            let template = ''
+            if (val === 'model') template = modelConfig?.systemPrompt ?? ''
+            // @TODO Eventually this will be read from a "custom_system_prompts.json" file from engine
+            else if (val === 'custom_default') template = settings?.systemPrompt || ''
+            else {
+              const configs = systemPrompts?.presets ?? {}
+              const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+              template = items.find(i => i.id === val)?.text || ''
+            }
+            template && setState(prev => ({ ...prev, systemPrompt: template }))
+          }}
+        >
+          <SelectTrigger className="w-full flex-1">
+            <SelectValue placeholder="Select a source"></SelectValue>
+          </SelectTrigger>
+          <SelectContent className="max-h-[16rem] p-1">
+            {systemPromptOptions()}
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Content */}
       <textarea
+        disabled={systemPromptSource !== 'custom_default'}
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
         value={state?.systemPrompt}
         placeholder={defaultState.systemPrompt}
         onChange={e => handleStateChange('systemPrompt', e.target.value)}
       />
 
-      {/* Prompt Template */}
+      {/* Prompt Template (Normal chat) */}
       <DialogHeader className="my-8">
         <DialogTitle>Prompt Template</DialogTitle>
         <DialogDescription>
-          Give your prompts structure. This will wrap every request (optional).
+          Give your prompts structure. This will wrap every request.
         </DialogDescription>
       </DialogHeader>
 
+      {/* Select where to load from */}
+      <div className="mb-2 w-full">
+        <Select
+          value={promptTemplateSource}
+          onValueChange={val => {
+            val && setPromptTemplateSource(val as T_TemplateSource)
+            let template = ''
+            if (val === 'model') template = modelConfig?.promptTemplate ?? ''
+            if (val === 'custom' && settings?.promptTemplate) template = settings.promptTemplate
+            if (template) setState(prev => ({ ...prev, promptTemplate: template }))
+          }}
+        >
+          <SelectTrigger className="w-full flex-1">
+            <SelectValue placeholder="Select a source"></SelectValue>
+          </SelectTrigger>
+          <SelectGroup>
+            <SelectContent className="p-1">
+              <SelectLabel className="select-none">Load from</SelectLabel>
+              <SelectItem value="model">Model Config</SelectItem>
+              <SelectItem value="custom">Custom</SelectItem>
+            </SelectContent>
+          </SelectGroup>
+        </Select>
+      </div>
+
       {/* Content */}
       <textarea
+        disabled={promptTemplateSource !== 'custom'}
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
         value={state?.promptTemplate}
         placeholder={defaultState.promptTemplate}
         onChange={e => handleStateChange('promptTemplate', e.target.value)}
+      />
+
+      {/* Prompt Template (Chat with Memories) */}
+      <DialogHeader className="my-8">
+        <DialogTitle>Memory Prompt Template</DialogTitle>
+        <DialogDescription>
+          When chatting with your memories, instruct & guide the Ai on how to handle your requests.
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* Select where to load from */}
+      <div className="mb-2 w-full">
+        <Select
+          value={ragPromptSource}
+          onValueChange={val => {
+            val && setRagPromptSource(val)
+            let template = {} as T_RAGPromptTemplate
+            // @TODO Eventually this will be read from a "custom_prompt_templates.json" file from engine
+            if (val === 'custom_default') {
+              if (settings?.ragPromptTemplate) {
+                template = settings.ragPromptTemplate
+                template.type = 'CUSTOM' // hard-code since user has no way of inputting
+              }
+            }
+            else {
+              const configs = promptTemplates?.rag_presets ?? {}
+              const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+              const tValue = items.find(i => i.id === val)
+              if (tValue) template = tValue
+            }
+            if (template.text) setState(prev => ({ ...prev, ragPromptTemplate: template }))
+          }}
+        >
+          <SelectTrigger className="w-full flex-1">
+            <SelectValue placeholder="Select a source"></SelectValue>
+          </SelectTrigger>
+          <SelectContent className="max-h-[16rem] p-1">
+            {ragPromptTemplateOptions()}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Content */}
+      <textarea
+        disabled={ragPromptSource !== 'custom_default'}
+        className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
+        value={state?.ragPromptTemplate.text}
+        placeholder={defaultState.ragPromptTemplate.text}
+        onChange={
+          e => {
+            const newValue = { ...state?.ragPromptTemplate, text: e.target.value }
+            setState(prev => ({ ...prev, ragPromptTemplate: newValue }))
+          }
+        }
       />
 
       <Separator className="my-6" />

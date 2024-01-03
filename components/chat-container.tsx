@@ -135,7 +135,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       <>
         <div className="m-4 text-center">Waiting to connect to server</div>
         <Button
-          className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center hover:bg-white hover:text-blue-700"
+          className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center text-white hover:bg-blue-800"
           onClick={connect}
           disabled={isConnecting}
         >
@@ -164,8 +164,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           <div className="mt-4 px-4 text-center">Connected to HomebrewAi server</div>
           <div className="flex flex-col items-stretch justify-items-stretch gap-4">
             {/* Load */}
-            <Button
-              className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-700"
+            {selectedModelId && <Button
+              className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"
               onClick={async () => {
                 setIsConnecting(true)
                 const isConnected = await connectTextServiceAction()
@@ -175,7 +175,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
               disabled={isConnecting}
             >
               <LightningBoltIcon className="mr-1" />Load
-            </Button>
+            </Button>}
             <div className="flex flex-row gap-2">
               {/* Select a prev installed model to load */}
               <div className="w-full">
@@ -189,7 +189,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
                   </SelectTrigger>
                   <SelectGroup>
                     <SelectContent className="p-1">
-                      <SelectLabel className="select-none">Installed</SelectLabel>
+                      <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
                       {installedModels}
                     </SelectContent>
                   </SelectGroup>

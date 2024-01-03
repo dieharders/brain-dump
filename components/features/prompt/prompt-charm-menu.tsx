@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { QueryCharmMenu } from '@/components/features/prompt/dialog-query-charm'
 import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_ServiceApis, T_PromptTemplates, T_SystemPrompts, T_TextModelsData, useHomebrew } from '@/lib/homebrew'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'react-hot-toast'
 
@@ -58,7 +58,9 @@ export const CharmMenu = (props: I_Props) => {
   const animDuration = open ? 'duration-150' : 'duration-500'
   const memoryCharm = activeCharms.find(i => i.id === 'memory')
   const promptCharm = activeCharms.find(i => i.id === 'prompt')
-  const responseCharm = activeCharms.find(i => i.id === 'model')
+  const [modelConfig, setModelConfig] = useState<T_TextModelsData | undefined>()
+  const [promptTemplates, setPromptTemplates] = useState<T_PromptTemplates | undefined>()
+  const [systemPrompts, setSystemPrompts] = useState<T_SystemPrompts | undefined>()
   const activeStyle = 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-2 ring-purple-300'
   const emptyRingStyle = 'ring-2 ring-accent'
   const selectedMemoriesList = useRef<string[]>([])
@@ -78,6 +80,17 @@ export const CharmMenu = (props: I_Props) => {
   }
 
   const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
+  const fetchModelConfig = useCallback(async () => services?.textInference.model(), [services?.textInference])
+  const fetchPromptTemplates = useCallback(async () => {
+    // Read in json file
+    const file = await import('data/prompt-templates.json')
+    return file
+  }, [])
+  const fetchSystemPrompts = useCallback(async () => {
+    // Read in json file
+    const file = await import('data/system-prompts.json')
+    return file
+  }, [])
 
   // Get services
   useEffect(() => {
@@ -113,6 +126,9 @@ export const CharmMenu = (props: I_Props) => {
           toast.success('Prompt settings saved!')
         }}
         settings={promptSettings}
+        modelConfig={modelConfig}
+        promptTemplates={promptTemplates}
+        systemPrompts={systemPrompts}
       />
 
       {/* Charms Selection Menu */}
@@ -156,12 +172,15 @@ export const CharmMenu = (props: I_Props) => {
             </TooltipTrigger>
           </Tooltip>
 
-          {/* Prompt Type - You are an expert researcher/coder/generalist/etc. Includes presets, advanced settings as well as a custom form to write your own */}
+          {/* Prompt Type - Includes presets, advanced settings as well as a custom form to write your own */}
           <CharmItem
             className={`${emptyRingStyle} ${promptCharm && activeStyle}`}
             actionText="Prompt Template - Use presets or write your own"
             onClick={async () => {
-              await fetchSettings().then(res => setPromptSettings(res?.data?.call))
+              await fetchSettings().then(res => res?.data?.call && setPromptSettings(res?.data?.call))
+              await fetchModelConfig().then(res => res?.data && setModelConfig(res?.data))
+              await fetchPromptTemplates().then(res => res && setPromptTemplates(res))
+              await fetchSystemPrompts().then(res => res && setSystemPrompts(res))
               setOpenPromptCharmDialog(true)
             }}>
             <IconPromptTemplate className={iconStyle} />
