@@ -46,7 +46,12 @@ export const useLocalInference = ({
     collectionNames?: string[],
   ) => {
     try {
-      return services?.textInference.inference({ body: { ...options, collectionNames } })
+      return services?.textInference.inference({
+        body: {
+          ...options,
+          collectionNames
+        }
+      })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
@@ -163,7 +168,7 @@ export const useLocalInference = ({
   useEffect(() => {
     const action = async () => {
       const loadedSettings = await services?.storage.getSettings()
-      setSettings(loadedSettings?.data)
+      loadedSettings?.data && setSettings(loadedSettings.data)
     }
     action()
   }, [services?.storage])

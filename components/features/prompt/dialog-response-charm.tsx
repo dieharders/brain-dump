@@ -134,7 +134,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      <DialogFooter className="items-center">
+      <DialogFooter className="items-stretch">
         <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>

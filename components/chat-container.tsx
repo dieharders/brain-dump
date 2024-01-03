@@ -163,7 +163,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         <div className="flex w-full flex-col gap-16 overflow-hidden p-4 sm:w-[50%]">
           <div className="mt-4 px-4 text-center">Connected to HomebrewAi server</div>
           <div className="flex flex-col items-stretch justify-items-stretch gap-4">
-            {/* Load */}
+            {/* Start */}
             {selectedModelId && <Button
               className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"
               onClick={async () => {
@@ -174,7 +174,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
               }}
               disabled={isConnecting}
             >
-              <LightningBoltIcon className="mr-1" />Load
+              <LightningBoltIcon className="mr-1" />Start
             </Button>}
             <div className="flex flex-row gap-2">
               {/* Select a prev installed model to load */}

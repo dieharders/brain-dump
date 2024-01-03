@@ -2,10 +2,16 @@
   "rag_presets": {
     "basic": [
       {
-        "id": "simple_input",
+        "id": "basic_input",
         "name": "Basic Input",
         "text": "{query_str}",
         "type": "SIMPLE_INPUT"
+      },
+      {
+        "id": "eval_input",
+        "name": "Evaluate",
+        "text": "We have provided context information below. \n---------------------\n{context_str}\n---------------------\nGiven this information, please answer the question: {query_str}\n",
+        "type": "QUESTION_ANSWER"
       }
     ],
     "tree": [

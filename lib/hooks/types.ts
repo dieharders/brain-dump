@@ -39,7 +39,7 @@ export interface I_LLM_Call_Options {
   model?: ModelID
   promptTemplate?: string
   systemPrompt?: string
-  ragPromptTemplate: T_RAGPromptTemplate
+  ragPromptTemplate?: T_RAGPromptTemplate
   // grammar?: string
 }
 

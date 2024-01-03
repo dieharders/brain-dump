@@ -30,6 +30,11 @@ import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
 import { T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts, T_TextModelsData } from '@/lib/homebrew'
 
+interface I_State extends I_LLM_Call_Options {
+  // Presets
+  preset?: number // preset overrides temperature
+}
+
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
@@ -38,11 +43,6 @@ interface I_Props {
   modelConfig: T_TextModelsData | undefined
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
-}
-
-interface I_State extends I_LLM_Call_Options {
-  // Presets
-  preset?: number // preset overrides temperature
 }
 
 type T_TemplateSource = 'model' | 'custom'
@@ -58,7 +58,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   // Default state values
-  const defaultState: I_State = {
+  const defaultState = {
     preset: 0.8,
     systemPrompt: defaultSystemPrompt,
     promptTemplate: defaultPromptTemplate,
@@ -99,11 +99,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     }
     setState(prev => ({ ...prev, ...presets, [propName]: value }))
   }
-  const handleFloatChange = (propName: string, value: string) => setState(prev => {
-    const defState = defaultState[propName as keyof I_State]
-    const propValue = value === '' ? defState : parseFloat(value)
-    return { ...prev, [propName]: propValue }
-  })
+
+  const handleFloatChange = (propName: string, value: string) => {
+    setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
+  }
 
   const onSave = useCallback(() => {
     setDialogOpen(false)
@@ -120,7 +119,6 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         if (key === 'top_k') newVal = parseInt(val)
         if (key === 'top_p') newVal = parseFloat(val)
         if (key === 'stop') newVal = val.split(' ')
-        if (val.length === 0) newVal = undefined
       }
       settings.call[key] = newVal
     })
@@ -148,7 +146,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     const customGroup = (
       <SelectGroup key="custom">
         <SelectLabel className="select-none">Custom</SelectLabel>
-        <SelectItem value="custom_default">Custom (Default)</SelectItem>
+        <SelectItem value="custom_default">Custom (Editable)</SelectItem>
       </SelectGroup>
     )
     return [customGroup, ...presets]
@@ -160,7 +158,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     const customGroup = (
       <SelectGroup key="custom">
         <SelectLabel className="select-none">Custom</SelectLabel>
-        <SelectItem value="custom_default">Custom (Default)</SelectItem>
+        <SelectItem value="custom_default">Custom (Editable)</SelectItem>
       </SelectGroup>
     )
     const modelGroup = (
@@ -281,7 +279,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             <SelectContent className="p-1">
               <SelectLabel className="select-none">Load from</SelectLabel>
               <SelectItem value="model">Model Config</SelectItem>
-              <SelectItem value="custom">Custom</SelectItem>
+              <SelectItem value="custom">Custom (Editable)</SelectItem>
             </SelectContent>
           </SelectGroup>
         </Select>
@@ -340,19 +338,21 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <textarea
         disabled={ragPromptSource !== 'custom_default'}
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
-        value={state?.ragPromptTemplate.text}
-        placeholder={defaultState.ragPromptTemplate.text}
+        value={state?.ragPromptTemplate?.text}
+        placeholder={defaultState.ragPromptTemplate?.text}
         onChange={
           e => {
-            const newValue = { ...state?.ragPromptTemplate, text: e.target.value }
-            setState(prev => ({ ...prev, ragPromptTemplate: newValue }))
+            if (state?.ragPromptTemplate) {
+              const newValue = { ...state?.ragPromptTemplate, text: e.target.value }
+              setState(prev => ({ ...prev, ragPromptTemplate: newValue }))
+            }
           }
         }
       />
 
       <Separator className="my-6" />
 
-      <DialogFooter className="items-center">
+      <DialogFooter className="items-stretch">
         <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
@@ -369,7 +369,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       </DialogHeader>
 
       {/* Content */}
-      <form className="grid-auto-flow grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
+      <form className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
         {/* Temperature (temperature) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
@@ -439,7 +439,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           </div>
           <Input
             name="url"
-            value={state?.stop?.join?.(' ')}
+            value={state.stop}
             placeholder={defaultState.stop?.join(' ')}
             className="w-full"
             onChange={event => handleStateChange('stop', event.target.value)}
@@ -515,7 +515,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      <DialogFooter className="items-center">
+      <DialogFooter className="items-stretch">
         <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
