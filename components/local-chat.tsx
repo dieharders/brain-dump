@@ -24,6 +24,7 @@ export const LocalChat = ({ id, initialMessages, services, className, currentTex
     useLocalInference({
       initialMessages,
       services,
+      mode: 'completion', // @TODO Pass this from somewhere else, or maybe send from the request
     })
   const { constructPrompt } = useHomebrew()
 

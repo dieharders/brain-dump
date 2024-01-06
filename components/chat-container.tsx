@@ -93,11 +93,14 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         if (!settingsResponse?.success) {
           toast.error(`${settingsResponse?.message}`)
         }
-        // Remove "preset" from payload
+        // Remove "preset" from init payload
         const initOptions = { ...settingsResponse?.data?.init }
         if (initOptions?.preset) delete initOptions['preset']
+        // Set "call" payload
+        const callOptions = { ...settingsResponse?.data?.call }
         // Tell backend to load the model into memory using these args
-        const payload = { modelId: selectedModelId, ...initOptions }
+        // @TODO Set "mode" in payload from UI
+        const payload = { modelId: selectedModelId, mode: 'completion', init: initOptions, call: callOptions }
         const response = await services?.textInference.load({ body: payload })
 
         if (response?.success) {

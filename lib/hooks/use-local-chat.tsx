@@ -8,15 +8,18 @@ import { type Message, type CreateMessage } from 'ai/react'
 import { I_ServiceApis } from '@/lib/homebrew'
 import { I_InferenceGenerateOptions, I_LLM_Options } from '@/lib/hooks/types'
 
+type T_Mode = 'completion' | 'chat'
 
 interface IProps {
-  initialMessages: Message[] | undefined,
+  initialMessages: Message[] | undefined
   services: I_ServiceApis | null
+  mode?: T_Mode
 }
 
 export const useLocalInference = ({
   initialMessages = [],
   services,
+  mode = 'completion',
 }: IProps) => {
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
@@ -43,12 +46,14 @@ export const useLocalInference = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: I_InferenceGenerateOptions,
+    mode: T_Mode,
     collectionNames?: string[],
   ) => {
     try {
       return services?.textInference.inference({
         body: {
           ...options,
+          mode,
           collectionNames
         }
       })
@@ -133,8 +138,14 @@ export const useLocalInference = ({
       abortRef.current = false
       // Send request completion for prompt
       console.log('[Chat] Sending request to inference server...', newUserMsg)
-      const options = { ...settings.call, prompt: prompt.content }
-      const response = await getCompletion(options, collectionNames)
+      const options = {
+        ...settings.call,
+        // ...settings.init, // @TODO Can we just pass everything in init ?
+        n_ctx: settings.init?.n_ctx,
+        seed: settings.init?.seed,
+        prompt: prompt.content,
+      }
+      const response = await getCompletion(options, mode, collectionNames)
       console.log('[Chat] Prompt response', response)
       if (!response) throw new Error('No prompt response.')
 

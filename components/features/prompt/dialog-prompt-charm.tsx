@@ -45,10 +45,10 @@ interface I_Props {
   systemPrompts: T_SystemPrompts | undefined
 }
 
-type T_TemplateSource = 'model' | 'custom'
+type T_TemplateSource = 'custom_default' | string
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings, modelConfig, promptTemplates, systemPrompts } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts } = props
   const defaultSystemPrompt = 'You are an AI assistant that helps people find information.'
   const defaultPromptTemplate = '{query_str}'
   const defaultRAGPromptTemplate = { id: 'simple_input', name: 'Basic Input', text: '{query_str}', type: 'SIMPLE_INPUT' }
@@ -157,18 +157,24 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     const presets = constructOptionsGroups(config)
     const customGroup = (
       <SelectGroup key="custom">
-        <SelectLabel className="select-none">Custom</SelectLabel>
-        <SelectItem value="custom_default">Custom (Editable)</SelectItem>
+        <SelectLabel className="select-none">Editable</SelectLabel>
+        <SelectItem value="custom_default">Custom</SelectItem>
       </SelectGroup>
     )
-    const modelGroup = (
-      <SelectGroup key="model">
-        <SelectLabel className="select-none">Load from</SelectLabel>
-        <SelectItem value="model">Model Config</SelectItem>
-      </SelectGroup>
-    )
-    return [modelGroup, customGroup, ...presets]
+    return [customGroup, ...presets]
   }, [systemPrompts?.presets])
+
+  const promptTemplateOptions = useCallback(() => {
+    const config = promptTemplates?.normal_presets ?? {}
+    const presets = constructOptionsGroups(config)
+    const customGroup = (
+      <SelectGroup key="custom">
+        <SelectLabel className="select-none">Editable</SelectLabel>
+        <SelectItem value="custom_default">Custom</SelectItem>
+      </SelectGroup>
+    )
+    return [customGroup, ...presets]
+  }, [promptTemplates?.normal_presets])
 
   const presetsMenu = (
     <>
@@ -223,9 +229,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           onValueChange={val => {
             val && setSystemPromptSource(val as T_TemplateSource)
             let template = ''
-            if (val === 'model') template = modelConfig?.systemPrompt ?? ''
             // @TODO Eventually this will be read from a "custom_system_prompts.json" file from engine
-            else if (val === 'custom_default') template = settings?.systemPrompt || ''
+            if (val === 'custom_default') template = settings?.systemPrompt || ''
             else {
               const configs = systemPrompts?.presets ?? {}
               const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
@@ -265,29 +270,30 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         <Select
           value={promptTemplateSource}
           onValueChange={val => {
-            val && setPromptTemplateSource(val as T_TemplateSource)
+            val && setPromptTemplateSource(val)
             let template = ''
-            if (val === 'model') template = modelConfig?.promptTemplate ?? ''
-            if (val === 'custom' && settings?.promptTemplate) template = settings.promptTemplate
+            if (val === 'custom_default' && settings?.promptTemplate) template = settings.promptTemplate
+            else {
+              const configs = promptTemplates?.normal_presets ?? {}
+              const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+              const tValue = items.find(i => i.id === val)
+              if (tValue) template = tValue.text
+            }
             if (template) setState(prev => ({ ...prev, promptTemplate: template }))
           }}
         >
           <SelectTrigger className="w-full flex-1">
             <SelectValue placeholder="Select a source"></SelectValue>
           </SelectTrigger>
-          <SelectGroup>
-            <SelectContent className="p-1">
-              <SelectLabel className="select-none">Load from</SelectLabel>
-              <SelectItem value="model">Model Config</SelectItem>
-              <SelectItem value="custom">Custom (Editable)</SelectItem>
-            </SelectContent>
-          </SelectGroup>
+          <SelectContent className="p-1">
+            {promptTemplateOptions()}
+          </SelectContent>
         </Select>
       </div>
 
       {/* Content */}
       <textarea
-        disabled={promptTemplateSource !== 'custom'}
+        disabled={promptTemplateSource !== 'custom_default'}
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
         value={state?.promptTemplate}
         placeholder={defaultState.promptTemplate}
@@ -296,7 +302,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
       {/* Prompt Template (Chat with Memories) */}
       <DialogHeader className="my-8">
-        <DialogTitle>Memory Prompt Template</DialogTitle>
+        <DialogTitle>Memory Template</DialogTitle>
         <DialogDescription>
           When chatting with your memories, instruct & guide the Ai on how to handle your requests.
         </DialogDescription>
@@ -450,7 +456,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Max Response Tokens</Label>
             <Info label="max_tokens">
-              <span><Highlight>max_tokens</Highlight> determines the maximum number of tokens to generate.</span>
+              <span><Highlight>max_tokens</Highlight> determines the maximum number of tokens to generate. 0 means auto calculate.</span>
             </Info>
           </div>
           <Input

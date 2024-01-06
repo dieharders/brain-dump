@@ -2,7 +2,9 @@ import { type Message } from 'ai/react'
 import { ModelID } from '@/components/features/settings/types'
 import { T_RAGPromptTemplate } from '@/lib/homebrew'
 
-export interface I_InferenceGenerateOptions extends I_LLM_Call_Options {
+type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
+
+export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   mode?: 'completion' | 'chat'
 }
 
@@ -14,7 +16,7 @@ export interface I_LLM_Init_Options {
   n_batch?: number
   n_threads?: number | undefined
   offload_kqv?: boolean
-  chat_format?: string
+  chat_format?: string // llama-2
   f16_kv?: boolean
 }
 

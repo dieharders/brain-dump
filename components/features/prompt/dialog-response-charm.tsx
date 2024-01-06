@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { IconConversationType } from '@/components/ui/icons'
-import { QuestionMarkIcon, PersonIcon, } from '@radix-ui/react-icons'
+import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
@@ -41,12 +41,12 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
-  const DEFAULT_PRESET = 'conversational'
+  const DEFAULT_PRESET = 'completion'
 
   // State values
   const defaultState: I_State = {
     preset: DEFAULT_PRESET,
-    n_ctx: modelConfig?.n_ctx || 1000,
+    n_ctx: modelConfig?.n_ctx || 2048,
     seed: 1337,
     n_threads: undefined,
     n_batch: 512,
@@ -114,20 +114,25 @@ export const ResponseCharmMenu = (props: I_Props) => {
           value={state?.preset || DEFAULT_PRESET}
           onChange={val => handleStateChange('preset', val)}
         >
-          {/* Q and A */}
-          <div id="qa" className={toggleGroupClass}>
+          {/* Instruct - Give a one-off directive or instruction to follow */}
+          <div id="completion" className={toggleGroupClass}>
             <QuestionMarkIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Question & Answer</span>
+            <span className="flex-1 self-center text-ellipsis">Instruct</span>
           </div>
-          {/* Conversational */}
-          <div id="conversational" className={toggleGroupClass}>
+          {/* Conversational - Back and forth, multiple messages */}
+          <div id="chat" className={toggleGroupClass}>
             <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis">Conversational</span>
           </div>
-          {/* Assistant */}
-          <div id="assistant" className={toggleGroupClass}>
-            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+          {/* Assistant - Take an input and produce a verifiable output */}
+          <div id="formatter" className={toggleGroupClass}>
+            <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis">Assistant</span>
+          </div>
+          {/* Agent - Perform actions on user's behalf with permission */}
+          <div id="agent" className={toggleGroupClass}>
+            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis">Agent</span>
           </div>
         </ToggleGroup>
       </div>
@@ -233,7 +238,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">GPU Layers</Label>
             <Info label="n_gpu_layers">
-              <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. If -1 all layers are offloaded.</span>
+              <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. Adjust based on your hardware. -1 all layers are offloaded.</span>
             </Info>
           </div>
           <Input
