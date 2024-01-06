@@ -84,7 +84,12 @@ export const CharmMenu = (props: I_Props) => {
   const fetchPromptTemplates = useCallback(async () => {
     // Read in json file
     const file = await import('data/prompt-templates.json')
-    return file
+    return file.default
+  }, [])
+  const fetchRagPromptTemplates = useCallback(async () => {
+    // Read in json file
+    const file = await import('data/rag-prompt-templates.json')
+    return file.default
   }, [])
   const fetchSystemPrompts = useCallback(async () => {
     // Read in json file
@@ -179,7 +184,9 @@ export const CharmMenu = (props: I_Props) => {
             onClick={async () => {
               await fetchSettings().then(res => res?.data?.call && setPromptSettings(res?.data?.call))
               await fetchModelConfig().then(res => res?.data && setModelConfig(res?.data))
-              await fetchPromptTemplates().then(res => res && setPromptTemplates(res))
+              const normal = await fetchPromptTemplates()
+              const rag = await fetchRagPromptTemplates()
+              normal && rag && setPromptTemplates({ rag_presets: rag, normal_presets: normal })
               await fetchSystemPrompts().then(res => res && setSystemPrompts(res))
               setOpenPromptCharmDialog(true)
             }}>
