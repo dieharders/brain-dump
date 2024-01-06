@@ -22,11 +22,6 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
-interface I_ConstructPrompt {
-  prompt: string
-  promptTemplate?: string
-}
-
 export type T_GenericDataRes = any
 
 // @TODO Remove the extends once text inference is rolled into our own response schema
