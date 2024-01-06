@@ -63,7 +63,6 @@ export function CloudChat({ id, initialMessages, modelId, className }: IProps) {
         input={input}
         setInput={setInput}
         theme={theme}
-        constructPrompt={prompt => prompt}
       />
     </>
   )

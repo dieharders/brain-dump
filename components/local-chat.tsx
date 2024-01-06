@@ -26,7 +26,6 @@ export const LocalChat = ({ id, initialMessages, services, className, currentTex
       services,
       mode: 'completion', // @TODO Pass this from somewhere else, or maybe send from the request
     })
-  const { constructPrompt } = useHomebrew()
 
   return (
     <>
@@ -51,10 +50,6 @@ export const LocalChat = ({ id, initialMessages, services, className, currentTex
         setInput={setInput}
         theme={theme}
         saveSettings={saveSettings}
-        constructPrompt={(prompt: string) => {
-          const promptTemplate = currentTextModel?.promptTemplate || ''
-          return constructPrompt({ prompt, promptTemplate }) || prompt
-        }}
       />
     </>
   )

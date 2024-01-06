@@ -18,7 +18,6 @@ export interface ChatPanelProps
   id?: string
   theme: string | undefined
   append: TAppend
-  constructPrompt: (prompt: string) => string
   saveSettings?: (args: I_LLM_Options) => void
 }
 
@@ -33,7 +32,6 @@ export const ChatPanel = ({
   messages,
   theme,
   saveSettings,
-  constructPrompt,
 }: ChatPanelProps) => {
   // @TODO from-neutral-900 does not match the chat-page's bg color
   const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
@@ -102,7 +100,7 @@ export const ChatPanel = ({
               // Send prompt
               await append({
                 id,
-                content: constructPrompt(value),
+                content: value,
                 role: 'user',
                 // @TODO Perhaps add "collectionNames" as prop here
                 // so we can record in the msg what docs we were referencing.

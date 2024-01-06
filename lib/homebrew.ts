@@ -329,10 +329,6 @@ export const useHomebrew = () => {
     return result
   }
 
-  const constructPrompt = ({ prompt, promptTemplate }: I_ConstructPrompt) => {
-    return promptTemplate?.replace('{query_str}', prompt)
-  }
-
   /**
    * Get all api configs for services.
    */
@@ -342,5 +338,5 @@ export const useHomebrew = () => {
     return serviceApis
   }
 
-  return { connect, getServices, constructPrompt }
+  return { connect, getServices }
 }
