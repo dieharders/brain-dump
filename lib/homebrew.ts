@@ -152,7 +152,7 @@ export interface I_ServiceApis {
   storage: {
     getSettings: T_GenericAPIRequest<T_GenericDataRes>
     saveSettings: T_GenericAPIRequest<T_GenericDataRes>
-    // getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>
+    // getModelConfigs: T_GenericAPIRequest<T_GenericDataRes> // @TODO Add
   }
 }
 
