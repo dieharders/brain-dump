@@ -24,8 +24,7 @@ interface I_ConnectResponse {
 
 export type T_GenericDataRes = any
 
-// @TODO Remove the extends once text inference is rolled into our own response schema
-export interface I_GenericAPIResponse<DataResType> extends Response {
+export interface I_GenericAPIResponse<DataResType> {
   success: boolean
   message: string
   data: DataResType
@@ -79,17 +78,35 @@ export interface I_GetCollectionData {
   numItems: number
 }
 
-export type T_TextModelsData = {
+export type T_ModelConfig = {
   id: string
   name: string
-  path: string // path to model on disk
-  size: string
-  type?: string // what type it is
-  ownedBy: string
-  permissions: string[]
-  promptTemplate: string
-  systemPrompt: string
-  n_ctx: number
+  type?: string
+  provider?: string
+  licenses?: string[]
+  description?: string
+  fileSize?: number
+  fileName: string
+  modelType?: string
+  modelUrl?: string
+  quantTypes?: string[]
+  context_window?: number
+  downloadUrl: string
+  sha256?: string
+}
+
+export type T_InstalledTextModel = {
+  id: string
+  savePath: string
+  numTimesRun: number
+  isFavorited: boolean
+  validation: string
+  modified: string
+  size: number
+  endChunk: number
+  progress: number
+  tokenizerPath: string
+  checksum: string
 }
 
 type T_PromptTemplate = {
@@ -120,16 +137,25 @@ export type T_SystemPrompts = {
   presets: { [key: string]: T_SystemPrompt[] }
 }
 
-export interface I_ServiceApis {
+type T_Endpoint = { [key: string]: any }
+
+interface I_BaseServiceApis {
+  [key: string]: T_Endpoint
+}
+
+export interface I_ServiceApis extends I_BaseServiceApis {
   /**
    * Use to query the text inference engine
    */
   textInference: {
-    // Homebrew version
     inference: T_GenericAPIRequest<T_GenericDataRes>
     load: T_GenericAPIRequest<T_GenericDataRes>
-    model: T_GenericAPIRequest<T_TextModelsData>
-    installed: T_GenericAPIRequest<T_GenericDataRes>
+    model: T_GenericAPIRequest<T_InstalledTextModel>
+    installed: T_GenericAPIRequest<T_InstalledTextModel[]>
+    getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>
+    getPromptTemplates: T_GenericAPIRequest<T_GenericDataRes>
+    getRagPromptTemplates: T_GenericAPIRequest<T_GenericDataRes>
+    getSystemPrompts: T_GenericAPIRequest<T_GenericDataRes>
   }
   /**
    * Use to add/create/update/delete embeddings from database
@@ -152,7 +178,6 @@ export interface I_ServiceApis {
   storage: {
     getSettings: T_GenericAPIRequest<T_GenericDataRes>
     saveSettings: T_GenericAPIRequest<T_GenericDataRes>
-    // getModelConfigs: T_GenericAPIRequest<T_GenericDataRes> // @TODO Add
   }
 }
 
@@ -200,33 +225,57 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 }
 
-export const connectToLocalProvider = async (): Promise<I_ConnectResponse | null> => {
-  const conn = await fetchConnect()
-  console.log('[homebrew] Connecting:', conn)
+const getModelConfigs = async () => {
+  // Read in json file
+  const file = await import('data/text-model-configs.json')
 
-  const connected = conn?.success
-  if (!connected) return null
-
-  console.log(`[homebrew] Connected to local ai engine: ${conn.message}`)
-  return conn
+  return {
+    success: true,
+    message: 'Returned configurations for all curated models.',
+    data: file.default,
+  }
 }
 
-export const getAPIConfig = async () => {
-  const config = await fetchAPIConfig()
-  console.log('[homebrew] getAPIConfig:', config)
+const getPromptTemplates = async () => {
+  // Read in json file
+  const file = await import('data/prompt-templates.json')
 
-  const success = config?.success
-  if (!success) return null
-
-  const apis = config.data
-  return apis
+  return {
+    success: true,
+    message: 'Returned all prompt templates for text inference.',
+    data: file.default,
+  }
 }
 
+const getRagPromptTemplates = async () => {
+  // Read in json file
+  const file = await import('data/rag-prompt-templates.json')
+
+  return {
+    success: true,
+    message: 'Returned retrieval augmented generation templates for text inference.',
+    data: file.default,
+  }
+}
+
+const getSystemPrompts = async () => {
+  // Read in json file
+  const file = await import('data/system-prompts.json')
+
+  return {
+    success: true,
+    message: 'Returned all system prompts for text inference.',
+    data: file.default,
+  }
+}
+
+// Builds services and their methods for use by front-end
 const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   if (!response || response.length === 0) return null
 
-  const serviceApis: any = {}
+  const serviceApis = {} as I_ServiceApis
 
+  // Construct api funcs for each service
   response.forEach(api => {
     const origin = `${hostname}${api.port}`
     const apiName = api.name
@@ -301,7 +350,35 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
     serviceApis[apiName] = endpoints
   })
 
+  // Inject non-backend related methods
+  serviceApis.textInference.getModelConfigs = getModelConfigs
+  serviceApis.textInference.getPromptTemplates = getPromptTemplates
+  serviceApis.textInference.getRagPromptTemplates = getRagPromptTemplates
+  serviceApis.textInference.getSystemPrompts = getSystemPrompts
+
   return serviceApis
+}
+
+export const connectToLocalProvider = async (): Promise<I_ConnectResponse | null> => {
+  const conn = await fetchConnect()
+  console.log('[homebrew] Connecting:', conn)
+
+  const connected = conn?.success
+  if (!connected) return null
+
+  console.log(`[homebrew] Connected to local ai engine: ${conn.message}`)
+  return conn
+}
+
+export const getAPIConfig = async () => {
+  const config = await fetchAPIConfig()
+  console.log('[homebrew] getAPIConfig:', config)
+
+  const success = config?.success
+  if (!success) return null
+
+  const apis = config.data
+  return apis
 }
 
 /**

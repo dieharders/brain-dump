@@ -14,7 +14,7 @@ export interface I_LLM_Init_Options {
   seed?: number
   n_ctx?: number
   n_batch?: number
-  n_threads?: number | undefined
+  n_threads?: number
   offload_kqv?: boolean
   chat_format?: string // llama-2
   f16_kv?: boolean

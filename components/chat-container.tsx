@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react'
 import { type Message } from 'ai/react'
 import { LocalChat } from '@/components/local-chat'
-import { I_ServiceApis, T_TextModelsData, useHomebrew } from '@/lib/homebrew'
+import { I_ServiceApis, T_InstalledTextModel, T_ModelConfig, useHomebrew } from '@/lib/homebrew'
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
@@ -46,7 +46,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const [currentTextModel, setCurrentTextModel] = useState(null)
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
-  const [installedList, setInstalledList] = useState<T_TextModelsData[]>([])
+  const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
+  const [modelConfigs, setModelConfigs] = useState<{ [key: string]: T_ModelConfig }>()
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const [responseSettings, setResponseSettings] = useState(null)
 
@@ -69,6 +70,10 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         // Get all currently installed models
         const listResponse = await homebrewServices?.textInference.installed()
         listResponse?.data && setInstalledList(listResponse.data)
+        // Get all model configs
+        const cfgs = await homebrewServices?.textInference.getModelConfigs()
+        cfgs?.data && setModelConfigs(cfgs.data)
+        // Success
         return true
       }
       toast.error(`Failed to connect to local provider.`)
@@ -99,8 +104,9 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         // Set "call" payload
         const callOptions = { ...settingsResponse?.data?.call }
         // Tell backend to load the model into memory using these args
-        // @TODO Set "mode" in payload from UI
-        const payload = { modelId: selectedModelId, mode: 'completion', init: initOptions, call: callOptions }
+        const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
+        const mode = 'completion' // @TODO Set "mode" in payload from UI
+        const payload = { modelPath: installPath, modelId: selectedModelId, mode, init: initOptions, call: callOptions }
         const response = await services?.textInference.load({ body: payload })
 
         if (response?.success) {
@@ -121,12 +127,16 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [selectedModelId, services?.storage, services?.textInference])
+  }, [installedList, selectedModelId, services?.storage, services?.textInference])
 
   const isLocalSelected = selectedProvider === ModelID.Local
   const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
 
-  const installedModels = installedList?.map(item => (<SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>))
+  const installedModels = installedList?.map(item => {
+    const cfg = modelConfigs?.[item.id]
+    const name = cfg?.name
+    return (<SelectItem key={item.id} value={item.id}>{name}</SelectItem>)
+  })
 
   const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
 
@@ -160,7 +170,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
             toast.success('Model settings saved!')
           }}
           settings={responseSettings}
-          modelConfig={installedList?.find(i => i.id === selectedModelId)}
+          modelConfig={modelConfigs?.[selectedModelId || '']}
         />
         {/* Model Selection Menu */}
         <div className="flex w-full flex-col gap-16 overflow-hidden p-4 sm:w-[50%]">

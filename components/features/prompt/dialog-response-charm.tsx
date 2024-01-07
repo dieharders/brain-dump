@@ -21,14 +21,14 @@ import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Init_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_TextModelsData } from '@/lib/homebrew'
+import { T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
   settings: I_State | null
-  modelConfig: T_TextModelsData | undefined
+  modelConfig: T_ModelConfig | undefined
 }
 
 interface I_State extends I_LLM_Init_Options {
@@ -42,13 +42,14 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const DEFAULT_PRESET = 'completion'
+  const defaultContextWindow = modelConfig?.context_window
 
   // State values
   const defaultState: I_State = {
     preset: DEFAULT_PRESET,
-    n_ctx: modelConfig?.n_ctx || 2048,
+    n_ctx: defaultContextWindow,
     seed: 1337,
-    n_threads: undefined,
+    n_threads: -1,
     n_batch: 512,
     offload_kqv: false,
     n_gpu_layers: 0,
@@ -200,14 +201,14 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold"># Threads</Label>
             <Info label="n_threads">
-              <span><Highlight>n_threads</Highlight> number of CPU threads to use when generating. If None, the number is automatically determined.</span>
+              <span><Highlight>n_threads</Highlight> number of CPU threads to use when generating. If -1, value is automatically determined.</span>
             </Info>
           </div>
           <Input
             name="url"
             type="number"
-            value={state?.n_threads ?? ''}
-            min={0}
+            value={state?.n_threads || '0'}
+            min={-1}
             step={1}
             placeholder={defaultState?.n_threads?.toString()}
             className="w-full"

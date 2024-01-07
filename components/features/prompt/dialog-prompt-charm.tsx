@@ -28,7 +28,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts, T_TextModelsData } from '@/lib/homebrew'
+import { T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
 
 interface I_State extends I_LLM_Call_Options {
   // Presets
@@ -40,7 +40,6 @@ interface I_Props {
   setDialogOpen: (open: boolean) => void
   onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
   settings: I_State | null
-  modelConfig: T_TextModelsData | undefined
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
 }
@@ -118,8 +117,13 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         if (key === 'temperature') newVal = parseFloat(val)
         if (key === 'top_k') newVal = parseInt(val)
         if (key === 'top_p') newVal = parseFloat(val)
-        if (key === 'stop') newVal = val.split(' ')
       }
+      if (key === 'stop') {
+        newVal = val?.split?.(' ')
+        // Never allow empty string in array, otherwise no response.
+        if (val?.[0] === '') newVal = []
+      }
+
       settings.call[key] = newVal
     })
     onSubmit(charm, settings)
