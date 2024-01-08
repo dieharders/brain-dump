@@ -42,7 +42,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const DEFAULT_PRESET = 'completion'
-  const defaultContextWindow = modelConfig?.context_window || 1024
+  const defaultContextWindow = modelConfig?.context_window
 
   // State values
   const defaultState: I_State = {
