@@ -129,8 +129,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         // Never allow empty string in array, otherwise no response.
         if (val?.[0] === '') newVal = []
       }
-
-      if (newVal) settings.call[key] = newVal
+      // Set result
+      const isZero = typeof val === 'number' && val === 0
+      const shouldSet = newVal || isZero || typeof val === 'boolean'
+      if (shouldSet) settings.call[key] = newVal
     })
     onSubmit(charm, settings)
   }, [onSubmit, setDialogOpen, state])

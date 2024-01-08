@@ -42,7 +42,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const DEFAULT_PRESET = 'completion'
-  const defaultContextWindow = modelConfig?.context_window
+  const defaultContextWindow = modelConfig?.context_window || 1024
 
   // State values
   const defaultState: I_State = {
@@ -93,7 +93,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
         if (key === 'n_gpu_layers') newVal = parseInt(val)
         if (val.length === 0) newVal = undefined
       }
-      saveSettings.init[key] = newVal
+      // Set result
+      const isZero = typeof val === 'number' && val === 0
+      const shouldSet = newVal || isZero || typeof val === 'boolean'
+      if (shouldSet) saveSettings.init[key] = newVal
     })
     onSubmit(charm, saveSettings)
   }, [onSubmit, setDialogOpen, state])
@@ -169,7 +172,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state?.n_ctx}
+            value={(state?.n_ctx === 0) ? 0 : state?.n_ctx || ''}
             min={64}
             step={1}
             placeholder={defaultState?.n_ctx?.toString()}
