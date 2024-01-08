@@ -4,11 +4,8 @@ import * as React from 'react'
 import * as SelectPrimitive from '@radix-ui/react-select'
 
 import { cn } from '@/lib/utils'
-import {
-  IconArrowDown,
-  IconCheck,
-  IconChevronUpDown
-} from '@/components/ui/icons'
+import { IconCheck } from '@/components/ui/icons'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 
 const Select = SelectPrimitive.Root
 
@@ -30,7 +27,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <IconChevronUpDown className="opacity-50" />
+      <ChevronDownIcon className="opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))
@@ -55,7 +52,7 @@ const SelectContent = React.forwardRef<
         className={cn(
           'p-1',
           position === 'popper' &&
-            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+          'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
         )}
       >
         {children}
@@ -71,7 +68,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold', className)}
+    className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold uppercase text-indigo-500', className)}
     {...props}
   />
 ))

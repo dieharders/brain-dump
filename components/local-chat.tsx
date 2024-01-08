@@ -8,20 +8,23 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
-import { I_ServiceApis } from '@/lib/homebrew'
+import { I_ServiceApis, T_InstalledTextModel } from '@/lib/homebrew'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   services: I_ServiceApis | null
+  currentTextModel: T_InstalledTextModel | null
 }
 
 export const LocalChat = ({ id, initialMessages, services, className }: IProps) => {
+
   const { theme } = useTheme()
-  const { append, messages, reload, stop, input, setInput, isLoading } =
+  const { append, messages, reload, stop, input, setInput, isLoading, saveSettings } =
     useLocalInference({
       initialMessages,
       services,
+      mode: 'completion', // @TODO Pass this from somewhere else, or maybe send from the request
     })
 
   return (
@@ -46,6 +49,7 @@ export const LocalChat = ({ id, initialMessages, services, className }: IProps) 
         input={input}
         setInput={setInput}
         theme={theme}
+        saveSettings={saveSettings}
       />
     </>
   )

@@ -1,0 +1,16 @@
+{
+  "basic": [
+    {
+      "id": "basic_default",
+      "name": "Default",
+      "text": "{query_str}"
+    }
+  ],
+  "qa": [
+    {
+      "id": "qa_basic",
+      "name": "Basic Question & Answer",
+      "text": "{{query_str}} \nPlease answer in the following format, putting Q: and A: on seperate lines:\nQ: {question}\n\nA: {answer}"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Root, Item } from '@radix-ui/react-toggle-group'
 
-export type T_ConvoTypes = 'qa' | 'conversational' | 'assistant'
+export type T_ConvoTypes = 'completion' | 'chat' | 'formatter' | 'agent'
 
 interface I_Props {
   children: React.ReactNode
@@ -11,7 +11,7 @@ interface I_Props {
   onChange: (val: T_ConvoTypes) => void
 }
 
-const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = 'conversational', value, onChange }: I_Props) => {
+const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = 'completion', value, onChange }: I_Props) => {
   return (
     <Root
       className="border-1 flex w-fit flex-row flex-wrap gap-2 rounded-sm border-solid border-black bg-muted p-2"

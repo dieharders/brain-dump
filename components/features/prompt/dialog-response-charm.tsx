@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -16,57 +16,91 @@ import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { IconConversationType } from '@/components/ui/icons'
-import { QuestionMarkIcon, PersonIcon, } from '@radix-ui/react-icons'
+import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
+import { I_LLM_Init_Options, I_LLM_Options } from '@/lib/hooks/types'
+import { T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  onSubmit: (charm: I_Charm) => void
+  onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
+  settings: I_State | null
+  modelConfig: T_ModelConfig | undefined
 }
 
-interface I_State {
+interface I_State extends I_LLM_Init_Options {
   // Presets
-  preset: T_ConvoTypes
-  // Advanced
-  n_ctx: number | string
-  seed: number | string
-  n_threads: number | string
-  n_batch: number | string
-  f16_kv: boolean
-  use_mlock: boolean
+  preset?: T_ConvoTypes
 }
 
 export const ResponseCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings, modelConfig } = props
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
+  const DEFAULT_PRESET = 'completion'
+  const defaultContextWindow = modelConfig?.context_window
+
   // State values
   const defaultState: I_State = {
-    preset: 'conversational',
-    n_ctx: 512,
+    preset: DEFAULT_PRESET,
+    n_ctx: defaultContextWindow,
     seed: 1337,
     n_threads: -1,
     n_batch: 512,
+    offload_kqv: false,
+    n_gpu_layers: 0,
     f16_kv: true,
     use_mlock: false,
   }
-  // @TODO Pass in from persistent storage (upon menu open) and assign here
+
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
-    n_ctx: '',
-    seed: '',
-    n_threads: '',
-    n_batch: '',
+    n_ctx: defaultState.n_ctx,
+    seed: defaultState.seed,
+    n_threads: defaultState.n_threads,
+    n_batch: defaultState.n_batch,
+    offload_kqv: defaultState.offload_kqv,
+    n_gpu_layers: defaultState.n_gpu_layers,
     f16_kv: defaultState.f16_kv,
     use_mlock: defaultState.use_mlock,
   })
+
   // Handle input state changes
-  const handleFloatChange = (propName: string, value: string) => setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
+  const handleFloatChange = (propName: string, value: string) => setState(prev => {
+    const defState = defaultState[propName as keyof I_State]
+    const propValue = value === '' ? defState : parseFloat(value)
+    return { ...prev, [propName]: propValue }
+  })
   const handleStateChange = (propName: string, value: string | boolean) => setState(prev => ({ ...prev, [propName]: value }))
+
+  const onSave = useCallback(() => {
+    setDialogOpen(false)
+    // Save settings
+    const charm: I_Charm = { id: 'model' }
+    const saveSettings = { init: {} as any }
+    // Cleanup exported values to correct types
+    Object.entries(state)?.forEach(([key, val]) => {
+      let newVal = val
+      if (typeof val === 'string') {
+        if (key === 'n_batch') newVal = parseInt(val)
+        if (key === 'n_ctx') newVal = parseInt(val)
+        if (key === 'n_threads') newVal = parseInt(val)
+        if (key === 'seed') newVal = parseInt(val)
+        if (key === 'n_gpu_layers') newVal = parseInt(val)
+        if (val.length === 0) newVal = undefined
+      }
+      // Set result
+      const isZero = typeof val === 'number' && val === 0
+      const shouldSet = newVal || isZero || typeof val === 'boolean'
+      if (shouldSet) saveSettings.init[key] = newVal
+    })
+    onSubmit(charm, saveSettings)
+  }, [onSubmit, setDialogOpen, state])
+
   // Menus
   const presetsMenu = (
     <>
@@ -81,33 +115,36 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <div className="w-full">
         <ToggleGroup
           label="Response Type"
-          value={state.preset}
+          value={state?.preset || DEFAULT_PRESET}
           onChange={val => handleStateChange('preset', val)}
         >
-          {/* Q and A */}
-          <div id="qa" className={toggleGroupClass}>
+          {/* Instruct - Give a one-off directive or instruction to follow */}
+          <div id="completion" className={toggleGroupClass}>
             <QuestionMarkIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Question & Answer</span>
+            <span className="flex-1 self-center text-ellipsis">Instruct</span>
           </div>
-          {/* Conversational */}
-          <div id="conversational" className={toggleGroupClass}>
+          {/* Conversational - Back and forth, multiple messages */}
+          <div id="chat" className={toggleGroupClass}>
             <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis">Conversational</span>
           </div>
-          {/* Assistant */}
-          <div id="assistant" className={toggleGroupClass}>
-            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+          {/* Assistant - Take an input and produce a verifiable output */}
+          <div id="formatter" className={toggleGroupClass}>
+            <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis">Assistant</span>
+          </div>
+          {/* Agent - Perform actions on user's behalf with permission */}
+          <div id="agent" className={toggleGroupClass}>
+            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis">Agent</span>
           </div>
         </ToggleGroup>
       </div>
 
       <Separator className="my-6" />
 
-      <DialogFooter className="items-center">
-        <Button onClick={async () => {
-          setDialogOpen(false)
-        }}>Save</Button>
+      <DialogFooter className="items-stretch">
+        <Button onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -118,12 +155,12 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Advanced Settings</DialogTitle>
         <DialogDescription>
-          Override presets.
+          Overrides presets.
         </DialogDescription>
       </DialogHeader>
 
       {/* Content */}
-      <form className="grid-auto-flow grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
+      <form className="grid-auto-flow grid w-full grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
         {/* Context Window (n_ctx) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
@@ -135,10 +172,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.n_ctx}
+            value={(state?.n_ctx === 0) ? 0 : state?.n_ctx || ''}
             min={64}
             step={1}
-            placeholder={defaultState.n_ctx.toString()}
+            placeholder={defaultState?.n_ctx?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('n_ctx', event.target.value)}
           />
@@ -154,10 +191,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.seed}
+            value={state?.seed}
             min={0}
             step={1}
-            placeholder={defaultState.seed.toString()}
+            placeholder={defaultState?.seed?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('seed', event.target.value)}
           />
@@ -167,16 +204,16 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold"># Threads</Label>
             <Info label="n_threads">
-              <span><Highlight>n_threads</Highlight> number of GPU threads to use when generating. If None, the number is automatically determined.</span>
+              <span><Highlight>n_threads</Highlight> number of CPU threads to use when generating. If -1, value is automatically determined.</span>
             </Info>
           </div>
           <Input
             name="url"
             type="number"
-            value={state.n_threads}
+            value={state?.n_threads || '0'}
             min={-1}
             step={1}
-            placeholder={defaultState.n_threads.toString()}
+            placeholder={defaultState?.n_threads?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('n_threads', event.target.value)}
           />
@@ -192,15 +229,48 @@ export const ResponseCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state.n_batch}
+            value={state?.n_batch}
             min={64}
             step={1}
-            placeholder={defaultState.n_batch.toString()}
+            placeholder={defaultState?.n_batch?.toString()}
             className="w-full"
             onChange={event => handleFloatChange('n_batch', event.target.value)}
           />
         </div>
-        {/* Toggle precision (f16_kv) */}
+        {/* Number of GPU Layers (n_gpu_layers) - Number of layers to store in VRAM. Number of layers to offload to GPU (-ngl). If -1, all layers are offloaded. */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">GPU Layers</Label>
+            <Info label="n_gpu_layers">
+              <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. Adjust based on your hardware. -1 all layers are offloaded.</span>
+            </Info>
+          </div>
+          <Input
+            name="url"
+            type="number"
+            value={state?.n_gpu_layers}
+            min={-1}
+            step={1}
+            placeholder={defaultState?.n_gpu_layers?.toString()}
+            className="w-full"
+            onChange={event => handleFloatChange('n_gpu_layers', event.target.value)}
+          />
+        </div>
+        {/* Offload K, Q, V to GPU (offload_kqv) */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Offload Cache</Label>
+            <Info label="offload_kqv">
+              <span><Highlight>offload_kqv</Highlight> Whether to offload K, Q, V to GPU.</span>
+            </Info>
+          </div>
+          <Switch
+            className="block"
+            checked={state?.offload_kqv}
+            onCheckedChange={val => handleStateChange('offload_kqv', val)}
+          />
+        </div>
+        {/* Precision (f16_kv) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Half-Precision</Label>
@@ -210,7 +280,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            checked={state.f16_kv}
+            checked={state?.f16_kv}
             onCheckedChange={val => handleStateChange('f16_kv', val)}
           />
         </div>
@@ -224,7 +294,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
           </div>
           <Switch
             className="block"
-            checked={state.use_mlock}
+            checked={state?.use_mlock}
             onCheckedChange={val => handleStateChange('use_mlock', val)}
           />
         </div>
@@ -233,9 +303,13 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <Separator className="my-6" />
 
       <DialogFooter className="items-center">
-        <Button onClick={async () => {
-          setDialogOpen(false)
-        }}>Save</Button>
+        <Button
+          className="w-full sm:w-fit"
+          onClick={() => setState(defaultState)}
+        >
+          Reset
+        </Button>
+        <Button className="w-full sm:w-fit" onClick={onSave}>Save</Button>
       </DialogFooter>
     </>
   )
@@ -244,6 +318,10 @@ export const ResponseCharmMenu = (props: I_Props) => {
     { label: 'presets', content: presetsMenu },
     { label: 'advanced', content: advancedMenu },
   ]
+
+  useEffect(() => {
+    if (settings && dialogOpen) setState(prev => ({ ...prev, ...settings }))
+  }, [dialogOpen, settings])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
