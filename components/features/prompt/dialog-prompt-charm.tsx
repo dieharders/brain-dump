@@ -130,7 +130,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         if (val?.[0] === '') newVal = []
       }
 
-      settings.call[key] = newVal
+      if (newVal) settings.call[key] = newVal
     })
     onSubmit(charm, settings)
   }, [onSubmit, setDialogOpen, state])
