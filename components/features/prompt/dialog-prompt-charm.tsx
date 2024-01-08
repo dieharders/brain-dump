@@ -65,7 +65,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       temperature: 0.8,
       top_k: 40,
       top_p: 0.95,
-      stop: ['###'],
+      stop: ['### [DONE]'],
       max_tokens: 128,
       repeat_penalty: 1.1,
       stream: true,
@@ -82,7 +82,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     temperature: defaultState.temperature,
     top_k: defaultState.top_k,
     top_p: defaultState.top_p,
-    stop: defaultState.stop,
+    stop: [''],
     max_tokens: defaultState.max_tokens,
     repeat_penalty: defaultState.repeat_penalty,
     stream: defaultState.stream,
@@ -109,6 +109,18 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     setState(prev => ({ ...prev, [propName]: parseFloat(value) }))
   }
 
+  const handleStopValue = (val: string | string[] | undefined) => {
+    if (Array.isArray(val)) {
+      // Remove last space in string
+      const ind = val.length - 1
+      if (val[ind] === '') val.splice(ind, 1)
+
+      return val.join(' ')
+    }
+
+    return val || ''
+  }
+
   const onSave = useCallback(() => {
     setDialogOpen(false)
     // Save settings
@@ -125,9 +137,13 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         if (key === 'top_p') newVal = parseFloat(val)
       }
       if (key === 'stop') {
-        newVal = val?.split?.(' ')
-        // Never allow empty string in array, otherwise no response.
-        if (val?.[0] === '') newVal = []
+        if (Array.isArray(val)) {
+          // Never allow empty string in array, otherwise no response.
+          if (newVal?.[0] === '') newVal = null
+        } else {
+          // Create array result from string
+          newVal = val?.split?.(' ')
+        }
       }
       // Set result
       const isZero = typeof val === 'number' && val === 0
@@ -457,10 +473,14 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           </div>
           <Input
             name="url"
-            value={state.stop || ''}
+            value={handleStopValue(state?.stop)}
             placeholder={defaultState.stop?.join(' ')}
             className="w-full"
-            onChange={event => handleStateChange('stop', event.target.value)}
+            onChange={event => {
+              // Remove multiple consecutive spaces
+              const inputVal = event.target.value.replace(/ +/g, ' ')
+              handleStateChange('stop', inputVal)
+            }}
           />
         </div>
         {/* Max Number of Tokens (max_tokens) */}
