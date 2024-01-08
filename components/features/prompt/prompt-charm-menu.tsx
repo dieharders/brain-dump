@@ -79,7 +79,6 @@ export const CharmMenu = (props: I_Props) => {
   }
 
   const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
-  // const fetchTextModelConfigs = useCallback(async () => services?.textInference.getModelConfigs(), [services?.textInference])
   const fetchPromptTemplates = useCallback(async () => services?.textInference.getPromptTemplates(), [services?.textInference])
   const fetchRagPromptTemplates = useCallback(async () => services?.textInference.getRagPromptTemplates(), [services?.textInference])
   const fetchSystemPrompts = useCallback(async () => services?.textInference.getSystemPrompts(), [services?.textInference])
