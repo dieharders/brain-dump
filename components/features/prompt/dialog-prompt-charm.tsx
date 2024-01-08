@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -50,27 +50,29 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts } = props
   const defaultSystemPrompt = 'You are an AI assistant that helps people find information.'
   const defaultPromptTemplate = '{query_str}'
-  const defaultRAGPromptTemplate = { id: 'simple_input', name: 'Basic Input', text: '{query_str}', type: 'SIMPLE_INPUT' }
   const [systemPromptSource, setSystemPromptSource] = useState<string>()
   const [promptTemplateSource, setPromptTemplateSource] = useState<T_TemplateSource>()
   const [ragPromptSource, setRagPromptSource] = useState<string>() // llama-index prompts
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   // Default state values
-  const defaultState = {
-    preset: 0.8,
-    systemPrompt: defaultSystemPrompt,
-    promptTemplate: defaultPromptTemplate,
-    ragPromptTemplate: defaultRAGPromptTemplate,
-    temperature: 0.8,
-    top_k: 40,
-    top_p: 0.95,
-    stop: ['###'],
-    max_tokens: 128,
-    repeat_penalty: 1.1,
-    stream: true,
-    echo: false,
-  }
+  const defaultState = useMemo(() => {
+    return {
+      preset: 0.8,
+      systemPrompt: defaultSystemPrompt,
+      promptTemplate: defaultPromptTemplate,
+      ragPromptTemplate: { id: 'simple_input', name: 'Basic Input', text: '{query_str}', type: 'SIMPLE_INPUT' },
+      temperature: 0.8,
+      top_k: 40,
+      top_p: 0.95,
+      stop: ['###'],
+      max_tokens: 128,
+      repeat_penalty: 1.1,
+      stream: true,
+      echo: false,
+    }
+  }, [])
+
   // State values
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
@@ -86,6 +88,10 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     stream: defaultState.stream,
     echo: defaultState.echo,
   })
+
+  const handleFloatValue = (val: any) => {
+    return (val === 0 || val === '') ? 0 : val || ''
+  }
 
   // Handle input state changes
   const handleStateChange = (propName: string, value: number | string | boolean) => {
@@ -391,7 +397,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state?.temperature}
+            value={handleFloatValue(state?.temperature)}
             min={0}
             max={2}
             step={0.1}
@@ -411,7 +417,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state?.top_k}
+            value={handleFloatValue(state?.top_k)}
             min={0}
             step={1}
             placeholder={defaultState?.top_k?.toString()}
@@ -430,7 +436,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state?.top_p}
+            value={handleFloatValue(state?.top_p)}
             min={0}
             max={1}
             step={0.01}
@@ -449,7 +455,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           </div>
           <Input
             name="url"
-            value={state.stop}
+            value={state.stop || ''}
             placeholder={defaultState.stop?.join(' ')}
             className="w-full"
             onChange={event => handleStateChange('stop', event.target.value)}
@@ -466,7 +472,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state?.max_tokens}
+            value={handleFloatValue(state?.max_tokens)}
             min={4}
             step={1}
             placeholder={defaultState?.max_tokens?.toString()}
@@ -485,7 +491,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
           <Input
             name="url"
             type="number"
-            value={state?.repeat_penalty}
+            value={handleFloatValue(state?.repeat_penalty)}
             min={0}
             step={0.1}
             placeholder={defaultState?.repeat_penalty?.toString()}
