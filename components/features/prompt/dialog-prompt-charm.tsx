@@ -139,7 +139,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       if (key === 'stop') {
         if (Array.isArray(val)) {
           // Never allow empty string in array, otherwise no response.
-          if (newVal?.[0] === '') newVal = null
+          if (newVal?.[0] === '') newVal = []
         } else {
           // Create array result from string
           newVal = val?.split?.(' ')

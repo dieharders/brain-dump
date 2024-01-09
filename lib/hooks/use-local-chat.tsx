@@ -53,8 +53,8 @@ export const useLocalInference = ({
       return services?.textInference.inference({
         body: {
           ...options,
+          collectionNames,
           mode,
-          collectionNames
         }
       })
     } catch (error) {
@@ -141,7 +141,7 @@ export const useLocalInference = ({
       const options = {
         ...settings.call,
         // ...settings.init, // @TODO Can we just pass everything in init ?
-        n_ctx: settings.init?.n_ctx,
+        ...(settings?.init?.n_ctx && { n_ctx: settings.init.n_ctx }),
         seed: settings.init?.seed,
         prompt: prompt.content,
       }

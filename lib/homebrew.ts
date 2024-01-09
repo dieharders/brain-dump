@@ -148,7 +148,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to query the text inference engine
    */
   textInference: {
-    inference: T_GenericAPIRequest<T_GenericDataRes>
+    inference: (props?: I_GenericAPIRequestParams) => Response | null
     load: T_GenericAPIRequest<T_GenericDataRes>
     model: T_GenericAPIRequest<T_InstalledTextModel>
     installed: T_GenericAPIRequest<T_InstalledTextModel[]>
