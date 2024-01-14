@@ -47,6 +47,38 @@
     "downloadUrl": "https://huggingface.co/TheBloke/Mistral-7B-v0.1-GGUF/resolve/main/mistral-7b-v0.1.Q4_K_M.gguf",
     "sha256": "ce6253d2e91adea0c35924b38411b0434fa18fcb90c52980ce68187dbcbbe40c"
   },
+  "dolphin-2.6-mistral-7b.Q5_K_M": {
+    "id": "dolphin-2.6-mistral-7b.Q5_K_M",
+    "name": "Dolphin-Mistral-7B",
+    "type": "mistral",
+    "provider": "The Bloke",
+    "licenses": ["Apache-2.0"],
+    "description": "Mistral Ai",
+    "fileSize": 4.37,
+    "fileName": "dolphin-2.6-mistral-7b.Q5_K_M.gguf",
+    "modelType": "mistral",
+    "modelUrl": "https://huggingface.co/TheBloke/dolphin-2.6-mistral-7B-GGUF",
+    "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
+    "context_window": 4000,
+    "downloadUrl": "https://huggingface.co/TheBloke/dolphin-2.6-mistral-7B-GGUF/resolve/main/dolphin-2.6-mistral-7b.Q5_K_M.gguf",
+    "sha256": "e4ce9eabae27e45131c3d0d99223f133b96257301670073b3aee50f7627e20b2"
+  },
+  "mixtral-8x7b-v0.1.Q4_K_M": {
+    "id": "mixtral-8x7b-v0.1.Q4_K_M",
+    "name": "Mixtral-8x7B",
+    "type": "mistral",
+    "provider": "The Bloke",
+    "licenses": ["Apache-2.0"],
+    "description": "Mistral Ai",
+    "fileSize": 4.37,
+    "fileName": "mixtral-8x7b-v0.1.Q4_K_M.gguf",
+    "modelType": "mistral",
+    "modelUrl": "https://huggingface.co/TheBloke/Mixtral-8x7B-v0.1-GGUF",
+    "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
+    "context_window": 4000,
+    "downloadUrl": "https://huggingface.co/TheBloke/Mixtral-8x7B-v0.1-GGUF/resolve/main/mixtral-8x7b-v0.1.Q4_K_M.gguf?download=true",
+    "sha256": "5e066c60d89d904db46c3bf577661040578a223a5a39ba3fd23ff091549767f0"
+  },
   "wizard-coder-python-13b": {
     "id": "wizard-coder-python-13b",
     "name": "WizardCoder Python 13B",
