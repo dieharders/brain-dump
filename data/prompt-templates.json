@@ -18,6 +18,18 @@
       "text": "{query_str}\nThink through your steps before providing your final response or answer."
     }
   ],
+  "thought": [
+    {
+      "id": "thought_chain_response",
+      "name": "Respond - Chain of Thought",
+      "text": "Think through step by step then give a response before replying to the following:\n{query_str}"
+    },
+    {
+      "id": "thought_chain_query",
+      "name": "Question/Answer - Chain of Thought",
+      "text": "Q: {query_str} A: Think step by step."
+    }
+  ],
   "logic": [
     {
       "id": "logic_basic",
