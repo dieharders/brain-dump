@@ -14,6 +14,15 @@ import { T_GenericDataRes, T_GenericAPIRequest, I_Collection } from '@/lib/homeb
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+} from '@/components/ui/select'
 
 interface I_Props {
   collection: I_Collection | null,
@@ -30,6 +39,22 @@ export const DialogAddDocument = (props: I_Props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [urlValue, setUrlValue] = useState('')
   const [disableForm, setDisableForm] = useState(false)
+  const [chunkSize, setChunkSize] = useState<number | string>('')
+  const [chunkOverlap, setChunkOverlap] = useState<number | string>('')
+  const [chunkingStrategy, setChunkingStrategy] = useState<string | undefined>()
+
+  // @TODO Load available strats from apiConfig endpoint
+  const defaultChunkingStrategy = 'MARKDOWN_HEADING_SPLIT'
+  const strategies = [defaultChunkingStrategy]
+  const chunkingStrategies = strategies?.map(strat => {
+    const parseString = (str: string) => {
+      const words = str.split('_')
+      words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      return words.join(' ')
+    }
+    const name = parseString(strat)
+    return (<SelectItem key={strat} value={strat}>{name}</SelectItem>)
+  })
 
   // Store ref to our selected file
   const handleFileSelected = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -45,12 +70,24 @@ export const DialogAddDocument = (props: I_Props) => {
     try {
       // Send form input values (everything except file) as url query params
       const parsedTags = tagsValue // @TODO Parse the value to be a space-seperated string of words. Remove any special chars, commas.
-      const formInputs = { collectionName: collection?.name, documentName: nameValue, description: descrValue, tags: parsedTags, urlPath: urlValue }
+      const formInputs = {
+        collectionName: collection?.name,
+        documentName: nameValue,
+        urlPath: urlValue,
+        description: descrValue,
+        tags: parsedTags,
+        ...(chunkSize && { chunkSize: parseInt(chunkSize as string) }),
+        ...(chunkOverlap && { chunkOverlap: parseInt(chunkOverlap as string) }),
+        chunkingStrategy,
+      }
       // Create a form with our selected file attached
       const formData = new FormData()
       if (selectedFile) formData.append('file', selectedFile, selectedFile.name)
       // Send request (Add new document)
-      const result = await action({ queryParams: formInputs, ...(!urlValue && { formData }) })
+      const result = await action({
+        queryParams: formInputs,
+        ...(!urlValue && { formData }),
+      })
       // Verify
       if (result?.success) {
         toast.success(`File upload successful: ${result.message}`)
@@ -120,6 +157,44 @@ export const DialogAddDocument = (props: I_Props) => {
             placeholder="Tags (optional, 10 max)"
             onChange={e => setTagsValue(e.target.value)}
           />
+          {/* Chunk Size */}
+          <Input
+            name="chunkSize"
+            type="number"
+            value={chunkSize}
+            min={1}
+            step={1}
+            placeholder="Chunk Size (300)"
+            onChange={e => setChunkSize(e.target.value)}
+          />
+          {/* Chunk Overlap */}
+          <Input
+            name="chunkOverlap"
+            type="number"
+            value={chunkOverlap}
+            min={0}
+            step={1}
+            placeholder="Chunk Overlap (0)"
+            onChange={e => setChunkOverlap(e.target.value)}
+          />
+          {/* Chunking Strategy */}
+          <div className="w-full">
+            <Select
+              defaultValue={undefined}
+              value={chunkingStrategy}
+              onValueChange={setChunkingStrategy}
+            >
+              <SelectTrigger className="w-full flex-1">
+                <SelectValue placeholder="Select Chunking Strategy"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup>
+                <SelectContent className="p-1">
+                  <SelectLabel className="select-none uppercase text-indigo-500">Chunking Strategy</SelectLabel>
+                  {chunkingStrategies}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+          </div>
         </form>
         <DialogFooter className="items-center">
           <Button
