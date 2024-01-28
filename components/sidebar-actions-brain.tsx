@@ -115,7 +115,7 @@ export const CollectionActions = (props: I_Props) => {
             <span className="sr-only">Delete collection</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Delete</TooltipContent>
+        <TooltipContent>Delete Collection</TooltipContent>
       </Tooltip>
     </div>
   )
