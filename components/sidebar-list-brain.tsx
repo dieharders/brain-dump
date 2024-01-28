@@ -19,7 +19,7 @@ export interface SidebarBrainListProps {
 }
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
-  const { getServices } = useHomebrew()
+  const { getServices, APIConfigOptions } = useHomebrew()
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasMounted, setHasMounted] = useState(false)
   const [collections, setCollections] = useState<Array<I_Collection>>([])
@@ -123,7 +123,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
         {/* Pop-Up Menus */}
         <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
-        <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} />
+        <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions} />
         <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
         <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
         <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} services={services} />

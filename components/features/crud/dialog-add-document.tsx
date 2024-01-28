@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
-import { T_GenericDataRes, T_GenericAPIRequest, I_Collection } from '@/lib/homebrew'
+import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, T_ConfigOptions } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,10 +29,11 @@ interface I_Props {
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
   action: T_GenericAPIRequest<T_GenericDataRes>
+  options?: T_ConfigOptions
 }
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
-  const { action, collection, dialogOpen, setDialogOpen } = props
+  const { action, collection, dialogOpen, setDialogOpen, options } = props
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
@@ -43,16 +44,15 @@ export const DialogAddDocument = (props: I_Props) => {
   const [chunkOverlap, setChunkOverlap] = useState<number | string>('')
   const [chunkingStrategy, setChunkingStrategy] = useState<string | undefined>()
 
-  // @TODO Load available strats from apiConfig endpoint
-  const defaultChunkingStrategy = 'MARKDOWN_HEADING_SPLIT'
-  const strategies = [defaultChunkingStrategy]
+  // Load available strats from endpoint
+  const strategies = options?.['chunkingStrategies']
   const chunkingStrategies = strategies?.map(strat => {
-    const parseString = (str: string) => {
+    const parseName = (str: string) => {
       const words = str.split('_')
       words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       return words.join(' ')
     }
-    const name = parseString(strat)
+    const name = parseName(strat)
     return (<SelectItem key={strat} value={strat}>{name}</SelectItem>)
   })
 

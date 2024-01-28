@@ -28,7 +28,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
+import { T_ConfigOptions, T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
 
 interface I_State extends I_LLM_Call_Options {
   // Presets
@@ -42,14 +42,16 @@ interface I_Props {
   settings: I_State | null
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
+  getOptions?: () => Promise<T_ConfigOptions>
 }
 
 type T_TemplateSource = 'custom_default' | string
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts, getOptions } = props
   const defaultSystemPrompt = 'You are an AI assistant that helps people find information.'
   const defaultPromptTemplate = '{query_str}'
+  const [responseModes, setResponseModes] = useState<JSX.Element[] | undefined>()
   const [systemPromptSource, setSystemPromptSource] = useState<string>()
   const [promptTemplateSource, setPromptTemplateSource] = useState<T_TemplateSource>()
   const [ragPromptSource, setRagPromptSource] = useState<string>() // llama-index prompts
@@ -208,15 +210,14 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     return [customGroup, ...presets]
   }, [promptTemplates?.normal_presets])
 
-  const getResponseModes = useCallback(() => {
-    const parseString = (str: string) => {
+  const getResponseModes = useCallback((data: T_ConfigOptions) => {
+    const parseName = (str: string) => {
       const words = str.split('_')
       words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       return words.join(' ')
     }
-    // @TODO Get from api endpoint
-    const data = ['COMPACT']
-    return data.map(i => <SelectItem key={i} value={i}>{parseString(i)}</SelectItem>)
+    const modes = data?.['ragResponseModes']
+    return modes?.map(i => <SelectItem key={i} value={i}>{parseName(i)}</SelectItem>)
   }, [])
 
   const presetsMenu = (
@@ -601,7 +602,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         {/* Type of response (response_mode) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
-            <Label className="text-sm font-semibold">Type of Response</Label>
+            <Label className="text-sm font-semibold">Response Type</Label>
             <Info label="response_mode">
               <span><Highlight>response_mode</Highlight> determines how the LLM responds to the context.</span>
             </Info>
@@ -617,7 +618,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
               </SelectTrigger>
               <SelectGroup>
                 <SelectContent className="p-1">
-                  {getResponseModes()}
+                  {responseModes}
                 </SelectContent>
               </SelectGroup>
             </Select>
@@ -639,7 +640,17 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   ]
 
   useEffect(() => {
-    if (settings && dialogOpen) setState(prev => ({ ...prev, ...settings }))
+    if (settings && dialogOpen) {
+      const getOptionsAction = async () => {
+        const foo = await getOptions?.()
+        if (foo) {
+          const bar = getResponseModes(foo)
+          setResponseModes(bar)
+        }
+      }
+      getOptionsAction()
+      setState(prev => ({ ...prev, ...settings }))
+    }
   }, [dialogOpen, settings])
 
   return (
