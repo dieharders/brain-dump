@@ -86,18 +86,22 @@ export interface I_GetCollectionData {
 export type T_ModelConfig = {
   id: string
   name: string
-  type?: string
+  description?: string
+  archType?: string
+  modelType?: string
   provider?: string
   licenses?: string[]
-  description?: string
   fileSize?: number
   fileName: string
-  modelType?: string
   modelUrl?: string
-  quantTypes?: string[]
-  context_window?: number
   downloadUrl: string
   sha256?: string
+  quantTypes?: string[]
+  // used for model init
+  context_window?: number
+  embedding_size?: number
+  num_gpu_layers?: number
+  torch_dtype?: string
 }
 
 export type T_InstalledTextModel = {

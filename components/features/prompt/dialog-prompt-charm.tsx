@@ -91,8 +91,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     repeat_penalty: defaultState.repeat_penalty,
     stream: defaultState.stream,
     echo: defaultState.echo,
-    similarity_top_k: defaultState.similarity_top_k,
-    response_mode: undefined,
+    similarity_top_k: settings?.similarity_top_k || defaultState.similarity_top_k,
+    response_mode: settings?.response_mode || undefined,
   })
 
   const handleFloatValue = (val: any) => {
@@ -212,12 +212,12 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
   const getResponseModes = useCallback((data: T_ConfigOptions) => {
     const parseName = (str: string) => {
-      const words = str.split('_')
-      words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      const list = str.split('_')
+      const words = list.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       return words.join(' ')
     }
     const modes = data?.['ragResponseModes']
-    return modes?.map(i => <SelectItem key={i} value={i}>{parseName(i)}</SelectItem>)
+    return modes?.map(mode => <SelectItem key={mode} value={mode}>{parseName(mode)}</SelectItem>)
   }, [])
 
   const presetsMenu = (
@@ -641,15 +641,15 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
   useEffect(() => {
     if (settings && dialogOpen) {
-      const getOptionsAction = async () => {
-        const foo = await getOptions?.()
-        if (foo) {
-          const bar = getResponseModes(foo)
-          setResponseModes(bar)
+      const action = async () => {
+        const options = await getOptions?.()
+        if (options) {
+          const modeComponents = getResponseModes(options)
+          setResponseModes(modeComponents)
         }
+        setState(prev => ({ ...prev, ...settings }))
       }
-      getOptionsAction()
-      setState(prev => ({ ...prev, ...settings }))
+      action()
     }
   }, [dialogOpen, settings])
 
