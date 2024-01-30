@@ -440,6 +440,8 @@ export const useHomebrew = () => {
    * Get all api configs for services.
    */
   const getServices = async () => {
+    if (store.api?.services) return store.api?.services
+
     const res = await getAPIConfig()
     // Store all config options for endpoints
     let configOptions: T_APIConfigOptions = {}
