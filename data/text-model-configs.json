@@ -202,7 +202,7 @@
   },
   "zephyr-7b-beta": {
     "id": "zephyr-7b-beta",
-    "name": "Zephyr 7B Beta",
+    "name": "Zephyr 7B Beta (search)",
     "archType": "transformer",
     "provider": "The Bloke",
     "licenses": ["MIT"],
@@ -222,7 +222,7 @@
   },
   "bling-sheared-llama-1.3b-0.1": {
     "id": "bling-sheared-llama-1.3b-0.1",
-    "name": "Sheared Llama 1.3B",
+    "name": "Sheared Llama 1.3B (search)",
     "archType": "transformer",
     "provider": "Aryanne",
     "licenses": ["Apache-2.0"],
