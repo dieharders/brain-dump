@@ -28,7 +28,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
+import { T_APIConfigOptions, T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
 
 interface I_State extends I_LLM_Call_Options {
   // Presets
@@ -42,19 +42,22 @@ interface I_Props {
   settings: I_State | null
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
+  getOptions?: () => Promise<T_APIConfigOptions>
 }
 
 type T_TemplateSource = 'custom_default' | string
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts, getOptions } = props
   const defaultSystemPrompt = 'You are an AI assistant that helps people find information.'
   const defaultPromptTemplate = '{query_str}'
+  const [responseModes, setResponseModes] = useState<JSX.Element[] | undefined>()
   const [systemPromptSource, setSystemPromptSource] = useState<string>()
   const [promptTemplateSource, setPromptTemplateSource] = useState<T_TemplateSource>()
   const [ragPromptSource, setRagPromptSource] = useState<string>() // llama-index prompts
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
+
   // Default state values
   const defaultState = useMemo(() => {
     return {
@@ -70,6 +73,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       repeat_penalty: 1.1,
       stream: true,
       echo: false,
+      similarity_top_k: 1,
     }
   }, [])
 
@@ -87,6 +91,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     repeat_penalty: defaultState.repeat_penalty,
     stream: defaultState.stream,
     echo: defaultState.echo,
+    similarity_top_k: settings?.similarity_top_k || defaultState.similarity_top_k,
+    response_mode: settings?.response_mode || undefined,
   })
 
   const handleFloatValue = (val: any) => {
@@ -204,8 +210,18 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     return [customGroup, ...presets]
   }, [promptTemplates?.normal_presets])
 
+  const getResponseModes = useCallback((data: T_APIConfigOptions) => {
+    const parseName = (str: string) => {
+      const list = str.split('_')
+      const words = list.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      return words.join(' ')
+    }
+    const modes = data?.ragResponseModes
+    return modes?.map(mode => <SelectItem key={mode} value={mode}>{parseName(mode)}</SelectItem>)
+  }, [])
+
   const presetsMenu = (
-    <>
+    <div className="px-1">
       {/* Accuracy Presets */}
       <DialogHeader className="my-8">
         <DialogTitle>Accuracy Settings</DialogTitle>
@@ -389,11 +405,11 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <DialogFooter className="items-stretch">
         <Button onClick={onSave}>Save</Button>
       </DialogFooter>
-    </>
+    </div>
   )
 
   const advancedMenu = (
-    <>
+    <div className="px-1">
       {/* Advanced Settings, should override all other settings */}
       <DialogHeader className="my-8">
         <DialogTitle>Advanced Settings</DialogTitle>
@@ -402,8 +418,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
         </DialogDescription>
       </DialogHeader>
 
-      {/* Content */}
-      <form className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4" method="POST" encType="multipart/form-data">
+      {/* Options Content */}
+      <div className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4">
         {/* Temperature (temperature) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
@@ -549,14 +565,73 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             onCheckedChange={val => handleStateChange('echo', val)}
           />
         </div>
-      </form>
+      </div>
+
+      <Separator className="my-6" />
+
+      {/* RAG Options ONLY */}
+      <DialogHeader className="my-8">
+        <DialogTitle>Memory Retrieval</DialogTitle>
+        <DialogDescription>
+          Only applies to queries that use external memories as context.
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* RAG Options Content */}
+      <div className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4">
+        {/* Max Number of Results (similarity_top_k) */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Num Matching Results</Label>
+            <Info label="similarity_top_k">
+              <span><Highlight>similarity_top_k</Highlight> determines how many matching documents to consider when synthesizing a response.</span>
+            </Info>
+          </div>
+          <Input
+            name="url"
+            type="number"
+            value={handleFloatValue(state?.similarity_top_k)}
+            min={1}
+            step={1}
+            placeholder={defaultState?.similarity_top_k?.toString()}
+            className="w-full"
+            onChange={event => handleFloatChange('similarity_top_k', event.target.value)}
+          />
+        </div>
+
+        {/* Type of response (response_mode) */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Response Type</Label>
+            <Info label="response_mode">
+              <span><Highlight>response_mode</Highlight> determines how the LLM responds to the context.</span>
+            </Info>
+          </div>
+          <div className="w-full">
+            <Select
+              defaultValue={undefined}
+              value={state?.response_mode}
+              onValueChange={value => handleStateChange('response_mode', value)}
+            >
+              <SelectTrigger className="w-full flex-1">
+                <SelectValue placeholder="Select Response Mode"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup>
+                <SelectContent className="p-1">
+                  {responseModes}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+          </div>
+        </div>
+      </div>
 
       <Separator className="my-6" />
 
       <DialogFooter className="items-stretch">
         <Button onClick={onSave}>Save</Button>
       </DialogFooter>
-    </>
+    </div>
   )
 
   const tabs = [
@@ -565,7 +640,17 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   ]
 
   useEffect(() => {
-    if (settings && dialogOpen) setState(prev => ({ ...prev, ...settings }))
+    if (settings && dialogOpen) {
+      const action = async () => {
+        const options = await getOptions?.()
+        if (options) {
+          const modeComponents = getResponseModes(options)
+          setResponseModes(modeComponents)
+        }
+        setState(prev => ({ ...prev, ...settings }))
+      }
+      action()
+    }
   }, [dialogOpen, settings])
 
   return (

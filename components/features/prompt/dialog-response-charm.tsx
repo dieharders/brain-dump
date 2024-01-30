@@ -103,7 +103,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
 
   // Menus
   const presetsMenu = (
-    <>
+    <div className="px-1">
       <DialogHeader className="my-8">
         <DialogTitle>Response Types</DialogTitle>
         <DialogDescription className="mb-4">
@@ -146,11 +146,11 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <DialogFooter className="items-stretch">
         <Button onClick={onSave}>Save</Button>
       </DialogFooter>
-    </>
+    </div>
   )
 
   const advancedMenu = (
-    <>
+    <div className="px-1">
       {/* Advanced Settings, should override all other settings */}
       <DialogHeader className="my-8">
         <DialogTitle>Advanced Settings</DialogTitle>
@@ -311,7 +311,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
         </Button>
         <Button className="w-full sm:w-fit" onClick={onSave}>Save</Button>
       </DialogFooter>
-    </>
+    </div>
   )
 
   const tabs = [

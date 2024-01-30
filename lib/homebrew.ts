@@ -1,3 +1,12 @@
+import { useState } from 'react'
+
+interface I_ChunkingStrategy {
+  chunkingStrategies?: Array<string>
+  ragResponseModes?: Array<string>
+}
+
+export type T_APIConfigOptions = I_ChunkingStrategy
+
 interface I_Endpoint {
   name: string
   urlPath: string
@@ -8,6 +17,7 @@ interface I_API {
   name: string
   port: number
   endpoints: Array<I_Endpoint>
+  configs?: T_APIConfigOptions
 }
 
 interface I_ServicesResponse {
@@ -81,18 +91,22 @@ export interface I_GetCollectionData {
 export type T_ModelConfig = {
   id: string
   name: string
-  type?: string
+  description?: string
+  archType?: string
+  modelType?: string
   provider?: string
   licenses?: string[]
-  description?: string
   fileSize?: number
   fileName: string
-  modelType?: string
   modelUrl?: string
-  quantTypes?: string[]
-  context_window?: number
   downloadUrl: string
   sha256?: string
+  quantTypes?: string[]
+  // used for model init
+  context_window?: number
+  embedding_size?: number
+  num_gpu_layers?: number
+  torch_dtype?: string
 }
 
 export type T_InstalledTextModel = {
@@ -385,6 +399,9 @@ export const getAPIConfig = async () => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
+  // @TODO Ideally we put this in some sort of global context
+  const [APIConfigOptions, setAPIConfigOptions] = useState<T_APIConfigOptions>({})
+
   /**
    * Attempt to connect to homebrew api.
    */
@@ -406,9 +423,24 @@ export const useHomebrew = () => {
    */
   const getServices = async () => {
     const res = await getAPIConfig()
+    // Store all config options for endpoints
+    let configOptions: T_APIConfigOptions = {}
+    res?.forEach(i => {
+      if (i.configs) configOptions = { ...configOptions, ...i.configs }
+    })
+    configOptions && setAPIConfigOptions(configOptions)
+    // Return readily usable request funcs
     const serviceApis = createServices(res)
     return serviceApis
   }
 
-  return { connect, getServices }
+  /**
+   * Return options for all endpoints
+   */
+  const getAPIConfigOptions = async () => {
+    if (!APIConfigOptions) await getServices()
+    return APIConfigOptions
+  }
+
+  return { connect, getServices, getAPIConfigOptions, APIConfigOptions }
 }

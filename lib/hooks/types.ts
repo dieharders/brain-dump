@@ -42,6 +42,8 @@ export interface I_LLM_Call_Options {
   promptTemplate?: string
   systemPrompt?: string
   ragPromptTemplate?: T_RAGPromptTemplate
+  similarity_top_k?: number
+  response_mode?: string
   // grammar?: string
 }
 

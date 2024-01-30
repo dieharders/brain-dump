@@ -52,7 +52,7 @@ export const CharmMenu = (props: I_Props) => {
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
-  const { getServices } = useHomebrew()
+  const { getServices, getAPIConfigOptions } = useHomebrew()
   const { fetchCollections } = useMemoryActions(services)
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
@@ -119,6 +119,7 @@ export const CharmMenu = (props: I_Props) => {
         settings={promptSettings}
         promptTemplates={promptTemplates}
         systemPrompts={systemPrompts}
+        getOptions={getAPIConfigOptions}
       />
 
       {/* Charms Selection Menu */}
