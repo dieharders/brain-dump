@@ -1,6 +1,11 @@
 import { useState } from 'react'
 
-export type T_ConfigOptions = { [key: string]: Array<string> }
+interface I_ChunkingStrategy {
+  chunkingStrategies?: Array<string>
+  ragResponseModes?: Array<string>
+}
+
+export type T_APIConfigOptions = I_ChunkingStrategy
 
 interface I_Endpoint {
   name: string
@@ -12,7 +17,7 @@ interface I_API {
   name: string
   port: number
   endpoints: Array<I_Endpoint>
-  configs?: T_ConfigOptions
+  configs?: T_APIConfigOptions
 }
 
 interface I_ServicesResponse {
@@ -395,7 +400,7 @@ export const getAPIConfig = async () => {
  */
 export const useHomebrew = () => {
   // @TODO Ideally we put this in some sort of global context
-  const [APIConfigOptions, setAPIConfigOptions] = useState<T_ConfigOptions>({})
+  const [APIConfigOptions, setAPIConfigOptions] = useState<T_APIConfigOptions>({})
 
   /**
    * Attempt to connect to homebrew api.
@@ -419,7 +424,7 @@ export const useHomebrew = () => {
   const getServices = async () => {
     const res = await getAPIConfig()
     // Store all config options for endpoints
-    let configOptions: T_ConfigOptions = {}
+    let configOptions: T_APIConfigOptions = {}
     res?.forEach(i => {
       if (i.configs) configOptions = { ...configOptions, ...i.configs }
     })

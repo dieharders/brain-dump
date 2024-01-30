@@ -28,7 +28,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_ConfigOptions, T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
+import { T_APIConfigOptions, T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
 
 interface I_State extends I_LLM_Call_Options {
   // Presets
@@ -42,7 +42,7 @@ interface I_Props {
   settings: I_State | null
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
-  getOptions?: () => Promise<T_ConfigOptions>
+  getOptions?: () => Promise<T_APIConfigOptions>
 }
 
 type T_TemplateSource = 'custom_default' | string
@@ -210,13 +210,13 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     return [customGroup, ...presets]
   }, [promptTemplates?.normal_presets])
 
-  const getResponseModes = useCallback((data: T_ConfigOptions) => {
+  const getResponseModes = useCallback((data: T_APIConfigOptions) => {
     const parseName = (str: string) => {
       const list = str.split('_')
       const words = list.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       return words.join(' ')
     }
-    const modes = data?.['ragResponseModes']
+    const modes = data?.ragResponseModes
     return modes?.map(mode => <SelectItem key={mode} value={mode}>{parseName(mode)}</SelectItem>)
   }, [])
 

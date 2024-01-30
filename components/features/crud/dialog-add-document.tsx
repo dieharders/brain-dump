@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
-import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, T_ConfigOptions } from '@/lib/homebrew'
+import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, T_APIConfigOptions } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,8 +29,9 @@ interface I_Props {
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
   action: T_GenericAPIRequest<T_GenericDataRes>
-  options?: T_ConfigOptions
+  options?: T_APIConfigOptions
 }
+
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
   const { action, collection, dialogOpen, setDialogOpen, options } = props
@@ -45,7 +46,7 @@ export const DialogAddDocument = (props: I_Props) => {
   const [chunkingStrategy, setChunkingStrategy] = useState<string | undefined>()
 
   // Load available strats from endpoint
-  const strategies = options?.['chunkingStrategies']
+  const strategies = options?.chunkingStrategies
   const chunkingStrategies = strategies?.map(strat => {
     const parseName = (str: string) => {
       const words = str.split('_')
