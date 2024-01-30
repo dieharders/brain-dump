@@ -53,6 +53,7 @@ export const CharmMenu = (props: I_Props) => {
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const { getServices, getAPIConfigOptions } = useHomebrew()
+  const APIConfigOptions = useRef({})
   const { fetchCollections } = useMemoryActions(services)
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
@@ -87,11 +88,13 @@ export const CharmMenu = (props: I_Props) => {
   useEffect(() => {
     const action = async () => {
       const res = await getServices()
+      const cfg = await getAPIConfigOptions()
 
       if (res) {
         setServices(res)
         setHasMounted(true)
       }
+      if (cfg) APIConfigOptions.current = cfg
     }
     if (!hasMounted) action()
   }, [getServices, hasMounted])
@@ -119,7 +122,7 @@ export const CharmMenu = (props: I_Props) => {
         settings={promptSettings}
         promptTemplates={promptTemplates}
         systemPrompts={systemPrompts}
-        getOptions={getAPIConfigOptions}
+        options={APIConfigOptions.current}
       />
 
       {/* Charms Selection Menu */}

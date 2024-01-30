@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { I_Collection, I_GenericAPIResponse, I_ServiceApis, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
@@ -19,7 +19,8 @@ export interface SidebarBrainListProps {
 }
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
-  const { getServices, APIConfigOptions } = useHomebrew()
+  const APIConfigOptions = useRef({})
+  const { getServices, getAPIConfigOptions } = useHomebrew()
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasMounted, setHasMounted] = useState(false)
   const [collections, setCollections] = useState<Array<I_Collection>>([])
@@ -106,6 +107,15 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     if (!hasMounted) action()
   }, [getServices, hasMounted, updateListAction])
 
+  // Fetch api options
+  useEffect(() => {
+    const action = async () => {
+      const options = await getAPIConfigOptions()
+      if (options) APIConfigOptions.current = options
+    }
+    action()
+  }, [])
+
   return (
     <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
       {/* "Add New" and "Refresh" buttons */}
@@ -123,7 +133,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
         {/* Pop-Up Menus */}
         <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
-        <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions} />
+        <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions.current} />
         <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
         <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
         <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} services={services} />
