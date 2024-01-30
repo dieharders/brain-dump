@@ -1,11 +1,23 @@
-import { useState } from 'react'
-
-interface I_ChunkingStrategy {
+export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
   ragResponseModes?: Array<string>
 }
 
-export type T_APIConfigOptions = I_ChunkingStrategy
+type T_APIRequests = {
+  services: I_ServiceApis
+  configs: T_APIConfigOptions
+}
+
+type T_ClientAPI = {
+  hasInitConnection?: boolean
+  api?: T_APIRequests
+}
+
+declare global {
+  interface Window {
+    homebrewai?: T_ClientAPI
+  }
+}
 
 interface I_Endpoint {
   name: string
@@ -399,15 +411,21 @@ export const getAPIConfig = async () => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  // @TODO Ideally we put this in some sort of global context
-  const [APIConfigOptions, setAPIConfigOptions] = useState<T_APIConfigOptions>({})
+  // Init global context
+  let store = {} as T_ClientAPI
+
+  if (typeof window !== 'undefined') {
+    // Client-side-only code
+    if (!window.homebrewai) window.homebrewai = {}
+    store = window.homebrewai
+  }
 
   /**
    * Attempt to connect to homebrew api.
    */
   const connect = async () => {
     // Track the initial attempt at a connection
-    if (window?.homebrewai) window.homebrewai.hasInitConnection = true
+    if (store) store.hasInitConnection = true
 
     const result = await connectToLocalProvider()
     if (!result?.success) return null
@@ -422,15 +440,21 @@ export const useHomebrew = () => {
    * Get all api configs for services.
    */
   const getServices = async () => {
+    if (store.api?.services) return store.api?.services
+
     const res = await getAPIConfig()
     // Store all config options for endpoints
     let configOptions: T_APIConfigOptions = {}
     res?.forEach(i => {
       if (i.configs) configOptions = { ...configOptions, ...i.configs }
     })
-    configOptions && setAPIConfigOptions(configOptions)
     // Return readily usable request funcs
     const serviceApis = createServices(res)
+    if (store && serviceApis && configOptions) {
+      const d = { configs: configOptions, services: serviceApis }
+      if (!store?.api) store.api = d
+      store.api = d
+    }
     return serviceApis
   }
 
@@ -438,9 +462,12 @@ export const useHomebrew = () => {
    * Return options for all endpoints
    */
   const getAPIConfigOptions = async () => {
-    if (!APIConfigOptions) await getServices()
-    return APIConfigOptions
+    if (!store?.api) {
+      await getServices()
+      return store?.api?.configs
+    }
+    return store?.api?.configs
   }
 
-  return { connect, getServices, getAPIConfigOptions, APIConfigOptions }
+  return { connect, getServices, getAPIConfigOptions }
 }

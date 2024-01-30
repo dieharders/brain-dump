@@ -21,14 +21,6 @@ import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { I_LLM_Options } from '@/lib/hooks/types'
 
-declare global {
-  interface Window {
-    homebrewai?: {
-      hasInitConnection?: boolean,
-    }
-  }
-}
-
 interface IProps {
   id?: string
   initialMessages?: Message[]

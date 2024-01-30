@@ -42,13 +42,13 @@ interface I_Props {
   settings: I_State | null
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
-  getOptions?: () => Promise<T_APIConfigOptions>
+  options?: T_APIConfigOptions
 }
 
 type T_TemplateSource = 'custom_default' | string
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts, getOptions } = props
+  const { dialogOpen, setDialogOpen, onSubmit, settings, promptTemplates, systemPrompts, options } = props
   const defaultSystemPrompt = 'You are an AI assistant that helps people find information.'
   const defaultPromptTemplate = '{query_str}'
   const [responseModes, setResponseModes] = useState<JSX.Element[] | undefined>()
@@ -642,7 +642,6 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   useEffect(() => {
     if (settings && dialogOpen) {
       const action = async () => {
-        const options = await getOptions?.()
         if (options) {
           const modeComponents = getResponseModes(options)
           setResponseModes(modeComponents)
