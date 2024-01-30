@@ -43,6 +43,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const DEFAULT_PRESET = 'completion'
   const defaultContextWindow = modelConfig?.context_window
+  const max_gpu_layers = modelConfig?.num_gpu_layers
 
   // State values
   const defaultState: I_State = {
@@ -250,6 +251,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             type="number"
             value={state?.n_gpu_layers}
             min={-1}
+            max={max_gpu_layers}
             step={1}
             placeholder={defaultState?.n_gpu_layers?.toString()}
             className="w-full"
