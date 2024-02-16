@@ -96,6 +96,25 @@
     "sha256": "5cf756efc061eeb4e01b2b6f5bec8dc0f0650b5f3012cc023dfb20a569f68379",
     "messageFormat": "[INST]\n{prompt}\n[/INST]"
   },
+  "codellama-7b.Q5_K_M": {
+    "id": "codellama-7b.Q5_K_M",
+    "name": "Code Llama 7B (coding)",
+    "archType": "transformer",
+    "provider": "The Bloke",
+    "licenses": ["llama2"],
+    "description": "Code Llama is a collection of pretrained and fine-tuned generative text models ranging in scale from 7 billion to 34 billion parameters. This is the repository for the base 7B version in the Hugging Face Transformers format. This model is designed for general code synthesis and understanding. Links to other models can be found in the index at the bottom.",
+    "fileSize": 4.78,
+    "fileName": "codellama-7b.Q5_K_M.gguf",
+    "modelType": "llama",
+    "modelUrl": "https://huggingface.co/TheBloke/CodeLlama-7B-GGUF",
+    "context_window": 16384,
+    "embedding_size": 16384,
+    "num_gpu_layers": 32,
+    "torch_dtype": "bfloat16",
+    "downloadUrl": "https://huggingface.co/TheBloke/CodeLlama-7B-GGUF/resolve/main/codellama-7b.Q5_K_M.gguf",
+    "sha256": "f4222b2c639e3f5adee3cf2391f02fb0ee1307e5ef5a48399affb5f3802dd857",
+    "messageFormat": "{prompt}"
+  },
   "dolphin-2.6-mistral-7b.Q5_K_S": {
     "id": "dolphin-2.6-mistral-7b.Q5_K_S",
     "name": "Dolphin Mistral 7B (uncensored)",
