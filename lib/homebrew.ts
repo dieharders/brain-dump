@@ -117,7 +117,6 @@ export type T_ModelConfig = {
   // used for model init
   context_window?: number
   num_gpu_layers?: number
-  torch_dtype?: string
 }
 
 export type T_InstalledTextModel = {

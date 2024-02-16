@@ -13,7 +13,6 @@
     "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
     "context_window": 4096,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "downloadUrl": "https://huggingface.co/TheBloke/Mistral-7B-v0.1-GGUF/resolve/main/mistral-7b-v0.1.Q4_K_M.gguf",
     "sha256": "ce6253d2e91adea0c35924b38411b0434fa18fcb90c52980ce68187dbcbbe40c",
     "messageFormat": "{system_message}\n\n{prompt}"
@@ -31,7 +30,6 @@
     "modelUrl": "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
     "context_window": 4096,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "downloadUrl": "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q5_K_S.gguf",
     "sha256": "83d1104865d0790ada7a5e1191f2f702b9956ff3a457d67109ded0ab6a56aafd",
     "messageFormat": "<s>[INST] {prompt} [/INST]"
@@ -50,7 +48,6 @@
     "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
     "context_window": 4096,
     "num_gpu_layers": 40,
-    "torch_dtype": "float16",
     "downloadUrl": "https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/resolve/main/llama-2-13b-chat.Q4_K_M.gguf",
     "sha256": "7ddfe27f61bf994542c22aca213c46ecbd8a624cca74abff02a7b5a8c18f787f",
     "messageFormat": "[INST]<<SYS>>\n{system_message}\n<</SYS>>\n{prompt}[/INST]"
@@ -68,7 +65,6 @@
     "modelUrl": "https://huggingface.co/TheBloke/llama2_7b_chat_uncensored-GGUF",
     "context_window": 2048,
     "num_gpu_layers": 32,
-    "torch_dtype": "float32",
     "downloadUrl": "https://huggingface.co/TheBloke/llama2_7b_chat_uncensored-GGUF/resolve/main/llama2_7b_chat_uncensored.Q5_K_M.gguf",
     "sha256": "5597c297e81774e476a0d56d153dafa32b0f5043d6e90cb13eb19db6651df791",
     "messageFormat": "### HUMAN:\n{prompt}\n\n### RESPONSE:"
@@ -86,7 +82,6 @@
     "modelUrl": "https://huggingface.co/TheBloke/Llama-2-7B-32K-Instruct-GGUF",
     "context_window": 32000,
     "num_gpu_layers": 32,
-    "torch_dtype": "float16",
     "downloadUrl": "https://huggingface.co/TheBloke/Llama-2-7B-32K-Instruct-GGUF/resolve/main/llama-2-7b-32k-instruct.Q5_K_M.gguf",
     "sha256": "5cf756efc061eeb4e01b2b6f5bec8dc0f0650b5f3012cc023dfb20a569f68379",
     "messageFormat": "[INST]\n{prompt}\n[/INST]"
@@ -104,7 +99,6 @@
     "modelUrl": "https://huggingface.co/TheBloke/CodeLlama-7B-GGUF",
     "context_window": 16384,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "downloadUrl": "https://huggingface.co/TheBloke/CodeLlama-7B-GGUF/resolve/main/codellama-7b.Q5_K_M.gguf",
     "sha256": "f4222b2c639e3f5adee3cf2391f02fb0ee1307e5ef5a48399affb5f3802dd857",
     "messageFormat": "{prompt}"
@@ -123,7 +117,6 @@
     "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
     "context_window": 32768,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "downloadUrl": "https://huggingface.co/TheBloke/dolphin-2.6-mistral-7B-GGUF/resolve/main/dolphin-2.6-mistral-7b.Q5_K_S.gguf",
     "sha256": "c4f7042ef8fd02a2e7c2fdd9cb7dfd70c930750475778f54f1cd49eafd0e18ee",
     "messageFormat": "<|im_start|>system\n{system_message}<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant"
@@ -141,7 +134,6 @@
     "modelUrl": "https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
     "context_window": 32768,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "downloadUrl": "https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF/resolve/main/mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
     "sha256": "9193684683657e90707087bd1ed19fd0b277ab66358d19edeadc26d6fdec4f53",
     "messageFormat": "[INST] {system_message} {prompt} [/INST]"
@@ -159,7 +151,6 @@
     "modelType": "llama",
     "context_window": 5120,
     "num_gpu_layers": 40,
-    "torch_dtype": "float16",
     "modelUrl": "https://huggingface.co/TheBloke/WizardCoder-Python-13B-V1.0-GGUF",
     "downloadUrl": "https://huggingface.co/TheBloke/WizardCoder-Python-13B-V1.0-GGUF/resolve/main/wizardcoder-python-13b-v1.0.Q4_K_M.gguf",
     "sha256": "50ff7a6a33357a063e0d09b6d43d95dbf62dda5450138541478e524e06a4fe2a",
@@ -196,7 +187,6 @@
     "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
     "context_window": 4096,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "downloadUrl": "https://huggingface.co/TheBloke/openbuddy-openllama-7B-v12-bf16-GGUF/resolve/main/openbuddy-openllama-7b-v12-bf16.Q4_K_M.gguf",
     "sha256": "98d9e5b27fcd70acdeac0fcc4c862356a6106464ac96d88e59c0d3b56ff5c27a",
     "messageFormat": "You can speak fluently in many languages, for example: English, Chinese.\nYour vast knowledge is cutoff: 2021-09.{system_message}\n\nUser: {prompt}\nAssistant:"
@@ -215,7 +205,6 @@
     "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
     "context_window": 5120,
     "num_gpu_layers": 40,
-    "torch_dtype": "float32",
     "downloadUrl": "https://huggingface.co/TheBloke/Wizard-Vicuna-13B-Uncensored-GGUF/resolve/main/Wizard-Vicuna-13B-Uncensored.Q4_K_M.gguf",
     "sha256": "e5ca843fd4a8c0a898b036f5c664a1fac366fb278f20880f1a750f38a950db73",
     "messageFormat": "{system_message} USER: {prompt} ASSISTANT:"
@@ -235,7 +224,6 @@
     "quantTypes": ["Q5_K_S", "Q4_K_M", "Q3_K_S"],
     "context_window": 4096,
     "num_gpu_layers": 32,
-    "torch_dtype": "float16",
     "downloadUrl": "https://huggingface.co/TheBloke/law-LLM-GGUF/resolve/main/law-llm.Q5_K_M.gguf",
     "sha256": "3b8b1f96660780a4fbb91182a6e5a78450e19608bb98e38ff8ccfdb2cc6a56f3",
     "messageFormat": "{system_message}\n\n{prompt}"
@@ -253,7 +241,6 @@
     "modelType": "llama",
     "context_window": 4096,
     "num_gpu_layers": 32,
-    "torch_dtype": "float16",
     "modelUrl": "https://huggingface.co/TheBloke/orca_mini_v3_7B-GGUF",
     "downloadUrl": "https://huggingface.co/TheBloke/orca_mini_v3_7B-GGUF/resolve/main/orca_mini_v3_7b.Q5_K_M.gguf",
     "sha256": "75d38891298b5d979a52425b8db75a10b2092ffdc035b02ba9072bc2e09e5cf4",
@@ -272,7 +259,6 @@
     "modelType": "mistral",
     "context_window": 32768,
     "num_gpu_layers": 32,
-    "torch_dtype": "bfloat16",
     "modelUrl": "https://huggingface.co/TheBloke/zephyr-7B-beta-GGUF",
     "downloadUrl": "https://huggingface.co/TheBloke/zephyr-7B-beta-GGUF/resolve/main/zephyr-7b-beta.Q4_K_M.gguf",
     "sha256": "503580dce392c6e64669ad21a77023ba2a17baa0c381250fb67c11ba6406a85e",
@@ -291,7 +277,6 @@
     "modelType": "llama",
     "context_window": 2048,
     "num_gpu_layers": 24,
-    "torch_dtype": "float32",
     "modelUrl": "https://huggingface.co/llmware/bling-sheared-llama-1.3b-0.1",
     "downloadUrl": "https://huggingface.co/Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf/resolve/main/f16-bling-sheared-llama-1.3b-0.1.gguf",
     "sha256": "38e1a893f9a9949be324ad8edacf627f60c7626432b622a6bed155af6773bf6c",
