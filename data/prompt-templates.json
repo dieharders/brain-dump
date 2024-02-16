@@ -56,7 +56,7 @@
     {
       "id": "qa_basic",
       "name": "Basic Question & Answer",
-      "text": "{query_str} \nPlease answer in the following format:\nQ: <<QUESTION>>\n\nA: <<ANSWER>>"
+      "text": "{query_str}\nPlease answer in the following format:\nQ: <<QUESTION>>\n\nA: <<ANSWER>>"
     }
   ]
 }
