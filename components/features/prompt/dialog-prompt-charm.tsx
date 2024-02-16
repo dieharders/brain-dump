@@ -62,7 +62,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   const defaultState = useMemo(() => {
     return {
       preset: 0.8,
-      systemPrompt: defaultSystemPrompt,
+      systemMessage: defaultSystemPrompt,
       promptTemplate: defaultPromptTemplate,
       ragPromptTemplate: { id: 'simple_input', name: 'Basic Input', text: '{query_str}', type: 'SIMPLE_INPUT' },
       temperature: 0.8,
@@ -80,7 +80,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   // State values
   const [state, setState] = useState<I_State>({
     preset: defaultState.preset,
-    systemPrompt: defaultState.systemPrompt,
+    systemMessage: defaultState.systemMessage,
     promptTemplate: defaultState.promptTemplate,
     ragPromptTemplate: defaultState.ragPromptTemplate,
     temperature: defaultState.temperature,
@@ -258,9 +258,9 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
 
       <Separator className="my-6" />
 
-      {/* System Prompt */}
+      {/* System Message */}
       <DialogHeader className="my-8">
-        <DialogTitle>System Prompt</DialogTitle>
+        <DialogTitle>System Message</DialogTitle>
         <DialogDescription>
           Prepare the Ai by giving a description of its role and overall behavior.
         </DialogDescription>
@@ -274,13 +274,13 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
             val && setSystemPromptSource(val as T_TemplateSource)
             let template = ''
             // @TODO Eventually this will be read from a "custom_system_prompts.json" file from engine
-            if (val === 'custom_default') template = settings?.systemPrompt || ''
+            if (val === 'custom_default') template = settings?.systemMessage || ''
             else {
               const configs = systemPrompts?.presets ?? {}
               const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
               template = items.find(i => i.id === val)?.text || ''
             }
-            template && setState(prev => ({ ...prev, systemPrompt: template }))
+            template && setState(prev => ({ ...prev, systemMessage: template }))
           }}
         >
           <SelectTrigger className="w-full flex-1">
@@ -296,9 +296,9 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       <textarea
         disabled={systemPromptSource !== 'custom_default'}
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
-        value={state?.systemPrompt}
-        placeholder={defaultState.systemPrompt}
-        onChange={e => handleStateChange('systemPrompt', e.target.value)}
+        value={state?.systemMessage}
+        placeholder={defaultState.systemMessage}
+        onChange={e => handleStateChange('systemMessage', e.target.value)}
       />
 
       {/* Prompt Template (Normal chat) */}

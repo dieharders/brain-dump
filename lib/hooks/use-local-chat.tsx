@@ -5,7 +5,7 @@ import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
-import { I_ServiceApis } from '@/lib/homebrew'
+import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { I_InferenceGenerateOptions, I_LLM_Options } from '@/lib/hooks/types'
 
 type T_Mode = 'completion' | 'chat'
@@ -136,6 +136,15 @@ export const useLocalInference = ({
       setResponseText('')
       setIsLoading(true)
       abortRef.current = false
+
+      // Get model data
+      const { getServices } = useHomebrew()
+      const services = await getServices()
+      const model_configs = await services?.textInference.getModelConfigs()
+      const current_text_model = await services?.textInference.model()
+      const current_text_model_id = current_text_model?.data?.id || ''
+      const messageFormat = model_configs?.data?.[current_text_model_id]?.messageFormat
+
       // Send request completion for prompt
       console.log('[Chat] Sending request to inference server...', newUserMsg)
       const options = {
@@ -144,6 +153,7 @@ export const useLocalInference = ({
         ...(settings?.init?.n_ctx && { n_ctx: settings.init.n_ctx }),
         seed: settings.init?.seed,
         prompt: prompt.content,
+        messageFormat,
       }
       const response = await getCompletion(options, mode, collectionNames)
       console.log('[Chat] Prompt response', response)

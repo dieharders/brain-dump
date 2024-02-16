@@ -116,9 +116,7 @@ export type T_ModelConfig = {
   quantTypes?: string[]
   // used for model init
   context_window?: number
-  embedding_size?: number
   num_gpu_layers?: number
-  torch_dtype?: string
 }
 
 export type T_InstalledTextModel = {
