@@ -18,6 +18,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
+import { ApplicationModesMenu } from '@/components/features/menus/menu-application-modes'
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { I_LLM_Options } from '@/lib/hooks/types'
 
@@ -165,7 +166,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           modelConfig={modelConfigs?.[selectedModelId || '']}
         />
         {/* Model Selection Menu */}
-        <div className="flex w-full flex-col gap-16 overflow-hidden p-4 sm:w-[50%]">
+        <div className="flex w-full flex-col gap-16 overflow-hidden p-4 md:w-[70%]">
           <div className="mt-4 px-4 text-center">Connected to HomebrewAi server</div>
           <div className="flex flex-col items-stretch justify-items-stretch gap-4">
             {/* Start */}
@@ -213,6 +214,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
               </Button>}
             </div>
           </div>
+          <ApplicationModesMenu onSubmit={() => {/* logic to go to a route */ }} />
         </div>
       </>
     )

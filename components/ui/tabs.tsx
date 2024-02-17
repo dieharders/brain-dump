@@ -9,16 +9,20 @@ interface I_Tab {
 interface I_Props {
   label: string
   tabs: I_Tab[]
+  onChange?: (val: string) => void
 }
 
-export const Tabs = ({ label = 'Tabs Menu', tabs = [] }: I_Props) => {
+export const Tabs = ({ label = 'Tabs Menu', tabs = [], onChange = () => { } }: I_Props) => {
   const [checked, setChecked] = useState<string>(tabs?.[0]?.label || '')
 
   return (
     <Root
       className="flex flex-col justify-between overflow-hidden"
       defaultValue={tabs[0].label}
-      onValueChange={setChecked}
+      onValueChange={(val) => {
+        setChecked(val)
+        onChange(val)
+      }}
     >
       {/* Tabs */}
       <List className="mb-4 mt-8 flex shrink-0 rounded-none" aria-label={label}>
@@ -27,7 +31,7 @@ export const Tabs = ({ label = 'Tabs Menu', tabs = [] }: I_Props) => {
             <Trigger
               key={i.label}
               value={i.label}
-              className="flex h-4 flex-1 cursor-default items-center justify-center text-lg font-semibold uppercase"
+              className="flex w-full min-h-4 flex-1 cursor-default items-end justify-center text-lg font-semibold uppercase"
             >
               <label className="w-full">
                 <input
