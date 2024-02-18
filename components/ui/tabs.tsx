@@ -31,7 +31,7 @@ export const Tabs = ({ label = 'Tabs Menu', tabs = [], onChange = () => { } }: I
             <Trigger
               key={i.label}
               value={i.label}
-              className="flex w-full min-h-4 flex-1 cursor-default items-end justify-center text-lg font-semibold uppercase"
+              className="flex w-full min-h-4 flex-1 cursor-default items-end justify-center text-lg font-semibold capitalize"
             >
               <label className="w-full">
                 <input

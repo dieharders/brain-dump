@@ -106,38 +106,33 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const presetsMenu = (
     <div className="px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Response Types</DialogTitle>
+        <DialogTitle>Choose a chat mode</DialogTitle>
         <DialogDescription className="mb-4">
-          Choose how you want the Ai to behave when responding.
+          Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.
         </DialogDescription>
       </DialogHeader>
 
       {/* Content */}
       <div className="w-full">
         <ToggleGroup
-          label="Response Type"
+          label="Chat Mode"
           value={state?.preset || DEFAULT_PRESET}
           onChange={val => handleStateChange('preset', val)}
         >
-          {/* Instruct - Give a one-off directive or instruction to follow */}
-          <div id="completion" className={toggleGroupClass}>
-            <QuestionMarkIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Instruct</span>
-          </div>
-          {/* Conversational - Back and forth, multiple messages */}
+          {/* Conversational - Multiple messages can be sent until the context is filled, then the conversation ends. */}
           <div id="chat" className={toggleGroupClass}>
             <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis">Conversational</span>
           </div>
-          {/* Assistant - Take an input and produce a verifiable output */}
+          {/* Instruction - Maximum context is used for each query, conversation ends with each query. */}
           <div id="formatter" className={toggleGroupClass}>
             <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Assistant</span>
+            <span className="flex-1 self-center text-ellipsis">Instruction</span>
           </div>
-          {/* Agent - Perform actions on user's behalf with permission */}
+          {/* Sliding Attention - When context fills up, move the attention window forward after each query. Conversation can continue indefinitely. */}
           <div id="agent" className={toggleGroupClass}>
             <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Agent</span>
+            <span className="flex-1 self-center text-ellipsis">Rolling Chat</span>
           </div>
         </ToggleGroup>
       </div>
@@ -154,9 +149,9 @@ export const ResponseCharmMenu = (props: I_Props) => {
     <div className="px-1">
       {/* Advanced Settings, should override all other settings */}
       <DialogHeader className="my-8">
-        <DialogTitle>Advanced Settings</DialogTitle>
+        <DialogTitle>Performance settings</DialogTitle>
         <DialogDescription>
-          Overrides presets.
+          Customize how the model performs on your hardware. Configure memory management, inference splitting across CPU cores and/or enable acceleration on a dedicated GPU.
         </DialogDescription>
       </DialogHeader>
 
@@ -317,8 +312,8 @@ export const ResponseCharmMenu = (props: I_Props) => {
   )
 
   const tabs = [
-    { label: 'presets', content: presetsMenu },
-    { label: 'advanced', content: advancedMenu },
+    { label: 'attention', content: presetsMenu },
+    { label: 'performance', content: advancedMenu },
   ]
 
   useEffect(() => {
@@ -328,7 +323,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
-        <Tabs label="Response Settings" tabs={tabs} />
+        <Tabs label="Model Settings" tabs={tabs} />
       </DialogContent>
     </Dialog>
   )

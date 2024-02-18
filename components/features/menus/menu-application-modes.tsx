@@ -1,15 +1,23 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
-import { cn } from '@/lib/utils'
 import { Tabs } from '@/components/ui/tabs'
+import { Playground } from '@/components/features/menus/load-playground'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
   onSubmit: () => void
+  services: any
+  modelConfigs: any
+  installedList: any
+  setCurrentTextModel: any
+  isConnecting: any
+  setIsConnecting: any
+  setHasTextServiceConnected: any
 }
 
 const Header = ({ children }: { children: React.ReactNode }) => <div className="flex flex-col space-y-1.5 text-center sm:text-left my-8">{children}</div>
@@ -36,7 +44,9 @@ const Item = ({ title, onAction, Icon }: { title?: string, onAction?: () => void
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
-  const { onSubmit } = props
+  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
+
+  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs, setCurrentTextModel } = props
 
   const onSave = useCallback(() => {
     onSubmit()
@@ -153,12 +163,32 @@ export const ApplicationModesMenu = (props: I_Props) => {
     </div>
   )
 
+  const playgroundMenu = (
+    <>
+      <div className="px-1">
+        <Header>
+          <Title>Ai Playground</Title>
+          <Description>
+            Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.
+          </Description>
+        </Header>
+
+        {/* Content */}
+        <div className="w-full flex flex-row justify-between items-start gap-2">
+          {/* Choose model to load */}
+          <Playground setHasTextServiceConnected={setHasTextServiceConnected} setSelectedModelId={setSelectedModelId} isConnecting={isConnecting} setIsConnecting={setIsConnecting} selectedModelId={selectedModelId} setCurrentTextModel={setCurrentTextModel} services={services} installedList={installedList} modelConfigs={modelConfigs} />
+        </div>
+      </div>
+    </>
+  )
+
   const tabs = [
+    { label: 'models', content: modelsMenu },
+    { label: 'playground', content: playgroundMenu },
     { label: 'bots', content: botsMenu },
     { label: 'assistants', content: assistantsMenu },
     { label: 'crews', content: crewsMenu },
     { label: 'knowledge', content: knowledgeMenu },
-    { label: 'models', content: modelsMenu },
   ]
 
   return (
