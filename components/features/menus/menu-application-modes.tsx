@@ -28,24 +28,24 @@ const Description = ({ children }: { children: React.ReactNode }) => <p classNam
 
 const Item = ({ title, onAction, Icon }: { title?: string, onAction?: () => void, Icon: any }) => {
   return (
-    <div className="flex flex-col items-center">
+    <div className="h-[10rem] w-[10rem] flex flex-col items-center justify-center gap-2 bg-accent rounded-md p-2">
       <div
         onClick={onAction}
         className={cn(
           buttonVariants({ size: 'sm', variant: 'outline' }),
-          `h-12 w-12 rounded-full bg-background p-0 cursor-pointer`,
+          `h-[50%] w-[50%] rounded-full bg-background p-0 cursor-pointer focus:outline-none outline-3 hover:outline-dashed outline-offset-0 outline-muted-foreground`,
         )}
       >
-        <Icon className="h-6 w-6 text-foreground" />
+        <Icon className="h-[50%] w-[50%] text-foreground" />
       </div>
-      <div className="text-sm text-center text-muted-foreground">{title}</div>
+      <div className="w-full text-md text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{title}</div>
     </div>
   )
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
-
+  const gridContentClass = "flex flex-wrap justify-around gap-6"
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs, setCurrentTextModel } = props
 
   const onSave = useCallback(() => {
@@ -59,9 +59,34 @@ export const ApplicationModesMenu = (props: I_Props) => {
     [],
   )
 
+  const placeholderItems = () => {
+    const list = []
+    for (let index = 0; index < 13; index++) {
+      const el = <Item key={index} title="...." Icon={QuestionMarkIcon} />
+      list.push(el)
+    }
+    return list
+  }
+
+  const createNewBotAction = () => {
+    // show bot creation menu
+    // ###
+    // - Model pulldown selector
+    // - Customize model performance settings
+    // - Attention type (conversation, instruct, rolling)
+    // - Use trained data or RAG data, if RAG then select an index source and retrieval method
+    // - Customize system message (personality), only shown if promptFormat includes "system_str"
+    // - Customize prompt template (structured response types), only shown if RAG is disabled
+    // - Customize RAG memory template, only shown if RAG is enabled
+    // - Customize model config settings
+
+    console.log('@@ show bot creation menu');
+
+  }
+
   // Menus
   const botsMenu = (
-    <div className="px-1">
+    <div>
       <Header>
         <Title>Bots</Title>
         <Description>
@@ -70,18 +95,19 @@ export const ApplicationModesMenu = (props: I_Props) => {
       </Header>
 
       {/* Content */}
-      <div className="w-full flex flex-row justify-between items-start gap-2">
-        <Item title="Add New" Icon={IconPlus} />
+      <div className={gridContentClass}>
+        <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
         <Item title="Instruct" Icon={QuestionMarkIcon} />
         <Item title="Conversational" Icon={IconConversationType} />
         <Item title="Assistant" Icon={ClipboardIcon} />
         <Item title="Agent" Icon={PersonIcon} />
+        {placeholderItems()}
       </div>
     </div>
   )
 
   const assistantsMenu = (
-    <div className="px-1">
+    <div>
       <Header>
         <Title>Assistants</Title>
         <Description>
@@ -90,39 +116,41 @@ export const ApplicationModesMenu = (props: I_Props) => {
       </Header>
 
       {/* Content */}
-      <div className="w-full flex flex-row justify-between items-start gap-2">
+      <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
         <Item title="Academic" Icon={QuestionMarkIcon} />
         <Item title="Entertainment" Icon={IconConversationType} />
         <Item title="Developer" Icon={ClipboardIcon} />
         <Item title="Writer" Icon={PersonIcon} />
         <Item title="Lawyer" Icon={PersonIcon} />
+        {placeholderItems()}
       </div>
     </div>
   )
 
   const crewsMenu = (
-    <div className="px-1">
+    <div>
       <Header>
-        <Title>Crews</Title>
+        <Title>Company of Assistants</Title>
         <Description>
-          A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with the deadline and criteria to meet that goal. Many results are returned over time until the goal is met.
+          A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with a deadline and criteria to meet that goal. Several results are returned over time by individual assistants and collected into a report by a designated "CEO" assistant until the goal is met.
         </Description>
       </Header>
 
       {/* Content */}
-      <div className="w-full flex flex-row justify-between items-start gap-2">
+      <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
         <Item title="Publisher" Icon={QuestionMarkIcon} />
         <Item title="Game Studio" Icon={IconConversationType} />
         <Item title="Quality Assurance" Icon={ClipboardIcon} />
         <Item title="Software Team" Icon={PersonIcon} />
+        {placeholderItems()}
       </div>
     </div>
   )
 
   const knowledgeMenu = (
-    <div className="px-1">
+    <div>
       <Header>
         <Title>Knowledge Base</Title>
         <Description>
@@ -131,7 +159,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       </Header>
 
       {/* Content */}
-      <div className="w-full flex flex-row justify-between items-start gap-2">
+      <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
         <Item title="Documentation" Icon={QuestionMarkIcon} />
         <Item title="Best Practices" Icon={IconConversationType} />
@@ -143,7 +171,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const modelsMenu = (
-    <div className="px-1">
+    <div>
       <Header>
         <Title>Ai Model Explorer</Title>
         <Description>
@@ -152,7 +180,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       </Header>
 
       {/* Content */}
-      <div className="w-full flex flex-row justify-between items-start gap-2">
+      <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
         <Item title="Llama 2 13B" Icon={QuestionMarkIcon} />
         <Item title="Wizard Vicuna" Icon={IconConversationType} />
@@ -165,7 +193,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const playgroundMenu = (
     <>
-      <div className="px-1">
+      <div>
         <Header>
           <Title>Ai Playground</Title>
           <Description>
@@ -187,7 +215,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     { label: 'playground', content: playgroundMenu },
     { label: 'bots', content: botsMenu },
     { label: 'assistants', content: assistantsMenu },
-    { label: 'crews', content: crewsMenu },
+    { label: 'teams', content: crewsMenu },
     { label: 'knowledge', content: knowledgeMenu },
   ]
 
