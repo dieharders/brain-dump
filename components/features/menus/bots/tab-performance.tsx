@@ -1,90 +1,42 @@
-'use client'
-
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
-  Dialog,
-  DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { I_Charm } from '@/components/features/prompt/prompt-charm-menu'
-import ToggleGroup from '@/components/ui/toggle-group'
-import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { IconConversationType } from '@/components/ui/icons'
-import { PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
-import { Button } from '@/components/ui/button'
-import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
-import { I_LLM_Init_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_ModelConfig } from '@/lib/homebrew'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { I_LLM_Init_Options } from '@/lib/hooks/types'
 
 interface I_Props {
-  dialogOpen: boolean
-  setDialogOpen: (open: boolean) => void
-  onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
-  settings: I_State | null
-  modelConfig: T_ModelConfig | undefined
+  onSubmit: (state: any) => void
+  modelConfig: any
 }
 
-interface I_State extends I_LLM_Init_Options {
-  // Presets
-  preset?: string
+export const defaultState: I_LLM_Init_Options = {
+  n_ctx: 1000,
+  seed: 1337,
+  n_threads: -1,
+  n_batch: 512,
+  offload_kqv: false,
+  n_gpu_layers: 0,
+  f16_kv: true,
+  use_mlock: false,
 }
 
-export const ResponseCharmMenu = (props: I_Props) => {
-  const { dialogOpen, setDialogOpen, onSubmit, settings, modelConfig } = props
-  const infoClass = "flex w-full flex-row gap-2"
-  const inputContainerClass = "grid w-full gap-1"
-  const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
-  const DEFAULT_PRESET = 'completion'
-  const defaultContextWindow = modelConfig?.context_window
+export const PerformanceTab = ({ onSubmit, modelConfig }: I_Props) => {
+  const maxContextWindow = modelConfig?.context_window
   const max_gpu_layers = modelConfig?.num_gpu_layers
+  const [state, setState] = useState<I_LLM_Init_Options>(defaultState)
+  const inputContainerClass = "grid w-full gap-1"
+  const infoClass = "flex w-full flex-row gap-2"
 
-  // State values
-  const defaultState: I_State = {
-    preset: DEFAULT_PRESET,
-    n_ctx: defaultContextWindow,
-    seed: 1337,
-    n_threads: -1,
-    n_batch: 512,
-    offload_kqv: false,
-    n_gpu_layers: 0,
-    f16_kv: true,
-    use_mlock: false,
-  }
-
-  const [state, setState] = useState<I_State>({
-    preset: defaultState.preset,
-    n_ctx: defaultState.n_ctx,
-    seed: defaultState.seed,
-    n_threads: defaultState.n_threads,
-    n_batch: defaultState.n_batch,
-    offload_kqv: defaultState.offload_kqv,
-    n_gpu_layers: defaultState.n_gpu_layers,
-    f16_kv: defaultState.f16_kv,
-    use_mlock: defaultState.use_mlock,
-  })
-
-  // Handle input state changes
-  const handleFloatChange = (propName: string, value: string) => setState(prev => {
-    const defState = defaultState[propName as keyof I_State]
-    const propValue = value === '' ? defState : parseFloat(value)
-    return { ...prev, [propName]: propValue }
-  })
-  const handleStateChange = (propName: string, value: string | boolean) => setState(prev => ({ ...prev, [propName]: value }))
-
-  const onSave = useCallback(() => {
-    setDialogOpen(false)
-    // Save settings
-    const charm: I_Charm = { id: 'model' }
-    const saveSettings = { init: {} as any }
+  const saveParsedSettings = (settings: { [key: string]: any }) => {
+    const saveSettings: { [key: string]: any } = {}
     // Cleanup exported values to correct types
-    Object.entries(state)?.forEach(([key, val]) => {
+    Object.entries(settings)?.forEach(([key, val]) => {
       let newVal = val
       if (typeof val === 'string') {
         if (key === 'n_batch') newVal = parseInt(val)
@@ -97,55 +49,26 @@ export const ResponseCharmMenu = (props: I_Props) => {
       // Set result
       const isZero = typeof val === 'number' && val === 0
       const shouldSet = newVal || isZero || typeof val === 'boolean'
-      if (shouldSet) saveSettings.init[key] = newVal
+      if (shouldSet) saveSettings[key] = newVal
     })
-    onSubmit(charm, saveSettings)
-  }, [onSubmit, setDialogOpen, state])
+    onSubmit(saveSettings)
+  }
 
-  // Menus
-  const presetsMenu = (
-    <div className="px-1">
-      <DialogHeader className="my-8">
-        <DialogTitle>Choose a chat mode</DialogTitle>
-        <DialogDescription className="mb-4">
-          Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.
-        </DialogDescription>
-      </DialogHeader>
+  // Handle input state changes
+  const handleFloatChange = (propName: string, value: string) => setState(prev => {
+    const defState = defaultState[propName as keyof I_LLM_Init_Options]
+    const propValue = value === '' ? defState : parseFloat(value)
+    return { ...prev, [propName]: propValue }
+  })
+  const handleStateChange = (propName: string, value: string | boolean) => {
+    setState((prev: any) => ({ ...prev, [propName]: value }))
+  }
 
-      {/* Content */}
-      <div className="w-full">
-        <ToggleGroup
-          label="Chat Mode"
-          value={state?.preset || DEFAULT_PRESET}
-          onChange={val => handleStateChange('preset', val)}
-        >
-          {/* Conversational - Multiple messages can be sent until the context is filled, then the conversation ends. */}
-          <div id="chat" className={toggleGroupClass}>
-            <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Conversational</span>
-          </div>
-          {/* Instruction - Maximum context is used for each query, conversation ends with each query. */}
-          <div id="formatter" className={toggleGroupClass}>
-            <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Instruction</span>
-          </div>
-          {/* Sliding Attention - When context fills up, move the attention window forward after each query. Conversation can continue indefinitely. */}
-          <div id="agent" className={toggleGroupClass}>
-            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Rolling Chat</span>
-          </div>
-        </ToggleGroup>
-      </div>
+  useEffect(() => {
+    saveParsedSettings(state)
+  }, [state])
 
-      <Separator className="my-6" />
-
-      <DialogFooter className="items-stretch">
-        <Button onClick={onSave}>Save</Button>
-      </DialogFooter>
-    </div>
-  )
-
-  const advancedMenu = (
+  return (
     <div className="px-1">
       {/* Advanced Settings, should override all other settings */}
       <DialogHeader className="my-8">
@@ -170,6 +93,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
             type="number"
             value={(state?.n_ctx === 0) ? 0 : state?.n_ctx || ''}
             min={64}
+            max={maxContextWindow || defaultState.n_ctx}
             step={1}
             placeholder={defaultState?.n_ctx?.toString()}
             className="w-full"
@@ -296,35 +220,6 @@ export const ResponseCharmMenu = (props: I_Props) => {
           />
         </div>
       </form>
-
-      <Separator className="my-6" />
-
-      <DialogFooter className="items-center">
-        <Button
-          className="w-full sm:w-fit"
-          onClick={() => setState(defaultState)}
-        >
-          Reset
-        </Button>
-        <Button className="w-full sm:w-fit" onClick={onSave}>Save</Button>
-      </DialogFooter>
     </div>
-  )
-
-  const tabs = [
-    { label: 'attention', content: presetsMenu },
-    { label: 'performance', content: advancedMenu },
-  ]
-
-  useEffect(() => {
-    if (settings && dialogOpen) setState(prev => ({ ...prev, ...settings }))
-  }, [dialogOpen, settings])
-
-  return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent>
-        <Tabs label="Model Settings" tabs={tabs} />
-      </DialogContent>
-    </Dialog>
   )
 }

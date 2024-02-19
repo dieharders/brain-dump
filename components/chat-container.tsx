@@ -7,8 +7,8 @@ import { I_ServiceApis, T_InstalledTextModel, T_ModelConfig, useHomebrew } from 
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
+import { ApplicationModesMenu } from '@/components/features/menus/app/menu-application-modes'
 import { toast } from 'react-hot-toast'
-import { ApplicationModesMenu } from '@/components/features/menus/menu-application-modes'
 
 interface IProps {
   id?: string
@@ -87,7 +87,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       // Model Selection Menu
       < div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]" >
         {/* <h1 className="mt-4 px-4 text-center text-xl">Connected to HomebrewAi server</h1> */}
-        <ApplicationModesMenu setHasTextServiceConnected={setHasTextServiceConnected} isConnecting={isConnecting} setIsConnecting={setIsConnecting} modelConfigs={modelConfigs} installedList={installedList} setCurrentTextModel={setCurrentTextModel} onSubmit={() => {/* logic to go to a route */ }} services={services} />
+        <ApplicationModesMenu setHasTextServiceConnected={setHasTextServiceConnected} isConnecting={isConnecting} setIsConnecting={setIsConnecting} modelConfigs={modelConfigs || {}} installedList={installedList} setCurrentTextModel={setCurrentTextModel} onSubmit={() => {/* logic to go to a route */ }} services={services} />
       </div >
     )
 

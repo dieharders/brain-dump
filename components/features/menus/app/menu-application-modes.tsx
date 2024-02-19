@@ -6,14 +6,17 @@ import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-ico
 import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
-import { Playground } from '@/components/features/menus/load-playground'
+import { Playground } from '@/components/features/menus/app/load-playground'
+import { BotCreationMenu } from '@/components/features/menus/bots/menu-create-bot'
+import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
+import { T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
   onSubmit: () => void
   services: any
-  modelConfigs: any
-  installedList: any
+  modelConfigs: { [key: string]: T_ModelConfig }
+  installedList: T_InstalledTextModel[]
   setCurrentTextModel: any
   isConnecting: any
   setIsConnecting: any
@@ -26,9 +29,9 @@ const Title = ({ children }: { children: React.ReactNode }) => <h1 className="te
 
 const Description = ({ children }: { children: React.ReactNode }) => <p className="text-sm text-muted-foreground mb-4">{children}</p>
 
-const Item = ({ title, onAction, Icon }: { title?: string, onAction?: () => void, Icon: any }) => {
+const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?: () => void, Icon: any, className?: string }) => {
   return (
-    <div className="h-[10rem] w-[10rem] flex flex-col items-center justify-center gap-2 bg-accent rounded-md p-2">
+    <div className={`h-[10rem] w-[10rem] flex flex-col items-center justify-center gap-2 bg-accent rounded-md p-2 ${className}`}>
       <div
         onClick={onAction}
         className={cn(
@@ -47,8 +50,9 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
   const gridContentClass = "flex flex-wrap justify-around gap-6"
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs, setCurrentTextModel } = props
+  const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
 
-  const onSave = useCallback(() => {
+  const onSelect = useCallback(() => {
     onSubmit()
   }, [onSubmit])
 
@@ -62,7 +66,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const placeholderItems = () => {
     const list = []
     for (let index = 0; index < 13; index++) {
-      const el = <Item key={index} title="...." Icon={QuestionMarkIcon} />
+      const el = <Item key={index} title="...." Icon={QuestionMarkIcon} className="opacity-40" />
       list.push(el)
     }
     return list
@@ -70,23 +74,39 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const createNewBotAction = () => {
     // show bot creation menu
+    setOpenBotCreationMenu(true)
     // ###
     // - Model pulldown selector
-    // - Customize model performance settings
     // - Attention type (conversation, instruct, rolling)
+    // - Customize model performance settings
     // - Use trained data or RAG data, if RAG then select an index source and retrieval method
-    // - Customize system message (personality), only shown if promptFormat includes "system_str"
-    // - Customize prompt template (structured response types), only shown if RAG is disabled
-    // - Customize RAG memory template, only shown if RAG is enabled
-    // - Customize model config settings
+    // - Customize system message (personality), only shown if "promptFormat" in modelConfig includes "system_str"
+    // - Customize prompt template (thinking, structured response types), only shown if RAG is disabled -OR- RAG memory template, only shown if RAG is enabled
+    // - Customize model config settings (Response, temperature, etc)
 
     console.log('@@ show bot creation menu');
-
   }
+
+  const saveBotConfig = useCallback((settings: any) => {
+    toast.success('New bot created!')
+    console.log('@@ bot saved settings', settings);
+    // @TODO Update this menu's list of items
+    // ...
+    // save menu forms to a json file under 'settings/app.json'
+    // ...
+  }, [])
 
   // Menus
   const botsMenu = (
     <div>
+      {/* Menu for bot creation */}
+      <BotCreationMenu
+        dialogOpen={openBotCreationMenu}
+        setDialogOpen={setOpenBotCreationMenu}
+        onSubmit={saveBotConfig}
+        data={{ modelConfigs, installedList, services }}
+      />
+      {/* Title and description */}
       <Header>
         <Title>Bots</Title>
         <Description>
@@ -97,10 +117,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
-        <Item title="Instruct" Icon={QuestionMarkIcon} />
-        <Item title="Conversational" Icon={IconConversationType} />
-        <Item title="Assistant" Icon={ClipboardIcon} />
-        <Item title="Agent" Icon={PersonIcon} />
+        <Item title="Language Expert" Icon={QuestionMarkIcon} onAction={onSelect} />
+        <Item title="Coding Chatbot" Icon={IconConversationType} />
+        <Item title="Logical Thinker" Icon={ClipboardIcon} />
+        <Item title="Mathematician" Icon={PersonIcon} />
+        <Item title="Historical Scholar" Icon={PersonIcon} />
         {placeholderItems()}
       </div>
     </div>
@@ -118,10 +139,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Academic" Icon={QuestionMarkIcon} />
-        <Item title="Entertainment" Icon={IconConversationType} />
-        <Item title="Developer" Icon={ClipboardIcon} />
-        <Item title="Writer" Icon={PersonIcon} />
+        <Item title="Stock Analyst" Icon={QuestionMarkIcon} />
+        <Item title="Entertainer" Icon={IconConversationType} />
+        <Item title="Software Developer" Icon={ClipboardIcon} />
+        <Item title="Sci-Fi Author" Icon={PersonIcon} />
         <Item title="Lawyer" Icon={PersonIcon} />
         {placeholderItems()}
       </div>
