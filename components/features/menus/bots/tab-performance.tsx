@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+'use client'
+
+import { Dispatch, SetStateAction } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -11,7 +13,8 @@ import { Switch } from '@/components/ui/switch'
 import { I_LLM_Init_Options } from '@/lib/hooks/types'
 
 interface I_Props {
-  onSubmit: (state: any) => void
+  state: I_LLM_Init_Options
+  setState: Dispatch<SetStateAction<I_LLM_Init_Options>>
   modelConfig: any
 }
 
@@ -26,33 +29,33 @@ export const defaultState: I_LLM_Init_Options = {
   use_mlock: false,
 }
 
-export const PerformanceTab = ({ onSubmit, modelConfig }: I_Props) => {
+export const PerformanceTab = (props: I_Props) => {
+  const { modelConfig, state, setState } = props
   const maxContextWindow = modelConfig?.context_window
   const max_gpu_layers = modelConfig?.num_gpu_layers
-  const [state, setState] = useState<I_LLM_Init_Options>(defaultState)
   const inputContainerClass = "grid w-full gap-1"
   const infoClass = "flex w-full flex-row gap-2"
 
-  const saveParsedSettings = (settings: { [key: string]: any }) => {
-    const saveSettings: { [key: string]: any } = {}
-    // Cleanup exported values to correct types
-    Object.entries(settings)?.forEach(([key, val]) => {
-      let newVal = val
-      if (typeof val === 'string') {
-        if (key === 'n_batch') newVal = parseInt(val)
-        if (key === 'n_ctx') newVal = parseInt(val)
-        if (key === 'n_threads') newVal = parseInt(val)
-        if (key === 'seed') newVal = parseInt(val)
-        if (key === 'n_gpu_layers') newVal = parseInt(val)
-        if (val.length === 0) newVal = undefined
-      }
-      // Set result
-      const isZero = typeof val === 'number' && val === 0
-      const shouldSet = newVal || isZero || typeof val === 'boolean'
-      if (shouldSet) saveSettings[key] = newVal
-    })
-    onSubmit(saveSettings)
-  }
+  // const saveParsedSettings = useCallback((settings: { [key: string]: any }) => {
+  //   const saveSettings: { [key: string]: any } = {}
+  //   // Cleanup exported values to correct types
+  //   Object.entries(settings)?.forEach(([key, val]) => {
+  //     let newVal = val
+  //     if (typeof val === 'string') {
+  //       if (key === 'n_batch') newVal = parseInt(val)
+  //       if (key === 'n_ctx') newVal = parseInt(val)
+  //       if (key === 'n_threads') newVal = parseInt(val)
+  //       if (key === 'seed') newVal = parseInt(val)
+  //       if (key === 'n_gpu_layers') newVal = parseInt(val)
+  //       if (val.length === 0) newVal = undefined
+  //     }
+  //     // Set result
+  //     const isZero = typeof val === 'number' && val === 0
+  //     const shouldSet = newVal || isZero || typeof val === 'boolean'
+  //     if (shouldSet) saveSettings[key] = newVal
+  //   })
+  //   setState(saveSettings)
+  // }, [setState])
 
   // Handle input state changes
   const handleFloatChange = (propName: string, value: string) => setState(prev => {
@@ -60,19 +63,16 @@ export const PerformanceTab = ({ onSubmit, modelConfig }: I_Props) => {
     const propValue = value === '' ? defState : parseFloat(value)
     return { ...prev, [propName]: propValue }
   })
-  const handleStateChange = (propName: string, value: string | boolean) => {
-    setState((prev: any) => ({ ...prev, [propName]: value }))
-  }
 
-  useEffect(() => {
-    saveParsedSettings(state)
-  }, [state])
+  const handleStateChange = (propName: string, value: string | boolean) => {
+    setState((prev) => ({ ...prev, [propName]: value }))
+  }
 
   return (
     <div className="px-1">
       {/* Advanced Settings, should override all other settings */}
       <DialogHeader className="my-8">
-        <DialogTitle>Performance settings</DialogTitle>
+        <DialogTitle>Performance Settings</DialogTitle>
         <DialogDescription>
           Customize how the model performs on your hardware. Configure memory management, inference splitting across CPU cores and/or enable acceleration on a dedicated GPU.
         </DialogDescription>

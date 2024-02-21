@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -9,11 +9,16 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
-import { AttentionTab, defaultState as defaultAttentionState } from '@/components/features/menus/bots/tab-attention'
+import { I_RAGPromptTemplates, T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
+import { AttentionTab, defaultState as defaultAttentionState, I_State as I_Attention_State } from '@/components/features/menus/bots/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/bots/tab-performance'
-import { ModelTab, defaultState as defaultModelState } from '@/components/features/menus/bots/tab-model'
-import { SystemTab, defaultState as defaultSystemState } from '@/components/features/menus/bots/tab-system'
+import { ModelTab, defaultState as defaultModelState, I_State as I_Model_State } from '@/components/features/menus/bots/tab-model'
+import { SystemTab, defaultState as defaultSystemState, I_State as I_System_State } from '@/components/features/menus/bots/tab-system'
+import { PromptTab, defaultState as defaultPromptState, I_State as I_Prompt_State } from '@/components/features/menus/bots/tab-prompt'
+import { KnowledgeTab, defaultState as defaultKnowledgeState, I_State as I_Knowledge_State } from '@/components/features/menus/bots/tab-knowledge'
+import { useMemoryActions } from '@/components/features/crud/actions'
+import { toast } from 'react-hot-toast'
+import { I_LLM_Init_Options } from '@/lib/hooks/types'
 
 interface I_Props {
   dialogOpen: boolean
@@ -24,47 +29,107 @@ interface I_Props {
 
 export const BotCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit, data } = props
+  const { fetchCollections } = useMemoryActions(data.services)
 
   // Defaults
-  const defaults = {
+  const defaults = useMemo(() => ({
     attention: defaultAttentionState,
     performance: defaultPerformanceState,
     system: defaultSystemState,
     model: defaultModelState,
-  }
+    prompt: defaultPromptState,
+    knowledge: defaultKnowledgeState,
+  }), [])
 
   // State values
-  const [state, setState] = useState(defaults)
+  const [stateKnowledge, setStateKnowledge] = useState<I_Knowledge_State>(defaults.knowledge)
+  const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
+  const [stateAttention, setStateAttention] = useState<I_Attention_State>(defaults.attention)
+  const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
+  const [stateSystem, setStateSystem] = useState<I_System_State>(defaults.system)
+  const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
+
+  // Data values
+  const [promptTemplates, setPromptTemplates] = useState()
+  const [ragTemplates, setRagTemplates] = useState<I_RAGPromptTemplates>({})
 
   // Menus
-  const promptMenu = <div>promptMenu</div>
-  const systemMessageMenu = <SystemTab services={data.services} onSubmit={(form) => setState(prev => ({ ...prev, system: form }))} />
-  const knowledgeMenu = <div>knowledgeMenu</div>
+  const promptMenu = <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={stateKnowledge.type === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} />
+  const systemMessageMenu = <SystemTab services={data.services} state={stateSystem} setState={setStateSystem} />
+  const knowledgeMenu = <KnowledgeTab state={stateKnowledge} setState={setStateKnowledge} fetchListAction={fetchCollections} />
   const responseMenu = <div>responseMenu</div>
-  const modelMenu = <ModelTab installedList={data.installedList} modelConfigs={data.modelConfigs} onSubmit={(form) => setState(prev => ({ ...prev, model: form }))} />
-  const attentionMenu = <AttentionTab onSubmit={(form) => setState(prev => ({ ...prev, attention: form }))} />
-  const performanceMenu = <PerformanceTab modelConfig={data.modelConfigs[state.model.id ?? '']} onSubmit={(form) => setState(prev => ({ ...prev, performance: form }))} />
+  const modelMenu = <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />
+  const attentionMenu = <AttentionTab state={stateAttention} setState={setStateAttention} />
+  const performanceMenu = <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={data.modelConfigs[stateModel.id ?? '']} />
 
   const tabs = [
-    { label: 'model', content: modelMenu },
-    { label: 'attention', content: attentionMenu },
-    { label: 'performance', content: performanceMenu },
-    { label: 'knowledge', content: knowledgeMenu },
-    { label: 'personality', content: systemMessageMenu },
-    { label: 'thinking', content: promptMenu }, // normal and RAG prompt templates
-    { label: 'response', content: responseMenu }, // includes "accuracy"
+    { label: '🤖', title: 'Model', content: modelMenu },
+    { label: '👀', title: 'Attention', content: attentionMenu },
+    { label: '🏃‍♂️', title: 'Performance', content: performanceMenu },
+    { label: '📚', title: 'Knowledge', content: knowledgeMenu },
+    { label: '🤬', title: 'Personality', content: systemMessageMenu },
+    { label: '🧠', title: 'Thinking', content: promptMenu },
+    { label: '🙊', title: 'Response', content: responseMenu },
   ]
+
+  // Hooks
+  const fetchPromptTemplates = useCallback(async () => data.services?.textInference.getPromptTemplates(), [data.services?.textInference])
+  const fetchRagTemplates = useCallback(async () => data.services?.textInference.getRagPromptTemplates(), [data.services?.textInference])
+
+  useEffect(() => {
+    // Reset settings
+    if (dialogOpen) {
+      setStateKnowledge(defaults.knowledge)
+      setStateModel(defaults.model)
+      setStateAttention(defaults.attention)
+      setStatePerformance(defaults.performance)
+      setStateSystem(defaults.system)
+      setStatePrompt(defaults.prompt)
+    }
+  }, [defaults, dialogOpen])
+
+  // Fetch data
+  useEffect(() => {
+    const getPromptTemplates = async () => {
+      const req = await fetchPromptTemplates()
+      const data = req.data
+      setPromptTemplates(data)
+    }
+    const getRagTemplates = async () => {
+      const req = await fetchRagTemplates()
+      const data = req.data
+      setRagTemplates(data)
+    }
+    getPromptTemplates()
+    getRagTemplates()
+  }, [fetchPromptTemplates, fetchRagTemplates])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent className="min-w-[90%]">
-        <Tabs label="Bot Settings" tabs={tabs} />
+      <DialogContent className="lg:min-w-[35%]">
+        <Tabs
+          className="text-2xl"
+          label="Bot Settings"
+          tabs={tabs}
+        />
         <Separator className="my-6" />
-        <DialogFooter className="items-stretch">
+        <DialogFooter className="content-center items-stretch">
           <Button onClick={() => {
-            setDialogOpen(false)
+            if (!stateModel.id) {
+              toast.error('You must choose an LLM model')
+              return
+            }
             // Save settings
-            onSubmit(state)
+            onSubmit({
+              attention: stateAttention,
+              performance: statePerformance,
+              system: stateSystem,
+              model: stateModel,
+              prompt: statePrompt,
+              knowledge: stateKnowledge,
+            })
+            // Close
+            setDialogOpen(false)
           }}>Save</Button>
         </DialogFooter>
       </DialogContent>

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+'use client'
+
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -17,23 +19,25 @@ import { T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
 
 type T_TemplateSource = 'custom_default' | string
 
-interface I_State {
-  systemMessage: string
+export interface I_State {
+  systemMessage: string | undefined
+  systemMessageName: string | undefined
 }
 
 interface I_Props {
-  onSubmit: (state: any) => void
+  state: I_State
+  setState: Dispatch<SetStateAction<I_State>>
   services: any
 }
 
 export const defaultState = {
-  systemMessage: 'You are an AI assistant that helps people find information.',
+  systemMessage: undefined,
+  systemMessageName: undefined,
 }
 
-export const SystemTab = ({ onSubmit, services }: I_Props) => {
+export const SystemTab = (props: I_Props) => {
   // State values
-  const [state, setState] = useState<I_State>(defaultState)
-  const [systemPromptSource, setSystemPromptSource] = useState<string>()
+  const { state, setState, services } = props
   const [systemPrompts, setSystemPrompts] = useState<T_SystemPrompts | undefined>()
 
   const fetchSystemPrompts = useCallback(async () => services?.textInference.getSystemPrompts(), [services?.textInference])
@@ -75,57 +79,52 @@ export const SystemTab = ({ onSubmit, services }: I_Props) => {
       await fetchSystemPrompts().then(res => res?.data && setSystemPrompts(res.data))
     }
     action()
-  }, [])
-
-  useEffect(() => {
-    onSubmit(state)
-  }, [state])
+  }, [fetchSystemPrompts])
 
   return (
     <div className="px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Construct a personality for your Ai model</DialogTitle>
+        <DialogTitle>Give Your Ai Personality</DialogTitle>
         <DialogDescription className="mb-4">
-          Every model comes with a pre-trained personality type. Choose from premade templates to override the model's behavior. Or write your own custom role description in the form below.
+          {`Every model comes with a pre-trained personality type. Choose from premade templates to override the model's behavior. Or write your own custom role description in the form below.`}
         </DialogDescription>
       </DialogHeader>
 
       {/* Content */}
-      <div className="w-full flex flex-col justify-between items-start gap-2">
-        {/* Select where to load from */}
-        <div className="mb-2 w-full">
-          <Select
-            value={systemPromptSource}
-            onValueChange={val => {
-              val && setSystemPromptSource(val as T_TemplateSource)
-              let template = ''
-              if (val === 'custom_default') template = state?.systemMessage || ''
-              else {
-                const configs = systemPrompts?.presets ?? {}
-                const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
-                template = items.find(i => i.id === val)?.text || ''
-              }
-              if (template) setState(prev => ({ ...prev, systemMessage: template }))
-            }}
-          >
-            <SelectTrigger className="w-full flex-1">
-              <SelectValue placeholder="Select a source"></SelectValue>
-            </SelectTrigger>
-            <SelectContent className="max-h-[16rem] p-1">
-              {systemPromptOptions()}
-            </SelectContent>
-          </Select>
-        </div>
 
-        {/* Content */}
-        <textarea
-          disabled={systemPromptSource !== 'custom_default'}
-          className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
-          value={state?.systemMessage}
-          placeholder={defaultState.systemMessage}
-          onChange={e => handleStateChange('systemMessage', e.target.value)}
-        />
+      {/* Select where to load from */}
+      <div className="mb-4 w-full">
+        <Select
+          value={state.systemMessageName}
+          onValueChange={val => {
+            val && setState(prev => ({ ...prev, systemMessageName: val as T_TemplateSource }))
+            let template = ''
+            if (val === 'custom_default') template = state?.systemMessage || ''
+            else {
+              const configs = systemPrompts?.presets ?? {}
+              const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+              template = items.find(i => i.id === val)?.text || ''
+            }
+            if (template) setState(prev => ({ ...prev, systemMessage: template }))
+          }}
+        >
+          <SelectTrigger className="w-full flex-1">
+            <SelectValue placeholder="Select a template"></SelectValue>
+          </SelectTrigger>
+          <SelectContent className="max-h-[16rem] p-1">
+            {systemPromptOptions()}
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Prompt Area */}
+      <textarea
+        disabled={state.systemMessageName !== 'custom_default'}
+        className="scrollbar h-48 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
+        value={state?.systemMessage}
+        placeholder={defaultState.systemMessage}
+        onChange={e => handleStateChange('systemMessage', e.target.value)}
+      />
     </div>
   )
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useState } from "react"
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
@@ -84,7 +86,7 @@ export const Playground = (props: I_Props) => {
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [installedList, selectedModelId, services?.storage, services?.textInference])
+  }, [installedList, selectedModelId, services?.storage, services?.textInference, setCurrentTextModel, setIsConnecting])
 
   return (
     <>
@@ -99,7 +101,7 @@ export const Playground = (props: I_Props) => {
         settings={responseSettings}
         modelConfig={modelConfigs?.[selectedModelId || '']}
       />
-      <div className="flex flex-col w-full pb-4 items-stretch justify-items-stretch gap-4">
+      <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 p-1 pb-4">
         {/* Start */}
         {selectedModelId && <Button
           className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"

@@ -3,16 +3,18 @@ import { useState } from 'react'
 
 interface I_Tab {
   label: string
+  title?: string
   content: React.ReactNode
 }
 
 interface I_Props {
+  className?: string
   label: string
   tabs: I_Tab[]
   onChange?: (val: string) => void
 }
 
-export const Tabs = ({ label = 'Tabs Menu', tabs = [], onChange = () => { } }: I_Props) => {
+export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange = () => { } }: I_Props) => {
   const [checked, setChecked] = useState<string>(tabs?.[0]?.label || '')
 
   return (
@@ -31,9 +33,9 @@ export const Tabs = ({ label = 'Tabs Menu', tabs = [], onChange = () => { } }: I
             <Trigger
               key={i.label}
               value={i.label}
-              className="flex w-full min-h-4 flex-1 cursor-default items-end justify-center text-lg font-semibold capitalize"
+              className="min-h-4 flex w-full flex-1 cursor-default items-end justify-center text-lg font-semibold capitalize"
             >
-              <label className="w-full">
+              <label className="w-full" title={i.title}>
                 <input
                   className="peer hidden"
                   type="radio"
@@ -41,7 +43,7 @@ export const Tabs = ({ label = 'Tabs Menu', tabs = [], onChange = () => { } }: I
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
-                <div className="border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary" >
+                <div className={`border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary ${className}`} >
                   {i.label}
                 </div>
               </label>

@@ -87,7 +87,16 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
       // Model Selection Menu
       < div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]" >
         {/* <h1 className="mt-4 px-4 text-center text-xl">Connected to HomebrewAi server</h1> */}
-        <ApplicationModesMenu setHasTextServiceConnected={setHasTextServiceConnected} isConnecting={isConnecting} setIsConnecting={setIsConnecting} modelConfigs={modelConfigs || {}} installedList={installedList} setCurrentTextModel={setCurrentTextModel} onSubmit={() => {/* logic to go to a route */ }} services={services} />
+        <ApplicationModesMenu
+          setHasTextServiceConnected={setHasTextServiceConnected}
+          isConnecting={isConnecting}
+          setIsConnecting={setIsConnecting}
+          modelConfigs={modelConfigs || {}}
+          installedList={installedList}
+          setCurrentTextModel={setCurrentTextModel}
+          onSubmit={() => {/* logic to go to a route */ }}
+          services={services}
+        />
       </div >
     )
 

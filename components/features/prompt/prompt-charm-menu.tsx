@@ -97,7 +97,7 @@ export const CharmMenu = (props: I_Props) => {
       if (cfg) APIConfigOptions.current = cfg
     }
     if (!hasMounted) action()
-  }, [getServices, hasMounted])
+  }, [getAPIConfigOptions, getServices, hasMounted])
 
   return (
     <>

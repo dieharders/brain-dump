@@ -3,7 +3,7 @@
     {
       "id": "basic_input",
       "name": "Basic Input",
-      "text": "{query_str}",
+      "text": "{context_str}\n{query_str}",
       "type": "SIMPLE_INPUT"
     },
     {

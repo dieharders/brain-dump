@@ -23,25 +23,25 @@ interface I_Props {
   setHasTextServiceConnected: any
 }
 
-const Header = ({ children }: { children: React.ReactNode }) => <div className="flex flex-col space-y-1.5 text-center sm:text-left my-8">{children}</div>
+const Header = ({ children }: { children: React.ReactNode }) => <div className="my-8 flex flex-col space-y-1.5 text-center sm:text-left">{children}</div>
 
 const Title = ({ children }: { children: React.ReactNode }) => <h1 className="text-lg font-semibold leading-none tracking-tight">{children}</h1>
 
-const Description = ({ children }: { children: React.ReactNode }) => <p className="text-sm text-muted-foreground mb-4">{children}</p>
+const Description = ({ children }: { children: React.ReactNode }) => <p className="mb-4 text-sm text-muted-foreground">{children}</p>
 
 const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?: () => void, Icon: any, className?: string }) => {
   return (
-    <div className={`h-[10rem] w-[10rem] flex flex-col items-center justify-center gap-2 bg-accent rounded-md p-2 ${className}`}>
+    <div className={`flex h-[10rem] w-[10rem] flex-col items-center justify-center gap-2 rounded-md bg-accent p-2 ${className}`}>
       <div
         onClick={onAction}
         className={cn(
           buttonVariants({ size: 'sm', variant: 'outline' }),
-          `h-[50%] w-[50%] rounded-full bg-background p-0 cursor-pointer focus:outline-none outline-3 hover:outline-dashed outline-offset-0 outline-muted-foreground`,
+          `outline-3 h-[50%] w-[50%] cursor-pointer rounded-full bg-background p-0 outline-offset-0 outline-muted-foreground hover:outline-dashed focus:outline-none`,
         )}
       >
         <Icon className="h-[50%] w-[50%] text-foreground" />
       </div>
-      <div className="w-full text-md text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{title}</div>
+      <div className="text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-muted-foreground">{title}</div>
     </div>
   )
 }
@@ -58,7 +58,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const onTabChange = useCallback(
     (val: string) => {
-      console.log('@@ tab', val);
+      // console.log('@@ tab', val)
     },
     [],
   )
@@ -76,20 +76,18 @@ export const ApplicationModesMenu = (props: I_Props) => {
     // show bot creation menu
     setOpenBotCreationMenu(true)
     // ###
-    // - Model pulldown selector
-    // - Attention type (conversation, instruct, rolling)
-    // - Customize model performance settings
-    // - Use trained data or RAG data, if RAG then select an index source and retrieval method
-    // - Customize system message (personality), only shown if "promptFormat" in modelConfig includes "system_str"
-    // - Customize prompt template (thinking, structured response types), only shown if RAG is disabled -OR- RAG memory template, only shown if RAG is enabled
-    // - Customize model config settings (Response, temperature, etc)
-
-    console.log('@@ show bot creation menu');
+    // - Model - pulldown selector
+    // - Attention - type (conversation, instruct, rolling)
+    // - Performance - Customize model performance settings
+    // - Knowledge - Use trained data or RAG data, if RAG then select an index source and retrieval method
+    // - Personality - Customize system message, only shown if "promptFormat" in modelConfig includes "system_str"
+    // - Thinking - Customize prompt template (structured response types), only shown if RAG is disabled -OR- RAG memory template, only shown if RAG is enabled
+    // - Response - Customize model config settings (temperature, etc)
   }
 
   const saveBotConfig = useCallback((settings: any) => {
     toast.success('New bot created!')
-    console.log('@@ bot saved settings', settings);
+    console.log('@@ bot saved settings', settings)
     // @TODO Update this menu's list of items
     // ...
     // save menu forms to a json file under 'settings/app.json'
@@ -144,6 +142,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         <Item title="Software Developer" Icon={ClipboardIcon} />
         <Item title="Sci-Fi Author" Icon={PersonIcon} />
         <Item title="Lawyer" Icon={PersonIcon} />
+        <Item title="Bio Researcher" Icon={PersonIcon} />
         {placeholderItems()}
       </div>
     </div>
@@ -152,9 +151,9 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const crewsMenu = (
     <div>
       <Header>
-        <Title>Company of Assistants</Title>
+        <Title>Team of Assistants</Title>
         <Description>
-          A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with a deadline and criteria to meet that goal. Several results are returned over time by individual assistants and collected into a report by a designated "CEO" assistant until the goal is met.
+          {`A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with a deadline and criteria to meet that goal. Several results are returned over time by individual assistants and collected into a report by a designated "CEO" assistant until the goal is met.`}
         </Description>
       </Header>
 
@@ -163,8 +162,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
         <Item title="Add New" Icon={IconPlus} />
         <Item title="Publisher" Icon={QuestionMarkIcon} />
         <Item title="Game Studio" Icon={IconConversationType} />
+        <Item title="Advertising Company" Icon={PersonIcon} />
         <Item title="Quality Assurance" Icon={ClipboardIcon} />
         <Item title="Software Team" Icon={PersonIcon} />
+        <Item title="Research Org" Icon={PersonIcon} />
         {placeholderItems()}
       </div>
     </div>
@@ -213,22 +214,20 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const playgroundMenu = (
-    <>
-      <div>
-        <Header>
-          <Title>Ai Playground</Title>
-          <Description>
-            Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.
-          </Description>
-        </Header>
+    <div>
+      <Header>
+        <Title>Ai Playground</Title>
+        <Description>
+          {`Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.`}
+        </Description>
+      </Header>
 
-        {/* Content */}
-        <div className="w-full flex flex-row justify-between items-start gap-2">
-          {/* Choose model to load */}
-          <Playground setHasTextServiceConnected={setHasTextServiceConnected} setSelectedModelId={setSelectedModelId} isConnecting={isConnecting} setIsConnecting={setIsConnecting} selectedModelId={selectedModelId} setCurrentTextModel={setCurrentTextModel} services={services} installedList={installedList} modelConfigs={modelConfigs} />
-        </div>
+      {/* Content */}
+      <div className="flex w-full flex-row items-start justify-between gap-2">
+        {/* Choose model to load */}
+        <Playground setHasTextServiceConnected={setHasTextServiceConnected} setSelectedModelId={setSelectedModelId} isConnecting={isConnecting} setIsConnecting={setIsConnecting} selectedModelId={selectedModelId} setCurrentTextModel={setCurrentTextModel} services={services} installedList={installedList} modelConfigs={modelConfigs} />
       </div>
-    </>
+    </div>
   )
 
   const tabs = [

@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+'use client'
+
+import { Dispatch, SetStateAction } from 'react'
 import {
-  Dialog,
-  DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -18,45 +17,42 @@ import {
 } from '@/components/ui/select'
 import { T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
 
-interface I_Props {
-  onSubmit: (state: any) => void
-  installedList: T_InstalledTextModel[]
-  modelConfigs: { [key: string]: T_ModelConfig }
+export interface I_State {
+  id: string | undefined
 }
 
-interface I_State {
-  id: string | undefined
+interface I_Props {
+  state: I_State,
+  setState: Dispatch<SetStateAction<I_State>>
+  installedList: T_InstalledTextModel[]
+  modelConfigs: { [key: string]: T_ModelConfig }
 }
 
 export const defaultState: I_State = {
   id: undefined
 }
 
-export const ModelTab = ({ onSubmit, installedList, modelConfigs }: I_Props) => {
+export const ModelTab = (props: I_Props) => {
+  const { installedList, modelConfigs, state, setState } = props
   const installedModels = installedList?.map(item => {
     const cfg = modelConfigs?.[item.id]
     const name = cfg?.name
     return (<SelectItem key={item.id} value={item.id}>{name}</SelectItem>)
   }) ?? []
-  const [state, setState] = useState<I_State>(defaultState)
-
-  useEffect(() => {
-    onSubmit(state)
-  }, [state])
 
   return (
     <div className="px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Choose LLM model</DialogTitle>
+        <DialogTitle>Choose an LLM Model</DialogTitle>
         <DialogDescription className="mb-4">
           Each model possesses unique abilities based on their training data. The size of their attention span and capability can vary so experiment with different parameter sizes and architecture types.
         </DialogDescription>
       </DialogHeader>
 
       {/* Content */}
-      <div className="w-full flex flex-row justify-between items-start gap-2">
+      <div className="flex w-full flex-row items-start justify-between gap-2">
 
-        <div className="flex flex-col w-full pb-4 items-stretch justify-items-stretch gap-4">
+        <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 pb-4">
           <div className="flex flex-row gap-2">
             {/* Select a prev installed model to load */}
             <div className="w-full">

@@ -108,7 +108,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Choose a chat mode</DialogTitle>
         <DialogDescription className="mb-4">
-          Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.
+          {`Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.`}
         </DialogDescription>
       </DialogHeader>
 

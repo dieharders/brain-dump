@@ -650,7 +650,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       }
       action()
     }
-  }, [dialogOpen, settings])
+  }, [dialogOpen, getResponseModes, options, settings])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

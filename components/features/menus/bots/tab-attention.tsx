@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+'use client'
+
+import { Dispatch, SetStateAction } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -8,32 +10,29 @@ import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
 import { PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 
-interface I_State {
+export interface I_State {
   mode: 'instruct' | 'chat' | 'sliding'
 }
 
 interface I_Props {
-  onSubmit: (state: any) => void
+  state: I_State
+  setState: Dispatch<SetStateAction<I_State>>
 }
 
 const DEFAULT_MODE = 'instruct'
 export const defaultState: I_State = { mode: DEFAULT_MODE }
 
-export const AttentionTab = ({ onSubmit }: I_Props) => {
-  const [state, setState] = useState<I_State>(defaultState)
+export const AttentionTab = (props: I_Props) => {
+  const { state, setState } = props
   const handleStateChange = (propName: string, value: string | boolean) => setState((prev: any) => ({ ...prev, [propName]: value }))
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
-
-  useEffect(() => {
-    onSubmit(state)
-  }, [state])
 
   return (
     <div className="px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Choose a chat mode</DialogTitle>
+        <DialogTitle>Chat Mode</DialogTitle>
         <DialogDescription className="mb-4">
-          Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.
+          {`Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.`}
         </DialogDescription>
       </DialogHeader>
 

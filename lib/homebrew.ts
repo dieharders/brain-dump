@@ -133,7 +133,7 @@ export type T_InstalledTextModel = {
   checksum: string
 }
 
-type T_PromptTemplate = {
+export type T_PromptTemplate = {
   id: string
   name: string
   text: string
@@ -146,15 +146,23 @@ export type T_RAGPromptTemplate = {
   type: string
 }
 
+export interface I_RAGPromptTemplates {
+  [key: string]: T_RAGPromptTemplate[]
+}
+
 export type T_SystemPrompt = {
   id: string
   name: string
   text: string
 }
 
+export interface I_PromptTemplates {
+  [key: string]: T_PromptTemplate[]
+}
+
 export type T_PromptTemplates = {
-  rag_presets: { [key: string]: T_RAGPromptTemplate[] }
-  normal_presets: { [key: string]: T_PromptTemplate[] }
+  rag_presets: I_RAGPromptTemplates
+  normal_presets: I_PromptTemplates
 }
 
 export type T_SystemPrompts = {
