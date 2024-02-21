@@ -30,13 +30,13 @@ export const defaultRagTemplateState = {
 }
 
 interface I_Props {
-  currentRagTemplate: T_RAGPromptTemplate
-  setCurrentRagTemplate: (val: T_RAGPromptTemplate) => void
-  ragTemplates: I_RAGPromptTemplates
+  state: T_RAGPromptTemplate
+  setState: (val: T_RAGPromptTemplate) => void
+  templates: I_RAGPromptTemplates
 }
 
 export const RAGTemplateForm = (props: I_Props) => {
-  const { currentRagTemplate, setCurrentRagTemplate, ragTemplates } = props
+  const { state, setState, templates } = props
 
   const constructOptionsGroups = (config: { [key: string]: Array<T_RAGPromptTemplate> }) => {
     const groups = Object.keys(config)
@@ -54,7 +54,7 @@ export const RAGTemplateForm = (props: I_Props) => {
   }
 
   const ragPromptTemplateOptions = useCallback(() => {
-    const presets = constructOptionsGroups(ragTemplates)
+    const presets = constructOptionsGroups(templates)
     const customGroup = (
       <SelectGroup key="custom">
         <SelectLabel className="select-none">{CUSTOM_NAME}</SelectLabel>
@@ -62,7 +62,7 @@ export const RAGTemplateForm = (props: I_Props) => {
       </SelectGroup>
     )
     return [customGroup, ...presets]
-  }, [ragTemplates])
+  }, [templates])
 
   return (
     <>
@@ -77,24 +77,24 @@ export const RAGTemplateForm = (props: I_Props) => {
       {/* Select where to load from */}
       < div className="mb-2 w-full" >
         <Select
-          value={currentRagTemplate.id}
+          value={state.id}
           onValueChange={(val: string) => {
             if (val === CUSTOM_ID) {
-              if (currentRagTemplate) {
+              if (state) {
                 const template = {
                   id: val,
                   name: CUSTOM_NAME,
-                  text: currentRagTemplate.text,
+                  text: state.text,
                   type: defaultCustomType, // hard-code since user has no way of inputting
                 }
-                setCurrentRagTemplate(template)
+                setState(template)
               }
             }
             else {
-              const items = Object.values(ragTemplates).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+              const items = Object.values(templates).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
               const newTemplate = items.find(i => i.id === val)
               if (newTemplate) {
-                setCurrentRagTemplate(newTemplate)
+                setState(newTemplate)
               }
             }
           }}
@@ -110,15 +110,15 @@ export const RAGTemplateForm = (props: I_Props) => {
 
       {/* Content */}
       < textarea
-        disabled={currentRagTemplate.id !== CUSTOM_ID}
+        disabled={state.id !== CUSTOM_ID}
         className="scrollbar h-36 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
-        value={currentRagTemplate.text}
+        value={state.text}
         placeholder={defaultRagTemplateState.text}
         onChange={
           e => {
-            if (currentRagTemplate) {
-              const newValue = { ...currentRagTemplate, text: e.target.value }
-              setCurrentRagTemplate(newValue)
+            if (state) {
+              const newValue = { ...state, text: e.target.value }
+              setState(newValue)
             }
           }
         }
