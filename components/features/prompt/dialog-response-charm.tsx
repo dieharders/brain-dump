@@ -323,7 +323,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
-        <Tabs label="Model Settings" tabs={tabs} />
+        <Tabs label="Response Settings" tabs={tabs} />
       </DialogContent>
     </Dialog>
   )

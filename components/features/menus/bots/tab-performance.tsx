@@ -36,6 +36,7 @@ export const PerformanceTab = (props: I_Props) => {
   const inputContainerClass = "grid w-full gap-1"
   const infoClass = "flex w-full flex-row gap-2"
 
+  // @TODO Maybe need to implement this with setState
   // const saveParsedSettings = useCallback((settings: { [key: string]: any }) => {
   //   const saveSettings: { [key: string]: any } = {}
   //   // Cleanup exported values to correct types

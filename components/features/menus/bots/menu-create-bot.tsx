@@ -44,7 +44,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const { getAPIConfigOptions } = useHomebrew()
 
   // Defaults
-  const defaults = useMemo(() => ({
+  const defaults: I_Settings = useMemo(() => ({
     attention: defaultAttentionState,
     performance: defaultPerformanceState,
     system: defaultSystemState,

@@ -10,8 +10,10 @@ import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
 import { PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 
+type T_Mode = 'instruct' | 'chat' | 'sliding'
+
 export interface I_State {
-  mode: 'instruct' | 'chat' | 'sliding'
+  mode: T_Mode
 }
 
 interface I_Props {
@@ -24,7 +26,6 @@ export const defaultState: I_State = { mode: DEFAULT_MODE }
 
 export const AttentionTab = (props: I_Props) => {
   const { state, setState } = props
-  const handleStateChange = (propName: string, value: string | boolean) => setState((prev: any) => ({ ...prev, [propName]: value }))
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
 
   return (
@@ -42,7 +43,7 @@ export const AttentionTab = (props: I_Props) => {
           label="Chat Mode"
           value={state?.mode || DEFAULT_MODE}
           onChange={val => {
-            handleStateChange('mode', val)
+            setState(prev => ({ ...prev, mode: val as T_Mode }))
           }}
         >
           {/* Conversational Chat - Multiple messages can be sent until the context is filled, then the conversation ends. */}
