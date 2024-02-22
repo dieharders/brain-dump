@@ -15,7 +15,6 @@ import {
 import { Label } from '@/components/ui/label'
 import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
-import { T_APIConfigOptions } from '@/lib/homebrew'
 
 export interface I_State {
   similarity_top_k: number,
@@ -65,7 +64,7 @@ export const RAGStrategyForm = (props: I_Props) => {
       </DialogHeader>
 
       {/* RAG Options Content */}
-      <div className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4">
+      <div className="grid-auto-flow m-auto mb-2 grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4">
         {/* Max Number of Results (similarity_top_k) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>

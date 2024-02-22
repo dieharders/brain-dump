@@ -16,9 +16,10 @@ import { ModelTab, defaultState as defaultModelState, I_State as I_Model_State }
 import { SystemTab, defaultState as defaultSystemState, I_State as I_System_State } from '@/components/features/menus/bots/tab-system'
 import { PromptTab, defaultState as defaultPromptState, I_State as I_Prompt_State } from '@/components/features/menus/bots/tab-prompt'
 import { KnowledgeTab, defaultState as defaultKnowledgeState, I_State as I_Knowledge_State } from '@/components/features/menus/bots/tab-knowledge'
+import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/bots/tab-response'
+import { I_LLM_Init_Options, I_Response_Options } from '@/lib/hooks/types'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { toast } from 'react-hot-toast'
-import { I_LLM_Init_Options } from '@/lib/hooks/types'
 
 interface I_Props {
   dialogOpen: boolean
@@ -40,6 +41,7 @@ export const BotCreationMenu = (props: I_Props) => {
     model: defaultModelState,
     prompt: defaultPromptState,
     knowledge: defaultKnowledgeState,
+    response: defaultResponse,
   }), [])
 
   // State values
@@ -49,6 +51,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
   const [stateSystem, setStateSystem] = useState<I_System_State>(defaults.system)
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
+  const [stateResponse, setStateResponse] = useState<I_Response_Options>(defaults.response)
 
   // Data values
   const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})
@@ -59,7 +62,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const promptMenu = <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={stateKnowledge.type === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />
   const systemMessageMenu = <SystemTab services={data.services} state={stateSystem} setState={setStateSystem} />
   const knowledgeMenu = <KnowledgeTab state={stateKnowledge} setState={setStateKnowledge} fetchListAction={fetchCollections} />
-  const responseMenu = <div>responseMenu</div>
+  const responseMenu = <ResponseTab state={stateResponse} setState={setStateResponse} />
   const modelMenu = <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />
   const attentionMenu = <AttentionTab state={stateAttention} setState={setStateAttention} />
   const performanceMenu = <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={data.modelConfigs[stateModel.id ?? '']} />
@@ -88,6 +91,7 @@ export const BotCreationMenu = (props: I_Props) => {
       setStatePerformance(defaults.performance)
       setStateSystem(defaults.system)
       setStatePrompt(defaults.prompt)
+      setStateResponse(defaults.response)
     }
   }, [defaults, dialogOpen])
 
@@ -135,6 +139,7 @@ export const BotCreationMenu = (props: I_Props) => {
               model: stateModel,
               prompt: statePrompt,
               knowledge: stateKnowledge,
+              response: stateResponse,
             })
             // Close
             setDialogOpen(false)
