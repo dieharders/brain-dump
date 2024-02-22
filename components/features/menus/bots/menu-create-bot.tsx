@@ -68,7 +68,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const performanceMenu = <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={data.modelConfigs[stateModel.id ?? '']} />
 
   const tabs = [
-    { label: '🤖', title: 'Model', content: modelMenu },
+    { label: '🤖', title: 'LLM Model', content: modelMenu },
     { label: '👀', title: 'Attention', content: attentionMenu },
     { label: '🏃‍♂️', title: 'Performance', content: performanceMenu },
     { label: '📚', title: 'Knowledge', content: knowledgeMenu },
@@ -77,10 +77,38 @@ export const BotCreationMenu = (props: I_Props) => {
     { label: '🙊', title: 'Response', content: responseMenu },
   ]
 
-  // Hooks
+  // Fetch data
   const fetchPromptTemplates = useCallback(async () => data.services?.textInference.getPromptTemplates(), [data.services?.textInference])
   const fetchRagTemplates = useCallback(async () => data.services?.textInference.getRagPromptTemplates(), [data.services?.textInference])
   const fetchRagModes = useCallback(async () => getAPIConfigOptions(), [getAPIConfigOptions])
+
+  // Hooks
+  const onSaveClick = useCallback(
+    () => {
+      // Check form validation
+      if (!stateModel.id) {
+        toast.error('Please choose an LLM model')
+        return
+      }
+      if (!stateModel.botName) {
+        toast.error('Please choose a name for your bot')
+        return
+      }
+      // Save settings
+      onSubmit({
+        attention: stateAttention,
+        performance: statePerformance,
+        system: stateSystem,
+        model: stateModel,
+        prompt: statePrompt,
+        knowledge: stateKnowledge,
+        response: stateResponse,
+      })
+      // Close
+      setDialogOpen(false)
+    },
+    [onSubmit, setDialogOpen, stateAttention, stateKnowledge, stateModel, statePerformance, statePrompt, stateResponse, stateSystem],
+  )
 
   useEffect(() => {
     // Reset settings
@@ -126,24 +154,7 @@ export const BotCreationMenu = (props: I_Props) => {
         />
         <Separator className="my-6" />
         <DialogFooter className="content-center items-stretch">
-          <Button onClick={() => {
-            if (!stateModel.id) {
-              toast.error('You must choose an LLM model')
-              return
-            }
-            // Save settings
-            onSubmit({
-              attention: stateAttention,
-              performance: statePerformance,
-              system: stateSystem,
-              model: stateModel,
-              prompt: statePrompt,
-              knowledge: stateKnowledge,
-              response: stateResponse,
-            })
-            // Close
-            setDialogOpen(false)
-          }}>Save</Button>
+          <Button onClick={onSaveClick}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

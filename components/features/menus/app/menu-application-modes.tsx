@@ -75,14 +75,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const createNewBotAction = () => {
     // show bot creation menu
     setOpenBotCreationMenu(true)
-    // ###
-    // - Model - pulldown selector
-    // - Attention - type (conversation, instruct, rolling)
-    // - Performance - Customize model performance settings
-    // - Knowledge - Use trained data or RAG data, if RAG then select an index source and retrieval method
-    // - Personality - Customize system message, only shown if "promptFormat" in modelConfig includes "system_str"
-    // - Thinking - Customize prompt template (structured response types), only shown if RAG is disabled -OR- RAG memory template, only shown if RAG is enabled
-    // - Response - Customize model config settings (temperature, etc)
   }
 
   const saveBotConfig = useCallback((settings: any) => {
