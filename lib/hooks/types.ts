@@ -47,6 +47,23 @@ export interface I_LLM_Call_Options {
   // grammar?: string
 }
 
+export interface I_Response_Options {
+  temperature?: number
+  max_tokens?: number
+  top_p?: number
+  echo?: boolean
+  stop?: string[]
+  repeat_penalty?: number
+  top_k?: number
+  stream?: boolean
+  // min_p?: number
+  // presence_penalty?: number // 1.0
+  // frequency_penalty?: number // 1.0
+  // tfs_z?: number
+  // mirostat_tau?: number
+  // grammar?: string
+}
+
 export interface I_LLM_Options {
   init?: I_LLM_Init_Options
   call?: I_LLM_Call_Options

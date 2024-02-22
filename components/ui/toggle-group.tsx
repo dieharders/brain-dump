@@ -1,14 +1,12 @@
 import React from 'react'
 import { Root, Item } from '@radix-ui/react-toggle-group'
 
-export type T_ConvoTypes = 'completion' | 'chat' | 'formatter' | 'agent'
-
 interface I_Props {
   children: React.ReactNode
   label: string
-  defaultValue?: T_ConvoTypes
-  value: T_ConvoTypes
-  onChange: (val: T_ConvoTypes) => void
+  defaultValue?: string
+  value: string
+  onChange: (val: string) => void
 }
 
 const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = 'completion', value, onChange }: I_Props) => {
@@ -18,7 +16,7 @@ const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = 'complet
       type="single" // assign unique "name" prop to each <input> if you wish to use type="multiple"
       defaultValue={defaultValue}
       aria-label={label}
-      onValueChange={(val: T_ConvoTypes) => val && onChange(val)}
+      onValueChange={(val: string) => val && onChange(val)}
     >
       {React.Children.map(children, (child, index) => {
         // Children should have "id" attr set on the parent,

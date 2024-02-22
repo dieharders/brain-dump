@@ -8,13 +8,12 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
-import { I_ServiceApis, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_ServiceApis } from '@/lib/homebrew'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   services: I_ServiceApis | null
-  currentTextModel: T_InstalledTextModel | null
 }
 
 export const LocalChat = ({ id, initialMessages, services, className }: IProps) => {
