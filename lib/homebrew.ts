@@ -119,6 +119,10 @@ export type T_ModelConfig = {
   num_gpu_layers?: number
 }
 
+export interface I_ModelConfigs {
+  [key: string]: T_ModelConfig
+}
+
 export type T_InstalledTextModel = {
   id: string
   savePath: string

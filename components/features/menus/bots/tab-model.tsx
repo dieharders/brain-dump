@@ -15,7 +15,7 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
+import { I_ModelConfigs, T_InstalledTextModel } from '@/lib/homebrew'
 import { Input } from '@/components/ui/input'
 
 export interface I_State {
@@ -27,7 +27,7 @@ interface I_Props {
   state: I_State,
   setState: Dispatch<SetStateAction<I_State>>
   installedList: T_InstalledTextModel[]
-  modelConfigs: { [key: string]: T_ModelConfig }
+  modelConfigs: I_ModelConfigs
 }
 
 export const defaultState: I_State = {

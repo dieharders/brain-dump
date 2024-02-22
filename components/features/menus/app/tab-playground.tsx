@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useState } from "react"
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
@@ -13,24 +13,23 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { T_InstalledTextModel } from "@/lib/homebrew"
+import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
 import { I_LLM_Options } from '@/lib/hooks/types'
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
-  modelConfigs: any
-  services: any
-  setCurrentTextModel: any
-  selectedModelId: any
-  isConnecting: any
-  setIsConnecting: any
-  setHasTextServiceConnected: any
-  setSelectedModelId: any
+  modelConfigs: I_ModelConfigs
+  services: I_ServiceApis | null
+  selectedModelId: string | undefined
+  isConnecting: boolean
+  setIsConnecting: Dispatch<SetStateAction<boolean>>
+  setHasTextServiceConnected: Dispatch<SetStateAction<boolean>>
+  setSelectedModelId: Dispatch<SetStateAction<string | undefined>>
 }
 
 export const Playground = (props: I_Props) => {
-  const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, setCurrentTextModel, selectedModelId } = props
+  const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const [responseSettings, setResponseSettings] = useState(null)
 
@@ -70,7 +69,6 @@ export const Playground = (props: I_Props) => {
 
         if (response?.success) {
           toast.success('Connected successfully to Ai')
-          setCurrentTextModel(response?.data)
           return true
         }
 
@@ -86,7 +84,7 @@ export const Playground = (props: I_Props) => {
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [installedList, selectedModelId, services?.storage, services?.textInference, setCurrentTextModel, setIsConnecting])
+  }, [installedList, selectedModelId, services?.storage, services?.textInference, setIsConnecting])
 
   return (
     <>

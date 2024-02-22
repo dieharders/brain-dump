@@ -1,26 +1,25 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useState } from 'react'
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
-import { Playground } from '@/components/features/menus/app/load-playground'
-import { BotCreationMenu } from '@/components/features/menus/bots/menu-create-bot'
+import { Playground } from '@/components/features/menus/app/tab-playground'
+import { BotCreationMenu, I_Settings } from '@/components/features/menus/bots/menu-create-bot'
+import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from '@/lib/homebrew'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
-import { T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
   onSubmit: () => void
-  services: any
-  modelConfigs: { [key: string]: T_ModelConfig }
+  services: I_ServiceApis | null
+  modelConfigs: I_ModelConfigs
   installedList: T_InstalledTextModel[]
-  setCurrentTextModel: any
-  isConnecting: any
-  setIsConnecting: any
-  setHasTextServiceConnected: any
+  isConnecting: boolean
+  setIsConnecting: Dispatch<SetStateAction<boolean>>
+  setHasTextServiceConnected: Dispatch<SetStateAction<boolean>>
 }
 
 const Header = ({ children }: { children: React.ReactNode }) => <div className="my-8 flex flex-col space-y-1.5 text-center sm:text-left">{children}</div>
@@ -49,7 +48,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 export const ApplicationModesMenu = (props: I_Props) => {
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
   const gridContentClass = "flex flex-wrap justify-around gap-6"
-  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs, setCurrentTextModel } = props
+  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
 
   const onSelect = useCallback(() => {
@@ -57,7 +56,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   }, [onSubmit])
 
   const onTabChange = useCallback(
-    (val: string) => {
+    (_val: string) => {
       // console.log('@@ tab', val)
     },
     [],
@@ -77,7 +76,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     setOpenBotCreationMenu(true)
   }
 
-  const saveBotConfig = useCallback((settings: any) => {
+  const saveBotConfig = useCallback((settings: I_Settings) => {
     toast.success('New bot created!')
     console.log('@@ bot saved settings', settings)
     // @TODO Update this menu's list of items
@@ -217,7 +216,16 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className="flex w-full flex-row items-start justify-between gap-2">
         {/* Choose model to load */}
-        <Playground setHasTextServiceConnected={setHasTextServiceConnected} setSelectedModelId={setSelectedModelId} isConnecting={isConnecting} setIsConnecting={setIsConnecting} selectedModelId={selectedModelId} setCurrentTextModel={setCurrentTextModel} services={services} installedList={installedList} modelConfigs={modelConfigs} />
+        <Playground
+          setHasTextServiceConnected={setHasTextServiceConnected}
+          setSelectedModelId={setSelectedModelId}
+          isConnecting={isConnecting}
+          setIsConnecting={setIsConnecting}
+          selectedModelId={selectedModelId}
+          services={services}
+          installedList={installedList}
+          modelConfigs={modelConfigs}
+        />
       </div>
     </div>
   )

@@ -9,7 +9,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { I_PromptTemplates, I_RAGPromptTemplates, T_InstalledTextModel, T_ModelConfig, useHomebrew } from '@/lib/homebrew'
+import { I_ModelConfigs, I_PromptTemplates, I_RAGPromptTemplates, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
 import { AttentionTab, defaultState as defaultAttentionState, I_State as I_Attention_State } from '@/components/features/menus/bots/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/bots/tab-performance'
 import { ModelTab, defaultState as defaultModelState, I_State as I_Model_State } from '@/components/features/menus/bots/tab-model'
@@ -24,8 +24,18 @@ import { toast } from 'react-hot-toast'
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  onSubmit: (saveSettings: any) => void
-  data: { modelConfigs: { [key: string]: T_ModelConfig }, installedList: T_InstalledTextModel[], services: any }
+  onSubmit: (saveSettings: I_Settings) => void
+  data: { modelConfigs: I_ModelConfigs, installedList: T_InstalledTextModel[], services: I_ServiceApis | null }
+}
+
+export interface I_Settings {
+  attention: I_Attention_State,
+  performance: I_LLM_Init_Options,
+  system: I_System_State,
+  model: I_Model_State,
+  prompt: I_Prompt_State,
+  knowledge: I_Knowledge_State,
+  response: I_Response_Options,
 }
 
 export const BotCreationMenu = (props: I_Props) => {
@@ -127,12 +137,12 @@ export const BotCreationMenu = (props: I_Props) => {
   useEffect(() => {
     const getPromptTemplates = async () => {
       const req = await fetchPromptTemplates()
-      const data = req.data
+      const data = req?.data || {}
       setPromptTemplates(data)
     }
     const getRagTemplates = async () => {
       const req = await fetchRagTemplates()
-      const data = req.data
+      const data = req?.data || {}
       setRagTemplates(data)
     }
     const getRagModes = async () => {

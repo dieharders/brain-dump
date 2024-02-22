@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react'
 import { type Message } from 'ai/react'
 import { LocalChat } from '@/components/local-chat'
-import { I_ServiceApis, T_InstalledTextModel, T_ModelConfig, useHomebrew } from '@/lib/homebrew'
+import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
@@ -25,9 +25,8 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { provider: selectedProvider, model: selectedModel } = useSettings()
   const { connect: connectToHomebrew, getServices } = useHomebrew()
-  const [currentTextModel, setCurrentTextModel] = useState(null)
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
-  const [modelConfigs, setModelConfigs] = useState<{ [key: string]: T_ModelConfig }>()
+  const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -93,7 +92,6 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           setIsConnecting={setIsConnecting}
           modelConfigs={modelConfigs || {}}
           installedList={installedList}
-          setCurrentTextModel={setCurrentTextModel}
           onSubmit={() => {/* logic to go to a route */ }}
           services={services}
         />
@@ -112,7 +110,6 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           id={id}
           initialMessages={initialMessages}
           services={services}
-          currentTextModel={currentTextModel}
         />
       )
     // Render chat UI (cloud)
