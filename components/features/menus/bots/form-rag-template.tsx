@@ -22,17 +22,17 @@ const CUSTOM_ID = 'custom_default'
 const defaultRagPromptText = '{context_str}\n{query_str}'
 const defaultCustomType = 'CUSTOM'
 
+interface I_Props {
+  state: T_RAGPromptTemplate
+  setState: (val: T_RAGPromptTemplate) => void
+  templates: I_RAGPromptTemplates
+}
+
 export const defaultRagTemplateState = {
   id: CUSTOM_ID,
   name: CUSTOM_NAME,
   text: defaultRagPromptText,
   type: defaultCustomType,
-}
-
-interface I_Props {
-  state: T_RAGPromptTemplate
-  setState: (val: T_RAGPromptTemplate) => void
-  templates: I_RAGPromptTemplates
 }
 
 export const RAGTemplateForm = (props: I_Props) => {

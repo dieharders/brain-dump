@@ -9,7 +9,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { I_RAGPromptTemplates, T_InstalledTextModel, T_ModelConfig } from '@/lib/homebrew'
+import { I_PromptTemplates, I_RAGPromptTemplates, T_InstalledTextModel, T_ModelConfig, useHomebrew } from '@/lib/homebrew'
 import { AttentionTab, defaultState as defaultAttentionState, I_State as I_Attention_State } from '@/components/features/menus/bots/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/bots/tab-performance'
 import { ModelTab, defaultState as defaultModelState, I_State as I_Model_State } from '@/components/features/menus/bots/tab-model'
@@ -30,6 +30,7 @@ interface I_Props {
 export const BotCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit, data } = props
   const { fetchCollections } = useMemoryActions(data.services)
+  const { getAPIConfigOptions } = useHomebrew()
 
   // Defaults
   const defaults = useMemo(() => ({
@@ -50,11 +51,12 @@ export const BotCreationMenu = (props: I_Props) => {
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
 
   // Data values
-  const [promptTemplates, setPromptTemplates] = useState()
+  const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})
   const [ragTemplates, setRagTemplates] = useState<I_RAGPromptTemplates>({})
+  const [ragModes, setRagModes] = useState<string[]>([])
 
   // Menus
-  const promptMenu = <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={stateKnowledge.type === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} />
+  const promptMenu = <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={stateKnowledge.type === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />
   const systemMessageMenu = <SystemTab services={data.services} state={stateSystem} setState={setStateSystem} />
   const knowledgeMenu = <KnowledgeTab state={stateKnowledge} setState={setStateKnowledge} fetchListAction={fetchCollections} />
   const responseMenu = <div>responseMenu</div>
@@ -75,6 +77,7 @@ export const BotCreationMenu = (props: I_Props) => {
   // Hooks
   const fetchPromptTemplates = useCallback(async () => data.services?.textInference.getPromptTemplates(), [data.services?.textInference])
   const fetchRagTemplates = useCallback(async () => data.services?.textInference.getRagPromptTemplates(), [data.services?.textInference])
+  const fetchRagModes = useCallback(async () => getAPIConfigOptions(), [getAPIConfigOptions])
 
   useEffect(() => {
     // Reset settings
@@ -100,9 +103,14 @@ export const BotCreationMenu = (props: I_Props) => {
       const data = req.data
       setRagTemplates(data)
     }
+    const getRagModes = async () => {
+      const data = await fetchRagModes()
+      setRagModes(data?.ragResponseModes || [])
+    }
     getPromptTemplates()
     getRagTemplates()
-  }, [fetchPromptTemplates, fetchRagTemplates])
+    getRagModes()
+  }, [fetchPromptTemplates, fetchRagModes, fetchRagTemplates])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
