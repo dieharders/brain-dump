@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input'
 
 export interface I_State {
   id: string | undefined
-  botName: string | undefined
+  botName: string
 }
 
 interface I_Props {
@@ -32,7 +32,7 @@ interface I_Props {
 
 export const defaultState: I_State = {
   id: undefined,
-  botName: undefined
+  botName: ''
 }
 
 export const ModelTab = (props: I_Props) => {
@@ -61,7 +61,7 @@ export const ModelTab = (props: I_Props) => {
               <Select
                 defaultValue={undefined}
                 value={state.id}
-                onValueChange={(val: string) => setState(prev => ({ ...prev, id: val }))}
+                onValueChange={(val: string) => setState({ ...state, id: val })}
               >
                 <SelectTrigger className="w-full flex-1">
                   <SelectValue placeholder="Select Ai Model"></SelectValue>
