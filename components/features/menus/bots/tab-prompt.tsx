@@ -2,9 +2,9 @@
 
 import { Dispatch, SetStateAction } from 'react'
 import { I_PromptTemplates, I_RAGPromptTemplates, T_PromptTemplate, T_RAGPromptTemplate } from '@/lib/homebrew'
-import { RAGTemplateForm, defaultRagTemplateState } from '@/components/features/menus/bots/form-rag-template'
-import { PromptTemplateForm, defaultPromptState } from '@/components/features/menus/bots/form-prompt-template'
-import { RAGStrategyForm, defaultState as defaultRagModes, I_State as I_RAG_Strat_State } from '@/components/features/menus/bots/form-rag-strategy'
+import { RAGTemplateForm, defaultRagTemplateState } from '@/components/features/forms/form-rag-template'
+import { PromptTemplateForm, defaultPromptState } from '@/components/features/forms/form-prompt-template'
+import { RAGStrategyForm, defaultState as defaultRagModes, I_State as I_RAG_Strat_State } from '@/components/features/forms/form-rag-strategy'
 
 export type I_State = {
   promptTemplate: T_PromptTemplate
