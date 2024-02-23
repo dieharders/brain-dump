@@ -12,16 +12,33 @@ import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
 
-interface I_Props {
-  state: any
-  setState: (val: any) => void
+export interface I_State {
+  temperature?: number
+  max_tokens?: number
+  top_p?: number
+  echo?: boolean
+  stop?: string[]
+  repeat_penalty?: number
+  top_k?: number
+  stream?: boolean
+  // min_p?: number
+  // presence_penalty?: number // 1.0
+  // frequency_penalty?: number // 1.0
+  // tfs_z?: number
+  // mirostat_tau?: number
+  // grammar?: string
 }
 
-export const defaultState = {
+interface I_Props {
+  state: I_State
+  setState: (val: I_State) => void
+}
+
+export const defaultState: I_State = {
   temperature: 0.8,
   top_k: 40,
   top_p: 0.95,
-  stop: ['### [DONE]'],
+  stop: [''],
   max_tokens: 128,
   repeat_penalty: 1.1,
   stream: true,
@@ -32,6 +49,7 @@ export const ResponseTab = (props: I_Props) => {
   const { state, setState } = props
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
+  const stopPlaceholder = '[DONE]'
 
   // Handle input state changes
   const handleFloatValue = (val: any) => {
@@ -46,16 +64,9 @@ export const ResponseTab = (props: I_Props) => {
     setState({ ...state, [propName]: parseFloat(value) })
   }
 
-  const handleStopValue = (val: string | string[] | undefined) => {
-    if (Array.isArray(val)) {
-      // Remove last space in string
-      const ind = val.length - 1
-      if (val[ind] === '') val.splice(ind, 1)
-
-      return val.join(' ')
-    }
-
-    return val || ''
+  const convertToString = (value: string[] | undefined) => {
+    if (!value) return ''
+    return value.join(' ')
   }
 
   return (
@@ -180,13 +191,14 @@ export const ResponseTab = (props: I_Props) => {
           </div>
           <Input
             name="url"
-            value={handleStopValue(state?.stop)}
-            placeholder={defaultState.stop?.join(' ')}
+            value={convertToString(state?.stop)}
+            placeholder={stopPlaceholder}
             className="w-full"
             onChange={event => {
               // Remove multiple consecutive spaces
               const inputVal = event.target.value.replace(/ +/g, ' ')
-              handleStateChange('stop', inputVal)
+              const arrVal = inputVal.split(' ')
+              setState({ ...state, stop: arrVal })
             }}
           />
         </div>

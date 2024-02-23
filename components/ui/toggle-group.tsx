@@ -1,5 +1,6 @@
 import React from 'react'
 import { Root, Item } from '@radix-ui/react-toggle-group'
+import { DEFAULT_CONVERSATION_MODE } from '@/lib/homebrew'
 
 interface I_Props {
   children: React.ReactNode
@@ -9,7 +10,7 @@ interface I_Props {
   onChange: (val: string) => void
 }
 
-const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = 'completion', value, onChange }: I_Props) => {
+const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = DEFAULT_CONVERSATION_MODE, value, onChange }: I_Props) => {
   return (
     <Root
       className="border-1 flex w-fit flex-row flex-wrap gap-2 rounded-sm border-solid border-black bg-muted p-2"

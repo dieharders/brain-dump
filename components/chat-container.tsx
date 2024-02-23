@@ -92,7 +92,9 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           setIsConnecting={setIsConnecting}
           modelConfigs={modelConfigs || {}}
           installedList={installedList}
-          onSubmit={() => {/* logic to go to a route */ }}
+          onSubmit={() => {
+            /* logic to go to a route */
+          }}
           services={services}
         />
       </div >

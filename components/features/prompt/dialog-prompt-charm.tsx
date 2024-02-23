@@ -68,7 +68,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       temperature: 0.8,
       top_k: 40,
       top_p: 0.95,
-      stop: ['### [DONE]'],
+      stop: ['[DONE]'],
       max_tokens: 128,
       repeat_penalty: 1.1,
       stream: true,

@@ -1,11 +1,11 @@
 import { type Message } from 'ai/react'
 import { ModelID } from '@/components/features/settings/types'
-import { T_RAGPromptTemplate } from '@/lib/homebrew'
+import { T_ConversationMode, T_RAGPromptTemplate } from '@/lib/homebrew'
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
-  mode?: 'completion' | 'chat'
+  mode?: T_ConversationMode
 }
 
 export interface I_LLM_Init_Options {
@@ -44,23 +44,6 @@ export interface I_LLM_Call_Options {
   ragPromptTemplate?: T_RAGPromptTemplate
   similarity_top_k?: number
   response_mode?: string
-  // grammar?: string
-}
-
-export interface I_Response_Options {
-  temperature?: number
-  max_tokens?: number
-  top_p?: number
-  echo?: boolean
-  stop?: string[]
-  repeat_penalty?: number
-  top_k?: number
-  stream?: boolean
-  // min_p?: number
-  // presence_penalty?: number // 1.0
-  // frequency_penalty?: number // 1.0
-  // tfs_z?: number
-  // mirostat_tau?: number
   // grammar?: string
 }
 
