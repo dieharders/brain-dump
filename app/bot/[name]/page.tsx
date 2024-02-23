@@ -61,6 +61,12 @@ export default function BotPage({ params }: BotPageProps) {
     action()
   }, [getServices])
 
+  useEffect(() => {
+    // @TODO Load the model from the bot settings on page mount. Disable all other buttons until loaded.
+    // fetch [name] settings
+    // load llm model
+  }, [])
+
   // @TODO Break out the charm menu from LocalChat since we want to pass specific charms to the chat per page
   return (
     <LocalChat

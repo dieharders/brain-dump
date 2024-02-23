@@ -16,8 +16,8 @@ import { ModelTab, defaultState as defaultModelState, I_State as I_Model_State }
 import { SystemTab, defaultState as defaultSystemState, I_State as I_System_State } from '@/components/features/menus/bots/tab-system'
 import { PromptTab, defaultState as defaultPromptState, I_State as I_Prompt_State } from '@/components/features/menus/bots/tab-prompt'
 import { KnowledgeTab, defaultState as defaultKnowledgeState, I_State as I_Knowledge_State } from '@/components/features/menus/bots/tab-knowledge'
-import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/bots/tab-response'
-import { I_LLM_Init_Options, I_Response_Options } from '@/lib/hooks/types'
+import { ResponseTab, defaultState as defaultResponse, I_State as I_Response_Options } from '@/components/features/menus/bots/tab-response'
+import { I_LLM_Init_Options } from '@/lib/hooks/types'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { toast } from 'react-hot-toast'
 
