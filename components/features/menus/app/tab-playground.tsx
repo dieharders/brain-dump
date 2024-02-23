@@ -13,7 +13,7 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
+import { DEFAULT_CONVERSATION_MODE, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
 import { I_LLM_Options } from '@/lib/hooks/types'
 
@@ -63,7 +63,7 @@ export const Playground = (props: I_Props) => {
         const callOptions = { ...settingsResponse?.data?.call }
         // Tell backend to load the model into memory using these args
         const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
-        const mode = 'completion' // @TODO Set chat "mode" in payload from UI
+        const mode = DEFAULT_CONVERSATION_MODE // @TODO Set chat "mode" in payload from UI
         const payload = { modelPath: installPath, modelId: selectedModelId, mode, init: initOptions, call: callOptions }
         const response = await services?.textInference.load({ body: payload })
 

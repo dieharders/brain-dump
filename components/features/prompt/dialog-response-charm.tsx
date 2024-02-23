@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Highlight, Info } from '@/components/ui/info'
 import { I_LLM_Init_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_ModelConfig } from '@/lib/homebrew'
+import { DEFAULT_CONVERSATION_MODE, T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
   dialogOpen: boolean
@@ -41,13 +41,12 @@ export const ResponseCharmMenu = (props: I_Props) => {
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
-  const DEFAULT_PRESET = 'completion'
   const defaultContextWindow = modelConfig?.context_window
   const max_gpu_layers = modelConfig?.num_gpu_layers
 
   // State values
   const defaultState: I_State = {
-    preset: DEFAULT_PRESET,
+    preset: DEFAULT_CONVERSATION_MODE,
     n_ctx: defaultContextWindow,
     seed: 1337,
     n_threads: -1,
@@ -116,7 +115,7 @@ export const ResponseCharmMenu = (props: I_Props) => {
       <div className="w-full">
         <ToggleGroup
           label="Chat Mode"
-          value={state?.preset || DEFAULT_PRESET}
+          value={state?.preset || DEFAULT_CONVERSATION_MODE}
           onChange={val => handleStateChange('preset', val)}
         >
           {/* Conversational - Multiple messages can be sent until the context is filled, then the conversation ends. */}

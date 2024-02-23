@@ -46,6 +46,10 @@ interface I_ConnectResponse {
   data: { docs: string }
 }
 
+export const DEFAULT_CONVERSATION_MODE = 'instruct'
+
+export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
+
 export type T_GenericDataRes = any
 
 export interface I_GenericAPIResponse<DataResType> {
@@ -54,7 +58,9 @@ export interface I_GenericAPIResponse<DataResType> {
   data: DataResType
 }
 
-// Use 'body' for POST requests
+// Use 'body' for POST requests with complex (arrays) data types
+// Use 'queryParams' for POST requests with simple data structs and forms
+// Use 'formData' for POST requests with complex forms (binary uploads)
 export interface I_GenericAPIRequestParams {
   queryParams?: { [key: string]: any }
   formData?: FormData
@@ -176,6 +182,46 @@ export type T_SystemPrompts = {
   presets: { [key: string]: T_SystemPrompt[] }
 }
 
+interface LoadTextModelPayload {
+  mode?: T_ConversationMode
+  modelPath: string
+  modelId: string
+  init: {
+    n_gpu_layers?: number
+    use_mmap?: boolean
+    use_mlock?: boolean
+    f16_kv?: boolean
+    seed?: number
+    n_ctx?: number
+    n_batch?: number
+    n_threads?: number
+    offload_kqv?: boolean
+    verbose?: boolean
+    // chat_format?: string // 'llama2' @TODO check backend if we use this
+  }
+  call: {
+    stream?: boolean
+    stop?: string[]
+    echo?: boolean
+    model?: string // 'local'
+    // mirostat_tau?: number // not yet implemented
+    // tfs_z?: number // not yet implemented
+    top_k?: number
+    top_p?: number
+    // min_p?: number // not yet implemented
+    repeat_penalty?: number
+    // presence_penalty?: number // not yet implemented
+    // frequency_penalty?: number // not yet implemented
+    temperature?: number
+    // grammar?: any // not yet implemented
+    max_tokens?: number
+  }
+}
+
+export interface LoadTextModelRequestPayload {
+  body: LoadTextModelPayload
+}
+
 type T_Endpoint = { [key: string]: any }
 
 interface I_BaseServiceApis {
@@ -188,7 +234,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   textInference: {
     inference: (props?: I_GenericAPIRequestParams) => Response | null
-    load: T_GenericAPIRequest<T_GenericDataRes>
+    load: T_GenericAPIRequest<LoadTextModelRequestPayload>
     model: T_GenericAPIRequest<T_InstalledTextModel>
     installed: T_GenericAPIRequest<T_InstalledTextModel[]>
     getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>

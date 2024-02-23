@@ -1,11 +1,11 @@
 import { type Message } from 'ai/react'
 import { ModelID } from '@/components/features/settings/types'
-import { T_RAGPromptTemplate } from '@/lib/homebrew'
+import { T_ConversationMode, T_RAGPromptTemplate } from '@/lib/homebrew'
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
-  mode?: 'completion' | 'chat'
+  mode?: T_ConversationMode
 }
 
 export interface I_LLM_Init_Options {

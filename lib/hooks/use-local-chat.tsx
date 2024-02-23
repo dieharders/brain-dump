@@ -5,22 +5,21 @@ import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
-import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { DEFAULT_CONVERSATION_MODE, I_ServiceApis, T_ConversationMode, useHomebrew } from '@/lib/homebrew'
 import { I_InferenceGenerateOptions, I_LLM_Options } from '@/lib/hooks/types'
-
-type T_Mode = 'completion' | 'chat'
 
 interface IProps {
   initialMessages: Message[] | undefined
   services: I_ServiceApis | null
-  mode?: T_Mode
+  mode?: T_ConversationMode
 }
 
 export const useLocalInference = ({
   initialMessages = [],
   services,
-  mode = 'completion',
+  mode = DEFAULT_CONVERSATION_MODE,
 }: IProps) => {
+  const { getServices } = useHomebrew()
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
   const [input, setInput] = useState('')
@@ -46,7 +45,7 @@ export const useLocalInference = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: I_InferenceGenerateOptions,
-    mode: T_Mode,
+    mode: T_ConversationMode,
     collectionNames?: string[],
   ) => {
     try {
@@ -138,7 +137,6 @@ export const useLocalInference = ({
       abortRef.current = false
 
       // Get model data
-      const { getServices } = useHomebrew()
       const services = await getServices()
       const model_configs = await services?.textInference.getModelConfigs()
       const current_text_model = await services?.textInference.model()
