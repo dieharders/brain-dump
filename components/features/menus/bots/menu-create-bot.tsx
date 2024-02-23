@@ -21,13 +21,6 @@ import { I_LLM_Init_Options, I_Response_Options } from '@/lib/hooks/types'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { toast } from 'react-hot-toast'
 
-interface I_Props {
-  dialogOpen: boolean
-  setDialogOpen: (open: boolean) => void
-  onSubmit: (saveSettings: I_Settings) => void
-  data: { modelConfigs: I_ModelConfigs, installedList: T_InstalledTextModel[], services: I_ServiceApis | null }
-}
-
 export interface I_Settings {
   attention: I_Attention_State,
   performance: I_LLM_Init_Options,
@@ -36,6 +29,17 @@ export interface I_Settings {
   prompt: I_Prompt_State,
   knowledge: I_Knowledge_State,
   response: I_Response_Options,
+}
+
+interface I_Props {
+  dialogOpen: boolean
+  setDialogOpen: (open: boolean) => void
+  onSubmit: (saveSettings: I_Settings) => void
+  data: {
+    modelConfigs: I_ModelConfigs,
+    installedList: T_InstalledTextModel[],
+    services: I_ServiceApis | null
+  }
 }
 
 export const BotCreationMenu = (props: I_Props) => {

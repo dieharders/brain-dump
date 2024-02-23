@@ -1,6 +1,7 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
 import { buttonVariants } from '@/components/ui/button'
@@ -48,8 +49,17 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 export const ApplicationModesMenu = (props: I_Props) => {
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
   const gridContentClass = "flex flex-wrap justify-around gap-6"
+  const presetBotClass = "opacity-40"
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
+  const [bots, setBots] = useState<I_Settings[]>([])
+
+  const fetchBots = useCallback(async () => {
+    // Save menu forms to a json file
+    const res = await services?.storage.getBotSettings()
+    // Update this menu's list of items
+    res?.data && setBots(res.data)
+  }, [services?.storage])
 
   const onSelect = useCallback(() => {
     onSubmit()
@@ -62,15 +72,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     [],
   )
 
-  const placeholderItems = () => {
-    const list = []
-    for (let index = 0; index < 13; index++) {
-      const el = <Item key={index} title="...." Icon={QuestionMarkIcon} className="opacity-40" />
-      list.push(el)
-    }
-    return list
-  }
-
   const createNewBotAction = () => {
     // show bot creation menu
     setOpenBotCreationMenu(true)
@@ -78,12 +79,18 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const saveBotConfig = useCallback((settings: I_Settings) => {
     toast.success('New bot created!')
-    console.log('@@ bot saved settings', settings)
-    // @TODO Update this menu's list of items
-    // ...
-    // save menu forms to a json file under 'settings/app.json'
-    // ...
-  }, [])
+    const action = async () => {
+      // Save menu forms to a json file
+      const res = await services?.storage.saveBotSettings({ body: settings })
+      // Update this menu's list of items
+      res?.data && setBots(res.data)
+    }
+    action()
+  }, [services?.storage])
+
+  useEffect(() => {
+    fetchBots()
+  }, [fetchBots])
 
   // Menus
   const botsMenu = (
@@ -106,12 +113,21 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
-        <Item title="Language Expert" Icon={QuestionMarkIcon} onAction={onSelect} />
-        <Item title="Coding Chatbot" Icon={IconConversationType} />
-        <Item title="Logical Thinker" Icon={ClipboardIcon} />
-        <Item title="Mathematician" Icon={PersonIcon} />
-        <Item title="Historical Scholar" Icon={PersonIcon} />
-        {placeholderItems()}
+        {...bots.map(bot => {
+          const str = bot.model.botName
+          const title = str[0].toUpperCase() + str.slice(1)
+          return (
+            <Link key={bot.model.botName} href={`/bot/${bot.model.botName}`} >
+              <Item title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={onSelect} />
+            </Link>
+          )
+        }
+        )}
+        <Item title="Language Expert" Icon={QuestionMarkIcon} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Coding Chatbot" Icon={IconConversationType} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Logical Thinker" Icon={ClipboardIcon} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Mathematician" Icon={PersonIcon} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Historical Scholar" Icon={PersonIcon} onAction={createNewBotAction} className={presetBotClass} />
       </div>
     </div>
   )
@@ -128,13 +144,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Stock Analyst" Icon={QuestionMarkIcon} />
-        <Item title="Entertainer" Icon={IconConversationType} />
-        <Item title="Software Developer" Icon={ClipboardIcon} />
-        <Item title="Sci-Fi Author" Icon={PersonIcon} />
-        <Item title="Lawyer" Icon={PersonIcon} />
-        <Item title="Bio Researcher" Icon={PersonIcon} />
-        {placeholderItems()}
+        <Item title="Stock Analyst" Icon={QuestionMarkIcon} className={presetBotClass} />
+        <Item title="Entertainer" Icon={IconConversationType} className={presetBotClass} />
+        <Item title="Software Developer" Icon={ClipboardIcon} className={presetBotClass} />
+        <Item title="Sci-Fi Author" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Lawyer" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Bio Researcher" Icon={PersonIcon} className={presetBotClass} />
       </div>
     </div>
   )
@@ -151,13 +166,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Publisher" Icon={QuestionMarkIcon} />
-        <Item title="Game Studio" Icon={IconConversationType} />
-        <Item title="Advertising Company" Icon={PersonIcon} />
-        <Item title="Quality Assurance" Icon={ClipboardIcon} />
-        <Item title="Software Team" Icon={PersonIcon} />
-        <Item title="Research Org" Icon={PersonIcon} />
-        {placeholderItems()}
+        <Item title="Publisher" Icon={QuestionMarkIcon} className={presetBotClass} />
+        <Item title="Game Studio" Icon={IconConversationType} className={presetBotClass} />
+        <Item title="Advertising Company" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Quality Assurance" Icon={ClipboardIcon} className={presetBotClass} />
+        <Item title="Software Team" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Research Org" Icon={PersonIcon} className={presetBotClass} />
       </div>
     </div>
   )
@@ -174,11 +188,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Documentation" Icon={QuestionMarkIcon} />
-        <Item title="Best Practices" Icon={IconConversationType} />
-        <Item title="Code Repo" Icon={ClipboardIcon} />
-        <Item title="Contacts" Icon={PersonIcon} />
-        <Item title="Notes" Icon={PersonIcon} />
+        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} />
+        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} />
+        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} />
+        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} />
       </div>
     </div>
   )
@@ -195,11 +209,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Llama 2 13B" Icon={QuestionMarkIcon} />
-        <Item title="Wizard Vicuna" Icon={IconConversationType} />
-        <Item title="Mistral 7B" Icon={ClipboardIcon} />
-        <Item title="Mixtral 8x7B" Icon={PersonIcon} />
-        <Item title="Code Llama" Icon={PersonIcon} />
+        <Item title="Llama 2 13B" Icon={QuestionMarkIcon} className={presetBotClass} />
+        <Item title="Wizard Vicuna" Icon={IconConversationType} className={presetBotClass} />
+        <Item title="Mistral 7B" Icon={ClipboardIcon} className={presetBotClass} />
+        <Item title="Mixtral 8x7B" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Code Llama" Icon={PersonIcon} className={presetBotClass} />
       </div>
     </div>
   )

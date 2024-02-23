@@ -1,3 +1,5 @@
+import { I_Settings } from '@/components/features/menus/bots/menu-create-bot'
+
 export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
   ragResponseModes?: Array<string>
@@ -52,6 +54,7 @@ export interface I_GenericAPIResponse<DataResType> {
   data: DataResType
 }
 
+// Use 'body' for POST requests
 export interface I_GenericAPIRequestParams {
   queryParams?: { [key: string]: any }
   formData?: FormData
@@ -213,7 +216,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   storage: {
     getSettings: T_GenericAPIRequest<T_GenericDataRes>
-    saveSettings: T_GenericAPIRequest<T_GenericDataRes>
+    saveSettings: T_GenericAPIRequest<I_Settings[]>
+    getBotSettings: T_GenericAPIRequest<I_Settings[]>
+    saveBotSettings: T_GenericAPIRequest<T_GenericDataRes>
   }
 }
 
