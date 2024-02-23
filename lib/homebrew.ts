@@ -1,4 +1,4 @@
-import { I_Settings } from '@/components/features/menus/bots/menu-create-bot'
+import { I_Settings as I_Bot_Settings } from '@/components/features/menus/bots/menu-create-bot'
 
 export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
@@ -262,9 +262,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   storage: {
     getSettings: T_GenericAPIRequest<T_GenericDataRes>
-    saveSettings: T_GenericAPIRequest<I_Settings[]>
-    getBotSettings: T_GenericAPIRequest<I_Settings[]>
-    saveBotSettings: T_GenericAPIRequest<T_GenericDataRes>
+    saveSettings: T_GenericAPIRequest<T_GenericDataRes>
+    getBotSettings: T_GenericAPIRequest<I_Bot_Settings[]>
+    saveBotSettings: T_GenericAPIRequest<I_Bot_Settings[]>
   }
 }
 

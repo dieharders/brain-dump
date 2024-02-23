@@ -94,7 +94,6 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
           installedList={installedList}
           onSubmit={() => {
             /* logic to go to a route */
-            console.log('@@ going to route page')
           }}
           services={services}
         />

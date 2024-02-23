@@ -199,7 +199,6 @@ export const ResponseTab = (props: I_Props) => {
               const inputVal = event.target.value.replace(/ +/g, ' ')
               const arrVal = inputVal.split(' ')
               setState({ ...state, stop: arrVal })
-              // convertToArray('stop', arrVal)
             }}
           />
         </div>
