@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { IconSpinner } from '@/components/ui/icons'
-import { I_Collection } from '@/lib/homebrew'
+import { I_Collection, I_Knowledge_State as I_State, T_Memory_Type } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
 import { Root, Indicator } from '@radix-ui/react-checkbox'
 import { CheckIcon } from '@radix-ui/react-icons'
@@ -16,18 +16,11 @@ import { CollectionCard } from '@/components/sidebar-item-brain'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconBrain, IconDocument } from '@/components/ui/icons'
 
-export interface I_State {
-  type: T_Type
-  index: string[]
-}
-
 interface I_Props {
   fetchListAction: () => Promise<I_Collection[]>
   state: I_State
   setState: Dispatch<SetStateAction<I_State>>
 }
-
-export type T_Type = 'training' | 'augmented_retrieval'
 
 export const DEFAULT_TYPE = 'training'
 
@@ -152,7 +145,7 @@ export const KnowledgeTab = (props: I_Props) => {
           value={state.type}
           onChange={val => {
             // Record mode state
-            setState({ index: checkboxes, type: val as T_Type })
+            setState({ index: checkboxes, type: val as T_Memory_Type })
           }}
         >
           <div id="training" className={toggleGroupClass}>

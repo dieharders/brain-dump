@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
@@ -6,9 +6,9 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
-import { I_LLM_Options } from '@/lib/hooks/types'
+import { I_Text_Settings } from '@/lib/homebrew'
 
-type TAppend = (message: Message | CreateMessage, collectionName?: string[]) => Promise<string | null | undefined>
+type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
 
 export interface ChatPanelProps
   extends Pick<
@@ -18,7 +18,8 @@ export interface ChatPanelProps
   id?: string
   theme: string | undefined
   append: TAppend
-  saveSettings?: (args: I_LLM_Options) => void
+  settings?: I_Text_Settings,
+  setSettings?: Dispatch<SetStateAction<I_Text_Settings>>,
 }
 
 export const ChatPanel = ({
@@ -31,7 +32,8 @@ export const ChatPanel = ({
   setInput,
   messages,
   theme,
-  saveSettings,
+  settings,
+  setSettings,
 }: ChatPanelProps) => {
   // @TODO from-neutral-900 does not match the chat-page's bg color
   const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
@@ -68,7 +70,8 @@ export const ChatPanel = ({
         <div className="flex flex-col justify-between space-y-4 border-t bg-background px-0 py-2 shadow-lg sm:rounded-t-xl sm:border sm:px-4 md:py-4">
           <CharmMenu
             open={charmMenuOpen}
-            saveSettings={saveSettings}
+            settings={settings}
+            setSettings={setSettings}
             activeCharms={activeCharms}
             addActiveCharm={(selectedCharm: I_Charm) => {
               const charmIds = activeCharms.map(i => i.id)
@@ -94,17 +97,12 @@ export const ChatPanel = ({
             onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
             charmMenuIsOpen={charmMenuOpen}
             onSubmit={async value => {
-              // Call the charm callback for extra data
-              const memCharm = activeCharms.find(i => i.id === 'memory')
-              const collectionNames: string[] = memCharm?.onCallback?.() || []
               // Send prompt
               await append({
                 id,
                 content: value,
                 role: 'user',
-                // @TODO Perhaps add "collectionNames" as prop here
-                // so we can record in the msg what docs we were referencing.
-              }, collectionNames)
+              })
             }}
             input={input}
             setInput={setInput}

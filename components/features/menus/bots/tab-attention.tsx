@@ -9,11 +9,7 @@ import {
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
 import { PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
-import { DEFAULT_CONVERSATION_MODE, T_ConversationMode } from '@/lib/homebrew'
-
-export interface I_State {
-  mode: T_ConversationMode
-}
+import { DEFAULT_CONVERSATION_MODE, I_Attention_State as I_State, T_ConversationMode } from '@/lib/homebrew'
 
 interface I_Props {
   state: I_State

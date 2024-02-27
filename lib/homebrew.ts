@@ -1,9 +1,69 @@
-import { I_Settings as I_Bot_Settings } from '@/components/features/menus/bots/menu-create-bot'
+import { type Message } from 'ai/react'
+
+export enum ModelID {
+  GPT3 = 'gpt3.5',
+  GPT4 = 'gpt4',
+  GPTNeo = 'gpt-neoxt-20B', // together/
+  Cohere = 'xlarge', // cohere/
+  Local = 'local', // 3rd party, local server
+}
+
+export interface I_LLM_Init_Options {
+  n_gpu_layers?: number
+  use_mlock?: boolean
+  seed?: number
+  n_ctx?: number
+  n_batch?: number
+  n_threads?: number
+  offload_kqv?: boolean
+  chat_format?: string // llama-2
+  f16_kv?: boolean
+}
+
+export interface I_LLM_Call_Options {
+  prompt?: string
+  messages?: Message[]
+  suffix?: string
+  max_tokens?: number
+  temperature?: number
+  top_p?: number
+  min_p?: number
+  echo?: boolean
+  stop?: string[]
+  repeat_penalty?: number
+  presence_penalty?: number // 1.0
+  frequency_penalty?: number // 1.0
+  top_k?: number
+  stream?: boolean
+  seed?: number
+  tfs_z?: number
+  mirostat_tau?: number
+  model?: ModelID
+  promptTemplate?: string
+  systemMessage?: string
+  ragPromptTemplate?: T_RAGPromptTemplate
+  similarity_top_k?: number
+  response_mode?: string
+  // grammar?: string
+}
+
+export interface I_LLM_Options {
+  init?: I_LLM_Init_Options
+  call?: I_LLM_Call_Options
+}
 
 export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
   ragResponseModes?: Array<string>
 }
+
+export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
+  mode?: T_ConversationMode
+  messageFormat?: string
+  collectionNames?: string[]
+}
+
+type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 
 type T_APIRequests = {
   services: I_ServiceApis
@@ -204,18 +264,77 @@ interface LoadTextModelPayload {
     stop?: string[]
     echo?: boolean
     model?: string // 'local'
-    // mirostat_tau?: number // not yet implemented
-    // tfs_z?: number // not yet implemented
     top_k?: number
     top_p?: number
-    // min_p?: number // not yet implemented
     repeat_penalty?: number
+    temperature?: number
+    max_tokens?: number
+    // mirostat_tau?: number // not yet implemented
+    // tfs_z?: number // not yet implemented
+    // min_p?: number // not yet implemented
     // presence_penalty?: number // not yet implemented
     // frequency_penalty?: number // not yet implemented
-    temperature?: number
     // grammar?: any // not yet implemented
-    max_tokens?: number
   }
+}
+
+export interface I_Response_State {
+  temperature?: number
+  max_tokens?: number
+  top_p?: number
+  echo?: boolean
+  stop?: string[]
+  repeat_penalty?: number
+  top_k?: number
+  stream?: boolean
+  // min_p?: number
+  // presence_penalty?: number // 1.0
+  // frequency_penalty?: number // 1.0
+  // tfs_z?: number
+  // mirostat_tau?: number
+  // grammar?: string
+}
+
+export type T_Memory_Type = 'training' | 'augmented_retrieval'
+
+export interface I_Knowledge_State {
+  type: T_Memory_Type
+  index: string[]
+}
+
+export interface I_RAG_Strat_State {
+  similarity_top_k: number
+  response_mode: string | undefined
+}
+
+export type I_Prompt_State = {
+  promptTemplate: T_PromptTemplate
+  ragTemplate: T_RAGPromptTemplate
+  ragMode: I_RAG_Strat_State
+}
+
+export interface I_Model_State {
+  id: string | undefined
+  botName: string
+}
+
+export interface I_System_State {
+  systemMessage: string | undefined
+  systemMessageName: string | undefined
+}
+
+export interface I_Attention_State {
+  mode: T_ConversationMode
+}
+
+export interface I_Text_Settings {
+  attention: I_Attention_State
+  performance: I_LLM_Init_Options
+  system: I_System_State
+  model: I_Model_State
+  prompt: I_Prompt_State
+  knowledge: I_Knowledge_State
+  response: I_Response_State
 }
 
 export interface LoadTextModelRequestPayload {
@@ -228,12 +347,16 @@ interface I_BaseServiceApis {
   [key: string]: T_Endpoint
 }
 
+type T_TextInferenceAPIRequest = (props: {
+  body: I_InferenceGenerateOptions
+}) => (Response & I_GenericAPIResponse<any>) | null
+
 export interface I_ServiceApis extends I_BaseServiceApis {
   /**
    * Use to query the text inference engine
    */
   textInference: {
-    inference: (props?: I_GenericAPIRequestParams) => Response | null
+    inference: T_TextInferenceAPIRequest
     load: T_GenericAPIRequest<LoadTextModelRequestPayload>
     model: T_GenericAPIRequest<T_InstalledTextModel>
     installed: T_GenericAPIRequest<T_InstalledTextModel[]>
@@ -261,16 +384,16 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to persist data
    */
   storage: {
-    getSettings: T_GenericAPIRequest<T_GenericDataRes>
-    saveSettings: T_GenericAPIRequest<T_GenericDataRes>
-    getBotSettings: T_GenericAPIRequest<I_Bot_Settings[]>
-    saveBotSettings: T_GenericAPIRequest<I_Bot_Settings[]>
+    getSettings: T_GenericAPIRequest<I_Text_Settings>
+    saveSettings: T_GenericAPIRequest<I_Text_Settings>
+    getBotSettings: T_GenericAPIRequest<I_Text_Settings[]>
+    saveBotSettings: T_GenericAPIRequest<I_Text_Settings[]>
   }
 }
 
 // @TODO These will eventually be passed in from our server picker helper
 const PORT = 8008
-const hostname = 'http://localhost:'
+const hostname = 'http://localhost:' // 127.0.0.1
 
 const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   const options = {

@@ -27,8 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { Highlight, Info } from '@/components/ui/info'
-import { I_LLM_Call_Options, I_LLM_Options } from '@/lib/hooks/types'
-import { T_APIConfigOptions, T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
+import { I_LLM_Call_Options, I_Text_Settings, T_APIConfigOptions, T_PromptTemplates, T_RAGPromptTemplate, T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
 
 interface I_State extends I_LLM_Call_Options {
   // Presets
@@ -38,8 +37,8 @@ interface I_State extends I_LLM_Call_Options {
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  onSubmit: (charm: I_Charm, saveSettings: I_LLM_Options) => void
-  settings: I_State | null
+  onSubmit: (charm: I_Charm, saveSettings: I_Text_Settings) => void
+  settings: any
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
   options?: T_APIConfigOptions
@@ -131,7 +130,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     setDialogOpen(false)
     // Save settings
     const charm: I_Charm = { id: 'prompt' }
-    const settings = { call: {} as any }
+    const settings = { call: {} as any } as unknown as I_Text_Settings
     // Cleanup exported values to correct types
     Object.entries(state)?.forEach(([key, val]) => {
       let newVal = val
@@ -154,7 +153,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       // Set result
       const isZero = typeof val === 'number' && val === 0
       const shouldSet = newVal || isZero || typeof val === 'boolean'
-      if (shouldSet) settings.call[key] = newVal
+      // @TODO Fuck this mess we are replacing it soon anyways
+      // if (shouldSet) settings.call[key] = newVal
     })
     onSubmit(charm, settings)
   }, [onSubmit, setDialogOpen, state])

@@ -13,8 +13,8 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { DEFAULT_CONVERSATION_MODE, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
-import { ResponseCharmMenu } from '@/components/features/prompt/dialog-response-charm'
+import { DEFAULT_CONVERSATION_MODE, I_LLM_Init_Options, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
+import { ResponseCharmMenu, defaultState as defaultResponseState } from '@/components/features/prompt/dialog-response-charm'
 import { I_LLM_Options } from '@/lib/hooks/types'
 
 interface I_Props {
@@ -31,7 +31,7 @@ interface I_Props {
 export const Playground = (props: I_Props) => {
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
-  const [responseSettings, setResponseSettings] = useState(null)
+  const [responseSettings, setResponseSettings] = useState<I_LLM_Init_Options>(defaultResponseState)
 
   const saveSettings = async (options: I_LLM_Options) => services?.storage.saveSettings({ body: options })
   const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
@@ -56,11 +56,10 @@ export const Playground = (props: I_Props) => {
         if (!settingsResponse?.success) {
           toast.error(`${settingsResponse?.message}`)
         }
-        // Remove "preset" from init payload
-        const initOptions = { ...settingsResponse?.data?.init }
-        if (initOptions?.preset) delete initOptions['preset']
+        // Set "init" payload
+        const initOptions = { ...settingsResponse?.data?.performance }
         // Set "call" payload
-        const callOptions = { ...settingsResponse?.data?.call }
+        const callOptions = { ...settingsResponse?.data?.response }
         // Tell backend to load the model into memory using these args
         const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
         const mode = DEFAULT_CONVERSATION_MODE // @TODO Set chat "mode" in payload from UI
@@ -96,7 +95,7 @@ export const Playground = (props: I_Props) => {
           saveSettings(settings)
           toast.success('Model settings saved!')
         }}
-        settings={responseSettings}
+        settings={responseSettings || {}}
         modelConfig={modelConfigs?.[selectedModelId || '']}
       />
       <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 p-1 pb-4">
@@ -138,7 +137,10 @@ export const Playground = (props: I_Props) => {
             variant="outline"
             onClick={
               async () => {
-                await fetchSettings().then(res => setResponseSettings(res?.data?.init))
+                await fetchSettings().then(res => {
+                  const performance = res?.data?.performance || {}
+                  setResponseSettings(prev => ({ ...prev, ...performance }))
+                })
                 setOpenResponseCharmDialog(true)
               }}>
             <MixerHorizontalIcon className="mr-1" />Settings

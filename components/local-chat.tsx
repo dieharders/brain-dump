@@ -1,5 +1,6 @@
 'use client'
 
+import { Dispatch, SetStateAction } from 'react'
 import { type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
@@ -8,22 +9,26 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
-import { DEFAULT_CONVERSATION_MODE, I_ServiceApis } from '@/lib/homebrew'
+import { I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   services: I_ServiceApis | null
   isModelLoading?: boolean
+  settings?: I_Text_Settings
+  setSettings?: Dispatch<SetStateAction<I_Text_Settings>> // @TODO This should be a useRef() to not trigger re-render ?
 }
 
-export const LocalChat = ({ id, initialMessages, services, isModelLoading, className }: IProps) => {
+export const LocalChat = (props: IProps) => {
+  const { id, initialMessages, services, isModelLoading, className, settings, setSettings = () => { } } = props
   const { theme } = useTheme()
-  const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading, saveSettings } =
+  const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading } =
     useLocalInference({
       initialMessages,
       services,
-      mode: DEFAULT_CONVERSATION_MODE, // @TODO Pass this from props
+      settings,
+      setSettings,
     })
   const isLoading = isModelLoading || isChatLoading
 
@@ -49,7 +54,8 @@ export const LocalChat = ({ id, initialMessages, services, isModelLoading, class
         input={input}
         setInput={setInput}
         theme={theme}
-        saveSettings={saveSettings}
+        settings={settings}
+        setSettings={setSettings}
       />
     </>
   )

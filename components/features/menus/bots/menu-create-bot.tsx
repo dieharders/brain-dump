@@ -9,32 +9,21 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { I_ModelConfigs, I_PromptTemplates, I_RAGPromptTemplates, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
-import { AttentionTab, defaultState as defaultAttentionState, I_State as I_Attention_State } from '@/components/features/menus/bots/tab-attention'
+import { I_Attention_State, I_Knowledge_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_PromptTemplates, I_Prompt_State, I_RAGPromptTemplates, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { AttentionTab, defaultState as defaultAttentionState } from '@/components/features/menus/bots/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/bots/tab-performance'
-import { ModelTab, defaultState as defaultModelState, I_State as I_Model_State } from '@/components/features/menus/bots/tab-model'
-import { SystemTab, defaultState as defaultSystemState, I_State as I_System_State } from '@/components/features/menus/bots/tab-system'
-import { PromptTab, defaultState as defaultPromptState, I_State as I_Prompt_State } from '@/components/features/menus/bots/tab-prompt'
-import { KnowledgeTab, defaultState as defaultKnowledgeState, I_State as I_Knowledge_State } from '@/components/features/menus/bots/tab-knowledge'
-import { ResponseTab, defaultState as defaultResponse, I_State as I_Response_Options } from '@/components/features/menus/bots/tab-response'
-import { I_LLM_Init_Options } from '@/lib/hooks/types'
+import { ModelTab, defaultState as defaultModelState } from '@/components/features/menus/bots/tab-model'
+import { SystemTab, defaultState as defaultSystemState } from '@/components/features/menus/bots/tab-system'
+import { PromptTab, defaultState as defaultPromptState } from '@/components/features/menus/bots/tab-prompt'
+import { KnowledgeTab, defaultState as defaultKnowledgeState } from '@/components/features/menus/bots/tab-knowledge'
+import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/bots/tab-response'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { toast } from 'react-hot-toast'
-
-export interface I_Settings {
-  attention: I_Attention_State,
-  performance: I_LLM_Init_Options,
-  system: I_System_State,
-  model: I_Model_State,
-  prompt: I_Prompt_State,
-  knowledge: I_Knowledge_State,
-  response: I_Response_Options,
-}
 
 interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  onSubmit: (saveSettings: I_Settings) => void
+  onSubmit: (saveSettings: I_Text_Settings) => void
   data: {
     modelConfigs: I_ModelConfigs,
     installedList: T_InstalledTextModel[],
@@ -48,7 +37,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const { getAPIConfigOptions } = useHomebrew()
 
   // Defaults
-  const defaults: I_Settings = useMemo(() => ({
+  const defaults: I_Text_Settings = useMemo(() => ({
     attention: defaultAttentionState,
     performance: defaultPerformanceState,
     system: defaultSystemState,
@@ -65,7 +54,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
   const [stateSystem, setStateSystem] = useState<I_System_State>(defaults.system)
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
-  const [stateResponse, setStateResponse] = useState<I_Response_Options>(defaults.response)
+  const [stateResponse, setStateResponse] = useState<I_Response_State>(defaults.response)
 
   // Data values
   const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})

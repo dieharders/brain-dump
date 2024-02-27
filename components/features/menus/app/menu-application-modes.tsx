@@ -8,8 +8,8 @@ import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/app/tab-playground'
-import { BotCreationMenu, I_Settings } from '@/components/features/menus/bots/menu-create-bot'
-import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from '@/lib/homebrew'
+import { BotCreationMenu } from '@/components/features/menus/bots/menu-create-bot'
+import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 
@@ -52,7 +52,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const presetBotClass = "opacity-40"
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
-  const [bots, setBots] = useState<I_Settings[]>([])
+  const [bots, setBots] = useState<I_Text_Settings[]>([])
 
   const fetchBots = useCallback(async () => {
     // Save menu forms to a json file
@@ -77,7 +77,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     setOpenBotCreationMenu(true)
   }
 
-  const saveBotConfig = useCallback((settings: I_Settings) => {
+  const saveBotConfig = useCallback((settings: I_Text_Settings) => {
     toast.success('New bot created!')
     const action = async () => {
       // Save menu forms to a json file

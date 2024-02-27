@@ -11,23 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
-
-export interface I_State {
-  temperature?: number
-  max_tokens?: number
-  top_p?: number
-  echo?: boolean
-  stop?: string[]
-  repeat_penalty?: number
-  top_k?: number
-  stream?: boolean
-  // min_p?: number
-  // presence_penalty?: number // 1.0
-  // frequency_penalty?: number // 1.0
-  // tfs_z?: number
-  // mirostat_tau?: number
-  // grammar?: string
-}
+import { I_Response_State as I_State } from '@/lib/homebrew'
 
 interface I_Props {
   state: I_State
