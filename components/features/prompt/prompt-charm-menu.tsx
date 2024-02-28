@@ -46,7 +46,7 @@ export const CharmMenu = (props: I_Props) => {
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
-  const iconStyle = 'h-fit w-16 cursor-pointer rounded-full text-white bg-ghost'
+  const iconStyle = 'h-fit w-16 cursor-pointer rounded-full text-primary bg-ghost'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
@@ -70,7 +70,7 @@ export const CharmMenu = (props: I_Props) => {
   const CharmItem = (props: I_CharmItemProps) => {
     return (
       <Badge
-        className={`h-10 w-10 cursor-pointer bg-black p-2 ring-[inherit] ring-accent hover:bg-accent ${props.className}`}
+        className={`h-10 w-10 cursor-pointer bg-accent p-2 ring-[inherit] ring-background hover:bg-background ${props.className}`}
         onClick={props?.onClick}
         onMouseEnter={() => setExplanation(props?.actionText || '')}
         onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}
@@ -88,7 +88,7 @@ export const CharmMenu = (props: I_Props) => {
   const saveSettings = useCallback<T_SavePromptSettings>((args) => {
     console.log('save to file:', args)
     // Save to settings file
-    args && services?.storage.saveSettings({ body: args })
+    args && services?.storage.savePlaygroundSettings({ body: args })
     // Save state
     setSettings && setSettings(args)
   }, [services?.storage, setSettings])

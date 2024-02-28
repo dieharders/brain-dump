@@ -16,35 +16,21 @@ export interface I_LLM_Init_Options {
   n_batch?: number
   n_threads?: number
   offload_kqv?: boolean
-  chat_format?: string // llama-2
+  chat_format?: string // 'llama2' @TODO check backend if we use this
   f16_kv?: boolean
+  verbose?: boolean
 }
 
-export interface I_LLM_Call_Options {
+export interface I_LLM_Call_Options extends I_Response_State {
   prompt?: string
   messages?: Message[]
   suffix?: string
-  max_tokens?: number
-  temperature?: number
-  top_p?: number
-  min_p?: number
-  echo?: boolean
-  stop?: string[]
-  repeat_penalty?: number
-  presence_penalty?: number // 1.0
-  frequency_penalty?: number // 1.0
-  top_k?: number
-  stream?: boolean
-  seed?: number
-  tfs_z?: number
-  mirostat_tau?: number
   model?: ModelID
   promptTemplate?: string
   systemMessage?: string
   ragPromptTemplate?: T_RAGPromptTemplate
   similarity_top_k?: number
   response_mode?: string
-  // grammar?: string
 }
 
 export interface I_LLM_Options {
@@ -246,36 +232,8 @@ interface LoadTextModelPayload {
   mode?: T_ConversationMode
   modelPath: string
   modelId: string
-  init: {
-    n_gpu_layers?: number
-    use_mmap?: boolean
-    use_mlock?: boolean
-    f16_kv?: boolean
-    seed?: number
-    n_ctx?: number
-    n_batch?: number
-    n_threads?: number
-    offload_kqv?: boolean
-    verbose?: boolean
-    // chat_format?: string // 'llama2' @TODO check backend if we use this
-  }
-  call: {
-    stream?: boolean
-    stop?: string[]
-    echo?: boolean
-    model?: string // 'local'
-    top_k?: number
-    top_p?: number
-    repeat_penalty?: number
-    temperature?: number
-    max_tokens?: number
-    // mirostat_tau?: number // not yet implemented
-    // tfs_z?: number // not yet implemented
-    // min_p?: number // not yet implemented
-    // presence_penalty?: number // not yet implemented
-    // frequency_penalty?: number // not yet implemented
-    // grammar?: any // not yet implemented
-  }
+  init: I_LLM_Init_Options
+  call: I_LLM_Call_Options
 }
 
 export interface I_Response_State {
@@ -287,12 +245,12 @@ export interface I_Response_State {
   repeat_penalty?: number
   top_k?: number
   stream?: boolean
-  // min_p?: number
-  // presence_penalty?: number // 1.0
-  // frequency_penalty?: number // 1.0
-  // tfs_z?: number
-  // mirostat_tau?: number
-  // grammar?: string
+  min_p?: number
+  presence_penalty?: number // 1.0
+  frequency_penalty?: number // 1.0
+  tfs_z?: number
+  mirostat_tau?: number
+  grammar?: string
 }
 
 export type T_Memory_Type = 'training' | 'augmented_retrieval'
@@ -384,8 +342,8 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to persist data
    */
   storage: {
-    getSettings: T_GenericAPIRequest<I_Text_Settings>
-    saveSettings: T_GenericAPIRequest<I_Text_Settings>
+    getPlaygroundSettings: T_GenericAPIRequest<I_Text_Settings>
+    savePlaygroundSettings: T_GenericAPIRequest<I_Text_Settings>
     getBotSettings: T_GenericAPIRequest<I_Text_Settings[]>
     saveBotSettings: T_GenericAPIRequest<I_Text_Settings[]>
   }

@@ -35,15 +35,14 @@ export const ChatPanel = ({
   settings,
   setSettings,
 }: ChatPanelProps) => {
-  // @TODO from-neutral-900 does not match the chat-page's bg color
-  const colorFrom = theme === 'light' ? 'from-muted/100' : 'from-neutral-900'
-  const colorTo = theme === 'light' ? 'to-muted/0' : 'to-muted/150'
+  const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
+  const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
   const [activeCharms, setActiveCharms] = useState<I_Charm[]>([])
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-85% ${colorTo} to-100%`}
+      className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-90% ${colorTo} to-100%`}
     >
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">

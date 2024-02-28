@@ -1,18 +1,16 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
-import { DEFAULT_CONVERSATION_MODE, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
-import { I_InferenceGenerateOptions } from '@/lib/hooks/types'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 
 interface IProps {
   initialMessages: Message[] | undefined
   services: I_ServiceApis | null
   settings?: I_Text_Settings
-  setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
 }
 
 export const useLocalInference = (props: IProps) => {
@@ -20,7 +18,6 @@ export const useLocalInference = (props: IProps) => {
     initialMessages = [],
     services,
     settings,
-    setSettings,
   } = props
   const { getServices } = useHomebrew()
   const { processSseStream } = useChatHelpers()
@@ -140,9 +137,10 @@ export const useLocalInference = (props: IProps) => {
         ...settings?.response,
       }
       const response = await getCompletion(options)
-      const success = response?.success
       console.log('[Chat] Prompt response', response)
-      if (!response || !success) throw new Error('No prompt response.')
+      if (typeof response?.success === 'boolean')
+        if (!response?.success) throw new Error('Response failed.')
+      if (!response) throw new Error('No response.')
 
       // Process the stream into text tokens
       await processSseStream(
@@ -169,15 +167,6 @@ export const useLocalInference = (props: IProps) => {
       return null
     }
   }
-
-  // Load inference settings
-  useEffect(() => {
-    const action = async () => {
-      const loadedSettings = await services?.storage.getSettings()
-      if (loadedSettings?.data && setSettings) setSettings(loadedSettings.data)
-    }
-    action()
-  }, [services?.storage, setSettings])
 
 
   // Update messages state with results

@@ -13,9 +13,10 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { DEFAULT_CONVERSATION_MODE, I_LLM_Init_Options, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
-import { ResponseCharmMenu, defaultState as defaultResponseState } from '@/components/features/prompt/dialog-response-charm'
-import { I_LLM_Options } from '@/lib/hooks/types'
+import { DEFAULT_CONVERSATION_MODE, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
+import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
+import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
+import { useRouter } from "next/navigation"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -29,12 +30,24 @@ interface I_Props {
 }
 
 export const Playground = (props: I_Props) => {
+  const router = useRouter()
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
-  const [responseSettings, setResponseSettings] = useState<I_LLM_Init_Options>(defaultResponseState)
+  const {
+    stateAttention,
+    setStateAttention,
+    statePerformance,
+    setStatePerformance,
+  } = usePerformanceMenu()
 
-  const saveSettings = async (options: I_LLM_Options) => services?.storage.saveSettings({ body: options })
-  const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
+  const saveSettings = async () => {
+    const settings = {
+      attention: stateAttention,
+      performance: statePerformance,
+      model: { id: selectedModelId },
+    }
+    return services?.storage.savePlaygroundSettings({ body: settings })
+  }
 
   const installedModels = installedList?.map(item => {
     const cfg = modelConfigs?.[item.id]
@@ -52,7 +65,7 @@ export const Playground = (props: I_Props) => {
           return true
         }
         // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
-        const settingsResponse = await services?.storage.getSettings()
+        const settingsResponse = await services?.storage.getPlaygroundSettings()
         if (!settingsResponse?.success) {
           toast.error(`${settingsResponse?.message}`)
         }
@@ -88,30 +101,23 @@ export const Playground = (props: I_Props) => {
   return (
     <>
       {/* Menu for Model settings */}
-      <ResponseCharmMenu
+      <PerformanceMenu
         dialogOpen={openResponseCharmDialog}
-        setDialogOpen={setOpenResponseCharmDialog}
-        onSubmit={(charm, settings) => {
-          saveSettings(settings)
-          toast.success('Model settings saved!')
+        setDialogOpen={bool => {
+          setOpenResponseCharmDialog(bool)
         }}
-        settings={responseSettings || {}}
+        onSubmit={async () => {
+          await saveSettings()
+          toast.success('Model settings saved!')
+          setOpenResponseCharmDialog(false)
+        }}
+        stateAttention={stateAttention}
+        setStateAttention={setStateAttention}
+        statePerformance={statePerformance}
+        setStatePerformance={setStatePerformance}
         modelConfig={modelConfigs?.[selectedModelId || '']}
       />
       <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 p-1 pb-4">
-        {/* Start */}
-        {selectedModelId && <Button
-          className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"
-          onClick={async () => {
-            setIsConnecting(true)
-            const isConnected = await connectTextServiceAction()
-            isConnected && setHasTextServiceConnected(true)
-            setIsConnecting(false)
-          }}
-          disabled={isConnecting}
-        >
-          <LightningBoltIcon className="mr-1" />Start
-        </Button>}
         <div className="flex flex-row gap-2">
           {/* Select a prev installed model to load */}
           <div className="w-full">
@@ -131,18 +137,28 @@ export const Playground = (props: I_Props) => {
               </SelectGroup>
             </Select>
           </div>
+          {/* Start */}
+          {selectedModelId &&
+            <Button
+              className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"
+              onClick={async () => {
+                setIsConnecting(true)
+                const isConnected = await connectTextServiceAction()
+                isConnected && setHasTextServiceConnected(true)
+                await saveSettings()
+                setIsConnecting(false)
+                router.push('/playground')
+              }}
+              disabled={isConnecting}
+            >
+              <LightningBoltIcon className="mr-1" />Start
+            </Button>
+          }
           {/* Model Settings Button */}
           {selectedModelId && <Button
             className="m-auto h-fit bg-accent-foreground hover:bg-accent"
             variant="outline"
-            onClick={
-              async () => {
-                await fetchSettings().then(res => {
-                  const performance = res?.data?.performance || {}
-                  setResponseSettings(prev => ({ ...prev, ...performance }))
-                })
-                setOpenResponseCharmDialog(true)
-              }}>
+            onClick={() => setOpenResponseCharmDialog(true)}>
             <MixerHorizontalIcon className="mr-1" />Settings
           </Button>}
         </div>

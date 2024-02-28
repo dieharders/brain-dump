@@ -10,12 +10,12 @@ import { Label } from '@/components/ui/label'
 import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { I_LLM_Init_Options } from '@/lib/hooks/types'
+import { I_LLM_Init_Options, T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
   state: I_LLM_Init_Options
   setState: Dispatch<SetStateAction<I_LLM_Init_Options>>
-  modelConfig: any
+  modelConfig: T_ModelConfig | undefined
 }
 
 export const defaultState: I_LLM_Init_Options = {
@@ -24,9 +24,10 @@ export const defaultState: I_LLM_Init_Options = {
   n_threads: -1,
   n_batch: 512,
   offload_kqv: false,
-  n_gpu_layers: 0,
+  n_gpu_layers: -1,
   f16_kv: true,
   use_mlock: false,
+  verbose: false,
 }
 
 export const PerformanceTab = (props: I_Props) => {

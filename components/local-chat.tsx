@@ -3,7 +3,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
-import { cn } from '@/lib/utils'
+import { cn, constructMainBgStyle } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
@@ -21,19 +21,19 @@ interface IProps extends React.ComponentProps<'div'> {
 }
 
 export const LocalChat = (props: IProps) => {
-  const { id, initialMessages, services, isModelLoading, className, settings, setSettings = () => { } } = props
   const { theme } = useTheme()
+  const wrapperStyle = constructMainBgStyle(theme)
+  const { id, initialMessages, services, isModelLoading, className, settings, setSettings = () => { } } = props
   const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading } =
     useLocalInference({
       initialMessages,
       services,
       settings,
-      setSettings,
     })
   const isLoading = isModelLoading || isChatLoading
 
   return (
-    <>
+    <div className={wrapperStyle}>
       <div className={cn('w-full pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
@@ -57,6 +57,6 @@ export const LocalChat = (props: IProps) => {
         settings={settings}
         setSettings={setSettings}
       />
-    </>
+    </div>
   )
 }
