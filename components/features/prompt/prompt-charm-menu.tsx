@@ -87,7 +87,6 @@ export const CharmMenu = (props: I_Props) => {
   type T_SavePromptSettings = (args: I_Text_Settings) => void
 
   const saveSettings = useCallback<T_SavePromptSettings>((args) => {
-    console.log('save to file:', args)
     // Save to settings file
     args && services?.storage.savePlaygroundSettings({ body: args })
     // Save state
@@ -198,13 +197,6 @@ export const CharmMenu = (props: I_Props) => {
             }}>
             <IconPromptTemplate className={iconStyle} />
           </CharmItem>
-
-          {/* Ai Mode - Completion, Chat, Data, Function, Copilot, Vision */}
-          {/* This may need to only be set at the start of the conversation */}
-          {/* <CharmItem actionText="Prompt Template - Use presets or write your own">
-            <IconPromptTemplate className={iconStyle} />
-          </CharmItem> */}
-
         </div>
 
         <DropdownMenuSeparator />

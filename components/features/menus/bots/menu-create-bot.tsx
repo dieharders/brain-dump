@@ -18,8 +18,8 @@ import { PromptTab, defaultState as defaultPromptState } from '@/components/feat
 import { KnowledgeTab, defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 import { useMemoryActions } from '@/components/features/crud/actions'
+import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
 import { toast } from 'react-hot-toast'
-import { useKnowledgeMenu } from '../charm/hook-charm-knowledge'
 
 interface I_Props {
   dialogOpen: boolean

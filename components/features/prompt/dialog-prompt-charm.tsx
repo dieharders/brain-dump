@@ -38,7 +38,7 @@ interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   onSubmit: (charm: I_Charm, saveSettings: I_Text_Settings) => void
-  settings: any
+  settings: any // @TODO Set when we know
   promptTemplates: T_PromptTemplates | undefined
   systemPrompts: T_SystemPrompts | undefined
   options?: T_APIConfigOptions
@@ -130,7 +130,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     setDialogOpen(false)
     // Save settings
     const charm: I_Charm = { id: 'prompt' }
-    const settings = { call: {} as any } as unknown as I_Text_Settings
+    const settings = { call: {} } as unknown as I_Text_Settings
     // Cleanup exported values to correct types
     Object.entries(state)?.forEach(([key, val]) => {
       let newVal = val

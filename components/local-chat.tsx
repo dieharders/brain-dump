@@ -17,7 +17,7 @@ interface IProps extends React.ComponentProps<'div'> {
   services: I_ServiceApis | null
   isModelLoading?: boolean
   settings?: I_Text_Settings
-  setSettings?: Dispatch<SetStateAction<I_Text_Settings>> // @TODO This should be a useRef() to not trigger re-render ?
+  setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
 }
 
 export const LocalChat = (props: IProps) => {

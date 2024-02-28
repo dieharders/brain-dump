@@ -72,7 +72,7 @@ export const KnowledgeTab = (props: I_Props) => {
           </Indicator>
         </Root>
         <label
-          className="w-full flex-1 ${bg}"
+          className="w-full flex-1"
           htmlFor={`c${index}`}
         >
           <CollectionCard
