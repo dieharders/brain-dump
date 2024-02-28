@@ -1,6 +1,6 @@
 'use client'
 
-import { MutableRefObject, useMemo } from 'react'
+import { useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { I_Collection, T_Memory_Type } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
-import { I_Charm, T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
+import { T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
 import { KnowledgeTab } from '@/components/features/menus/tabs/tab-knowledge'
 import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
 
@@ -18,15 +18,14 @@ interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   fetchListAction: () => Promise<I_Collection[]>
-  onSubmit: (charm: I_Charm, settings: { type: T_Memory_Type, index: string[] }) => void
-  removeCharm: (id: T_CharmId) => void
-  checkboxes: MutableRefObject<string[]>
+  onSubmit: (settings: { type: T_Memory_Type, index: string[] }) => void
 }
+
+export const charmId: T_CharmId = 'memory'
 
 // A menu to select from a list of collections
 export const KnowledgeCharmMenu = (props: I_Props) => {
-  const charmId: T_CharmId = 'memory'
-  const { checkboxes, fetchListAction, dialogOpen, setDialogOpen, removeCharm, onSubmit } = props
+  const { fetchListAction, dialogOpen, setDialogOpen, onSubmit } = props
   const {
     disableForm,
     setDisableForm,
@@ -49,10 +48,7 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
       setCollections={setCollections}
       disableForm={disableForm}
       setDisableForm={setDisableForm}
-      checkboxes={checkboxes}
-    />, [checkboxes, collections, disableForm, fetchListAction, selected, setCollections, setDisableForm, setSelected, setType, type])
-
-  const onCallback = () => checkboxes.current
+    />, [collections, disableForm, fetchListAction, selected, setCollections, setDisableForm, setSelected, setType, type])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -68,9 +64,8 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
             variant="ghost"
             className="w-full sm:w-32"
             onClick={() => {
-              // Reset list
-              // checkboxes.current = []
-              // setSelected([])
+              // Reset state
+              setSelected([])
               setDialogOpen(false)
               setDisableForm(false)
             }}
@@ -82,25 +77,9 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
             className="w-full sm:w-32"
             onClick={async () => {
               setDisableForm(true)
-              // Only save if we selected something
-              if (checkboxes.current.length) {
-                // Save the list based on current checkboxes
-                // checkboxes.current = ([...checkboxes.current])
-                // Make a charm struct
-                const mentions = onCallback()?.map(name => `@${name}`).join(' ')
-                const charm: I_Charm = {
-                  id: charmId,
-                  toolTipText: mentions,
-                  onCallback,
-                }
-                // Add the charm to prompt
-                onSubmit(charm, { type, index: checkboxes.current })
-              } else {
-                // Remove ourselves from active charm list
-                removeCharm(charmId)
-                // Reset state
-                checkboxes.current = []
-              }
+              // Save the list based on currently selected checkboxes
+              const payload = { type, index: selected }
+              onSubmit(payload)
               setDialogOpen(false)
               setDisableForm(false)
             }}

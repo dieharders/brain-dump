@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -17,8 +17,6 @@ import ToggleGroup from '@/components/ui/toggle-group'
 import { IconBrain, IconDocument } from '@/components/ui/icons'
 import { DEFAULT_TYPE } from '@/components/features/menus/charm/hook-charm-knowledge'
 
-// @TODO Determine if we need all these props
-
 interface I_Props {
   fetchListAction: () => Promise<I_Collection[]>
   type: T_Memory_Type
@@ -29,7 +27,6 @@ interface I_Props {
   setDisableForm: Dispatch<SetStateAction<boolean>>
   collections: I_Collection[]
   setCollections: Dispatch<SetStateAction<I_Collection[]>>
-  checkboxes: MutableRefObject<string[]>
 }
 
 export const defaultState: I_State = {
@@ -38,46 +35,26 @@ export const defaultState: I_State = {
 }
 
 export const KnowledgeTab = (props: I_Props) => {
-  const { fetchListAction, type, setType, disableForm, setDisableForm, collections, setCollections, setSelected, selected, checkboxes } = props
+  const { fetchListAction, type, setType, disableForm, setDisableForm, collections, setCollections, setSelected, selected } = props
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const renderDefaultMsg = <div className="font-semibold">No collections added yet.</div>
 
   const CollectionItem = ({ item, index }: { item: I_Collection, index: number }) => {
-    const [isChecked, setIsChecked] = useState<boolean>(false)
     const itemName = item.name
     const [isActive, setIsActive] = useState(false)
-    const isInList = typeof checkboxes.current.find(name => name === itemName) === 'string' // && isChecked
-    // const isInList = typeof selected.find(name => name === itemName) === 'string' // && isChecked
+    const selectedItem = selected.find(name => name === itemName)
+    const isInList = typeof selectedItem === 'string'
 
     const onChange = useCallback(() => {
-      // setIsChecked((c) => {
-      //   const newResult = !c
-      //   // Set checked list state
-      //   if (newResult) {
-      //     checkboxes.current = [...checkboxes.current, itemName]
-      //   }
-      //   else {
-      //     const indItem = checkboxes.current.findIndex(i => i === itemName)
-      //     checkboxes.current.splice(indItem, 1)
-      //   }
-      //   // Set checkbox state
-      //   return newResult
-      // })
-
       if (!isInList) {
-        checkboxes.current = [...checkboxes.current, itemName]
-        // setSelected([...checkboxes.current, itemName])
+        setSelected([...selected, itemName])
       }
       else {
-        const indItem = checkboxes.current.findIndex(i => i === itemName)
-        checkboxes.current.splice(indItem, 1)
-
-        // const indItem = selected.findIndex(i => i === itemName)
-        // const s = [...selected]
-        // s.splice(indItem, 1)
-        // setSelected(checkboxes.current)
+        const indItem = selected.findIndex(i => i === itemName)
+        const newVal = [...selected]
+        newVal.splice(indItem, 1)
+        setSelected(newVal)
       }
-      setIsChecked(prev => !prev)
     }, [isInList, itemName])
 
     return (
@@ -130,7 +107,6 @@ export const KnowledgeTab = (props: I_Props) => {
             onClick={() => {
               // Add all collections to list
               setSelected([...collections.map(i => i.name)])
-              checkboxes.current = [...collections.map(i => i.name)]
               setDisableForm(false)
             }}
           >
@@ -143,7 +119,6 @@ export const KnowledgeTab = (props: I_Props) => {
             onClick={async () => {
               // Remove all collections from list
               setSelected([])
-              checkboxes.current = []
               setDisableForm(false)
             }}
           >
@@ -182,7 +157,6 @@ export const KnowledgeTab = (props: I_Props) => {
           value={type}
           onChange={val => {
             // Record mode state
-            // setState({ index: checkboxes.current, type: val as T_Memory_Type })
             setType(val as T_Memory_Type)
           }}
         >

@@ -15,7 +15,6 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 import { I_Knowledge_State, I_ServiceApis, I_Text_Settings, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'react-hot-toast'
-import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
 
 export interface I_Charm {
   id: T_CharmId
@@ -66,7 +65,6 @@ export const CharmMenu = (props: I_Props) => {
   const emptyRingStyle = 'ring-2 ring-accent'
   const selectedMemoriesList = useRef<string[]>([])
   const selectedMemoriesText = selectedMemoriesList.current?.map((i, index) => <p key={index}>{i}</p>)
-  const { checkboxes: knowledgeCheckboxes } = useKnowledgeMenu()
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
@@ -122,17 +120,14 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
-      {/* Collections list for Query Menu */}
+      {/* Collections list for Knowledge Base menu */}
       <KnowledgeCharmMenu
         dialogOpen={openQueryCharmDialog}
         setDialogOpen={setOpenQueryCharmDialog}
         fetchListAction={fetchCollections}
-        onSubmit={(charm, knowledgeSettings) => {
+        onSubmit={knowledgeSettings => {
           saveKnowledgeSettings(knowledgeSettings)
-          addActiveCharm(charm)
         }}
-        removeCharm={removeActiveCharm}
-        checkboxes={knowledgeCheckboxes}
       />
       {/* Menu for Prompt Template settings */}
       <PromptTemplateCharmMenu

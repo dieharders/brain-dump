@@ -1,23 +1,20 @@
 import { I_Collection, T_Memory_Type } from '@/lib/homebrew'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import { useState } from 'react'
 
 export const DEFAULT_TYPE = 'training'
 
 export const useKnowledgeMenu = () => {
-  const checkboxes = useRef<string[]>([]) // Tracks all checkbox states
-  const [collections, setCollections] = useState<I_Collection[]>([])
-  const checkboxCallbacks = useRef<{ [key: string]: Dispatch<SetStateAction<boolean>> }>(
-    {},
-  ) // Func to check/uncheck
+  // Menu states
   const [disableForm, setDisableForm] = useState(false)
+  // Settings states
   const [type, setType] = useState<T_Memory_Type>(DEFAULT_TYPE)
-  const [selected, setSelected] = useState<string[]>([])
+  const [selected, setSelected] = useState<string[]>([]) // Tracks all checkbox states
+  // Data states
+  const [collections, setCollections] = useState<I_Collection[]>([])
 
   return {
-    checkboxes,
     collections,
     setCollections,
-    checkboxCallbacks,
     disableForm,
     setDisableForm,
     type,
