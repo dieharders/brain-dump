@@ -1,16 +1,10 @@
 'use client'
 
 import { Dispatch, SetStateAction } from 'react'
-import { I_PromptTemplates, I_RAGPromptTemplates, T_PromptTemplate, T_RAGPromptTemplate } from '@/lib/homebrew'
+import { I_PromptTemplates, I_Prompt_State as I_State, I_RAGPromptTemplates } from '@/lib/homebrew'
 import { RAGTemplateForm, defaultRagTemplateState } from '@/components/features/forms/form-rag-template'
 import { PromptTemplateForm, defaultPromptState } from '@/components/features/forms/form-prompt-template'
-import { RAGStrategyForm, defaultState as defaultRagModes, I_State as I_RAG_Strat_State } from '@/components/features/forms/form-rag-strategy'
-
-export type I_State = {
-  promptTemplate: T_PromptTemplate
-  ragTemplate: T_RAGPromptTemplate
-  ragMode: I_RAG_Strat_State,
-}
+import { RAGStrategyForm, defaultState as defaultRagModes } from '@/components/features/forms/form-rag-strategy'
 
 interface I_Props {
   state: I_State

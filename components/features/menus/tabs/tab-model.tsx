@@ -15,13 +15,8 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { I_ModelConfigs, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_ModelConfigs, I_Model_State as I_State, T_InstalledTextModel } from '@/lib/homebrew'
 import { Input } from '@/components/ui/input'
-
-export interface I_State {
-  id: string | undefined
-  botName: string
-}
 
 interface I_Props {
   state: I_State,

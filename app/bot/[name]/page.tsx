@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { LocalChat } from '@/components/local-chat'
-import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { type Message } from 'ai/react'
 // import { type Metadata } from 'next'
 // import { notFound, redirect } from 'next/navigation'
@@ -12,7 +12,7 @@ import { type Message } from 'ai/react'
 // export const runtime = 'edge'
 // export const preferredRegion = 'home'
 
-export interface BotPageProps {
+export interface I_PageProps {
   params: {
     name: string
   }
@@ -31,13 +31,14 @@ export interface BotPageProps {
 //   }
 // }
 
-export default function BotPage({ params }: BotPageProps) {
+export default function BotPage({ params }: I_PageProps) {
   const { name } = params
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const { getServices } = useHomebrew()
   const [isLoading, setIsLoading] = useState(true)
   const [doOnce, setDoOnce] = useState(false)
+  const [botSettings, setBotSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
 
   // const session = await auth()
 
@@ -55,6 +56,14 @@ export default function BotPage({ params }: BotPageProps) {
   //   notFound()
   // }
 
+  const fetchBot = useCallback(async () => {
+    // Load the model from the bot settings on page mount.
+    const res = await services?.storage.getBotSettings()
+    const settings = res?.data
+    const selectedModel = settings?.find(item => item.model.botName === name)
+    return selectedModel
+  }, [name, services?.storage])
+
   useEffect(() => {
     const action = async () => {
       const services = await getServices()
@@ -69,21 +78,28 @@ export default function BotPage({ params }: BotPageProps) {
 
     const action = async () => {
       // Load the model from the bot settings on page mount.
-      const res = await services?.storage.getBotSettings()
-      const settings = res?.data
-      const selectedModel = settings?.find(item => item.model.botName === name)
-      const selectedModelId = selectedModel?.model.id
-      const mode = selectedModel?.attention.mode
-      const initOptions = selectedModel?.performance
+      const settings = await fetchBot()
+      // Save settings
+      settings && setBotSettings(settings)
+      // Make payload
+      const selectedModelId = settings?.model.id
+      const mode = settings?.attention.mode
+      const initOptions = settings?.performance
       const callOptions = {
         model: 'local', // @TODO should load from settings
-        ...selectedModel?.response
+        ...settings?.response
       }
-      // Load LLM
       const listResponse = await services?.textInference.installed()
       const installedList = listResponse?.data
       const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
-      const payload = { modelPath: installPath, modelId: selectedModelId, mode, init: initOptions, call: callOptions }
+      // Load LLM
+      const payload = {
+        modelPath: installPath,
+        modelId: selectedModelId,
+        mode,
+        init: initOptions,
+        call: callOptions,
+      }
       await services?.textInference.load({ body: payload })
       // Finished
       setIsLoading(false)
@@ -91,15 +107,16 @@ export default function BotPage({ params }: BotPageProps) {
 
     action()
     setDoOnce(true)
-  }, [doOnce, name, services])
+  }, [doOnce, fetchBot, services])
 
-  // @TODO Break out the charm menu from LocalChat since we want to pass specific charms to the chat per page
   return (
     <LocalChat
       id={name}
       initialMessages={initialMessages}
       services={services}
       isModelLoading={isLoading}
+      setSettings={setBotSettings}
+      settings={botSettings}
     />
   )
 }

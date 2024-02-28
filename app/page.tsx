@@ -1,9 +1,7 @@
-import { nanoid } from '@/lib/utils'
-import { ChatContainer } from '@/components/chat-container'
+import { AppContainer } from '@/components/app-container'
 
 export const runtime = 'edge'
 
 export default function IndexPage() {
-  const id = nanoid()
-  return <ChatContainer id={id} />
+  return <AppContainer />
 }

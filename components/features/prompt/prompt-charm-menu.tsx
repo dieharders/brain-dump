@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import {
   IconBrain,
   IconMicrophone,
@@ -9,10 +9,10 @@ import {
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { QueryCharmMenu } from '@/components/features/prompt/dialog-query-charm'
+import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
 import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { I_ServiceApis, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
+import { I_Knowledge_State, I_ServiceApis, I_Text_Settings, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'react-hot-toast'
 
@@ -36,25 +36,25 @@ export interface I_Props {
   activeCharms: I_Charm[]
   addActiveCharm: (charm: I_Charm) => void
   removeActiveCharm: (id: T_CharmId) => void
-  saveSettings?: (args: any) => void
+  settings?: I_Text_Settings
+  setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
 }
 
+// @TODO Break out the charm menu from LocalChat since we want to pass specific charms to the chat per page
 export const CharmMenu = (props: I_Props) => {
-  const { open, activeCharms, addActiveCharm, removeActiveCharm, saveSettings } = props
+  const { open, activeCharms, settings, addActiveCharm, removeActiveCharm, setSettings } = props
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
-  const iconStyle = 'h-fit w-16 cursor-pointer rounded-full text-white bg-ghost'
+  const iconStyle = 'h-fit w-16 cursor-pointer rounded-full text-primary bg-ghost'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
-  const [promptSettings, setPromptSettings] = useState(null)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const { getServices, getAPIConfigOptions } = useHomebrew()
   const APIConfigOptions = useRef({})
-  const { fetchCollections } = useMemoryActions(services)
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
   const memoryCharm = activeCharms.find(i => i.id === 'memory')
@@ -69,7 +69,7 @@ export const CharmMenu = (props: I_Props) => {
   const CharmItem = (props: I_CharmItemProps) => {
     return (
       <Badge
-        className={`h-10 w-10 cursor-pointer bg-black p-2 ring-[inherit] ring-accent hover:bg-accent ${props.className}`}
+        className={`h-10 w-10 cursor-pointer bg-accent p-2 ring-[inherit] ring-background hover:bg-background ${props.className}`}
         onClick={props?.onClick}
         onMouseEnter={() => setExplanation(props?.actionText || '')}
         onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}
@@ -79,10 +79,28 @@ export const CharmMenu = (props: I_Props) => {
     )
   }
 
-  const fetchSettings = useCallback(async () => services?.storage.getSettings(), [services?.storage])
   const fetchPromptTemplates = useCallback(async () => services?.textInference.getPromptTemplates(), [services?.textInference])
   const fetchRagPromptTemplates = useCallback(async () => services?.textInference.getRagPromptTemplates(), [services?.textInference])
   const fetchSystemPrompts = useCallback(async () => services?.textInference.getSystemPrompts(), [services?.textInference])
+  const { fetchCollections } = useMemoryActions(services)
+
+  type T_SavePromptSettings = (args: I_Text_Settings) => void
+
+  const saveSettings = useCallback<T_SavePromptSettings>((args) => {
+    // Save to settings file
+    args && services?.storage.savePlaygroundSettings({ body: args })
+    // Save state
+    setSettings && setSettings(args)
+  }, [services?.storage, setSettings])
+
+  const saveKnowledgeSettings = useCallback((settings: I_Knowledge_State) => {
+    toast.success('Knowledge settings saved!')
+    const action = async () => {
+      // Save menu forms to a json file
+      await services?.storage.savePlaygroundSettings({ body: settings })
+    }
+    action()
+  }, [services?.storage])
 
   // Get services
   useEffect(() => {
@@ -101,25 +119,25 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
-      {/* Collections list for Query Menu */}
-      <QueryCharmMenu
+      {/* Collections list for Knowledge Base menu */}
+      <KnowledgeCharmMenu
         dialogOpen={openQueryCharmDialog}
         setDialogOpen={setOpenQueryCharmDialog}
         fetchListAction={fetchCollections}
-        onSubmit={addActiveCharm}
-        removeCharm={removeActiveCharm}
-        selected={selectedMemoriesList}
+        onSubmit={knowledgeSettings => {
+          saveKnowledgeSettings(knowledgeSettings)
+        }}
       />
       {/* Menu for Prompt Template settings */}
       <PromptTemplateCharmMenu
         dialogOpen={openPromptCharmDialog}
         setDialogOpen={setOpenPromptCharmDialog}
-        onSubmit={(charm, settings) => {
+        onSubmit={(charm, templateSettings) => {
           addActiveCharm(charm)
-          saveSettings && saveSettings(settings)
+          saveSettings(templateSettings)
           toast.success('Prompt settings saved!')
         }}
-        settings={promptSettings}
+        settings={settings || {}}
         promptTemplates={promptTemplates}
         systemPrompts={systemPrompts}
         options={APIConfigOptions.current}
@@ -171,7 +189,6 @@ export const CharmMenu = (props: I_Props) => {
             className={`${emptyRingStyle} ${promptCharm && activeStyle}`}
             actionText="Prompt Template - Use presets or write your own"
             onClick={async () => {
-              await fetchSettings().then(res => res?.data?.call && setPromptSettings(res?.data?.call))
               const normal = await fetchPromptTemplates()
               const rag = await fetchRagPromptTemplates()
               normal && rag && setPromptTemplates({ rag_presets: rag.data, normal_presets: normal.data })
@@ -180,13 +197,6 @@ export const CharmMenu = (props: I_Props) => {
             }}>
             <IconPromptTemplate className={iconStyle} />
           </CharmItem>
-
-          {/* Ai Mode - Completion, Chat, Data, Function, Copilot, Vision */}
-          {/* This may need to only be set at the start of the conversation */}
-          {/* <CharmItem actionText="Prompt Template - Use presets or write your own">
-            <IconPromptTemplate className={iconStyle} />
-          </CharmItem> */}
-
         </div>
 
         <DropdownMenuSeparator />

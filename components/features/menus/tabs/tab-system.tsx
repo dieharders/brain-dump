@@ -15,19 +15,14 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { T_SystemPrompt, T_SystemPrompts } from '@/lib/homebrew'
+import { T_SystemPrompt, T_SystemPrompts, I_System_State as I_State, I_ServiceApis } from '@/lib/homebrew'
 
 type T_TemplateSource = 'custom_default' | string
-
-export interface I_State {
-  systemMessage: string | undefined
-  systemMessageName: string | undefined
-}
 
 interface I_Props {
   state: I_State
   setState: Dispatch<SetStateAction<I_State>>
-  services: any
+  services: I_ServiceApis | null
 }
 
 export const defaultState = {

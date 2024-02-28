@@ -1,32 +1,30 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { type Message } from 'ai/react'
-import { LocalChat } from '@/components/local-chat'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
 import { ApplicationModesMenu } from '@/components/features/menus/app/menu-application-modes'
 import { toast } from 'react-hot-toast'
-
-interface IProps {
-  id?: string
-  initialMessages?: Message[]
-}
+import { useTheme } from 'next-themes'
+import { constructMainBgStyle } from '@/lib/utils'
 
 /**
  * This holds the main app behavior
  */
-export const ChatContainer = ({ id, initialMessages }: IProps) => {
+export const AppContainer = () => {
+  const { theme } = useTheme()
+  const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
-  const { provider: selectedProvider, model: selectedModel } = useSettings()
+  const { provider: selectedProvider } = useSettings()
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
+  const [hasMounted, setHasMounted] = useState(false)
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -61,14 +59,19 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     return false
   }, [connectToHomebrew, getServices, selectedProvider])
 
-  const isLocalSelected = selectedProvider === ModelID.Local
-  const isCloudSelected = selectedProvider !== ModelID.Local && selectedModel !== 'no model selected'
+  useEffect(() => {
+    if (hasMounted) return
+    typeof theme === 'string' && setHasMounted(true)
+  }, [hasMounted, theme])
 
+  // Render
+
+  if (!hasMounted) return null
 
   // HomeBrewAi connection menu
   if (!isConnected)
     return (
-      <>
+      <div className={wrapperStyle}>
         <div className="m-4 text-center">Waiting to connect to server</div>
         <Button
           className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center text-white hover:bg-blue-800"
@@ -77,48 +80,47 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
         >
           Connect to HomeBrewAi
         </Button>
-      </>
+      </div>
     )
 
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
-      // Model Selection Menu
-      < div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]" >
-        {/* <h1 className="mt-4 px-4 text-center text-xl">Connected to HomebrewAi server</h1> */}
-        <ApplicationModesMenu
-          setHasTextServiceConnected={setHasTextServiceConnected}
-          isConnecting={isConnecting}
-          setIsConnecting={setIsConnecting}
-          modelConfigs={modelConfigs || {}}
-          installedList={installedList}
-          onSubmit={() => {
-            /* logic to go to a route */
-          }}
-          services={services}
-        />
-      </div >
+      // Wrapper for styling the app background
+      <div className={wrapperStyle}>
+        {/* Model Selection Menu */}
+        <div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]" >
+          {/* <h1 className="mt-4 px-4 text-center text-xl">Connected to HomebrewAi server</h1> */}
+          <ApplicationModesMenu
+            setHasTextServiceConnected={setHasTextServiceConnected}
+            isConnecting={isConnecting}
+            setIsConnecting={setIsConnecting}
+            modelConfigs={modelConfigs || {}}
+            installedList={installedList}
+            onSubmit={() => {
+              /* logic to go to a route */
+            }}
+            services={services}
+          />
+        </div >
+      </div>
     )
 
   // Render "Connecting..." feedback
   if (isConnecting && !isConnected)
-    return <div className="m-4 text-center">Connecting to server...</div>
+    return (
+      <div className={wrapperStyle}>
+        <div className="m-4 text-center">Connecting to server...</div>
+      </div>
+    )
   // Connected
   if (!isConnecting && isConnected) {
-    // Render chat UI (Local)
-    if (isLocalSelected)
-      return (
-        <LocalChat
-          id={id}
-          initialMessages={initialMessages}
-          services={services}
-        />
-      )
-    // Render chat UI (cloud)
-    if (isCloudSelected)
-      // return <CloudChat id={id} initialMessages={initialMessages} />
-      return <div className="m-4 text-center">Connect to Cloud provider...</div>
     // Render "no selection" warning
-    return <div className="m-4 text-center">No model selected. Go to settings {'->'} LLM Model and choose one.</div>
+    return (
+      <div className={wrapperStyle}>
+        <div className="m-4 text-center">No model selected. Go to settings {'->'} LLM Model and choose one.
+        </div>
+      </div>
+    )
   }
 }

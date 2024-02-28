@@ -17,11 +17,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
-
-export interface I_State {
-  similarity_top_k: number,
-  response_mode: string | undefined,
-}
+import { I_RAG_Strat_State as I_State } from '@/lib/homebrew'
 
 interface I_Props {
   state: I_State,

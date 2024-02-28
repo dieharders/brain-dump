@@ -5,57 +5,35 @@ import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
-import { DEFAULT_CONVERSATION_MODE, I_ServiceApis, T_ConversationMode, useHomebrew } from '@/lib/homebrew'
-import { I_InferenceGenerateOptions, I_LLM_Options } from '@/lib/hooks/types'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 
 interface IProps {
   initialMessages: Message[] | undefined
   services: I_ServiceApis | null
-  mode?: T_ConversationMode
+  settings?: I_Text_Settings
 }
 
-export const useLocalInference = ({
-  initialMessages = [],
-  services,
-  mode = DEFAULT_CONVERSATION_MODE,
-}: IProps) => {
+export const useLocalInference = (props: IProps) => {
+  const {
+    initialMessages = [],
+    services,
+    settings,
+  } = props
   const { getServices } = useHomebrew()
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
   const [input, setInput] = useState('')
-  const defaultSettings = {
-    init: {},
-    call: {},
-  } as I_LLM_Options
-  const [settings, setSettings] = useState(defaultSettings)
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
   const messages = useRef<Message[]>(initialMessages || [])
   const abortRef = useRef(false)
 
-  const saveSettings = (settings: I_LLM_Options) => {
-    setSettings(prev => {
-      const result = { ...prev, ...settings }
-      // Also persist to disk
-      services?.storage.saveSettings({ body: settings })
-      return result
-    })
-  }
-
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = async (
     options: I_InferenceGenerateOptions,
-    mode: T_ConversationMode,
-    collectionNames?: string[],
   ) => {
     try {
-      return services?.textInference.inference({
-        body: {
-          ...options,
-          collectionNames,
-          mode,
-        }
-      })
+      return services?.textInference.inference({ body: options })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
@@ -118,7 +96,7 @@ export const useLocalInference = ({
     }
   }, [])
 
-  const append = async (prompt: Message | CreateMessage, collectionNames?: string[]) => {
+  const append = async (prompt: Message | CreateMessage) => {
     if (!prompt) return
 
     setResponseId(nanoid())
@@ -145,22 +123,29 @@ export const useLocalInference = ({
 
       // Send request completion for prompt
       console.log('[Chat] Sending request to inference server...', newUserMsg)
-      const options = {
-        ...settings.call,
-        // ...settings.init, // @TODO Can we just pass everything in init ?
-        ...(settings?.init?.n_ctx && { n_ctx: settings.init.n_ctx }),
-        seed: settings.init?.seed,
-        prompt: prompt.content,
+      const mode = settings?.attention?.mode || DEFAULT_CONVERSATION_MODE
+      const options: I_InferenceGenerateOptions = {
+        mode,
         messageFormat,
+        collectionNames: settings?.knowledge?.index,
+        prompt: prompt?.content,
+        promptTemplate: settings?.prompt?.promptTemplate?.text,
+        ragPromptTemplate: settings?.prompt?.ragTemplate,
+        systemMessage: settings?.system?.systemMessage,
+        ...settings?.prompt?.ragMode,
+        ...settings?.performance,
+        ...settings?.response,
       }
-      const response = await getCompletion(options, mode, collectionNames)
+      const response = await getCompletion(options)
       console.log('[Chat] Prompt response', response)
-      if (!response) throw new Error('No prompt response.')
+      if (typeof response?.success === 'boolean')
+        if (!response?.success) throw new Error('Response failed.')
+      if (!response) throw new Error('No response.')
 
       // Process the stream into text tokens
       await processSseStream(
         response,
-        settings?.call?.stop,
+        settings?.response?.stop,
         {
           onData: (res: string) => onStreamResult(res),
           onFinish: async () => {
@@ -182,15 +167,6 @@ export const useLocalInference = ({
       return null
     }
   }
-
-  // Load inference settings
-  useEffect(() => {
-    const action = async () => {
-      const loadedSettings = await services?.storage.getSettings()
-      loadedSettings?.data && setSettings(loadedSettings.data)
-    }
-    action()
-  }, [services?.storage])
 
 
   // Update messages state with results
@@ -224,7 +200,5 @@ export const useLocalInference = ({
     isLoading,
     input,
     setInput,
-    settings,
-    saveSettings,
   }
 }
