@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect, useState } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -15,14 +15,22 @@ import { CheckIcon } from '@radix-ui/react-icons'
 import { CollectionCard } from '@/components/sidebar-item-brain'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconBrain, IconDocument } from '@/components/ui/icons'
+import { DEFAULT_TYPE } from '@/components/features/menus/charm/hook-charm-knowledge'
+
+// @TODO Determine if we need all these props
 
 interface I_Props {
   fetchListAction: () => Promise<I_Collection[]>
-  state: I_State
-  setState: Dispatch<SetStateAction<I_State>>
+  type: T_Memory_Type
+  setType: Dispatch<SetStateAction<T_Memory_Type>>
+  selected: string[]
+  setSelected: Dispatch<SetStateAction<string[]>>
+  disableForm: boolean
+  setDisableForm: Dispatch<SetStateAction<boolean>>
+  collections: I_Collection[]
+  setCollections: Dispatch<SetStateAction<I_Collection[]>>
+  checkboxes: MutableRefObject<string[]>
 }
-
-export const DEFAULT_TYPE = 'training'
 
 export const defaultState: I_State = {
   type: DEFAULT_TYPE,
@@ -30,44 +38,71 @@ export const defaultState: I_State = {
 }
 
 export const KnowledgeTab = (props: I_Props) => {
-  const { fetchListAction, state, setState } = props
+  const { fetchListAction, type, setType, disableForm, setDisableForm, collections, setCollections, setSelected, selected, checkboxes } = props
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
-  const checkboxes = state.index
-  const [disableForm, setDisableForm] = useState(false)
-  const [collections, setCollections] = useState<I_Collection[]>([])
   const renderDefaultMsg = <div className="font-semibold">No collections added yet.</div>
 
   const CollectionItem = ({ item, index }: { item: I_Collection, index: number }) => {
+    const [isChecked, setIsChecked] = useState<boolean>(false)
     const itemName = item.name
-    const isChecked = checkboxes.find(i => i === itemName) ? true : false
+    const [isActive, setIsActive] = useState(false)
+    const isInList = typeof checkboxes.current.find(name => name === itemName) === 'string' // && isChecked
+    // const isInList = typeof selected.find(name => name === itemName) === 'string' // && isChecked
 
-    const onChange = (checked: boolean) => {
-      // Set checked list state
-      if (checked) setState(prev => ({ ...prev, index: [...checkboxes, itemName] }))
-      else {
-        const indexes = [...checkboxes]
-        const indItem = indexes.findIndex(i => i === itemName)
-        indexes.splice(indItem, 1)
-        setState(prev => ({ ...prev, index: indexes }))
+    const onChange = useCallback(() => {
+      // setIsChecked((c) => {
+      //   const newResult = !c
+      //   // Set checked list state
+      //   if (newResult) {
+      //     checkboxes.current = [...checkboxes.current, itemName]
+      //   }
+      //   else {
+      //     const indItem = checkboxes.current.findIndex(i => i === itemName)
+      //     checkboxes.current.splice(indItem, 1)
+      //   }
+      //   // Set checkbox state
+      //   return newResult
+      // })
+
+      if (!isInList) {
+        checkboxes.current = [...checkboxes.current, itemName]
+        // setSelected([...checkboxes.current, itemName])
       }
-    }
+      else {
+        const indItem = checkboxes.current.findIndex(i => i === itemName)
+        checkboxes.current.splice(indItem, 1)
+
+        // const indItem = selected.findIndex(i => i === itemName)
+        // const s = [...selected]
+        // s.splice(indItem, 1)
+        // setSelected(checkboxes.current)
+      }
+      setIsChecked(prev => !prev)
+    }, [isInList, itemName])
 
     return (
       <span key={item.id} className="flex flex-row items-center space-x-8">
         <Root
           id={`c${index}`}
-          checked={isChecked}
+          checked={isInList}
           onCheckedChange={onChange}
+          onMouseEnter={() => setIsActive(true)}
+          onMouseLeave={() => setIsActive(false)}
           className="flex h-6 w-6 items-center justify-center rounded border border-gray-800 bg-black hover:bg-gray-900 hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
         >
           <Indicator>
             <CheckIcon className="h-4 w-4" />
           </Indicator>
         </Root>
-        <label className="w-full flex-1" htmlFor={`c${index}`}>
+        <label
+          className="w-full flex-1 ${bg}"
+          htmlFor={`c${index}`}
+        >
           <CollectionCard
+            isActive={isActive}
+            isSelected={isInList}
             collection={item}
-            onClick={() => onChange(!isChecked)}
+            onClick={onChange}
           />
         </label>
       </span>
@@ -92,9 +127,10 @@ export const KnowledgeTab = (props: I_Props) => {
           <Button
             disabled={disableForm}
             className="m-0 w-full p-0"
-            onClick={async () => {
+            onClick={() => {
               // Add all collections to list
-              setState({ type: 'augmented_retrieval', index: [...collections.map(i => i.name)] })
+              setSelected([...collections.map(i => i.name)])
+              checkboxes.current = [...collections.map(i => i.name)]
               setDisableForm(false)
             }}
           >
@@ -106,7 +142,8 @@ export const KnowledgeTab = (props: I_Props) => {
             className="m-0 w-full p-0"
             onClick={async () => {
               // Remove all collections from list
-              setState({ type: 'augmented_retrieval', index: [] })
+              setSelected([])
+              checkboxes.current = []
               setDisableForm(false)
             }}
           >
@@ -127,7 +164,7 @@ export const KnowledgeTab = (props: I_Props) => {
       if (result) setCollections(result)
     }
     action()
-  }, [fetchListAction])
+  }, [fetchListAction, setCollections])
 
   return (
     <div className="px-1">
@@ -142,10 +179,11 @@ export const KnowledgeTab = (props: I_Props) => {
       <div className="w-full">
         <ToggleGroup
           label="Knowledge Mode"
-          value={state.type}
+          value={type}
           onChange={val => {
             // Record mode state
-            setState({ index: checkboxes, type: val as T_Memory_Type })
+            // setState({ index: checkboxes.current, type: val as T_Memory_Type })
+            setType(val as T_Memory_Type)
           }}
         >
           <div id="training" className={toggleGroupClass}>
@@ -160,7 +198,7 @@ export const KnowledgeTab = (props: I_Props) => {
       </div>
 
       {/* Content */}
-      {state.type !== DEFAULT_TYPE ? <Content /> : <p className="mt-4 text-muted-foreground">Use the knowledge gained during training. This LLM was trained on all the data on the internet (probably).</p>}
+      {type !== DEFAULT_TYPE ? <Content /> : <p className="mt-4 text-muted-foreground">Use the knowledge gained during training. This LLM was trained on all the data on the internet (probably).</p>}
     </div>
   )
 }

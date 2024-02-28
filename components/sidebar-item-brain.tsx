@@ -9,6 +9,8 @@ import { I_Collection } from '@/lib/homebrew'
 
 interface SidebarItemProps {
   collection: I_Collection
+  isActive?: boolean
+  isSelected?: boolean
   onClick?: () => void
   children?: React.ReactNode
 }
@@ -17,7 +19,7 @@ interface SidebarItemProps {
  * A card container for collection of documents
  */
 export const CollectionCard = (props: SidebarItemProps) => {
-  const { collection, onClick, children } = props
+  const { collection, onClick, isSelected, isActive: isHighlighted, children } = props
   const [isActive, setIsActive] = useState(false)
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags?.split(' ').length || 0
@@ -29,7 +31,8 @@ export const CollectionCard = (props: SidebarItemProps) => {
       className={cn(
         buttonVariants({ variant: 'outline' }),
         'hover-bg-accent relative h-fit w-full select-none flex-col space-y-4 py-3 text-left',
-        isActive && 'bg-accent',
+        (isActive || isHighlighted) && 'bg-accent',
+        isSelected && 'bg-accent',
         onClick && 'cursor-pointer',
       )}
       onClick={e => {

@@ -114,7 +114,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       if (options) APIConfigOptions.current = options
     }
     action()
-  }, [])
+  }, [getAPIConfigOptions])
 
   return (
     <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
@@ -142,10 +142,13 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
           <div className="space-y-4">
             {collections?.map(
               collection => (
-                <CollectionCard key={collection?.id} collection={collection} onClick={() => {
-                  setSelectedCollection(collection)
-                  setExploreDialogOpen(true)
-                }}>
+                <CollectionCard
+                  key={collection?.id}
+                  collection={collection}
+                  onClick={() => {
+                    setSelectedCollection(collection)
+                    setExploreDialogOpen(true)
+                  }}>
                   <CollectionActions
                     setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                     setExploreDialogOpen={setExploreDialogOpen}

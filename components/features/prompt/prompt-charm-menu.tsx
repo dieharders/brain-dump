@@ -12,9 +12,10 @@ import { Badge } from '@/components/ui/badge'
 import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
 import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { I_ServiceApis, I_Text_Settings, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
+import { I_Knowledge_State, I_ServiceApis, I_Text_Settings, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'react-hot-toast'
+import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
 
 export interface I_Charm {
   id: T_CharmId
@@ -55,7 +56,6 @@ export const CharmMenu = (props: I_Props) => {
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const { getServices, getAPIConfigOptions } = useHomebrew()
   const APIConfigOptions = useRef({})
-  const { fetchCollections } = useMemoryActions(services)
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
   const memoryCharm = activeCharms.find(i => i.id === 'memory')
@@ -66,6 +66,7 @@ export const CharmMenu = (props: I_Props) => {
   const emptyRingStyle = 'ring-2 ring-accent'
   const selectedMemoriesList = useRef<string[]>([])
   const selectedMemoriesText = selectedMemoriesList.current?.map((i, index) => <p key={index}>{i}</p>)
+  const { checkboxes: knowledgeCheckboxes } = useKnowledgeMenu()
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
@@ -83,8 +84,10 @@ export const CharmMenu = (props: I_Props) => {
   const fetchPromptTemplates = useCallback(async () => services?.textInference.getPromptTemplates(), [services?.textInference])
   const fetchRagPromptTemplates = useCallback(async () => services?.textInference.getRagPromptTemplates(), [services?.textInference])
   const fetchSystemPrompts = useCallback(async () => services?.textInference.getSystemPrompts(), [services?.textInference])
+  const { fetchCollections } = useMemoryActions(services)
 
   type T_SavePromptSettings = (args: I_Text_Settings) => void
+
   const saveSettings = useCallback<T_SavePromptSettings>((args) => {
     console.log('save to file:', args)
     // Save to settings file
@@ -92,6 +95,15 @@ export const CharmMenu = (props: I_Props) => {
     // Save state
     setSettings && setSettings(args)
   }, [services?.storage, setSettings])
+
+  const saveKnowledgeSettings = useCallback((settings: I_Knowledge_State) => {
+    toast.success('Knowledge settings saved!')
+    const action = async () => {
+      // Save menu forms to a json file
+      await services?.storage.savePlaygroundSettings({ body: settings })
+    }
+    action()
+  }, [services?.storage])
 
   // Get services
   useEffect(() => {
@@ -115,9 +127,12 @@ export const CharmMenu = (props: I_Props) => {
         dialogOpen={openQueryCharmDialog}
         setDialogOpen={setOpenQueryCharmDialog}
         fetchListAction={fetchCollections}
-        onSubmit={addActiveCharm}
+        onSubmit={(charm, knowledgeSettings) => {
+          saveKnowledgeSettings(knowledgeSettings)
+          addActiveCharm(charm)
+        }}
         removeCharm={removeActiveCharm}
-        selected={selectedMemoriesList}
+        checkboxes={knowledgeCheckboxes}
       />
       {/* Menu for Prompt Template settings */}
       <PromptTemplateCharmMenu

@@ -9,7 +9,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { I_Attention_State, I_Knowledge_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_PromptTemplates, I_Prompt_State, I_RAGPromptTemplates, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { I_Attention_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_PromptTemplates, I_Prompt_State, I_RAGPromptTemplates, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
 import { AttentionTab, defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { ModelTab, defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -19,6 +19,7 @@ import { KnowledgeTab, defaultState as defaultKnowledgeState } from '@/component
 import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { toast } from 'react-hot-toast'
+import { useKnowledgeMenu } from '../charm/hook-charm-knowledge'
 
 interface I_Props {
   dialogOpen: boolean
@@ -48,7 +49,12 @@ export const BotCreationMenu = (props: I_Props) => {
   }), [])
 
   // State values
-  const [stateKnowledge, setStateKnowledge] = useState<I_Knowledge_State>(defaults.knowledge)
+  const {
+    type: knowledgeType,
+    setType: setKnowledgeType,
+    selected: knowledgeIndex,
+    setSelected: setKnowledgeIndex,
+  } = useKnowledgeMenu()
   const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
   const [stateAttention, setStateAttention] = useState<I_Attention_State>(defaults.attention)
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
@@ -56,21 +62,24 @@ export const BotCreationMenu = (props: I_Props) => {
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
   const [stateResponse, setStateResponse] = useState<I_Response_State>(defaults.response)
 
+  // Prop state values
+  const { disableForm, setDisableForm, collections, setCollections, checkboxes } = useKnowledgeMenu()
+
   // Data values
   const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})
   const [ragTemplates, setRagTemplates] = useState<I_RAGPromptTemplates>({})
   const [ragModes, setRagModes] = useState<string[]>([])
 
   // Menus
-  const promptMenu = <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={stateKnowledge.type === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />
-  const systemMessageMenu = <SystemTab services={data.services} state={stateSystem} setState={setStateSystem} />
-  const knowledgeMenu = <KnowledgeTab state={stateKnowledge} setState={setStateKnowledge} fetchListAction={fetchCollections} />
-  const responseMenu = <ResponseTab state={stateResponse} setState={setStateResponse} />
-  const modelMenu = <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />
-  const attentionMenu = <AttentionTab state={stateAttention} setState={setStateAttention} />
-  const performanceMenu = <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={data.modelConfigs[stateModel.id ?? '']} />
+  const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
+  const systemMessageMenu = useMemo(() => <SystemTab services={data.services} state={stateSystem} setState={setStateSystem} />, [data.services, stateSystem])
+  const knowledgeMenu = useMemo(() => <KnowledgeTab type={knowledgeType} setType={setKnowledgeType} selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} collections={collections} setCollections={setCollections} disableForm={disableForm} setDisableForm={setDisableForm} checkboxes={checkboxes} />, [checkboxes, collections, disableForm, fetchCollections, knowledgeType, knowledgeIndex, setCollections, setDisableForm, setKnowledgeIndex, setKnowledgeType])
+  const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [stateResponse])
+  const modelMenu = useMemo(() => <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />, [data.installedList, data.modelConfigs, stateModel])
+  const attentionMenu = useMemo(() => <AttentionTab state={stateAttention} setState={setStateAttention} />, [stateAttention])
+  const performanceMenu = useMemo(() => <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={data.modelConfigs[stateModel.id ?? '']} />, [data.modelConfigs, stateModel.id, statePerformance])
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { label: '🤖', title: 'LLM Model', content: modelMenu },
     { label: '👀', title: 'Attention', content: attentionMenu },
     { label: '🏃‍♂️', title: 'Performance', content: performanceMenu },
@@ -78,7 +87,7 @@ export const BotCreationMenu = (props: I_Props) => {
     { label: '🤬', title: 'Personality', content: systemMessageMenu },
     { label: '🧠', title: 'Thinking', content: promptMenu },
     { label: '🙊', title: 'Response', content: responseMenu },
-  ]
+  ], [attentionMenu, knowledgeMenu, modelMenu, performanceMenu, promptMenu, responseMenu, systemMessageMenu])
 
   // Fetch data
   const fetchPromptTemplates = useCallback(async () => data.services?.textInference.getPromptTemplates(), [data.services?.textInference])
@@ -104,19 +113,23 @@ export const BotCreationMenu = (props: I_Props) => {
         system: stateSystem,
         model: stateModel,
         prompt: statePrompt,
-        knowledge: stateKnowledge,
+        knowledge: {
+          type: knowledgeType,
+          index: knowledgeIndex,
+        },
         response: stateResponse,
       })
       // Close
       setDialogOpen(false)
     },
-    [onSubmit, setDialogOpen, stateAttention, stateKnowledge, stateModel, statePerformance, statePrompt, stateResponse, stateSystem],
+    [knowledgeType, onSubmit, knowledgeIndex, setDialogOpen, stateAttention, stateModel, statePerformance, statePrompt, stateResponse, stateSystem],
   )
 
   useEffect(() => {
     // Reset settings
     if (dialogOpen) {
-      setStateKnowledge(defaults.knowledge)
+      setKnowledgeType(defaults.knowledge.type)
+      setKnowledgeIndex(defaults.knowledge.index)
       setStateModel(defaults.model)
       setStateAttention(defaults.attention)
       setStatePerformance(defaults.performance)
@@ -124,7 +137,7 @@ export const BotCreationMenu = (props: I_Props) => {
       setStatePrompt(defaults.prompt)
       setStateResponse(defaults.response)
     }
-  }, [defaults, dialogOpen])
+  }, [defaults, dialogOpen, setKnowledgeIndex, setKnowledgeType])
 
   // Fetch data
   useEffect(() => {
