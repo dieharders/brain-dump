@@ -13,7 +13,7 @@ import { constructMainBgStyle } from '@/lib/utils'
 /**
  * This holds the main app behavior
  */
-export const ChatContainer = () => {
+export const AppContainer = () => {
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnected, setIsConnected] = useState(false)

@@ -1,8 +1,7 @@
-import { ChatContainer } from '@/components/chat-container'
+import { AppContainer } from '@/components/app-container'
 
 export const runtime = 'edge'
 
 export default function IndexPage() {
-  // @TODO Change to AppContainer
-  return <ChatContainer />
+  return <AppContainer />
 }
