@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useState } from "react"
 import { type Message } from 'ai/react'
 import { I_ServiceApis, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
-import { defaultState as defaultAttentionState } from '@/components/features/menus/bots/tab-attention'
-import { defaultState as defaultPerformanceState } from '@/components/features/menus/bots/tab-performance'
-import { defaultState as defaultModelState } from '@/components/features/menus/bots/tab-model'
-import { defaultState as defaultSystemState } from '@/components/features/menus/bots/tab-system'
-import { defaultState as defaultPromptState } from '@/components/features/menus/bots/tab-prompt'
-import { defaultState as defaultKnowledgeState } from '@/components/features/menus/bots/tab-knowledge'
-import { defaultState as defaultResponse } from '@/components/features/menus/bots/tab-response'
+import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
+import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
+import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
+import { defaultState as defaultSystemState } from '@/components/features/menus/tabs/tab-system'
+import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
+import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
+import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 import { LocalChat } from "@/components/local-chat"
 
 const defaultState = {
@@ -66,7 +66,7 @@ export default function PlaygroundPage() {
       const mode = newSettings?.attention?.mode
       const initOptions = newSettings?.performance
       const callOptions = {
-        model: 'local', // @TODO should load from settings
+        model: 'local', // @TODO should load from a menu setting
         ...newSettings?.response
       }
       const listResponse = await services?.textInference.installed()

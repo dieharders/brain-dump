@@ -42,11 +42,11 @@ export const ChatPanel = ({
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-90% ${colorTo} to-100%`}
+      className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-85% ${colorTo} to-100%`}
     >
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
-        <div className="flex h-10 items-center justify-center">
+        <div className="flex h-14 items-center justify-center">
           {isLoading ? (
             <Button variant="outline" onClick={() => stop()} className="bg-background">
               <IconStop className="mr-2" />

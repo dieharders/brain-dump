@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
@@ -22,7 +22,7 @@ interface IProps extends React.ComponentProps<'div'> {
 
 export const LocalChat = (props: IProps) => {
   const { theme } = useTheme()
-  const wrapperStyle = constructMainBgStyle(theme)
+  const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const { id, initialMessages, services, isModelLoading, className, settings, setSettings = () => { } } = props
   const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading } =
     useLocalInference({
@@ -31,6 +31,16 @@ export const LocalChat = (props: IProps) => {
       settings,
     })
   const isLoading = isModelLoading || isChatLoading
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    if (hasMounted) return
+    typeof theme === 'string' && setHasMounted(true)
+  }, [hasMounted, theme])
+
+  // Render
+
+  if (!hasMounted) return null
 
   return (
     <div className={wrapperStyle}>

@@ -28,7 +28,7 @@ interface I_Props {
 }
 
 // A menu to select from a list of collections
-export const QueryCharmMenu = (props: I_Props) => {
+export const KnowledgeCharmMenu = (props: I_Props) => {
   const charmId: T_CharmId = 'memory'
   const { selected, fetchListAction, dialogOpen, setDialogOpen, removeCharm, onSubmit } = props
   const [disableForm, setDisableForm] = useState(false)

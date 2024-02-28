@@ -1,7 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { type Message } from 'ai/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
@@ -11,17 +10,12 @@ import { toast } from 'react-hot-toast'
 import { useTheme } from 'next-themes'
 import { constructMainBgStyle } from '@/lib/utils'
 
-interface IProps {
-  id?: string
-  initialMessages?: Message[]
-}
-
 /**
  * This holds the main app behavior
  */
-export const ChatContainer = ({ id, initialMessages }: IProps) => {
+export const ChatContainer = () => {
   const { theme } = useTheme()
-  const wrapperStyle = constructMainBgStyle(theme)
+  const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
@@ -30,6 +24,7 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
+  const [hasMounted, setHasMounted] = useState(false)
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -63,6 +58,15 @@ export const ChatContainer = ({ id, initialMessages }: IProps) => {
     setIsConnecting(false)
     return false
   }, [connectToHomebrew, getServices, selectedProvider])
+
+  useEffect(() => {
+    if (hasMounted) return
+    typeof theme === 'string' && setHasMounted(true)
+  }, [hasMounted, theme])
+
+  // Render
+
+  if (!hasMounted) return null
 
   // HomeBrewAi connection menu
   if (!isConnected)

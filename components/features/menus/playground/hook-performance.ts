@@ -1,7 +1,7 @@
 import { I_Attention_State, I_LLM_Init_Options } from '@/lib/homebrew'
 import { useState } from 'react'
-import { defaultState as defaultAttentionState } from '@/components/features/menus/bots/tab-attention'
-import { defaultState as defaultPerformanceState } from '@/components/features/menus/bots/tab-performance'
+import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
+import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 
 // Defaults
 export const defaultState = {

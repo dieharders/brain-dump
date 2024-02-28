@@ -126,7 +126,7 @@ export const Playground = (props: I_Props) => {
               value={selectedModelId}
               onValueChange={setSelectedModelId}
             >
-              <SelectTrigger className="w-full flex-1">
+              <SelectTrigger className="w-full flex-1 bg-accent">
                 <SelectValue placeholder="Select Ai Model"></SelectValue>
               </SelectTrigger>
               <SelectGroup>
@@ -156,7 +156,7 @@ export const Playground = (props: I_Props) => {
           }
           {/* Model Settings Button */}
           {selectedModelId && <Button
-            className="m-auto h-fit bg-accent-foreground hover:bg-accent"
+            className="m-auto h-fit bg-accent hover:bg-accent-foreground"
             variant="outline"
             onClick={() => setOpenResponseCharmDialog(true)}>
             <MixerHorizontalIcon className="mr-1" />Settings

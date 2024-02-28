@@ -10,8 +10,8 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { I_Attention_State, I_LLM_Init_Options, T_ModelConfig } from '@/lib/homebrew'
-import { AttentionTab } from '@/components/features/menus/bots/tab-attention'
-import { PerformanceTab } from '@/components/features/menus/bots/tab-performance'
+import { AttentionTab } from '@/components/features/menus/tabs/tab-attention'
+import { PerformanceTab } from '@/components/features/menus/tabs/tab-performance'
 
 export type T_State = {
   attention: I_Attention_State

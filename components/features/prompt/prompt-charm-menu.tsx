@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { QueryCharmMenu } from '@/components/features/prompt/dialog-query-charm'
+import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
 import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { I_ServiceApis, I_Text_Settings, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
@@ -111,7 +111,7 @@ export const CharmMenu = (props: I_Props) => {
   return (
     <>
       {/* Collections list for Query Menu */}
-      <QueryCharmMenu
+      <KnowledgeCharmMenu
         dialogOpen={openQueryCharmDialog}
         setDialogOpen={setOpenQueryCharmDialog}
         fetchListAction={fetchCollections}
