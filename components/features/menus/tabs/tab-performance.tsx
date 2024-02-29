@@ -27,6 +27,7 @@ export const defaultState: I_LLM_Init_Options = {
   n_gpu_layers: -1,
   f16_kv: true,
   use_mlock: false,
+  chat_format: undefined,
   verbose: false,
 }
 

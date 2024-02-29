@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -15,14 +15,14 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { T_SystemPrompt, T_SystemPrompts, I_System_State as I_State, I_ServiceApis } from '@/lib/homebrew'
+import { T_SystemPrompt, T_SystemPrompts, I_System_State as I_State } from '@/lib/homebrew'
 
 type T_TemplateSource = 'custom_default' | string
 
 interface I_Props {
   state: I_State
   setState: Dispatch<SetStateAction<I_State>>
-  services: I_ServiceApis | null
+  systemPrompts: T_SystemPrompts
 }
 
 export const defaultState = {
@@ -32,10 +32,7 @@ export const defaultState = {
 
 export const SystemTab = (props: I_Props) => {
   // State values
-  const { state, setState, services } = props
-  const [systemPrompts, setSystemPrompts] = useState<T_SystemPrompts | undefined>()
-
-  const fetchSystemPrompts = useCallback(async () => services?.textInference.getSystemPrompts(), [services?.textInference])
+  const { state, setState, systemPrompts } = props
 
   // Handle input state changes
   const handleStateChange = (propName: string, value: number | string | boolean) => {
@@ -68,13 +65,6 @@ export const SystemTab = (props: I_Props) => {
     )
     return [customGroup, ...presets]
   }, [systemPrompts?.presets])
-
-  useEffect(() => {
-    const action = async () => {
-      await fetchSystemPrompts().then(res => res?.data && setSystemPrompts(res.data))
-    }
-    action()
-  }, [fetchSystemPrompts])
 
   return (
     <div className="px-1">

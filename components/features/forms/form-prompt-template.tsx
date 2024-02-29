@@ -40,8 +40,8 @@ export const PromptTemplateForm = (props: I_Props) => {
   const constructOptionsGroups = (config: { [key: string]: Array<T_PromptTemplate> }) => {
     const groups = Object.keys(config)
     return groups.map((groupName) => {
-      const configs = config[groupName]
-      const items = configs.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)
+      const configs = config?.[groupName]
+      const items = configs?.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)
       return (
         <SelectGroup key={groupName}>
           <SelectLabel className="select-none">{groupName}</SelectLabel>

@@ -22,7 +22,7 @@ export const defaultState: I_State = {
   temperature: 0.8,
   top_k: 40,
   top_p: 0.95,
-  stop: [''],
+  stop: [],
   max_tokens: 128,
   repeat_penalty: 1.1,
   stream: true,
@@ -106,26 +106,6 @@ export const ResponseTab = (props: I_Props) => {
 
       {/* Options Content */}
       <div className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4">
-        {/* Temperature (temperature) */}
-        {/* <div className={inputContainerClass}>
-          <div className={infoClass}>
-            <Label className="text-sm font-semibold">Temperature</Label>
-            <Info label="temperature">
-              <span><Highlight>temperature</Highlight> affects how likely the Ai is to hallucinate facts.</span>
-            </Info>
-          </div>
-          <Input
-            name="url"
-            type="number"
-            value={handleFloatValue(state?.temperature)}
-            min={0}
-            max={2}
-            step={0.1}
-            placeholder={defaultState?.temperature?.toString()}
-            className="w-full"
-            onChange={event => handleFloatChange('temperature', event.target.value)}
-          />
-        </div> */}
         {/* Sampling Precision (top_k) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
@@ -182,7 +162,9 @@ export const ResponseTab = (props: I_Props) => {
               // Remove multiple consecutive spaces
               const inputVal = event.target.value.replace(/ +/g, ' ')
               const arrVal = inputVal.split(' ')
-              setState({ ...state, stop: arrVal })
+              const parsed: string[] = []
+              arrVal?.forEach(i => i.length > 0 && parsed.push(i))
+              setState({ ...state, stop: parsed })
             }}
           />
         </div>

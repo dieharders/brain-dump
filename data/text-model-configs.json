@@ -67,7 +67,7 @@
     "num_gpu_layers": 32,
     "downloadUrl": "https://huggingface.co/TheBloke/llama2_7b_chat_uncensored-GGUF/resolve/main/llama2_7b_chat_uncensored.Q5_K_M.gguf",
     "sha256": "5597c297e81774e476a0d56d153dafa32b0f5043d6e90cb13eb19db6651df791",
-    "messageFormat": "### HUMAN:\n{prompt}\n\n### RESPONSE:"
+    "messageFormat": "### HUMAN:\n{system_message} {prompt}\n\n### RESPONSE:"
   },
   "llama-2-7b-32k-instruct.Q5_K_M": {
     "id": "llama-2-7b-32k-instruct.Q5_K_M",
@@ -84,7 +84,7 @@
     "num_gpu_layers": 32,
     "downloadUrl": "https://huggingface.co/TheBloke/Llama-2-7B-32K-Instruct-GGUF/resolve/main/llama-2-7b-32k-instruct.Q5_K_M.gguf",
     "sha256": "5cf756efc061eeb4e01b2b6f5bec8dc0f0650b5f3012cc023dfb20a569f68379",
-    "messageFormat": "[INST]\n{prompt}\n[/INST]"
+    "messageFormat": "[INST]\n{system_message} {prompt}\n[/INST]"
   },
   "codellama-7b.Q5_K_M": {
     "id": "codellama-7b.Q5_K_M",

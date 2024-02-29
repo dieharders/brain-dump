@@ -61,7 +61,7 @@ export const Playground = (props: I_Props) => {
         // First check if a model is already loaded, if so skip...
         const modelResponse = await services?.textInference.model()
         if (modelResponse?.success) {
-          toast.success(`Success: ${modelResponse?.message}`)
+          toast.success(`${modelResponse?.message}`)
           return true
         }
         // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
@@ -75,7 +75,7 @@ export const Playground = (props: I_Props) => {
         const callOptions = { ...settingsResponse?.data?.response }
         // Tell backend to load the model into memory using these args
         const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
-        const mode = DEFAULT_CONVERSATION_MODE // @TODO Set chat "mode" in payload from UI
+        const mode = stateAttention?.mode || DEFAULT_CONVERSATION_MODE
         const payload = { modelPath: installPath, modelId: selectedModelId, mode, init: initOptions, call: callOptions }
         const response = await services?.textInference.load({ body: payload })
 
@@ -108,7 +108,7 @@ export const Playground = (props: I_Props) => {
         }}
         onSubmit={async () => {
           await saveSettings()
-          toast.success('Model settings saved!')
+          toast.success('Performance settings saved!')
           setOpenResponseCharmDialog(false)
         }}
         stateAttention={stateAttention}
