@@ -61,7 +61,7 @@ export const Playground = (props: I_Props) => {
         // First check if a model is already loaded, if so skip...
         const modelResponse = await services?.textInference.model()
         if (modelResponse?.success) {
-          toast.success(`Success: ${modelResponse?.message}`)
+          toast.success(`${modelResponse?.message}`)
           return true
         }
         // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
@@ -108,7 +108,7 @@ export const Playground = (props: I_Props) => {
         }}
         onSubmit={async () => {
           await saveSettings()
-          toast.success('Model settings saved!')
+          toast.success('Performance settings saved!')
           setOpenResponseCharmDialog(false)
         }}
         stateAttention={stateAttention}

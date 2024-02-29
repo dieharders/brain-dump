@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
 import {
   IconBrain,
   IconMicrophone,
@@ -10,10 +10,9 @@ import {
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
-import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
+import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/menus/charm/menu-charm-model'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { I_Knowledge_State, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 
@@ -56,12 +55,8 @@ export const CharmMenu = (props: I_Props) => {
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
-  const memoryCharm = activeCharms.find(i => i.id === 'memory')
-  const promptCharm = activeCharms.find(i => i.id === 'prompt')
-  const activeStyle = 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-2 ring-purple-300'
+  // const activeStyle = 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-2 ring-purple-300'
   const emptyRingStyle = 'ring-2 ring-accent'
-  const selectedMemoriesList = useRef<string[]>([])
-  const selectedMemoriesText = selectedMemoriesList.current?.map((i, index) => <p key={index}>{i}</p>)
   const [knowledgeType, setKnowledgeType] = useState<string>('')
 
   const {
@@ -94,25 +89,27 @@ export const CharmMenu = (props: I_Props) => {
   const { fetchCollections } = useMemoryActions(services)
 
   const saveModelSettings = useCallback((args: I_ModelSettings) => {
-    // Save to settings file
     const action = async () => {
       if (args) {
-        const res = await services?.storage.savePlaygroundSettings({ body: args })
-        res?.success && toast.success('Model settings saved!')
+        // Save to settings file
+        await services?.storage.savePlaygroundSettings({ body: args })
         // Save state
         setState && setState(args)
       }
+      return
     }
-    action()
+    return action()
   }, [services?.storage, setState])
 
   const saveKnowledgeSettings = useCallback((settings: I_Knowledge_State) => {
     const action = async () => {
       // Save menu forms to a json file
-      const res = await services?.storage.savePlaygroundSettings({ body: settings })
-      res?.success && toast.success('Knowledge settings saved!')
+      await services?.storage.savePlaygroundSettings({ body: settings })
+      // Save state
+      setKnowledgeType(settings.type)
+      return
     }
-    action()
+    return action()
   }, [services?.storage])
 
   // Get services
@@ -134,20 +131,20 @@ export const CharmMenu = (props: I_Props) => {
         dialogOpen={openQueryCharmDialog}
         setDialogOpen={setOpenQueryCharmDialog}
         fetchListAction={fetchCollections}
-        onSubmit={knowledgeSettings => {
+        onSubmit={async (knowledgeSettings) => {
           // addActiveCharm(charm)
-          setKnowledgeType(knowledgeSettings.type)
-          saveKnowledgeSettings(knowledgeSettings)
+          await saveKnowledgeSettings(knowledgeSettings)
+          toast.success('Knowledge settings saved!')
         }}
       />
       {/* Menu for Prompt Template settings */}
       <PromptTemplateCharmMenu
         dialogOpen={openPromptCharmDialog}
         setDialogOpen={setOpenPromptCharmDialog}
-        onSubmit={settings => {
+        onSubmit={async (settings) => {
           // addActiveCharm(charm)
-          saveModelSettings(settings)
-          toast.success('Prompt settings saved!')
+          await saveModelSettings(settings)
+          toast.success('Model settings saved!')
         }}
         stateResponse={stateResponse}
         setStateResponse={setStateResponse}
@@ -160,7 +157,6 @@ export const CharmMenu = (props: I_Props) => {
         ragTemplates={ragTemplates}
         ragModes={ragModes}
         knowledgeType={knowledgeType}
-        services={services}
       />
 
       {/* Charms Selection Menu */}
@@ -184,29 +180,17 @@ export const CharmMenu = (props: I_Props) => {
           </CharmItem>
 
           {/* Query Memory - target a memory collection to use as context */}
-          <Tooltip delayDuration={250}>
-            <TooltipTrigger
-              tabIndex={-1}
-              className={`h-10 rounded-full ${emptyRingStyle} ${memoryCharm && activeStyle}`}
-            >
-              <CharmItem actionText="Query Memory - Select a memory to use as context" onClick={() => setOpenQueryCharmDialog(true)} >
-                <IconBrain className={iconStyle} />
-              </CharmItem>
-              <TooltipContent
-                sideOffset={10}
-              >
-                {/* List of currently selected memories */}
-                Memories: <span className="max-w-64 flex select-none flex-col flex-wrap items-center justify-center overflow-x-hidden break-words text-indigo-400">
-                  {selectedMemoriesText}
-                </span>
-              </TooltipContent>
-              <span className="sr-only">Currently selected memories: {memoryCharm?.toolTipText}</span>
-            </TooltipTrigger>
-          </Tooltip>
+          <CharmItem
+            className={emptyRingStyle}
+            actionText="Query Memory - Select a memory to use as context"
+            onClick={() => setOpenQueryCharmDialog(true)}
+          >
+            <IconBrain className={iconStyle} />
+          </CharmItem>
 
           {/* Model Settings */}
           <CharmItem
-            className={`${emptyRingStyle} ${promptCharm && activeStyle}`}
+            className={emptyRingStyle}
             actionText="Model Settings - Modify your Ai behavior"
             onClick={async () => {
               await fetchData()

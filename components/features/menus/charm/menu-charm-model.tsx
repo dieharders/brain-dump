@@ -12,15 +12,17 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { SystemTab } from '@/components/features/menus/tabs/tab-system'
+import { T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
 import {
   I_PromptTemplates,
   I_Prompt_State,
   I_RAGPromptTemplates,
   I_Response_State,
-  I_ServiceApis,
   I_System_State,
   T_SystemPrompts,
 } from '@/lib/homebrew'
+
+export const charmId: T_CharmId = 'prompt'
 
 export interface I_State {
   system: I_System_State,
@@ -43,7 +45,6 @@ interface I_Props {
   ragTemplates: I_RAGPromptTemplates
   ragModes: string[]
   knowledgeType: string
-  services: I_ServiceApis | null
 }
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
@@ -62,7 +63,6 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     ragTemplates,
     ragModes,
     knowledgeType,
-    services
   } = props
 
   const onSaveClick = useCallback(
@@ -82,7 +82,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   // Tabs
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [setStateResponse, stateResponse])
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, setStatePrompt, statePrompt])
-  const systemMessageMenu = useMemo(() => <SystemTab services={services} state={stateSystem} setState={setStateSystem} />, [services, setStateSystem, stateSystem])
+  const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [setStateSystem, stateSystem, systemPrompts])
 
   const tabs = [
     { label: 'Response', title: 'Response', content: responseMenu },

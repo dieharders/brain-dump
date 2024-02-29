@@ -59,7 +59,7 @@ export const BotCreationMenu = (props: I_Props) => {
     collections,
     setCollections,
   } = useKnowledgeMenu()
-  const { fetchData: fetchModelSettingsData, promptTemplates, ragTemplates, ragModes } = useModelSettingsMenu({ services: data.services })
+  const { fetchData: fetchModelSettingsData, systemPrompts, promptTemplates, ragTemplates, ragModes } = useModelSettingsMenu({ services: data.services })
   const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
   const [stateAttention, setStateAttention] = useState<I_Attention_State>(defaults.attention)
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
@@ -69,7 +69,7 @@ export const BotCreationMenu = (props: I_Props) => {
 
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
-  const systemMessageMenu = useMemo(() => <SystemTab services={data.services} state={stateSystem} setState={setStateSystem} />, [data.services, stateSystem])
+  const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [stateSystem, systemPrompts])
   const knowledgeMenu = useMemo(() => <KnowledgeTab type={knowledgeType} setType={setKnowledgeType} selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} collections={collections} setCollections={setCollections} disableForm={disableForm} setDisableForm={setDisableForm} />, [collections, disableForm, fetchCollections, knowledgeType, knowledgeIndex, setCollections, setDisableForm, setKnowledgeIndex, setKnowledgeType])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [stateResponse])
   const modelMenu = useMemo(() => <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />, [data.installedList, data.modelConfigs, stateModel])
