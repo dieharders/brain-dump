@@ -3,7 +3,7 @@ import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { ChatPrompt } from '@/components/features/chat/chat-prompt'
 import { ButtonScrollToBottom } from '@/components/features/chat/button-scroll-to-bottom'
-import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
+import { CharmMenu, T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
 
@@ -37,7 +37,7 @@ export const ChatPage = ({
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
-  const [activeCharms, setActiveCharms] = useState<I_Charm[]>([])
+  const [activeCharms, setActiveCharms] = useState<T_CharmId[]>([])
 
   return (
     <div
@@ -64,31 +64,25 @@ export const ChatPage = ({
             )
           )}
         </div>
-        {/* Main Prompt Panel */}
+        {/* Prompt Panel container */}
         <div className="flex flex-col justify-between space-y-4 border-t bg-background px-0 py-2 shadow-lg sm:rounded-t-xl sm:border sm:px-4 md:py-4">
           <CharmMenu
             open={charmMenuOpen}
             setState={setSettings}
             activeCharms={activeCharms}
-            addActiveCharm={(selectedCharm: I_Charm) => {
-              const charmIds = activeCharms.map(i => i.id)
-              const exists = charmIds.includes(selectedCharm.id)
-              // Check we arent adding dupes
+            toggleActiveCharm={(selectedCharmId: T_CharmId) => {
+              const index = activeCharms.indexOf(selectedCharmId)
+              const exists = index !== -1
+              // Remove
               if (exists) {
-                const index = charmIds.indexOf(selectedCharm.id)
                 const newActiveCharms = [...activeCharms]
                 newActiveCharms.splice(index, 1)
-                setActiveCharms([...newActiveCharms, selectedCharm])
+                setActiveCharms(newActiveCharms)
               }
-              else setActiveCharms([...activeCharms, selectedCharm])
+              // Add
+              else setActiveCharms([...activeCharms, selectedCharmId])
             }}
-            removeActiveCharm={(id: T_CharmId) => {
-              const ind = activeCharms.findIndex(i => i.id === id)
-              if (ind === -1) return
-              const newList = [...activeCharms]
-              newList.splice(ind, 1)
-              setActiveCharms(newList)
-            }} />
+          />
 
           <ChatPrompt
             onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}

@@ -45,7 +45,7 @@ export const ChatPrompt = ({ onSubmit, onCharmClick, input, setInput, isLoading,
             e.preventDefault()
             onCharmClick()
           }} />
-        {/* Prompt text area */}
+        {/* Text prompt area */}
         <Textarea
           ref={inputRef}
           tabIndex={0}
