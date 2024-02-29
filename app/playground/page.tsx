@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from "react"
+import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { I_ServiceApis, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
@@ -29,6 +30,8 @@ export interface I_PageProps {
 }
 
 export default function PlaygroundPage() {
+  const pathname = usePathname()
+  const routeId = pathname.split('/')[1] // base url
   const [doOnce, setDoOnce] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
@@ -66,7 +69,7 @@ export default function PlaygroundPage() {
       const mode = newSettings?.attention?.mode
       const initOptions = newSettings?.performance
       const callOptions = {
-        model: 'local', // @TODO should load from a menu setting
+        model: 'local', // @TODO should load from a menu setting (global app setting ?)
         ...newSettings?.response
       }
       const listResponse = await services?.textInference.installed()
@@ -92,6 +95,7 @@ export default function PlaygroundPage() {
   return (
     <LocalChat
       id={session_id}
+      routeId={routeId}
       initialMessages={initialMessages}
       services={services}
       isModelLoading={isLoading}

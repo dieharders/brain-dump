@@ -1,9 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { type Message } from 'ai/react'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
 import { I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
-import { type Message } from 'ai/react'
 // import { type Metadata } from 'next'
 // import { notFound, redirect } from 'next/navigation'
 // import { auth } from '@/auth'
@@ -33,6 +34,8 @@ export interface I_PageProps {
 
 export default function BotPage({ params }: I_PageProps) {
   const { name } = params
+  const pathname = usePathname()
+  const routeId = pathname.split('/')[1] // base url
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const { getServices } = useHomebrew()
@@ -112,6 +115,7 @@ export default function BotPage({ params }: I_PageProps) {
   return (
     <LocalChat
       id={name}
+      routeId={routeId}
       initialMessages={initialMessages}
       services={services}
       isModelLoading={isLoading}
