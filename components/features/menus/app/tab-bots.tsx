@@ -9,7 +9,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { I_Attention_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_PromptTemplates, I_Prompt_State, I_RAGPromptTemplates, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { I_Attention_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_Prompt_State, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { AttentionTab, defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { ModelTab, defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -19,6 +19,7 @@ import { KnowledgeTab, defaultState as defaultKnowledgeState } from '@/component
 import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
+import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 
 interface I_Props {
@@ -35,7 +36,6 @@ interface I_Props {
 export const BotCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit, data } = props
   const { fetchCollections } = useMemoryActions(data.services)
-  const { getAPIConfigOptions } = useHomebrew()
 
   // Defaults
   const defaults: I_Text_Settings = useMemo(() => ({
@@ -59,17 +59,13 @@ export const BotCreationMenu = (props: I_Props) => {
     collections,
     setCollections,
   } = useKnowledgeMenu()
+  const { fetchData: fetchModelSettingsData, promptTemplates, ragTemplates, ragModes } = useModelSettingsMenu({ services: data.services })
   const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
   const [stateAttention, setStateAttention] = useState<I_Attention_State>(defaults.attention)
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
   const [stateSystem, setStateSystem] = useState<I_System_State>(defaults.system)
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
   const [stateResponse, setStateResponse] = useState<I_Response_State>(defaults.response)
-
-  // Data values
-  const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})
-  const [ragTemplates, setRagTemplates] = useState<I_RAGPromptTemplates>({})
-  const [ragModes, setRagModes] = useState<string[]>([])
 
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
@@ -89,11 +85,6 @@ export const BotCreationMenu = (props: I_Props) => {
     { label: '🧠', title: 'Thinking', content: promptMenu },
     { label: '🙊', title: 'Response', content: responseMenu },
   ], [attentionMenu, knowledgeMenu, modelMenu, performanceMenu, promptMenu, responseMenu, systemMessageMenu])
-
-  // Fetch data
-  const fetchPromptTemplates = useCallback(async () => data.services?.textInference.getPromptTemplates(), [data.services?.textInference])
-  const fetchRagTemplates = useCallback(async () => data.services?.textInference.getRagPromptTemplates(), [data.services?.textInference])
-  const fetchRagModes = useCallback(async () => getAPIConfigOptions(), [getAPIConfigOptions])
 
   // Hooks
   const onSaveClick = useCallback(
@@ -140,26 +131,10 @@ export const BotCreationMenu = (props: I_Props) => {
     }
   }, [defaults, dialogOpen, setKnowledgeIndex, setKnowledgeType])
 
-  // Fetch data
+  // Fetch on mount
   useEffect(() => {
-    const getPromptTemplates = async () => {
-      const req = await fetchPromptTemplates()
-      const data = req?.data || {}
-      setPromptTemplates(data)
-    }
-    const getRagTemplates = async () => {
-      const req = await fetchRagTemplates()
-      const data = req?.data || {}
-      setRagTemplates(data)
-    }
-    const getRagModes = async () => {
-      const data = await fetchRagModes()
-      setRagModes(data?.ragResponseModes || [])
-    }
-    getPromptTemplates()
-    getRagTemplates()
-    getRagModes()
-  }, [fetchPromptTemplates, fetchRagModes, fetchRagTemplates])
+    fetchModelSettingsData()
+  }, [fetchModelSettingsData])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -169,7 +144,9 @@ export const BotCreationMenu = (props: I_Props) => {
           label="Bot Settings"
           tabs={tabs}
         />
+
         <Separator className="my-6" />
+
         <DialogFooter className="content-center items-stretch">
           <Button onClick={onSaveClick}>Save</Button>
         </DialogFooter>

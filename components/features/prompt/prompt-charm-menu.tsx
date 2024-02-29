@@ -10,10 +10,11 @@ import {
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
-import { PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
+import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/prompt/dialog-prompt-charm'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { I_Knowledge_State, I_ServiceApis, I_Text_Settings, T_PromptTemplates, T_SystemPrompts, useHomebrew } from '@/lib/homebrew'
+import { I_Knowledge_State, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 
 export interface I_Charm {
@@ -36,13 +37,13 @@ export interface I_Props {
   activeCharms: I_Charm[]
   addActiveCharm: (charm: I_Charm) => void
   removeActiveCharm: (id: T_CharmId) => void
-  settings?: I_Text_Settings
-  setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
+  setState?: Dispatch<SetStateAction<I_ModelSettings>>
 }
 
 // @TODO Break out the charm menu from LocalChat since we want to pass specific charms to the chat per page
 export const CharmMenu = (props: I_Props) => {
-  const { open, activeCharms, settings, addActiveCharm, removeActiveCharm, setSettings } = props
+  const { open, activeCharms, addActiveCharm, removeActiveCharm, setState } = props
+  const { getServices } = useHomebrew()
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
@@ -52,19 +53,30 @@ export const CharmMenu = (props: I_Props) => {
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
-  const [services, setServices] = useState<I_ServiceApis | null>(null)
-  const { getServices, getAPIConfigOptions } = useHomebrew()
-  const APIConfigOptions = useRef({})
+  const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const animDuration = open ? 'duration-150' : 'duration-500'
   const memoryCharm = activeCharms.find(i => i.id === 'memory')
   const promptCharm = activeCharms.find(i => i.id === 'prompt')
-  const [promptTemplates, setPromptTemplates] = useState<T_PromptTemplates | undefined>()
-  const [systemPrompts, setSystemPrompts] = useState<T_SystemPrompts | undefined>()
   const activeStyle = 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-2 ring-purple-300'
   const emptyRingStyle = 'ring-2 ring-accent'
   const selectedMemoriesList = useRef<string[]>([])
   const selectedMemoriesText = selectedMemoriesList.current?.map((i, index) => <p key={index}>{i}</p>)
+  const [knowledgeType, setKnowledgeType] = useState<string>('')
+
+  const {
+    fetchData,
+    stateResponse,
+    setStateResponse,
+    stateSystem,
+    setStateSystem,
+    statePrompt,
+    setStatePrompt,
+    promptTemplates,
+    systemPrompts,
+    ragTemplates,
+    ragModes,
+  } = useModelSettingsMenu({ services })
 
   const CharmItem = (props: I_CharmItemProps) => {
     return (
@@ -79,25 +91,26 @@ export const CharmMenu = (props: I_Props) => {
     )
   }
 
-  const fetchPromptTemplates = useCallback(async () => services?.textInference.getPromptTemplates(), [services?.textInference])
-  const fetchRagPromptTemplates = useCallback(async () => services?.textInference.getRagPromptTemplates(), [services?.textInference])
-  const fetchSystemPrompts = useCallback(async () => services?.textInference.getSystemPrompts(), [services?.textInference])
   const { fetchCollections } = useMemoryActions(services)
 
-  type T_SavePromptSettings = (args: I_Text_Settings) => void
-
-  const saveSettings = useCallback<T_SavePromptSettings>((args) => {
+  const saveModelSettings = useCallback((args: I_ModelSettings) => {
     // Save to settings file
-    args && services?.storage.savePlaygroundSettings({ body: args })
-    // Save state
-    setSettings && setSettings(args)
-  }, [services?.storage, setSettings])
+    const action = async () => {
+      if (args) {
+        const res = await services?.storage.savePlaygroundSettings({ body: args })
+        res?.success && toast.success('Model settings saved!')
+        // Save state
+        setState && setState(args)
+      }
+    }
+    action()
+  }, [services?.storage, setState])
 
   const saveKnowledgeSettings = useCallback((settings: I_Knowledge_State) => {
-    toast.success('Knowledge settings saved!')
     const action = async () => {
       // Save menu forms to a json file
-      await services?.storage.savePlaygroundSettings({ body: settings })
+      const res = await services?.storage.savePlaygroundSettings({ body: settings })
+      res?.success && toast.success('Knowledge settings saved!')
     }
     action()
   }, [services?.storage])
@@ -106,16 +119,13 @@ export const CharmMenu = (props: I_Props) => {
   useEffect(() => {
     const action = async () => {
       const res = await getServices()
-      const cfg = await getAPIConfigOptions()
-
       if (res) {
         setServices(res)
         setHasMounted(true)
       }
-      if (cfg) APIConfigOptions.current = cfg
     }
     if (!hasMounted) action()
-  }, [getAPIConfigOptions, getServices, hasMounted])
+  }, [getServices, hasMounted])
 
   return (
     <>
@@ -125,6 +135,8 @@ export const CharmMenu = (props: I_Props) => {
         setDialogOpen={setOpenQueryCharmDialog}
         fetchListAction={fetchCollections}
         onSubmit={knowledgeSettings => {
+          // addActiveCharm(charm)
+          setKnowledgeType(knowledgeSettings.type)
           saveKnowledgeSettings(knowledgeSettings)
         }}
       />
@@ -132,15 +144,23 @@ export const CharmMenu = (props: I_Props) => {
       <PromptTemplateCharmMenu
         dialogOpen={openPromptCharmDialog}
         setDialogOpen={setOpenPromptCharmDialog}
-        onSubmit={(charm, templateSettings) => {
-          addActiveCharm(charm)
-          saveSettings(templateSettings)
+        onSubmit={settings => {
+          // addActiveCharm(charm)
+          saveModelSettings(settings)
           toast.success('Prompt settings saved!')
         }}
-        settings={settings || {}}
+        stateResponse={stateResponse}
+        setStateResponse={setStateResponse}
+        stateSystem={stateSystem}
+        setStateSystem={setStateSystem}
+        statePrompt={statePrompt}
+        setStatePrompt={setStatePrompt}
         promptTemplates={promptTemplates}
         systemPrompts={systemPrompts}
-        options={APIConfigOptions.current}
+        ragTemplates={ragTemplates}
+        ragModes={ragModes}
+        knowledgeType={knowledgeType}
+        services={services}
       />
 
       {/* Charms Selection Menu */}
@@ -184,15 +204,12 @@ export const CharmMenu = (props: I_Props) => {
             </TooltipTrigger>
           </Tooltip>
 
-          {/* Prompt Type - Includes presets, advanced settings as well as a custom form to write your own */}
+          {/* Model Settings */}
           <CharmItem
             className={`${emptyRingStyle} ${promptCharm && activeStyle}`}
-            actionText="Prompt Template - Use presets or write your own"
+            actionText="Model Settings - Modify your Ai behavior"
             onClick={async () => {
-              const normal = await fetchPromptTemplates()
-              const rag = await fetchRagPromptTemplates()
-              normal && rag && setPromptTemplates({ rag_presets: rag.data, normal_presets: normal.data })
-              await fetchSystemPrompts().then(res => res?.data && setSystemPrompts(res.data))
+              await fetchData()
               setOpenPromptCharmDialog(true)
             }}>
             <IconPromptTemplate className={iconStyle} />

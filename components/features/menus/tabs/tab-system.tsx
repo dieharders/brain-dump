@@ -69,6 +69,7 @@ export const SystemTab = (props: I_Props) => {
     return [customGroup, ...presets]
   }, [systemPrompts?.presets])
 
+  // @TODO Push this outside to parent or in hook
   useEffect(() => {
     const action = async () => {
       await fetchSystemPrompts().then(res => res?.data && setSystemPrompts(res.data))
