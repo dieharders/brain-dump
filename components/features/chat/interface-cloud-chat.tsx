@@ -9,7 +9,7 @@ import { ChatPage } from '@/components/features/chat/chat-page'
 import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
-import { useSettings } from '../settings/hooks'
+import { useSettings } from '@/components/features/settings/hooks'
 import { AIModels } from '@/components/features/settings/hooks'
 
 interface IProps extends React.ComponentProps<'div'> {
