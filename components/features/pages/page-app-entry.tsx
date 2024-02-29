@@ -5,7 +5,7 @@ import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
-import { ApplicationModesMenu } from '@/components/features/menus/app/menu-application-modes'
+import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu-application-modes'
 import { toast } from 'react-hot-toast'
 import { useTheme } from 'next-themes'
 import { constructMainBgStyle } from '@/lib/utils'
@@ -13,7 +13,7 @@ import { constructMainBgStyle } from '@/lib/utils'
 /**
  * This holds the main app behavior
  */
-export const AppContainer = () => {
+export const AppEntry = () => {
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnected, setIsConnected] = useState(false)

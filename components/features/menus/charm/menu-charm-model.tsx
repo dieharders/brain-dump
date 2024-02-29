@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
 import { SystemTab } from '@/components/features/menus/tabs/tab-system'
-import { T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
+import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import {
   I_PromptTemplates,
   I_Prompt_State,

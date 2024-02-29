@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { LocalChat } from '@/components/local-chat'
+import { LocalChat } from '@/components/features/chat/interface-local-chat'
 import { I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { type Message } from 'ai/react'
 // import { type Metadata } from 'next'

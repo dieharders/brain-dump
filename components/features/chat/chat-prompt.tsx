@@ -5,7 +5,7 @@ import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { IconArrowElbow } from '@/components/ui/icons'
-import { CharmMenuButton } from '@/components/features/prompt/prompt-charm-button'
+import { CharmMenuButton } from '@/components/features/menus/charm/button-charm-menu-trigger'
 import { MouseEvent } from 'react'
 
 export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> {
@@ -15,7 +15,7 @@ export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> 
   isLoading: boolean
 }
 
-export const PromptForm = ({ onSubmit, onCharmClick, input, setInput, isLoading, charmMenuIsOpen }: PromptProps) => {
+export const ChatPrompt = ({ onSubmit, onCharmClick, input, setInput, isLoading, charmMenuIsOpen }: PromptProps) => {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
 

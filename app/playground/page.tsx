@@ -10,7 +10,7 @@ import { defaultState as defaultSystemState } from '@/components/features/menus/
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
 import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
-import { LocalChat } from "@/components/local-chat"
+import { LocalChat } from "@/components/features/chat/interface-local-chat"
 
 const defaultState = {
   attention: defaultAttentionState,

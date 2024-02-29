@@ -10,7 +10,7 @@ import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { I_Collection, T_Memory_Type } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
-import { T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
+import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { KnowledgeTab } from '@/components/features/menus/tabs/tab-knowledge'
 import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
 
