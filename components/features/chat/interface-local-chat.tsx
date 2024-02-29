@@ -4,10 +4,10 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
-import { ChatList } from '@/components/chat-list'
-import { ChatPanel } from '@/components/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
-import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
+import { ChatList } from '@/components/features/chat/chat-list'
+import { ChatPage } from '@/components/features/chat/chat-page'
+import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
+import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
 import { I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
 
@@ -54,7 +54,7 @@ export const LocalChat = (props: IProps) => {
           <EmptyScreen setInput={setInput} />
         )}
       </div>
-      <ChatPanel
+      <ChatPage
         id={id}
         isLoading={isLoading}
         stop={stop}

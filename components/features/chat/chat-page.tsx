@@ -1,16 +1,15 @@
 import { Dispatch, SetStateAction, useState } from 'react'
 import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
-import { PromptForm } from '@/components/prompt-form'
-import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/prompt/prompt-charm-menu'
+import { ChatPrompt } from '@/components/features/chat/chat-prompt'
+import { ButtonScrollToBottom } from '@/components/features/chat/button-scroll-to-bottom'
+import { CharmMenu, I_Charm, T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
-import { I_Text_Settings } from '@/lib/homebrew'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
 
-export interface ChatPanelProps
+export interface I_Props
   extends Pick<
     UseChatHelpers,
     'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
@@ -18,11 +17,11 @@ export interface ChatPanelProps
   id?: string
   theme: string | undefined
   append: TAppend
-  settings?: I_Text_Settings,
+  settings?: any,
   setSettings?: Dispatch<SetStateAction<any>>,
 }
 
-export const ChatPanel = ({
+export const ChatPage = ({
   id,
   isLoading,
   stop,
@@ -33,8 +32,8 @@ export const ChatPanel = ({
   messages,
   theme,
   settings,
-  setSettings,
-}: ChatPanelProps) => {
+  setSettings, // Used by parent to save settings to disk
+}: I_Props) => {
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
@@ -91,7 +90,7 @@ export const ChatPanel = ({
               setActiveCharms(newList)
             }} />
 
-          <PromptForm
+          <ChatPrompt
             onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
             charmMenuIsOpen={charmMenuOpen}
             onSubmit={async value => {
