@@ -58,7 +58,7 @@ export const ResponseTab = (props: I_Props) => {
       {/* Accuracy Presets */}
       <DialogHeader className="my-8">
         <div className={infoClass}>
-          <DialogTitle>Accuracy Settings</DialogTitle>
+          <DialogTitle>Accuracy</DialogTitle>
           <Info label="temperature">
             <span><Highlight>temperature</Highlight> {`affects how likely the Ai is to "hallucinate" facts, be creative.`}</span>
           </Info>
@@ -98,7 +98,7 @@ export const ResponseTab = (props: I_Props) => {
 
       {/* LLM call Settings */}
       <DialogHeader className="my-8">
-        <DialogTitle>Response Settings</DialogTitle>
+        <DialogTitle>Settings</DialogTitle>
         <DialogDescription>
           Determine how the LLM behaves when responding to requests.
         </DialogDescription>

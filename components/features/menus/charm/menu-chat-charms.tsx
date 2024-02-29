@@ -33,31 +33,32 @@ interface I_CharmItemProps {
 
 export interface I_Props {
   open: boolean
-  activeCharms: I_Charm[]
-  addActiveCharm: (charm: I_Charm) => void
-  removeActiveCharm: (id: T_CharmId) => void
+  charmsList: T_CharmId[] // What charms to render
+  activeCharms: T_CharmId[]
+  toggleActiveCharm: (id: T_CharmId) => void
   setState?: Dispatch<SetStateAction<I_ModelSettings>>
 }
 
-// @TODO Break out the charm menu from LocalChat since we want to pass specific charms to the chat per page
 export const CharmMenu = (props: I_Props) => {
-  const { open, activeCharms, addActiveCharm, removeActiveCharm, setState } = props
-  const { getServices } = useHomebrew()
+  const { open, charmsList, activeCharms, toggleActiveCharm, setState } = props
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
   const iconStyle = 'h-fit w-16 cursor-pointer rounded-full text-primary bg-ghost'
+  const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
   const DEFAULT_EXPLANATION = 'Use Charms to enhance the conversation'
-  const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
-  const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
-  const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
+  const activeStyle = 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-2 ring-purple-300'
+  const emptyRingStyle = 'ring-2 ring-accent'
+  const animDuration = open ? 'duration-150' : 'duration-500'
+  const { getServices } = useHomebrew()
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
-  const activeCharmVisibility = !open ? 'opacity-0' : 'opacity-100'
-  const animDuration = open ? 'duration-150' : 'duration-500'
-  // const activeStyle = 'shadow-[0_0_0.5rem_0.35rem_rgba(99,102,241,0.9)] ring-2 ring-purple-300'
-  const emptyRingStyle = 'ring-2 ring-accent'
+  const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [knowledgeType, setKnowledgeType] = useState<string>('')
+  const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
+  const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
+  const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
+  const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
 
   const {
     fetchData,
@@ -126,78 +127,94 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
+      {/* @TODO We may need to move these menus outside this component due to re-renders */}
+
       {/* Collections list for Knowledge Base menu */}
-      <KnowledgeCharmMenu
-        dialogOpen={openQueryCharmDialog}
-        setDialogOpen={setOpenQueryCharmDialog}
-        fetchListAction={fetchCollections}
-        onSubmit={async (knowledgeSettings) => {
-          // addActiveCharm(charm)
-          await saveKnowledgeSettings(knowledgeSettings)
-          toast.success('Knowledge settings saved!')
-        }}
-      />
+      {shouldRender('memory') &&
+        <KnowledgeCharmMenu
+          dialogOpen={openQueryCharmDialog}
+          setDialogOpen={setOpenQueryCharmDialog}
+          fetchListAction={fetchCollections}
+          onSubmit={async (knowledgeSettings) => {
+            await saveKnowledgeSettings(knowledgeSettings)
+            toast.success('Knowledge settings saved!')
+          }}
+        />
+      }
+
       {/* Menu for Prompt Template settings */}
-      <PromptTemplateCharmMenu
-        dialogOpen={openPromptCharmDialog}
-        setDialogOpen={setOpenPromptCharmDialog}
-        onSubmit={async (settings) => {
-          // addActiveCharm(charm)
-          await saveModelSettings(settings)
-          toast.success('Model settings saved!')
-        }}
-        stateResponse={stateResponse}
-        setStateResponse={setStateResponse}
-        stateSystem={stateSystem}
-        setStateSystem={setStateSystem}
-        statePrompt={statePrompt}
-        setStatePrompt={setStatePrompt}
-        promptTemplates={promptTemplates}
-        systemPrompts={systemPrompts}
-        ragTemplates={ragTemplates}
-        ragModes={ragModes}
-        knowledgeType={knowledgeType}
-      />
+      {shouldRender('prompt') &&
+        <PromptTemplateCharmMenu
+          dialogOpen={openPromptCharmDialog}
+          setDialogOpen={setOpenPromptCharmDialog}
+          onSubmit={async (settings) => {
+            await saveModelSettings(settings)
+            toast.success('Model settings saved!')
+          }}
+          stateResponse={stateResponse}
+          setStateResponse={setStateResponse}
+          stateSystem={stateSystem}
+          setStateSystem={setStateSystem}
+          statePrompt={statePrompt}
+          setStatePrompt={setStatePrompt}
+          promptTemplates={promptTemplates}
+          systemPrompts={systemPrompts}
+          ragTemplates={ragTemplates}
+          ragModes={ragModes}
+          knowledgeType={knowledgeType}
+        />
+      }
 
       {/* Charms Selection Menu */}
       <div className={`transition-[height, opacity] justify-between space-y-2 ease-out ${sizeHeight} overflow-hidden ${activeCharmVisibility} ${animDuration}`}>
         {/* Selectable Charms Buttons */}
         <div className="scrollbar flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
           {/* Microphone - use to input text */}
-          <CharmItem
-            className={`${emptyRingStyle}`}
-            actionText="Microphone - Transform speech to text"
-          >
-            <IconMicrophone className={iconStyle} />
-          </CharmItem>
+          {shouldRender('microphone') &&
+            <CharmItem
+              className={`${emptyRingStyle} ${isActive('microphone') && activeStyle}`}
+              actionText="Microphone - Transform speech to text"
+              onClick={() => toggleActiveCharm('microphone')}
+            >
+              <IconMicrophone className={iconStyle} />
+            </CharmItem>
+          }
 
           {/* Audio Response */}
-          <CharmItem
-            className={`${emptyRingStyle}`}
-            actionText="Speak - Have the Ai speak back to you"
-          >
-            <IconSynth className={iconStyle} />
-          </CharmItem>
+          {shouldRender('speak') &&
+            <CharmItem
+              className={`${emptyRingStyle} ${isActive('speak') && activeStyle}`}
+              actionText="Speak - Have the Ai speak back to you"
+              onClick={() => toggleActiveCharm('speak')}
+            >
+              <IconSynth className={iconStyle} />
+            </CharmItem>
+          }
 
           {/* Query Memory - target a memory collection to use as context */}
-          <CharmItem
-            className={emptyRingStyle}
-            actionText="Query Memory - Select a memory to use as context"
-            onClick={() => setOpenQueryCharmDialog(true)}
-          >
-            <IconBrain className={iconStyle} />
-          </CharmItem>
+          {shouldRender('memory') &&
+            <CharmItem
+              className={emptyRingStyle}
+              actionText="Query Memory - Select a memory to use as context"
+              onClick={() => setOpenQueryCharmDialog(true)}
+            >
+              <IconBrain className={iconStyle} />
+            </CharmItem>
+          }
 
           {/* Model Settings */}
-          <CharmItem
-            className={emptyRingStyle}
-            actionText="Model Settings - Modify your Ai behavior"
-            onClick={async () => {
-              await fetchData()
-              setOpenPromptCharmDialog(true)
-            }}>
-            <IconPromptTemplate className={iconStyle} />
-          </CharmItem>
+          {shouldRender('prompt') &&
+            <CharmItem
+              className={emptyRingStyle}
+              actionText="Model Settings - Modify your Ai behavior"
+              onClick={async () => {
+                await fetchData()
+                setOpenPromptCharmDialog(true)
+              }}>
+              <IconPromptTemplate className={iconStyle} />
+            </CharmItem>
+          }
+
         </div>
 
         <DropdownMenuSeparator />

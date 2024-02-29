@@ -5,7 +5,7 @@ import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { IconArrowElbow } from '@/components/ui/icons'
-import { CharmMenuButton } from '@/components/features/menus/charm/button-charm-menu-trigger'
+import { CharmMenuButton } from '@/components/features/chat/button-charm-menu-trigger'
 import { MouseEvent } from 'react'
 
 export interface PromptProps extends Pick<UseChatHelpers, 'input' | 'setInput'> {
@@ -45,7 +45,7 @@ export const ChatPrompt = ({ onSubmit, onCharmClick, input, setInput, isLoading,
             e.preventDefault()
             onCharmClick()
           }} />
-        {/* Prompt text area */}
+        {/* Text prompt area */}
         <Textarea
           ref={inputRef}
           tabIndex={0}

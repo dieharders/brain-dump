@@ -14,6 +14,7 @@ import { I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
+  routeId?: string
   services: I_ServiceApis | null
   isModelLoading?: boolean
   settings?: I_Text_Settings
@@ -23,7 +24,7 @@ interface IProps extends React.ComponentProps<'div'> {
 export const LocalChat = (props: IProps) => {
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
-  const { id, initialMessages, services, isModelLoading, className, settings, setSettings = () => { } } = props
+  const { id, routeId, initialMessages, services, isModelLoading, className, settings, setSettings = () => { } } = props
   const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading } =
     useLocalInference({
       initialMessages,
@@ -56,6 +57,7 @@ export const LocalChat = (props: IProps) => {
       </div>
       <ChatPage
         id={id}
+        routeId={routeId}
         isLoading={isLoading}
         stop={stop}
         append={append}
