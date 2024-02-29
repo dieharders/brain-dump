@@ -75,7 +75,7 @@ export const Playground = (props: I_Props) => {
         const callOptions = { ...settingsResponse?.data?.response }
         // Tell backend to load the model into memory using these args
         const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
-        const mode = DEFAULT_CONVERSATION_MODE // @TODO Set chat "mode" in payload from UI
+        const mode = stateAttention?.mode || DEFAULT_CONVERSATION_MODE
         const payload = { modelPath: installPath, modelId: selectedModelId, mode, init: initOptions, call: callOptions }
         const response = await services?.textInference.load({ body: payload })
 
