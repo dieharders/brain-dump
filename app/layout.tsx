@@ -5,7 +5,7 @@ import { fontMono, fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
-import { Header } from '@/components/header'
+import { Header } from '@/components/features/layout/header'
 
 export const metadata: Metadata = {
   title: {

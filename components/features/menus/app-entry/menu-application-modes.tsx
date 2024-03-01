@@ -1,6 +1,7 @@
 'use client'
 
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { useRouter } from "next/navigation"
 import Link from 'next/link'
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
@@ -47,6 +48,8 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
+  const ROUTE_KNOWLEDGE = '/knowledge'
+  const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
   const gridContentClass = "flex flex-wrap justify-around gap-6"
   const presetBotClass = "opacity-40"
@@ -188,11 +191,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} />
-        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} />
-        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} />
-        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
+        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
+        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
+        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
+        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
       </div>
     </div>
   )
