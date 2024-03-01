@@ -15,6 +15,7 @@ import { constructMainBgStyle } from '@/lib/utils'
  */
 export const AppEntry = () => {
   const { theme } = useTheme()
+  // Wrapper for styling the app background
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
@@ -66,8 +67,8 @@ export const AppEntry = () => {
 
   // Render
 
+  // Prevent server/client render mismatch
   if (!hasMounted) return null
-
   // HomeBrewAi connection menu
   if (!isConnected)
     return (
@@ -82,45 +83,29 @@ export const AppEntry = () => {
         </Button>
       </div>
     )
-
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
-      // Wrapper for styling the app background
       <div className={wrapperStyle}>
         {/* Model Selection Menu */}
         <div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]" >
-          {/* <h1 className="mt-4 px-4 text-center text-xl">Connected to HomebrewAi server</h1> */}
           <ApplicationModesMenu
             setHasTextServiceConnected={setHasTextServiceConnected}
             isConnecting={isConnecting}
             setIsConnecting={setIsConnecting}
             modelConfigs={modelConfigs || {}}
             installedList={installedList}
-            onSubmit={() => {
-              /* logic to go to a route */
-            }}
+            onSubmit={() => { /* logic to go to a route */ }}
             services={services}
           />
         </div >
       </div>
     )
-
-  // Render "Connecting..." feedback
-  if (isConnecting && !isConnected)
-    return (
-      <div className={wrapperStyle}>
-        <div className="m-4 text-center">Connecting to server...</div>
+  // Connected - Render "no selection" warning
+  return (
+    <div className={wrapperStyle}>
+      <div className="m-4 text-center">Loading LLM Model...
       </div>
-    )
-  // Connected
-  if (!isConnecting && isConnected) {
-    // Render "no selection" warning
-    return (
-      <div className={wrapperStyle}>
-        <div className="m-4 text-center">No model selected. Go to settings {'->'} LLM Model and choose one.
-        </div>
-      </div>
-    )
-  }
+    </div>
+  )
 }
