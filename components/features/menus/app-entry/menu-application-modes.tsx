@@ -250,12 +250,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const tabs = [
-    { label: 'models', content: modelsMenu },
-    { label: 'playground', content: playgroundMenu },
-    { label: 'bots', content: botsMenu },
-    { label: 'assistants', content: assistantsMenu },
-    { label: 'teams', content: crewsMenu },
-    { label: 'knowledge', content: knowledgeMenu },
+    { label: 'models', icon: "👨‍💻", content: modelsMenu },
+    { label: 'playground', icon: "🌎", content: playgroundMenu },
+    { label: 'bots', icon: "🤖", content: botsMenu },
+    { label: 'assistants', icon: "👩‍🔬", content: assistantsMenu },
+    { label: 'teams', icon: "🙌", content: crewsMenu },
+    { label: 'knowledge', icon: "📚", content: knowledgeMenu },
   ]
 
   return (

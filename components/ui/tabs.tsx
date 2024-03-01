@@ -4,6 +4,7 @@ import { useState } from 'react'
 interface I_Tab {
   label: string
   title?: string
+  icon?: string
   content: React.ReactNode
 }
 
@@ -43,8 +44,8 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
-                <div className={`border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary ${className}`} >
-                  {i.label}
+                <div className={`border-b-2 py-2 text-xl text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary ${className}`} >
+                  {i.icon}<br />{i.label}
                 </div>
               </label>
             </Trigger>
