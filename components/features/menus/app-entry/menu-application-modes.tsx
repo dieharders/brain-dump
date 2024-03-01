@@ -51,7 +51,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const ROUTE_KNOWLEDGE = '/knowledge'
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
-  const gridContentClass = "flex flex-wrap justify-around gap-6"
+  const gridContentClass = "flex flex-row flex-wrap justify-between gap-6 after:max-h-[10rem] after:max-w-[10rem] after:flex-auto after:content-['']"
   const presetBotClass = "opacity-40"
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)

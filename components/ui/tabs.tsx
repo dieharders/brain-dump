@@ -34,7 +34,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
             <Trigger
               key={i.label}
               value={i.label}
-              className="min-h-4 flex w-full flex-1 cursor-default items-end justify-center text-lg font-semibold capitalize"
+              className="min-h-4 flex w-full flex-1 cursor-default items-end justify-center text-xl font-semibold capitalize"
             >
               <label className="w-full" title={i.title}>
                 <input
@@ -44,7 +44,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
-                <div className={`border-b-2 py-2 text-xl text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary ${className}`} >
+                <div className={`border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary ${className}`} >
                   {i.icon}<br />{i.label}
                 </div>
               </label>
