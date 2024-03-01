@@ -48,14 +48,16 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
+  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const ROUTE_KNOWLEDGE = '/knowledge'
+  // State
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
-  const gridContentClass = "flex flex-row flex-wrap justify-between gap-6 after:max-h-[10rem] after:max-w-[10rem] after:flex-auto after:content-['']"
-  const presetBotClass = "opacity-40"
-  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [bots, setBots] = useState<I_Text_Settings[]>([])
+  // Styling
+  const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] justify-items-center gap-6"
+  const presetBotClass = "opacity-40"
 
   const goToKnowledgePage = () => router.push(ROUTE_KNOWLEDGE)
 
@@ -72,7 +74,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const onTabChange = useCallback(
     (_val: string) => {
-      // console.log('@@ tab', val)
+      // do stuff here ...
     },
     [],
   )
