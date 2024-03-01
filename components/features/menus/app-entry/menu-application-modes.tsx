@@ -57,6 +57,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [bots, setBots] = useState<I_Text_Settings[]>([])
 
+  const goToKnowledgePage = () => router.push(ROUTE_KNOWLEDGE)
+
   const fetchBots = useCallback(async () => {
     // Save menu forms to a json file
     const res = await services?.storage.getBotSettings()
@@ -191,11 +193,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
-        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
-        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
-        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
-        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} onAction={() => router.push(ROUTE_KNOWLEDGE)} />
+        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} onAction={goToKnowledgePage} />
       </div>
     </div>
   )
