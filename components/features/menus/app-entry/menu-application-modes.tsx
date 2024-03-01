@@ -1,6 +1,7 @@
 'use client'
 
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { useRouter } from "next/navigation"
 import Link from 'next/link'
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
@@ -47,12 +48,16 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
+  const ROUTE_KNOWLEDGE = '/knowledge'
+  const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
   const gridContentClass = "flex flex-wrap justify-around gap-6"
   const presetBotClass = "opacity-40"
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [bots, setBots] = useState<I_Text_Settings[]>([])
+
+  const goToKnowledgePage = () => router.push(ROUTE_KNOWLEDGE)
 
   const fetchBots = useCallback(async () => {
     // Save menu forms to a json file
@@ -188,11 +193,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} />
-        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} />
-        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} />
-        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} />
-        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} onAction={goToKnowledgePage} />
+        <Item title="Notes" Icon={PersonIcon} className={presetBotClass} onAction={goToKnowledgePage} />
       </div>
     </div>
   )

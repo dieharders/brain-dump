@@ -1,6 +1,7 @@
 'use client'
 
 import { Dispatch, SetStateAction, useCallback, useState } from "react"
+import { useRouter } from "next/navigation"
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
@@ -16,7 +17,6 @@ import {
 import { DEFAULT_CONVERSATION_MODE, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
-import { useRouter } from "next/navigation"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -96,7 +96,7 @@ export const Playground = (props: I_Props) => {
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [installedList, selectedModelId, services?.storage, services?.textInference, setIsConnecting])
+  }, [installedList, selectedModelId, services?.storage, services?.textInference, setIsConnecting, stateAttention?.mode])
 
   return (
     <>
