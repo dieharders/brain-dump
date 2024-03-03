@@ -130,14 +130,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
             query: { id: botId }
           }
           return (
-            <Link key={botId} href={path} >
-              <Item title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
-                if (loadChatBot) {
-                  await loadChatBot(botId)
-                  onSelect()
-                }
-              }} />
-            </Link>
+            <Item key={botId} title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
+              if (loadChatBot) {
+                await loadChatBot(botId)
+                onSelect()
+                router.push(path.pathname)
+              }
+            }} />
           )
         }
         )}
