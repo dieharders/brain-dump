@@ -69,15 +69,18 @@ export default function BotPage(props: any) {
     action()
   }, [getServices])
 
-  // fetch settings here
+  // Fetch settings here to pass to chat hook once
   useEffect(() => {
     const action = async () => {
       setIsLoading(true)
-      const res = await fetchBotSettings(name)
+      const res = await fetchBotSettings?.(name)
       res && setSettings(res)
+      // @TODO Need to fetch currently loaded model
+      // for verification, there may actually not be anything loaded, if so we disable all controls on the page and direct user to model browser
+      // ...
       setIsLoading(false)
     }
-    action()
+    if (fetchBotSettings) action()
   }, [fetchBotSettings, name])
 
   return (

@@ -132,8 +132,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
           return (
             <Link key={botId} href={path} >
               <Item title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
-                await loadChatBot(botId)
-                onSelect()
+                if (loadChatBot) {
+                  await loadChatBot(botId)
+                  onSelect()
+                }
               }} />
             </Link>
           )

@@ -92,7 +92,7 @@ export default function PlaygroundPage() {
       routeId={routeId}
       initialMessages={initialMessages}
       services={services}
-      isModelLoading={isLoading}
+      isLoading={isLoading}
       setSettings={setSettings}
       settings={settings}
     />
