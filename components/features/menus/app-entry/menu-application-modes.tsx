@@ -11,6 +11,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/app-entry/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/app-entry/tab-bots'
 import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
+import { useChatBot } from '@/app/chatbot/useChatbot'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 
@@ -50,6 +51,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const ROUTE_KNOWLEDGE = '/knowledge'
+  const { loadChatBot } = useChatBot({ services })
   // State
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
@@ -121,11 +123,18 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
         {...bots.map(bot => {
-          const str = bot.model.botName
-          const title = str[0].toUpperCase() + str.slice(1)
+          const botId = bot.model.botName
+          const title = botId[0].toUpperCase() + botId.slice(1)
+          const path = {
+            pathname: '/chatbot',
+            query: { id: botId }
+          }
           return (
-            <Link key={bot.model.botName} href={`/bot/${bot.model.botName}`} >
-              <Item title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={onSelect} />
+            <Link key={botId} href={path} >
+              <Item title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
+                await loadChatBot(botId)
+                onSelect()
+              }} />
             </Link>
           )
         }

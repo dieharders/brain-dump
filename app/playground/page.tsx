@@ -23,12 +23,6 @@ const defaultState = {
   response: defaultResponse,
 }
 
-export interface I_PageProps {
-  params: {
-    name: string
-  }
-}
-
 export default function PlaygroundPage() {
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
