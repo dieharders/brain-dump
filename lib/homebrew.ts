@@ -309,6 +309,13 @@ type T_TextInferenceAPIRequest = (props: {
   body: I_InferenceGenerateOptions
 }) => (Response & I_GenericAPIResponse<any>) | null
 
+export interface I_LoadedModelRes {
+  model_id: string
+  mode: T_ConversationMode
+  model_settings: I_LLM_Init_Options
+  generate_settings: I_LLM_Call_Options
+}
+
 export interface I_ServiceApis extends I_BaseServiceApis {
   /**
    * Use to query the text inference engine
@@ -316,8 +323,8 @@ export interface I_ServiceApis extends I_BaseServiceApis {
   textInference: {
     inference: T_TextInferenceAPIRequest
     load: T_GenericAPIRequest<LoadTextModelRequestPayload>
-    model: T_GenericAPIRequest<T_InstalledTextModel>
-    installed: T_GenericAPIRequest<T_InstalledTextModel[]>
+    model: T_GenericAPIRequest<I_LoadedModelRes> // Currently loaded text model
+    installed: T_GenericAPIRequest<T_InstalledTextModel[]> // List of currently installed text models
     getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>
     getPromptTemplates: T_GenericAPIRequest<T_GenericDataRes>
     getRagPromptTemplates: T_GenericAPIRequest<T_GenericDataRes>

@@ -11,7 +11,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/app-entry/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/app-entry/tab-bots'
 import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
-import { useChatBot } from '@/app/chatbot/useChatbot'
+import { useChatBot } from '@/app/chatbot/useChatBot'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 

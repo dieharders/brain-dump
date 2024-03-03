@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
+import { useChatBot } from '@/app/chatbot/useChatBot'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
-import { I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
-import { useChatBot } from '@/app/chatbot/useChatbot'
+import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 // import { type Metadata } from 'next'
 // import { notFound, redirect } from 'next/navigation'
 // import { auth } from '@/auth'
@@ -44,6 +45,7 @@ export default function BotPage(props: any) {
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchSettings: fetchBotSettings } = useChatBot({ services })
+  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes>({} as I_LoadedModelRes)
 
   // const session = await auth()
 
@@ -66,24 +68,29 @@ export default function BotPage(props: any) {
       const services = await getServices()
       setServices(services)
     }
-    action()
-  }, [getServices])
+    if (!services) action()
+  }, [getServices, services])
 
   // Fetch settings here to pass to chat hook once
   useEffect(() => {
     const action = async () => {
       setIsLoading(true)
-      const res = await fetchBotSettings?.(name)
-      res && setSettings(res)
-      // @TODO Need to fetch currently loaded model
-      // for verification, there may actually not be anything loaded, if so we disable all controls on the page and direct user to model browser
-      // ...
+      if (!settings) {
+        const res = await fetchBotSettings?.(name)
+        res && setSettings(res)
+        // Ask server if a model has been loaded and store state of result
+        const modelRes = await services?.textInference.model()
+        const success = modelRes?.success
+        success && setCurrentModel(modelRes.data)
+      }
       setIsLoading(false)
     }
-    if (fetchBotSettings) action()
-  }, [fetchBotSettings, name])
+    action()
+  }, [fetchBotSettings, name, services?.textInference, settings])
 
-  return (
+  // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
+
+  return (currentModel.model_id ?
     <LocalChat
       id={name}
       routeId={routeId}
@@ -92,5 +99,7 @@ export default function BotPage(props: any) {
       isLoading={isLoading}
       settings={settings}
     />
+    :
+    <EmptyModelScreen />
   )
 }

@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
-import { I_ServiceApis, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
+import { usePlayground } from "@/app/playground/usePlayground"
+import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -12,6 +13,7 @@ import { defaultState as defaultPromptState } from '@/components/features/menus/
 import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 import { LocalChat } from "@/components/features/chat/interface-local-chat"
+import { EmptyModelScreen } from "@/components/features/chat/chat-empty-model-screen"
 
 const defaultState = {
   attention: defaultAttentionState,
@@ -24,69 +26,45 @@ const defaultState = {
 }
 
 export default function PlaygroundPage() {
+  const session_id = 'playground'
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
-  const [doOnce, setDoOnce] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const [services, setServices] = useState<I_ServiceApis | null>(null)
-  const { getServices } = useHomebrew()
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes>({} as I_LoadedModelRes)
   const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
-  const session_id = 'playground'
-
-  const fetchSettings = useCallback(async () => {
-    // Load the model from settings on page mount
-    const res = await services?.storage.getPlaygroundSettings()
-    const s = res?.data
-    return s
-  }, [services?.storage])
+  const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
+  const { getServices } = useHomebrew()
+  const { fetchSettings } = usePlayground({ services })
 
   useEffect(() => {
     const action = async () => {
-      const services = await getServices()
-      setServices(services)
+      const res = await getServices()
+      setServices(res)
     }
-    action()
-  }, [getServices])
+    if (!services) action()
+  }, [getServices, services])
 
+  // Fetch settings
   useEffect(() => {
-    if (doOnce || !services) return
-
     const action = async () => {
-      // Load the model from the bot settings on page mount.
-      const res = await fetchSettings()
-      // Save settings
-      const newSettings = { ...settings, ...res }
-      res && setSettings(newSettings)
-      // Make payload
-      const selectedModelId = newSettings?.model?.id
-      const mode = newSettings?.attention?.mode
-      const initOptions = newSettings?.performance
-      const callOptions = {
-        model: 'local', // @TODO should load from a menu setting (global app setting ?)
-        ...newSettings?.response
+      setIsLoading(true)
+      if (!settings) {
+        const res = await fetchSettings?.()
+        res && setSettings(res)
+        // Ask server if a model has been loaded and store state of result
+        const modelRes = await services?.textInference.model()
+        const success = modelRes?.success
+        success && setCurrentModel(modelRes.data)
       }
-      const listResponse = await services?.textInference.installed()
-      const installedList = listResponse?.data
-      const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
-      // Load LLM
-      const payload = {
-        modelPath: installPath,
-        modelId: selectedModelId,
-        mode,
-        init: initOptions,
-        call: callOptions,
-      }
-      await services?.textInference.load({ body: payload })
-      // Finished
       setIsLoading(false)
     }
-
     action()
-    setDoOnce(true)
-  }, [doOnce, fetchSettings, services, settings])
+  }, [fetchSettings, services?.textInference, settings])
 
-  return (
+  // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
+
+  return (currentModel.model_id ?
     <LocalChat
       id={session_id}
       routeId={routeId}
@@ -96,5 +74,7 @@ export default function PlaygroundPage() {
       setSettings={setSettings}
       settings={settings}
     />
+    :
+    <EmptyModelScreen />
   )
 }
