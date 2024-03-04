@@ -127,10 +127,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
         {...bots.map(bot => {
           const botId = bot.model.botName
           const title = botId[0].toUpperCase() + botId.slice(1)
-          const path = {
-            pathname: `/${ROUTE_CHATBOT}`,
-            query: { id: botId }
-          }
+          const queryParams = `?id=${botId}`
+          const pathname = `/${ROUTE_CHATBOT}${queryParams}`
           return (
             <Item key={botId} title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
               if (loadChatBot) {
@@ -141,7 +139,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
                 await loadChatBot(botId)
                 setIsConnecting(false)
                 onSelect()
-                router.push(path.pathname)
+                router.push(pathname)
               }
             }} />
           )
