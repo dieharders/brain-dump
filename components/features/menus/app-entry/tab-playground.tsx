@@ -58,12 +58,9 @@ export const Playground = (props: I_Props) => {
   const connectTextServiceAction = useCallback(async () => {
     const action = async () => {
       try {
-        // First check if a model is already loaded, if so skip...
-        const modelResponse = await services?.textInference.model()
-        if (modelResponse?.success) {
-          toast.success(`${modelResponse?.message}`)
-          return true
-        }
+        // Eject first
+        await services?.textInference.unload()
+
         // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
         const settingsResponse = await services?.storage.getPlaygroundSettings()
         if (!settingsResponse?.success) {

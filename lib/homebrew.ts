@@ -295,7 +295,7 @@ export interface I_Text_Settings {
   response: I_Response_State
 }
 
-export interface LoadTextModelRequestPayload {
+export interface I_LoadTextModelRequestPayload {
   body: LoadTextModelPayload
 }
 
@@ -322,7 +322,8 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   textInference: {
     inference: T_TextInferenceAPIRequest
-    load: T_GenericAPIRequest<LoadTextModelRequestPayload>
+    load: T_GenericAPIRequest<I_LoadTextModelRequestPayload>
+    unload: T_GenericAPIRequest<T_GenericDataRes>
     model: T_GenericAPIRequest<I_LoadedModelRes> // Currently loaded text model
     installed: T_GenericAPIRequest<T_InstalledTextModel[]> // List of currently installed text models
     getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>

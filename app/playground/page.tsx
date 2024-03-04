@@ -31,7 +31,7 @@ export default function PlaygroundPage() {
   const routeId = pathname.split('/')[1] // base url
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes>({} as I_LoadedModelRes)
+  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
   const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
@@ -49,22 +49,27 @@ export default function PlaygroundPage() {
   useEffect(() => {
     const action = async () => {
       setIsLoading(true)
+
       if (!settings) {
         const res = await fetchSettings?.()
         res && setSettings(res)
+      }
+
+      if (!currentModel) {
         // Ask server if a model has been loaded and store state of result
         const modelRes = await services?.textInference.model()
         const success = modelRes?.success
         success && setCurrentModel(modelRes.data)
       }
+
       setIsLoading(false)
     }
     action()
-  }, [fetchSettings, services?.textInference, settings])
+  }, [currentModel, fetchSettings, services?.textInference, settings])
 
   // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
 
-  return (currentModel.model_id ?
+  return (currentModel?.model_id ?
     <LocalChat
       id={session_id}
       routeId={routeId}

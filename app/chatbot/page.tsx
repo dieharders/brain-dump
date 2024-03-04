@@ -45,7 +45,7 @@ export default function BotPage(props: any) {
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchSettings: fetchBotSettings } = useChatBot({ services })
-  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes>({} as I_LoadedModelRes)
+  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
 
   // const session = await auth()
 
@@ -78,6 +78,8 @@ export default function BotPage(props: any) {
       if (!settings) {
         const res = await fetchBotSettings?.(name)
         res && setSettings(res)
+      }
+      if (!currentModel) {
         // Ask server if a model has been loaded and store state of result
         const modelRes = await services?.textInference.model()
         const success = modelRes?.success
@@ -86,11 +88,11 @@ export default function BotPage(props: any) {
       setIsLoading(false)
     }
     action()
-  }, [fetchBotSettings, name, services?.textInference, settings])
+  }, [currentModel, fetchBotSettings, name, services?.textInference, settings])
 
   // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
 
-  return (currentModel.model_id ?
+  return (currentModel?.model_id ?
     <LocalChat
       id={name}
       routeId={routeId}

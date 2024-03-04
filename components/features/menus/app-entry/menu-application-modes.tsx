@@ -2,10 +2,9 @@
 
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { useRouter } from "next/navigation"
-import Link from 'next/link'
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/app-entry/tab-playground'
@@ -121,7 +120,9 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
+        {/* Create a bot */}
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
+        {/* Presets and User generated bots */}
         {...bots.map(bot => {
           const botId = bot.model.botName
           const title = botId[0].toUpperCase() + botId.slice(1)
@@ -132,7 +133,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
           return (
             <Item key={botId} title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
               if (loadChatBot) {
+                setIsConnecting(true)
+                // Eject first
+                await services?.textInference.unload()
+                // Load model
                 await loadChatBot(botId)
+                setIsConnecting(false)
                 onSelect()
                 router.push(path.pathname)
               }
@@ -270,7 +276,30 @@ export const ApplicationModesMenu = (props: I_Props) => {
     { label: 'knowledge', icon: "📚", content: knowledgeMenu },
   ]
 
-  return (
-    <Tabs label="Application Modes" tabs={tabs} onChange={onTabChange} />
+  return (isConnecting ?
+    (
+      <div className="mx-auto mt-16 min-w-[50%] max-w-2xl px-4">
+        <div className="rounded-lg border bg-background p-8">
+          <h1 className="mb-2 text-lg font-semibold">
+            Loading
+          </h1>
+
+          <p className="mb-2 leading-normal text-muted-foreground">
+            Please wait while the model loads...
+          </p>
+
+          <div className="mt-8 flex flex-col items-start space-y-2">
+            <Button
+              className="h-auto text-base"
+              onClick={() => { setIsConnecting(false) }}
+            >Cancel</Button>
+          </div>
+        </div>
+      </div>
+    )
+    :
+    <div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]">
+      <Tabs label="Application Modes" tabs={tabs} onChange={onTabChange} />
+    </div>
   )
 }
