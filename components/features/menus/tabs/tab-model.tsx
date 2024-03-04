@@ -75,7 +75,7 @@ export const ModelTab = (props: I_Props) => {
 
       {/* Name your Bot */}
       <DialogHeader className="my-8">
-        <DialogTitle>Name your Bot</DialogTitle>
+        <DialogTitle>Name your ChatBot</DialogTitle>
       </DialogHeader>
       {/* Content */}
       <div className="flex w-full flex-row items-start justify-between gap-2">

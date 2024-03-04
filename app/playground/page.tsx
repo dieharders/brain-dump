@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { usePlayground } from "@/app/playground/usePlayground"
@@ -14,6 +14,7 @@ import { defaultState as defaultKnowledgeState } from '@/components/features/men
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 import { LocalChat } from "@/components/features/chat/interface-local-chat"
 import { EmptyModelScreen } from "@/components/features/chat/chat-empty-model-screen"
+import { ROUTE_PLAYGROUND } from "@/app/constants"
 
 const defaultState = {
   attention: defaultAttentionState,
@@ -26,7 +27,7 @@ const defaultState = {
 }
 
 export default function PlaygroundPage() {
-  const session_id = 'playground'
+  const session_id = ROUTE_PLAYGROUND
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
   const [services, setServices] = useState<I_ServiceApis | null>(null)
@@ -35,7 +36,15 @@ export default function PlaygroundPage() {
   const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
-  const { fetchSettings } = usePlayground({ services })
+  const { fetchSettings, loadPlaygroundModel } = usePlayground({ services })
+
+  const getModel = useCallback(async () => {
+    // Ask server if a model has been loaded and store state of result
+    const modelRes = await services?.textInference.model()
+    const success = modelRes?.success
+    success && setCurrentModel(modelRes.data)
+    return
+  }, [services?.textInference])
 
   useEffect(() => {
     const action = async () => {
@@ -55,17 +64,12 @@ export default function PlaygroundPage() {
         res && setSettings(res)
       }
 
-      if (!currentModel) {
-        // Ask server if a model has been loaded and store state of result
-        const modelRes = await services?.textInference.model()
-        const success = modelRes?.success
-        success && setCurrentModel(modelRes.data)
-      }
+      if (!currentModel) await getModel()
 
       setIsLoading(false)
     }
     action()
-  }, [currentModel, fetchSettings, services?.textInference, settings])
+  }, [currentModel, fetchSettings, getModel, settings])
 
   // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
 
@@ -80,6 +84,11 @@ export default function PlaygroundPage() {
       settings={settings}
     />
     :
-    <EmptyModelScreen />
+    <EmptyModelScreen id={session_id} loadModel={async () => {
+      setIsLoading(true)
+      loadPlaygroundModel && await loadPlaygroundModel()
+      await getModel()
+      setIsLoading(false)
+    }} />
   )
 }

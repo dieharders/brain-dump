@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { useChatBot } from '@/app/chatbot/useChatBot'
@@ -35,16 +35,16 @@ export interface I_PageProps {
 // }
 
 export default function BotPage(props: any) {
+  const pathname = usePathname()
+  const { getServices } = useHomebrew()
   const { searchParams } = props
   const name = searchParams.id
-  const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const [services, setServices] = useState<I_ServiceApis | null>(null)
-  const { getServices } = useHomebrew()
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
-  const { fetchSettings: fetchBotSettings } = useChatBot({ services })
+  const { fetchSettings: fetchBotSettings, loadChatBot } = useChatBot({ services })
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
 
   // const session = await auth()
@@ -63,6 +63,14 @@ export default function BotPage(props: any) {
   //   notFound()
   // }
 
+  const getModel = useCallback(async () => {
+    // Ask server if a model has been loaded and store state of result
+    const modelRes = await services?.textInference.model()
+    const success = modelRes?.success
+    success && setCurrentModel(modelRes.data)
+    return
+  }, [services?.textInference])
+
   useEffect(() => {
     const action = async () => {
       const services = await getServices()
@@ -79,16 +87,11 @@ export default function BotPage(props: any) {
         const res = await fetchBotSettings?.(name)
         res && setSettings(res)
       }
-      if (!currentModel) {
-        // Ask server if a model has been loaded and store state of result
-        const modelRes = await services?.textInference.model()
-        const success = modelRes?.success
-        success && setCurrentModel(modelRes.data)
-      }
+      if (!currentModel) await getModel()
       setIsLoading(false)
     }
     action()
-  }, [currentModel, fetchBotSettings, name, services?.textInference, settings])
+  }, [currentModel, fetchBotSettings, getModel, name, settings])
 
   // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
 
@@ -102,6 +105,11 @@ export default function BotPage(props: any) {
       settings={settings}
     />
     :
-    <EmptyModelScreen />
+    <EmptyModelScreen id={name} loadModel={async (id) => {
+      setIsLoading(true)
+      loadChatBot && await loadChatBot(id)
+      await getModel()
+      setIsLoading(false)
+    }} />
   )
 }

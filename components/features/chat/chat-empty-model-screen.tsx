@@ -2,15 +2,20 @@ import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
 import { useRouter } from "next/navigation"
 
-export const EmptyModelScreen = () => {
+interface I_Props {
+  id: string
+  loadModel: (() => Promise<void>) | ((id: string) => Promise<void>) | undefined
+}
+
+export const EmptyModelScreen = ({ id, loadModel }: I_Props) => {
   const router = useRouter()
   const messages = [
     {
-      heading: 'Enter the Playground',
-      onClick: () => router.replace('/'),
+      heading: 'Reload model',
+      onClick: () => loadModel?.(id),
     },
     {
-      heading: 'Load a ChatBot',
+      heading: 'Go to main menu and choose a model',
       onClick: () => router.replace('/'),
     },
     {
@@ -19,24 +24,14 @@ export const EmptyModelScreen = () => {
     }
   ]
 
-  const HomeButton = () => {
-    return (
-      <Button
-        className="text-md m-0 p-0 font-semibold text-foreground"
-        variant="link"
-        onClick={() => router.replace('/')}
-      >here</Button>
-    )
-  }
-
   return (
     <div className="mx-auto mt-8 max-w-2xl px-4">
       <div className="rounded-lg border bg-background p-8">
         <h1 className="mb-2 text-lg font-semibold">
-          You have not loaded an Ai model.
+          No Ai model detected
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
-          Go <HomeButton /> to choose a model or try these alternatives:
+          Something may have gone wrong. Try these alternatives:
         </p>
         <div className="mt-4 flex flex-col items-start space-y-2">
           {messages.map((message, index) => (

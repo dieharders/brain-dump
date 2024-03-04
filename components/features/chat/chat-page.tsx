@@ -6,6 +6,7 @@ import { ButtonScrollToBottom } from '@/components/features/chat/button-scroll-t
 import { CharmMenu, T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
+import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
 
@@ -42,9 +43,9 @@ export const ChatPage = ({
   const [activeCharms, setActiveCharms] = useState<T_CharmId[]>([])
   const charmsList = useMemo((): T_CharmId[] => {
     switch (routeId) {
-      case 'playground':
+      case ROUTE_PLAYGROUND:
         return ['microphone', 'speak', 'memory', 'prompt']
-      case 'bot':
+      case ROUTE_CHATBOT:
         return ['microphone', 'speak']
       default:
         return []
