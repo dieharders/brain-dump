@@ -93,8 +93,6 @@ export default function BotPage(props: any) {
     action()
   }, [currentModel, fetchBotSettings, getModel, name, settings])
 
-  // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
-
   return (currentModel?.model_id ?
     <LocalChat
       id={name}

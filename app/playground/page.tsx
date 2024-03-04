@@ -71,8 +71,6 @@ export default function PlaygroundPage() {
     action()
   }, [currentModel, fetchSettings, getModel, settings])
 
-  // @TODO Create and pass a model readout panel with `currentModel` to LocalChat, or bake the component in?
-
   return (currentModel?.model_id ?
     <LocalChat
       id={session_id}

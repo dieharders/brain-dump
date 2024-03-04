@@ -5,8 +5,8 @@ export const usePlayground = ({ services }: { services: I_ServiceApis | null }) 
   const fetchSettings = useCallback(async () => {
     // Load the model from settings on page mount
     const res = await services?.storage.getPlaygroundSettings()
-    const s = res?.data
-    return s
+    const data = res?.data
+    return data
   }, [services?.storage])
 
   const loadModel = useCallback(async () => {
