@@ -232,6 +232,7 @@ interface LoadTextModelPayload {
   mode?: T_ConversationMode
   modelPath: string
   modelId: string
+  modelName: string
   init: I_LLM_Init_Options
   call: I_LLM_Call_Options
 }
@@ -274,6 +275,7 @@ export type I_Prompt_State = {
 export interface I_Model_State {
   id: string | undefined
   botName: string
+  name: string
 }
 
 export interface I_System_State {
@@ -311,6 +313,7 @@ type T_TextInferenceAPIRequest = (props: {
 
 export interface I_LoadedModelRes {
   model_id: string
+  model_name: string
   mode: T_ConversationMode
   model_settings: I_LLM_Init_Options
   generate_settings: I_LLM_Call_Options

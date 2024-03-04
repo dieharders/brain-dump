@@ -31,6 +31,7 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
       // Load LLM
       const payload = {
         modelPath: installPath,
+        modelName: settings?.model.name,
         modelId: selectedModelId,
         mode,
         init: initOptions,

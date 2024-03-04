@@ -14,9 +14,10 @@ import {
   SelectValue,
   SelectItem
 } from '@/components/ui/select'
-import { DEFAULT_CONVERSATION_MODE, I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
+import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
+import { usePlayground } from "@/app/playground/usePlayground"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -30,8 +31,9 @@ interface I_Props {
 }
 
 export const Playground = (props: I_Props) => {
-  const router = useRouter()
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
+  const router = useRouter()
+  const { loadPlaygroundModel } = usePlayground({ services })
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
     stateAttention,
@@ -44,7 +46,7 @@ export const Playground = (props: I_Props) => {
     const settings = {
       attention: stateAttention,
       performance: statePerformance,
-      model: { id: selectedModelId },
+      model: { id: selectedModelId, name: modelConfigs[selectedModelId || ''].name },
     }
     return services?.storage.savePlaygroundSettings({ body: settings })
   }
@@ -66,17 +68,10 @@ export const Playground = (props: I_Props) => {
         if (!settingsResponse?.success) {
           toast.error(`${settingsResponse?.message}`)
         }
-        // Set "init" payload
-        const initOptions = { ...settingsResponse?.data?.performance }
-        // Set "call" payload
-        const callOptions = { ...settingsResponse?.data?.response }
-        // Tell backend to load the model into memory using these args
-        const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
-        const mode = stateAttention?.mode || DEFAULT_CONVERSATION_MODE
-        const payload = { modelPath: installPath, modelId: selectedModelId, mode, init: initOptions, call: callOptions }
-        const response = await services?.textInference.load({ body: payload })
+        const response = await loadPlaygroundModel?.()
+        const success = response?.success
 
-        if (response?.success) {
+        if (success) {
           toast.success('Connected successfully to Ai')
           return true
         }
@@ -93,7 +88,7 @@ export const Playground = (props: I_Props) => {
     const result = await action()
     setIsConnecting(false)
     return result
-  }, [installedList, selectedModelId, services?.storage, services?.textInference, setIsConnecting, stateAttention?.mode])
+  }, [loadPlaygroundModel, services?.storage, services?.textInference, setIsConnecting])
 
   return (
     <>

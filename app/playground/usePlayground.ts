@@ -26,14 +26,15 @@ export const usePlayground = ({ services }: { services: I_ServiceApis | null }) 
     // Load LLM
     const payload = {
       modelPath: installPath,
+      modelName: settings?.model.name,
       modelId: selectedModelId,
       mode,
       init: initOptions,
       call: callOptions,
     }
-    await services?.textInference.load({ body: payload })
+    const res = await services?.textInference.load({ body: payload })
     // Finished
-    return
+    return res
   }, [fetchSettings, services?.textInference])
 
   return {
