@@ -97,6 +97,7 @@ export const DEFAULT_CONVERSATION_MODE = 'instruct'
 export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
 
 export type T_GenericDataRes = any
+export type T_GenericReqPayload = { [key: string]: any }
 
 export interface I_GenericAPIResponse<DataResType> {
   success: boolean
@@ -107,15 +108,15 @@ export interface I_GenericAPIResponse<DataResType> {
 // Use 'body' for POST requests with complex (arrays) data types
 // Use 'queryParams' for POST requests with simple data structs and forms
 // Use 'formData' for POST requests with complex forms (binary uploads)
-export interface I_GenericAPIRequestParams {
-  queryParams?: { [key: string]: any }
+export interface I_GenericAPIRequestParams<Payload> {
+  queryParams?: Payload
   formData?: FormData
-  body?: { [key: string]: any }
+  body?: Payload
 }
 
 // Pass in the type of response.data we expect
-export type T_GenericAPIRequest<DataResType> = (
-  props?: I_GenericAPIRequestParams,
+export type T_GenericAPIRequest<ReqPayload, DataResType> = (
+  props?: I_GenericAPIRequestParams<ReqPayload>,
 ) => Promise<I_GenericAPIResponse<DataResType> | null>
 
 // These are the sources (documents) kept track by a collection
@@ -228,11 +229,10 @@ export type T_SystemPrompts = {
   presets: { [key: string]: T_SystemPrompt[] }
 }
 
-interface LoadTextModelPayload {
+export interface I_LoadTextModelRequestPayload {
   mode?: T_ConversationMode
   modelPath: string
   modelId: string
-  modelName: string
   init: I_LLM_Init_Options
   call: I_LLM_Call_Options
 }
@@ -273,9 +273,8 @@ export type I_Prompt_State = {
 }
 
 export interface I_Model_State {
-  id: string | undefined
+  id: string | undefined // @TODO change to modelId
   botName: string
-  name: string
 }
 
 export interface I_System_State {
@@ -297,10 +296,6 @@ export interface I_Text_Settings {
   response: I_Response_State
 }
 
-export interface I_LoadTextModelRequestPayload {
-  body: LoadTextModelPayload
-}
-
 type T_Endpoint = { [key: string]: any }
 
 interface I_BaseServiceApis {
@@ -312,11 +307,10 @@ type T_TextInferenceAPIRequest = (props: {
 }) => (Response & I_GenericAPIResponse<any>) | null
 
 export interface I_LoadedModelRes {
-  model_id: string
-  model_name: string
+  modelId: string
   mode: T_ConversationMode
-  model_settings: I_LLM_Init_Options
-  generate_settings: I_LLM_Call_Options
+  modelSettings: I_LLM_Init_Options
+  generateSettings: I_LLM_Call_Options
 }
 
 export interface I_ServiceApis extends I_BaseServiceApis {
@@ -325,38 +319,41 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   textInference: {
     inference: T_TextInferenceAPIRequest
-    load: T_GenericAPIRequest<I_LoadTextModelRequestPayload>
-    unload: T_GenericAPIRequest<T_GenericDataRes>
-    model: T_GenericAPIRequest<I_LoadedModelRes> // Currently loaded text model
-    installed: T_GenericAPIRequest<T_InstalledTextModel[]> // List of currently installed text models
-    getModelConfigs: T_GenericAPIRequest<T_GenericDataRes>
-    getPromptTemplates: T_GenericAPIRequest<T_GenericDataRes>
-    getRagPromptTemplates: T_GenericAPIRequest<T_GenericDataRes>
-    getSystemPrompts: T_GenericAPIRequest<T_GenericDataRes>
+    load: T_GenericAPIRequest<
+      I_LoadTextModelRequestPayload,
+      I_GenericAPIResponse<undefined>
+    >
+    unload: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    model: T_GenericAPIRequest<T_GenericReqPayload, I_LoadedModelRes> // Currently loaded text model
+    installed: T_GenericAPIRequest<T_GenericReqPayload, T_InstalledTextModel[]> // List of currently installed text models
+    getModelConfigs: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getSystemPrompts: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
   }
   /**
    * Use to add/create/update/delete embeddings from database
    */
   memory: {
-    addDocument: T_GenericAPIRequest<T_GenericDataRes>
-    getDocument: T_GenericAPIRequest<T_GenericDataRes>
-    updateDocument: T_GenericAPIRequest<T_GenericDataRes>
-    deleteDocuments: T_GenericAPIRequest<T_GenericDataRes>
-    getAllCollections: T_GenericAPIRequest<T_GenericDataRes>
-    addCollection: T_GenericAPIRequest<T_GenericDataRes>
-    getCollection: T_GenericAPIRequest<I_GetCollectionData>
-    deleteCollection: T_GenericAPIRequest<T_GenericDataRes>
-    fileExplore: T_GenericAPIRequest<T_GenericDataRes>
-    wipe: T_GenericAPIRequest<T_GenericDataRes>
+    addDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    updateDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    deleteDocuments: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getAllCollections: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    addCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getCollection: T_GenericAPIRequest<T_GenericReqPayload, I_GetCollectionData>
+    deleteCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    fileExplore: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    wipe: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
   }
   /**
    * Use to persist data
    */
   storage: {
-    getPlaygroundSettings: T_GenericAPIRequest<I_Text_Settings>
-    savePlaygroundSettings: T_GenericAPIRequest<I_Text_Settings>
-    getBotSettings: T_GenericAPIRequest<I_Text_Settings[]>
-    saveBotSettings: T_GenericAPIRequest<I_Text_Settings[]>
+    getPlaygroundSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings>
+    savePlaygroundSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings>
+    getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
+    saveBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
   }
 }
 
@@ -464,7 +461,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
       // Create a re-usable fetch function
-      const request = async (args: I_GenericAPIRequestParams) => {
+      const request = async (args: I_GenericAPIRequestParams<T_GenericReqPayload>) => {
         try {
           const contentType = { 'Content-Type': 'application/json' }
           const method = endpoint.method

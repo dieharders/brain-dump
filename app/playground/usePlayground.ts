@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { I_ServiceApis } from '@/lib/homebrew'
+import { I_ServiceApis, ModelID } from '@/lib/homebrew'
 
 export const usePlayground = ({ services }: { services: I_ServiceApis | null }) => {
   const fetchSettings = useCallback(async () => {
@@ -17,7 +17,7 @@ export const usePlayground = ({ services }: { services: I_ServiceApis | null }) 
     const mode = settings?.attention?.mode
     const initOptions = settings?.performance
     const callOptions = {
-      model: 'local', // @TODO should load from a menu setting (global app setting ?)
+      model: 'local' as ModelID, // @TODO should load from a menu setting (global app setting ?)
       ...settings?.response,
     }
     const listResponse = await services?.textInference.installed()
@@ -25,11 +25,10 @@ export const usePlayground = ({ services }: { services: I_ServiceApis | null }) 
     const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
     // Load LLM
     const payload = {
-      modelPath: installPath,
-      modelName: settings?.model.name,
-      modelId: selectedModelId,
+      modelPath: installPath || '',
+      modelId: selectedModelId || '',
       mode,
-      init: initOptions,
+      init: initOptions || {},
       call: callOptions,
     }
     const res = await services?.textInference.load({ body: payload })

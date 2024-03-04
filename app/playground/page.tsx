@@ -71,7 +71,7 @@ export default function PlaygroundPage() {
     action()
   }, [currentModel, fetchSettings, getModel, settings])
 
-  return (currentModel?.model_id ?
+  return (currentModel?.modelId ?
     <LocalChat
       id={session_id}
       routeId={routeId}

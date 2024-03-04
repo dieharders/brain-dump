@@ -28,7 +28,6 @@ interface I_Props {
 export const defaultState: I_State = {
   id: undefined,
   botName: '',
-  name: '',
 }
 
 export const ModelTab = (props: I_Props) => {
@@ -57,7 +56,7 @@ export const ModelTab = (props: I_Props) => {
               <Select
                 defaultValue={undefined}
                 value={state.id}
-                onValueChange={(val: string) => setState({ ...state, id: val, name: modelConfigs[val].name })}
+                onValueChange={(val: string) => setState({ ...state, id: val })}
               >
                 <SelectTrigger className="w-full flex-1">
                   <SelectValue placeholder="Select Ai Model"></SelectValue>

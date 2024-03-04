@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { I_ServiceApis } from '@/lib/homebrew'
+import { I_ServiceApis, ModelID } from '@/lib/homebrew'
 
 export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => {
   const fetchSettings = useCallback(
@@ -22,7 +22,7 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
       const mode = settings?.attention.mode
       const initOptions = settings?.performance
       const callOptions = {
-        model: 'local', // @TODO should load from settings
+        model: 'local' as ModelID, // @TODO should load from settings
         ...settings?.response,
       }
       const listResponse = await services?.textInference.installed()
@@ -30,11 +30,10 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
       const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
       // Load LLM
       const payload = {
-        modelPath: installPath,
-        modelName: settings?.model.name,
-        modelId: selectedModelId,
+        modelPath: installPath || '',
+        modelId: selectedModelId || '',
         mode,
-        init: initOptions,
+        init: initOptions || {},
         call: callOptions,
       }
       const res = await services?.textInference.load({ body: payload })

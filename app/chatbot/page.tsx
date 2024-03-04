@@ -93,7 +93,7 @@ export default function BotPage(props: any) {
     action()
   }, [currentModel, fetchBotSettings, getModel, name, settings])
 
-  return (currentModel?.model_id ?
+  return (currentModel?.modelId ?
     <LocalChat
       id={name}
       routeId={routeId}

@@ -7,7 +7,6 @@ import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 
 export const ModelReadout = () => {
   const { getServices } = useHomebrew()
-  // @TODO Should really use something like Redux to get naem from parent and pass in
   const [title, setTitle] = useState('???')
   // @TODO Get these values from somewhere
   const gpu = '0'
@@ -19,8 +18,11 @@ export const ModelReadout = () => {
   useEffect(() => {
     const action = async () => {
       const services = await getServices()
-      const model = await services?.textInference.model()
-      const name = model?.data?.model_name
+      const currentModel = await services?.textInference.model()
+      const currentModelId = currentModel?.data?.modelId || ''
+      const configs = await services?.textInference.getModelConfigs()
+      const model = configs?.data?.[currentModelId]
+      const name = model?.name
       name && setTitle(name)
     }
     if (shouldRender) action()
