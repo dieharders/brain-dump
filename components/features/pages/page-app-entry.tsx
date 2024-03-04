@@ -40,14 +40,11 @@ export const AppEntry = () => {
       if (res?.success) {
         toast.success(`Connected to local provider`)
         setIsConnected(true)
-        // Get all possible server endpoints
-        const homebrewServices = await getServices()
-        if (homebrewServices) setServices(homebrewServices)
         // Get all currently installed models
-        const listResponse = await homebrewServices?.textInference.installed()
+        const listResponse = await services?.textInference.installed()
         listResponse?.data && setInstalledList(listResponse.data)
         // Get all model configs
-        const cfgs = await homebrewServices?.textInference.getModelConfigs()
+        const cfgs = await services?.textInference.getModelConfigs()
         cfgs?.data && setModelConfigs(cfgs.data)
         // Success
         return true
@@ -58,19 +55,14 @@ export const AppEntry = () => {
 
     setIsConnecting(false)
     return false
-  }, [connectToHomebrew, getServices, selectedProvider])
+  }, [connectToHomebrew, selectedProvider, services?.textInference])
 
-  useEffect(() => {
-    if (hasMounted) return
-    typeof theme === 'string' && setHasMounted(true)
-  }, [hasMounted, theme])
+  const ChooseBackendPage = () => {
+    useEffect(() => {
+      // Always unload current model
+      services?.textInference.unload()
+    }, [])
 
-  // Render
-
-  // Prevent server/client render mismatch
-  if (!hasMounted) return null
-  // HomeBrewAi connection menu
-  if (!isConnected)
     return (
       <div className={wrapperStyle}>
         <div className="m-4 text-center">Waiting to connect to server</div>
@@ -83,27 +75,46 @@ export const AppEntry = () => {
         </Button>
       </div>
     )
+  }
+
+  useEffect(() => {
+    if (hasMounted) return
+    typeof theme === 'string' && setHasMounted(true)
+    // Get all possible server endpoints
+    const action = async () => {
+      const res = await getServices()
+      if (res) setServices(res)
+    }
+    action()
+  }, [getServices, hasMounted, theme])
+
+  // Render
+
+  // Prevent server/client render mismatch
+  if (!hasMounted) return null
+  // HomeBrewAi connection menu
+  if (!isConnected) return <ChooseBackendPage />
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
       <div className={wrapperStyle}>
         {/* Model Selection Menu */}
-        <div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]" >
-          <ApplicationModesMenu
-            setHasTextServiceConnected={setHasTextServiceConnected}
-            isConnecting={isConnecting}
-            setIsConnecting={setIsConnecting}
-            modelConfigs={modelConfigs || {}}
-            installedList={installedList}
-            onSubmit={() => { /* logic to go to a route */ }}
-            services={services}
-          />
-        </div >
+        <ApplicationModesMenu
+          setHasTextServiceConnected={setHasTextServiceConnected}
+          isConnecting={isConnecting}
+          setIsConnecting={setIsConnecting}
+          modelConfigs={modelConfigs || {}}
+          installedList={installedList}
+          onSubmit={() => { /* exec logic when a route is navigated */ }}
+          services={services}
+        />
       </div>
     )
   // Connected - Render "no selection" warning
+  // @TODO Put an indeterminant loading spinner here since we dont know what could be loading
   return (
     <div className={wrapperStyle}>
+      {/* Matrix bg ? */}
       <div className="m-4 text-center">Loading LLM Model...
       </div>
     </div>

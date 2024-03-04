@@ -5,6 +5,8 @@ import {
   Dialog,
   DialogContent,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
@@ -139,9 +141,13 @@ export const BotCreationMenu = (props: I_Props) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className="lg:min-w-[35%]">
+        <DialogHeader>
+          <DialogTitle>Create a ChatBot</DialogTitle>
+        </DialogHeader>
+
         <Tabs
           className="text-2xl"
-          label="Bot Settings"
+          label="ChatBot Settings"
           tabs={tabs}
         />
 
