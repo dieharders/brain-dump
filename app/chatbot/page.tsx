@@ -46,6 +46,7 @@ export default function BotPage(props: any) {
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchSettings: fetchBotSettings, loadModel: loadChatBot } = useChatBot({ services })
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
+  const [hasFetched, setHasFetched] = useState(false)
 
   // const session = await auth()
 
@@ -79,19 +80,23 @@ export default function BotPage(props: any) {
     if (!services) action()
   }, [getServices, services])
 
-  // Fetch settings here to pass to chat hook once
+  // Fetch settings
   useEffect(() => {
     const action = async () => {
+      if (hasFetched || !fetchBotSettings) return
+
       setIsLoading(true)
-      if (!settings) {
-        const res = await fetchBotSettings?.(name)
-        res && setSettings(res)
-      }
+
+      const res = await fetchBotSettings(name)
+      res && setSettings(res)
+
       if (!currentModel) await getModel()
+
       setIsLoading(false)
+      setHasFetched(true)
     }
     action()
-  }, [currentModel, fetchBotSettings, getModel, name, settings])
+  }, [currentModel, fetchBotSettings, getModel, hasFetched, name, settings])
 
   return (currentModel?.modelId ?
     <LocalChat
