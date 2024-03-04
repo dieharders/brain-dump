@@ -1,8 +1,15 @@
 import { useCallback } from 'react'
 import { I_ServiceApis, ModelID } from '@/lib/homebrew'
 
-export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => {
-  const fetchSettings = useCallback(
+export const useChatPage = ({ services }: { services: I_ServiceApis | null }) => {
+  const fetchPlaygroundSettings = useCallback(async () => {
+    // Load the model from settings on page mount
+    const res = await services?.storage.getPlaygroundSettings()
+    const data = res?.data
+    return data
+  }, [services?.storage])
+
+  const fetchChatBotSettings = useCallback(
     async (botName: string) => {
       // Load the model from the bot settings on page mount.
       const res = await services?.storage.getBotSettings()
@@ -14,9 +21,12 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
   )
 
   const loadModel = useCallback(
-    async (botName: string) => {
+    async (botName?: string) => {
       // Load the model from the bot settings on page mount.
-      const settings = await fetchSettings(botName)
+      const settings = botName
+        ? await fetchChatBotSettings(botName)
+        : await fetchPlaygroundSettings()
+
       // Make payload
       const selectedModelId = settings?.model.id
       const mode = settings?.attention.mode
@@ -40,11 +50,12 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
       // Finished
       return res
     },
-    [fetchSettings, services?.textInference],
+    [fetchChatBotSettings, fetchPlaygroundSettings, services?.textInference],
   )
 
   return {
-    ...(services && { fetchSettings }),
+    ...(services && { fetchPlaygroundSettings }),
+    ...(services && { fetchChatBotSettings }),
     ...(services && { loadModel }),
   }
 }

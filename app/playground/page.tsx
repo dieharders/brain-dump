@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
-import { usePlayground } from "@/app/playground/usePlayground"
+import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
@@ -36,7 +36,7 @@ export default function PlaygroundPage() {
   const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
-  const { fetchSettings, loadModel: loadPlaygroundModel } = usePlayground({ services })
+  const { fetchPlaygroundSettings: fetchSettings, loadModel: loadPlaygroundModel } = useChatPage({ services })
   const [hasFetched, setHasFetched] = useState(false)
 
   const getModel = useCallback(async () => {
@@ -71,7 +71,7 @@ export default function PlaygroundPage() {
       setHasFetched(true)
     }
     action()
-  }, [currentModel, fetchSettings, getModel, hasFetched, settings])
+  }, [currentModel, fetchSettings, getModel, hasFetched])
 
   return (currentModel?.modelId ?
     <LocalChat
