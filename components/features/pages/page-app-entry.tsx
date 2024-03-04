@@ -111,8 +111,10 @@ export const AppEntry = () => {
       </div>
     )
   // Connected - Render "no selection" warning
+  // @TODO Put an indeterminant loading spinner here since we dont know what could be loading
   return (
     <div className={wrapperStyle}>
+      {/* Matrix bg ? */}
       <div className="m-4 text-center">Loading LLM Model...
       </div>
     </div>

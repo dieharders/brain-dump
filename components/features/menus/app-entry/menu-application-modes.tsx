@@ -137,6 +137,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
                 await services?.textInference.unload()
                 // Load model
                 await loadChatBot(botId)
+                setHasTextServiceConnected(true)
                 setIsConnecting(false)
                 onSelect()
                 router.push(pathname)
