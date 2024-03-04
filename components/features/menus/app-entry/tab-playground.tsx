@@ -18,6 +18,7 @@ import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homeb
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
 import { usePlayground } from "@/app/playground/usePlayground"
+import { ROUTE_PLAYGROUND } from "@/app/constants"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -139,7 +140,7 @@ export const Playground = (props: I_Props) => {
                 isConnected && setHasTextServiceConnected(true)
                 await saveSettings()
                 setIsConnecting(false)
-                router.push('/playground')
+                router.push(`/${ROUTE_PLAYGROUND}`)
               }}
               disabled={isConnecting}
             >

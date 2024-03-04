@@ -13,6 +13,7 @@ import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } 
 import { useChatBot } from '@/app/chatbot/useChatBot'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
+import { ROUTE_CHATBOT } from '@/app/constants'
 
 interface I_Props {
   onSubmit: () => void
@@ -127,7 +128,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           const botId = bot.model.botName
           const title = botId[0].toUpperCase() + botId.slice(1)
           const path = {
-            pathname: '/chatbot',
+            pathname: `/${ROUTE_CHATBOT}`,
             query: { id: botId }
           }
           return (

@@ -88,7 +88,6 @@ export const AppEntry = () => {
     action()
   }, [getServices, hasMounted, theme])
 
-
   // Render
 
   // Prevent server/client render mismatch
@@ -106,7 +105,7 @@ export const AppEntry = () => {
           setIsConnecting={setIsConnecting}
           modelConfigs={modelConfigs || {}}
           installedList={installedList}
-          onSubmit={() => { /* logic to go to a route */ }}
+          onSubmit={() => { /* exec logic when a route is navigated */ }}
           services={services}
         />
       </div>
