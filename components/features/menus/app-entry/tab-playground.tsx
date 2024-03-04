@@ -17,7 +17,7 @@ import {
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
-import { usePlayground } from "@/app/playground/usePlayground"
+import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ROUTE_PLAYGROUND } from "@/app/constants"
 
 interface I_Props {
@@ -34,7 +34,7 @@ interface I_Props {
 export const Playground = (props: I_Props) => {
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const router = useRouter()
-  const { loadModel: loadPlaygroundModel } = usePlayground({ services })
+  const { loadModel: loadPlaygroundModel } = useChatPage({ services })
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
     stateAttention,
