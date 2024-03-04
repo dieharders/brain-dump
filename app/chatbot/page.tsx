@@ -44,7 +44,7 @@ export default function BotPage(props: any) {
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
-  const { fetchSettings: fetchBotSettings, loadChatBot } = useChatBot({ services })
+  const { fetchSettings: fetchBotSettings, loadModel: loadChatBot } = useChatBot({ services })
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
 
   // const session = await auth()

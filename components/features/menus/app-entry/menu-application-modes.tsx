@@ -50,7 +50,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const ROUTE_KNOWLEDGE = '/knowledge'
-  const { loadChatBot } = useChatBot({ services })
+  const { loadModel: loadChatBot } = useChatBot({ services })
   // State
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)

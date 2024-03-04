@@ -36,7 +36,7 @@ export default function PlaygroundPage() {
   const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
-  const { fetchSettings, loadPlaygroundModel } = usePlayground({ services })
+  const { fetchSettings, loadModel: loadPlaygroundModel } = usePlayground({ services })
 
   const getModel = useCallback(async () => {
     // Ask server if a model has been loaded and store state of result

@@ -9,7 +9,7 @@ export const usePlayground = ({ services }: { services: I_ServiceApis | null }) 
     return s
   }, [services?.storage])
 
-  const loadPlaygroundModel = useCallback(async () => {
+  const loadModel = useCallback(async () => {
     // Load the model from the bot settings on page mount.
     const settings = await fetchSettings()
     // Make payload
@@ -39,6 +39,6 @@ export const usePlayground = ({ services }: { services: I_ServiceApis | null }) 
 
   return {
     ...(services && { fetchSettings }),
-    ...(services && { loadPlaygroundModel }),
+    ...(services && { loadModel }),
   }
 }

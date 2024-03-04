@@ -33,7 +33,7 @@ interface I_Props {
 export const Playground = (props: I_Props) => {
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const router = useRouter()
-  const { loadPlaygroundModel } = usePlayground({ services })
+  const { loadModel: loadPlaygroundModel } = usePlayground({ services })
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
     stateAttention,

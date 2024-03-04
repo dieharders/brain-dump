@@ -13,7 +13,7 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
     [services?.storage],
   )
 
-  const loadChatBot = useCallback(
+  const loadModel = useCallback(
     async (botName: string) => {
       // Load the model from the bot settings on page mount.
       const settings = await fetchSettings(botName)
@@ -37,15 +37,15 @@ export const useChatBot = ({ services }: { services: I_ServiceApis | null }) => 
         init: initOptions,
         call: callOptions,
       }
-      await services?.textInference.load({ body: payload })
+      const res = await services?.textInference.load({ body: payload })
       // Finished
-      return
+      return res
     },
     [fetchSettings, services?.textInference],
   )
 
   return {
     ...(services && { fetchSettings }),
-    ...(services && { loadChatBot }),
+    ...(services && { loadModel }),
   }
 }
