@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
-import { useChatBot } from '@/app/chatbot/useChatBot'
+import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
 import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
@@ -44,8 +44,9 @@ export default function BotPage(props: any) {
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
-  const { fetchSettings: fetchBotSettings, loadModel: loadChatBot } = useChatBot({ services })
+  const { fetchChatBotSettings, loadModel: loadChatBot } = useChatPage({ services })
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
+  const [hasFetched, setHasFetched] = useState(false)
 
   // const session = await auth()
 
@@ -79,19 +80,23 @@ export default function BotPage(props: any) {
     if (!services) action()
   }, [getServices, services])
 
-  // Fetch settings here to pass to chat hook once
+  // Fetch settings
   useEffect(() => {
     const action = async () => {
+      if (hasFetched || !fetchChatBotSettings) return
+
       setIsLoading(true)
-      if (!settings) {
-        const res = await fetchBotSettings?.(name)
-        res && setSettings(res)
-      }
+
+      const res = await fetchChatBotSettings(name)
+      res && setSettings(res)
+
       if (!currentModel) await getModel()
+
       setIsLoading(false)
+      setHasFetched(true)
     }
     action()
-  }, [currentModel, fetchBotSettings, getModel, name, settings])
+  }, [currentModel, fetchChatBotSettings, getModel, hasFetched, name])
 
   return (currentModel?.modelId ?
     <LocalChat

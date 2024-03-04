@@ -118,7 +118,7 @@ export const useLocalInference = (props: IProps) => {
       const services = await getServices()
       const model_configs = await services?.textInference.getModelConfigs()
       const current_text_model = await services?.textInference.model()
-      const current_text_model_id = current_text_model?.data?.id || ''
+      const current_text_model_id = current_text_model?.data?.modelId || ''
       const messageFormat = model_configs?.data?.[current_text_model_id]?.messageFormat
 
       // Send request completion for prompt

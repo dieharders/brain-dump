@@ -10,7 +10,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/app-entry/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/app-entry/tab-bots'
 import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
-import { useChatBot } from '@/app/chatbot/useChatBot'
+import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { ROUTE_CHATBOT } from '@/app/constants'
@@ -51,7 +51,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
   const ROUTE_KNOWLEDGE = '/knowledge'
-  const { loadModel: loadChatBot } = useChatBot({ services })
+  const { loadModel: loadChatBot } = useChatPage({ services })
   // State
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
