@@ -78,11 +78,11 @@ export const AppEntry = () => {
 
           {/* Enter remote server address */}
           <div className={containerStyle}>
-            <Label htmlFor="hostname" className={labelStyle}>Hostname</Label>
+            <Label htmlFor="domain" className={labelStyle}>Hostname</Label>
             <Input
-              name="hostname"
+              name="domain"
               value={domainValue}
-              placeholder={`hostname (${domainValue})`}
+              placeholder={`domain (${domainValue})`}
               onChange={e => setDomainValue(e.target.value)}
               className={inputStyle}
             />
@@ -90,7 +90,7 @@ export const AppEntry = () => {
 
           {/* Enter remote server port */}
           <div className={containerStyle}>
-            <Label htmlFor="hostname" className={labelStyle}>Port</Label>
+            <Label htmlFor="port" className={labelStyle}>Port</Label>
             <Input
               name="port"
               value={portValue}
