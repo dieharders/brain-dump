@@ -1,14 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, defaultDomain, defaultPort, useHomebrew } from '@/lib/homebrew'
 import { useSettings } from '@/components/features/settings/hooks'
 import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu-application-modes'
 import { toast } from 'react-hot-toast'
 import { useTheme } from 'next-themes'
-import { constructMainBgStyle } from '@/lib/utils'
+import { cn, constructMainBgStyle } from '@/lib/utils'
 
 /**
  * This holds the main app behavior
@@ -22,13 +24,19 @@ export const AppEntry = () => {
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { provider: selectedProvider } = useSettings()
-  const { connect: connectToHomebrew, getServices } = useHomebrew()
+  const { connect: connectToHomebrew, getServices, saveRemoteAddress } = useHomebrew()
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
   const [hasMounted, setHasMounted] = useState(false)
+  // For inputs
+  const [domainValue, setDomainValue] = useState(defaultDomain)
+  const [portValue, setPortValue] = useState(defaultPort)
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
+
+    // Record values to homebrew lib for later api calls
+    saveRemoteAddress({ domainValue, portValue })
 
     // Attempt to verify the local provider and text inference service exists.
     if (selectedProvider === ModelID.Local) {
@@ -55,27 +63,60 @@ export const AppEntry = () => {
 
     setIsConnecting(false)
     return false
-  }, [connectToHomebrew, selectedProvider, services?.textInference])
+  }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider, services?.textInference])
 
   const ChooseBackendPage = () => {
-    useEffect(() => {
-      // Always unload current model
-      services?.textInference.unload()
-    }, [])
+    const containerStyle = 'flex w-[24rem] flex-row items-center justify-between gap-3 rounded-lg bg-background/20 p-4 overflow-hidden'
+    const inputStyle = 'w-fit border-none bg-muted text-center text-primary outline-none hover:bg-primary/20 transition-all ease-out duration-100'
+    const labelStyle = 'text-left text-sm font-semibold text-primary/50'
 
     return (
-      <div className={wrapperStyle}>
-        <div className="m-4 text-center">Waiting to connect to server</div>
-        <Button
-          className="text-white-50 m-4 w-fit bg-blue-600 px-16 text-center text-white hover:bg-blue-800"
-          onClick={connect}
-          disabled={isConnecting}
-        >
-          Connect to HomeBrewAi
-        </Button>
+      <div className={cn(wrapperStyle, "items center flex h-full w-full flex-col justify-center")}>
+        <div className="flex h-[32rem] w-[32rem] flex-col items-center justify-start gap-4 rounded-xl border-2 border-accent bg-muted/60 p-8">
+          {/* Title */}
+          <div className="justify-self-start text-center text-lg font-semibold text-primary">Connect to remote server</div>
+
+          {/* Enter remote server address */}
+          <div className={containerStyle}>
+            <Label htmlFor="hostname" className={labelStyle}>Hostname</Label>
+            <Input
+              name="hostname"
+              value={domainValue}
+              placeholder={`hostname (${domainValue})`}
+              onChange={e => setDomainValue(e.target.value)}
+              className={inputStyle}
+            />
+          </div>
+
+          {/* Enter remote server port */}
+          <div className={containerStyle}>
+            <Label htmlFor="hostname" className={labelStyle}>Port</Label>
+            <Input
+              name="port"
+              value={portValue}
+              placeholder={`port (${defaultPort})`}
+              onChange={e => setPortValue(e.target.value)}
+              className={inputStyle}
+            />
+          </div>
+
+          {/* Connect */}
+          <Button
+            className="m-auto h-fit w-fit justify-self-end bg-blue-600 px-16 text-center text-primary hover:bg-blue-800"
+            onClick={connect}
+            disabled={isConnecting}
+          >
+            Connect to HomeBrewAi
+          </Button>
+        </div>
       </div>
     )
   }
+
+  useEffect(() => {
+    // Always unload current model
+    services?.textInference.unload()
+  }, [services?.textInference])
 
   useEffect(() => {
     if (hasMounted) return
@@ -93,7 +134,7 @@ export const AppEntry = () => {
   // Prevent server/client render mismatch
   if (!hasMounted) return null
   // HomeBrewAi connection menu
-  if (!isConnected) return <ChooseBackendPage />
+  if (!isConnected) return ChooseBackendPage()
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
@@ -113,8 +154,8 @@ export const AppEntry = () => {
   // Connected - Render "no selection" warning
   // @TODO Put an indeterminant loading spinner here since we dont know what could be loading
   return (
+    // Matrix bg ?
     <div className={wrapperStyle}>
-      {/* Matrix bg ? */}
       <div className="m-4 text-center">Loading LLM Model...
       </div>
     </div>
