@@ -41,6 +41,8 @@ export interface I_LLM_Options {
 export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
   ragResponseModes?: Array<string>
+  domain?: string
+  port?: string
 }
 
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
@@ -357,9 +359,14 @@ export interface I_ServiceApis extends I_BaseServiceApis {
   }
 }
 
-// @TODO These will eventually be passed in from our server picker helper
-const PORT = 8008
-const hostname = 'http://localhost:' // 127.0.0.1
+export const defaultPort = '8008'
+export const defaultDomain = '127.0.0.1'
+const createHostName = () => {
+  const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
+  const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain //localhost
+  const origin = `http://${DOMAIN}:${PORT}`
+  return origin
+}
 
 const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   const options = {
@@ -370,7 +377,7 @@ const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   }
 
   try {
-    const res = await fetch(`${hostname}${PORT}/v1/connect`, options)
+    const res = await fetch(`${createHostName()}/v1/connect`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
     if (!res) throw new Error('[homebrew] No response received.')
     return res.json()
@@ -389,9 +396,9 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 
   try {
-    // @TODO This api url should come from the /connect endpoint
+    // @TODO This api endpoint should come from the /connect endpoint
     const endpoint = '/v1/services/api'
-    const res = await fetch(`${hostname}${PORT}${endpoint}`, options)
+    const res = await fetch(`${createHostName()}${endpoint}`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
     if (!res) throw new Error(`[homebrew] No response from ${endpoint}`)
     return res.json()
@@ -453,7 +460,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
   // Construct api funcs for each service
   response.forEach(api => {
-    const origin = `${hostname}${api.port}`
+    const origin = `${createHostName()}`
     const apiName = api.name
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
     let res: Response
@@ -472,6 +479,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             : null
           const queryUrl = queryParams ? `?${queryParams}` : ''
           const url = `${origin}${endpoint.urlPath}${queryUrl}`
+
           res = await fetch(url, {
             method,
             mode: 'cors', // no-cors, *, cors, same-origin
@@ -619,5 +627,20 @@ export const useHomebrew = () => {
     return store?.api?.configs
   }
 
-  return { connect, getServices, getAPIConfigOptions }
+  /**
+   * Store remote address values for later api calls
+   */
+  const saveRemoteAddress = ({
+    portValue,
+    domainValue,
+  }: {
+    portValue: string
+    domainValue: string
+  }) => {
+    if (window.homebrewai?.api?.configs) window.homebrewai.api.configs.port = portValue
+    if (window.homebrewai?.api?.configs)
+      window.homebrewai.api.configs.domain = domainValue
+  }
+
+  return { connect, getServices, getAPIConfigOptions, saveRemoteAddress }
 }
