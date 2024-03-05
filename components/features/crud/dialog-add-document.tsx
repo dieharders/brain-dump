@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -82,33 +82,39 @@ export const DialogAddDocument = (props: I_Props) => {
   }
 
   // Input Field - File upload from network
-  const UrlFileInput = ({ className }: { className: string }) => {
+  const renderUrlFileInput = ({ className }: { className: string }) => {
+    const disabled = fileSource !== 'urlFile'
+
     return (
       <div className={className}>
-        <label htmlFor="urlFile"><DialogTitle className="text-sm">Enter a URL</DialogTitle></label>
+        <label htmlFor="urlFile">
+          <DialogTitle className="text-sm">Enter a URL</DialogTitle>
+        </label>
         <Input
           name="urlFile"
           value={urlValue}
           placeholder="https://example.com/file.txt"
           onChange={e => setUrlValue(e.target.value)}
-          disabled={fileSource !== 'urlFile'}
+          disabled={disabled}
         />
       </div>
     )
   }
 
   // Field - File upload from disk
-  const LocalFileUpload = ({ className }: { className: string }) => {
-    // @TODO Is this causing the focus issue?
+  const renderLocalFileUpload = ({ className }: { className: string }) => {
     const disabled = fileSource !== 'localFile'
     const disabledStyleOne = disabled ? 'text-primary/40' : 'text-primary/90'
     const disabledStyleTwo = disabled ? 'text-primary/20' : 'text-primary/60'
     const hoverStyle = disabled ? '' : 'hover:bg-muted/70 hover:border-primary/40'
+    const filename = `File: ${selectedFile?.name}`
+    const transitionStyle = 'transition-all ease-in duration-100'
+    const marginStyle = selectedFile ? 'mt-4' : ''
 
     return (
       <div className={className}>
         <DialogTitle className="text-sm">Select a file from storage</DialogTitle>
-        <label htmlFor="localFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle)}>
+        <label htmlFor="localFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
           <Input
             className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
             disabled={disabled}
@@ -116,12 +122,16 @@ export const DialogAddDocument = (props: I_Props) => {
             name="localFile"
             onChange={handleFileSelected}
           />
-          <div className="absolute flex flex-col items-center justify-center pb-6 pt-5">
-            <svg className={cn('mb-4 h-8 w-8', disabledStyleOne)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+          <div className="absolute flex w-full flex-col items-center justify-center overflow-hidden pb-6 pt-5">
+            <svg className={cn('mb-4 h-8 w-8', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
             </svg>
-            <p className={cn('mb-2 text-sm', disabledStyleOne)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
-            <p className={cn('text-xs', disabledStyleTwo)}>text, image, audio, video (MAX 10mb)</p>
+            <p className={cn('mb-2 text-sm', disabledStyleOne, transitionStyle)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
+            <p className={cn('text-xs', disabledStyleTwo, transitionStyle)}>text, image, audio, video (MAX 10mb)</p>
+            <p
+              className={cn('text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold', disabledStyleOne, transitionStyle, marginStyle)}>
+              {selectedFile ? filename : ''}
+            </p>
           </div>
         </label>
       </div>
@@ -129,7 +139,7 @@ export const DialogAddDocument = (props: I_Props) => {
   }
 
   // Field - File upload from text input
-  const RawTextInput = ({ className }: { className: string }) => {
+  const renderRawTextInput = ({ className }: { className: string }) => {
     const disabled = fileSource !== 'inputText'
     const hoverStyle = disabled ? 'text-primary/50 border-primary/10 placeholder:text-primary/20' : 'text-primary border-primary/20'
 
@@ -161,7 +171,7 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r1">
-          <UrlFileInput className={fieldContainer} />
+          {renderUrlFileInput({ className: fieldContainer })}
         </label>
       </div>
       <div className={inputContainer}>
@@ -169,7 +179,7 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r2">
-          <LocalFileUpload className={fieldContainer} />
+          {renderLocalFileUpload({ className: fieldContainer })}
         </label>
       </div>
       <div className={inputContainer}>
@@ -177,7 +187,7 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r3">
-          <RawTextInput className={fieldContainer} />
+          {renderRawTextInput({ className: fieldContainer })}
         </label>
       </div>
     </Root>
