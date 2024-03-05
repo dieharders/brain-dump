@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
+import { Root, Item, Indicator } from '@radix-ui/react-radio-group'
 import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, T_APIConfigOptions } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
@@ -25,8 +26,11 @@ import {
   SelectValue,
   SelectItem,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 
 type T_Payload = { [key: string]: any } | FormData
+
+type T_SourceFile = 'urlFile' | 'localFile' | 'inputText'
 
 interface I_Props {
   collection: I_Collection | null,
@@ -39,8 +43,13 @@ interface I_Props {
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
   const fieldContainer = "grid gap-4 rounded-md border p-4"
-  const tabContainerStyle = "grid w-full gap-4 overflow-hidden"
+  const radioGroupItemStyle = "mr-4 h-7 w-8 rounded-full border border-muted bg-background hover:border-primary/50 hover:bg-accent focus:border-primary/25 focus:bg-muted/50"
+  const radioGroupIndicatorStyle = "flex h-full w-full items-center justify-center text-xl after:h-[1rem] after:w-[1rem] after:rounded-full after:bg-primary/50 after:content-['']"
+  const labelStyle = "w-full"
+  const inputContainer = "flex flex-row items-center"
   const { action, collection, dialogOpen, setDialogOpen, options } = props
+  const defaultFileSource = 'urlFile'
+  const [fileSource, setFileSource] = useState<T_SourceFile>(defaultFileSource)
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
@@ -72,42 +81,109 @@ export const DialogAddDocument = (props: I_Props) => {
     file && setSelectedFile(file)
   }
 
-  // File source fields
-  const fileMenu = (
-    <div className={tabContainerStyle}>
-      {/* File upload from network */}
-      <div className={fieldContainer}>
-        <label htmlFor="url"><DialogTitle className="text-sm">Enter a URL</DialogTitle></label>
+  // Input Field - File upload from network
+  const UrlFileInput = ({ className }: { className: string }) => {
+    return (
+      <div className={className}>
+        <label htmlFor="urlFile"><DialogTitle className="text-sm">Enter a URL</DialogTitle></label>
         <Input
-          name="url"
+          name="urlFile"
           value={urlValue}
           placeholder="https://example.com/file.txt"
           onChange={e => setUrlValue(e.target.value)}
+          disabled={fileSource !== 'urlFile'}
         />
       </div>
+    )
+  }
 
-      {/* File upload from disk */}
-      <div className={fieldContainer}>
-        <label htmlFor="file"><DialogTitle className="text-sm">Select a file from local storage</DialogTitle></label>
-        <input disabled={urlValue.length > 0} type="file" name="file" onChange={handleFileSelected} />
+  // Field - File upload from disk
+  const LocalFileUpload = ({ className }: { className: string }) => {
+    // @TODO Is this causing the focus issue?
+    const disabled = fileSource !== 'localFile'
+    const disabledStyleOne = disabled ? 'text-primary/40' : 'text-primary/90'
+    const disabledStyleTwo = disabled ? 'text-primary/20' : 'text-primary/60'
+    const hoverStyle = disabled ? '' : 'hover:bg-muted/70 hover:border-primary/40'
+
+    return (
+      <div className={className}>
+        <DialogTitle className="text-sm">Select a file from storage</DialogTitle>
+        <label htmlFor="localFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle)}>
+          <Input
+            className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
+            disabled={disabled}
+            type="file"
+            name="localFile"
+            onChange={handleFileSelected}
+          />
+          <div className="absolute flex flex-col items-center justify-center pb-6 pt-5">
+            <svg className={cn('mb-4 h-8 w-8', disabledStyleOne)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+            </svg>
+            <p className={cn('mb-2 text-sm', disabledStyleOne)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
+            <p className={cn('text-xs', disabledStyleTwo)}>text, image, audio, video (MAX 10mb)</p>
+          </div>
+        </label>
       </div>
+    )
+  }
 
-      {/* File upload from text input */}
-      <div className={fieldContainer}>
-        <label htmlFor="rawText"><DialogTitle className="text-sm">Copy/Paste raw text here</DialogTitle></label>
+  // Field - File upload from text input
+  const RawTextInput = ({ className }: { className: string }) => {
+    const disabled = fileSource !== 'inputText'
+    const hoverStyle = disabled ? 'text-primary/50 border-primary/10 placeholder:text-primary/20' : 'text-primary border-primary/20'
+
+    return (
+      <div className={className}>
+        <label htmlFor="inputText"><DialogTitle className="text-sm">Copy/Paste raw text</DialogTitle></label>
         <textarea
-          name="rawText"
-          disabled={false}
-          className="scrollbar h-64 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
+          name="inputText"
+          disabled={disabled}
+          className={cn('scrollbar h-64 w-full resize-none rounded border-2 bg-muted/70 p-2 outline-none focus:border-primary/50', hoverStyle)}
           value={rawTextValue}
-          placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading level 2\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
+          placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
           onChange={e => setRawTextValue(e.target.value)}
         />
       </div>
-    </div>
+    )
+  }
+
+  // Tab - File source fields
+  const fileMenu = (
+    <Root
+      className="flex w-full flex-col gap-6 overflow-hidden"
+      defaultValue={fileSource}
+      aria-label="Upload file source"
+      onValueChange={(val: T_SourceFile) => setFileSource(val)}
+    >
+      <div className={inputContainer}>
+        <Item className={radioGroupItemStyle} value="urlFile" id="r1">
+          <Indicator className={radioGroupIndicatorStyle} />
+        </Item>
+        <label className={labelStyle} htmlFor="r1">
+          <UrlFileInput className={fieldContainer} />
+        </label>
+      </div>
+      <div className={inputContainer}>
+        <Item className={radioGroupItemStyle} value="localFile" id="r2">
+          <Indicator className={radioGroupIndicatorStyle} />
+        </Item>
+        <label className={labelStyle} htmlFor="r2">
+          <LocalFileUpload className={fieldContainer} />
+        </label>
+      </div>
+      <div className={inputContainer}>
+        <Item className={radioGroupItemStyle} value="inputText" id="r3">
+          <Indicator className={radioGroupIndicatorStyle} />
+        </Item>
+        <label className={labelStyle} htmlFor="r3">
+          <RawTextInput className={fieldContainer} />
+        </label>
+      </div>
+    </Root>
   )
 
-  // Metadata fields
+  // Tab - Metadata fields
   const metadataMenu = (
     <div className="grid w-full gap-4 overflow-hidden rounded-md border p-4">
       <DialogTitle className="text-sm">Enter metadata to describe file</DialogTitle>
@@ -186,7 +262,8 @@ export const DialogAddDocument = (props: I_Props) => {
       const formInputs = {
         collectionName: collection?.name,
         documentName: nameValue,
-        urlPath: urlValue || rawTextValue, // @TODO Use a toggle to determine which input to take file value from
+        ...(fileSource === 'urlFile' && { urlPath: urlValue }),
+        ...(fileSource === 'inputText' && { textInput: rawTextValue }),
         description: descrValue,
         tags: parsedTags,
         ...(chunkSize && { chunkSize: parseInt(chunkSize as string) }),
@@ -195,11 +272,13 @@ export const DialogAddDocument = (props: I_Props) => {
       }
       // Create a form with our selected file attached
       const formData = new FormData()
-      if (selectedFile) formData.append('file', selectedFile, selectedFile.name)
+      const isLocalFileSet = fileSource === 'localFile'
+
+      if (selectedFile && isLocalFileSet) formData.append('file', selectedFile, selectedFile.name)
       // Send request (Add new document)
       const result = await action({
         queryParams: formInputs,
-        ...(!urlValue && !rawTextValue && { formData }), // @TODO Use a toggle to determine which input to take file value from
+        ...(isLocalFileSet && { formData }),
       })
       // Verify
       if (result?.success) {
@@ -221,6 +300,7 @@ export const DialogAddDocument = (props: I_Props) => {
   useEffect(() => {
     return () => {
       if (!dialogOpen) {
+        setFileSource(defaultFileSource)
         setSelectedFile(null)
         setUrlValue('')
         setRawTextValue('')
@@ -238,7 +318,8 @@ export const DialogAddDocument = (props: I_Props) => {
             Provide a file you want the AI to memorize (text, image, audio, video). Give it a short description and tags to help the Ai understand it better.
           </DialogDescription>
         </DialogHeader>
-        <form className="grid w-full" method="POST" encType="multipart/form-data">
+
+        <form className="w-full" method="POST" encType="multipart/form-data">
           <Tabs label="Application Modes" tabs={tabs} />
         </form>
 
