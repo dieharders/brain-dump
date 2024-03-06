@@ -364,7 +364,9 @@ export const defaultDomain = '127.0.0.1'
 const createHostName = () => {
   const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
   const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain //localhost
-  const origin = `http://${DOMAIN}:${PORT}`
+  const isDev = !!process && process.env.NODE_ENV === 'development'
+  const protocol = isDev ? 'http' : 'https'
+  const origin = `${protocol}://${DOMAIN}:${PORT}`
   return origin
 }
 
