@@ -413,7 +413,7 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
 
 const getModelConfigs = async () => {
   // Read in json file
-  const file = await import('data/text-model-configs.json')
+  const file = await import('../data/text-model-configs.json')
 
   return {
     success: true,
@@ -424,7 +424,7 @@ const getModelConfigs = async () => {
 
 const getPromptTemplates = async () => {
   // Read in json file
-  const file = await import('data/prompt-templates.json')
+  const file = await import('../data/prompt-templates.json')
 
   return {
     success: true,
@@ -435,7 +435,7 @@ const getPromptTemplates = async () => {
 
 const getRagPromptTemplates = async () => {
   // Read in json file
-  const file = await import('data/rag-prompt-templates.json')
+  const file = await import('../data/rag-prompt-templates.json')
 
   return {
     success: true,
@@ -446,7 +446,7 @@ const getRagPromptTemplates = async () => {
 
 const getSystemPrompts = async () => {
   // Read in json file
-  const file = await import('data/system-prompts.json')
+  const file = await import('../data/system-prompts.json')
 
   return {
     success: true,
