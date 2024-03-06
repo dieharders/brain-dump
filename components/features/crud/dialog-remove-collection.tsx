@@ -18,7 +18,7 @@ import { I_Collection, T_GenericAPIRequest, T_GenericDataRes } from '@/lib/homeb
 
 interface I_Props {
   collection: I_Collection | null
-  action: T_GenericAPIRequest<T_GenericDataRes>
+  action: T_GenericAPIRequest<any, T_GenericDataRes>
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void
 }

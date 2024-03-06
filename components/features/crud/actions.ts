@@ -2,6 +2,8 @@ import { useCallback } from 'react'
 import { I_Collection, I_Document, I_ServiceApis } from '@/lib/homebrew'
 import toast from 'react-hot-toast'
 
+export type T_DocPayload = { [key: string]: any } | FormData
+
 export const useMemoryActions = (services: I_ServiceApis | null) => {
   // Fetch the current collection and all its' source ids
   const fetchCollection = useCallback(
