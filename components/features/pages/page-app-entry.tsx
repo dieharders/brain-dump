@@ -114,6 +114,11 @@ export const AppEntry = () => {
   }
 
   useEffect(() => {
+    if (!window.homebrewai?.api?.configs?.domain)
+      saveRemoteAddress({ domainValue, portValue })
+  }, [domainValue, portValue, saveRemoteAddress])
+
+  useEffect(() => {
     // Always unload current model
     services?.textInference.unload()
   }, [services?.textInference])

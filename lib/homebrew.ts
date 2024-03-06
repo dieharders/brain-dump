@@ -360,13 +360,13 @@ export interface I_ServiceApis extends I_BaseServiceApis {
 }
 
 export const defaultPort = '8008'
-export const defaultDomain = '127.0.0.1'
+export const defaultDomain = 'http://127.0.0.1'
 const createHostName = () => {
   const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
   const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain //localhost
-  const isDev = !!process && process.env.NODE_ENV === 'development'
-  const protocol = isDev ? 'http' : 'https'
-  const origin = `${protocol}://${DOMAIN}:${PORT}`
+  // const isDev = !!process && process.env.NODE_ENV === 'development'
+  // const protocol = 'http' //isDev ? 'http' : 'https'
+  const origin = `${DOMAIN}:${PORT}`
   return origin
 }
 
