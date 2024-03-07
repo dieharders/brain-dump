@@ -46,7 +46,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     }
   }, [])
 
-  const addCollection: T_GenericAPIRequest<T_GenericDataRes> = useCallback(async (args) => {
+  const addCollection: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
     const promise = new Promise((resolve, reject) => {
       const action = async () => {
         const result = await services?.memory.addCollection(args)
@@ -71,7 +71,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
   }, [updateListAction, services])
 
-  const addDocument: T_GenericAPIRequest<T_GenericDataRes> = useCallback(async (args) => {
+  const addDocument: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
     return services?.memory.addDocument(args) || null
   }, [services?.memory])
 

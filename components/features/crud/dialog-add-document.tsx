@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -27,8 +27,8 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { T_DocPayload } from '@/components/features/crud/actions'
 
-type T_Payload = { [key: string]: any } | FormData
 
 type T_SourceFile = 'urlFile' | 'localFile' | 'inputText'
 
@@ -36,7 +36,7 @@ interface I_Props {
   collection: I_Collection | null,
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
-  action: T_GenericAPIRequest<T_Payload, T_GenericDataRes>
+  action: T_GenericAPIRequest<T_DocPayload, T_GenericDataRes>
   options?: T_APIConfigOptions
 }
 

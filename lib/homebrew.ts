@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react'
 import { type Message } from 'ai/react'
 
 export enum ModelID {
@@ -360,11 +361,13 @@ export interface I_ServiceApis extends I_BaseServiceApis {
 }
 
 export const defaultPort = '8008'
-export const defaultDomain = '127.0.0.1'
+export const defaultDomain = 'http://127.0.0.1' // always use http since server currently does not support https
 const createHostName = () => {
   const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
   const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain //localhost
-  const origin = `http://${DOMAIN}:${PORT}`
+  // const isDev = !!process && process.env.NODE_ENV === 'development'
+  // const protocol = 'http' //isDev ? 'http' : 'https'
+  const origin = `${DOMAIN}:${PORT}`
   return origin
 }
 
@@ -410,7 +413,7 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
 
 const getModelConfigs = async () => {
   // Read in json file
-  const file = await import('data/text-model-configs.json')
+  const file = await import('../data/text-model-configs.json')
 
   return {
     success: true,
@@ -421,7 +424,7 @@ const getModelConfigs = async () => {
 
 const getPromptTemplates = async () => {
   // Read in json file
-  const file = await import('data/prompt-templates.json')
+  const file = await import('../data/prompt-templates.json')
 
   return {
     success: true,
@@ -432,7 +435,7 @@ const getPromptTemplates = async () => {
 
 const getRagPromptTemplates = async () => {
   // Read in json file
-  const file = await import('data/rag-prompt-templates.json')
+  const file = await import('../data/rag-prompt-templates.json')
 
   return {
     success: true,
@@ -443,7 +446,7 @@ const getRagPromptTemplates = async () => {
 
 const getSystemPrompts = async () => {
   // Read in json file
-  const file = await import('data/system-prompts.json')
+  const file = await import('../data/system-prompts.json')
 
   return {
     success: true,
@@ -570,7 +573,7 @@ export const getAPIConfig = async () => {
  */
 export const useHomebrew = () => {
   // Init global context
-  let store = {} as T_ClientAPI
+  let store = useMemo(() => ({} as T_ClientAPI), [])
 
   if (typeof window !== 'undefined') {
     // Client-side-only code
@@ -579,25 +582,9 @@ export const useHomebrew = () => {
   }
 
   /**
-   * Attempt to connect to homebrew api.
-   */
-  const connect = async () => {
-    // Track the initial attempt at a connection
-    if (store) store.hasInitConnection = true
-
-    const result = await connectToLocalProvider()
-    if (!result?.success) return null
-
-    // Attempt to return api services
-    await getServices()
-
-    return result
-  }
-
-  /**
    * Get all api configs for services.
    */
-  const getServices = async () => {
+  const getServices = useCallback(async () => {
     if (store.api?.services) return store.api?.services
 
     const res = await getAPIConfig()
@@ -614,7 +601,23 @@ export const useHomebrew = () => {
       store.api = d
     }
     return serviceApis
-  }
+  }, [store])
+
+  /**
+   * Attempt to connect to homebrew api.
+   */
+  const connect = useCallback(async () => {
+    // Track the initial attempt at a connection
+    if (store) store.hasInitConnection = true
+
+    const result = await connectToLocalProvider()
+    if (!result?.success) return null
+
+    // Attempt to return api services
+    await getServices()
+
+    return result
+  }, [getServices, store])
 
   /**
    * Return options for all endpoints

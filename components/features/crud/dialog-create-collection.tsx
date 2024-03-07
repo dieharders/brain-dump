@@ -16,7 +16,7 @@ import {
 interface IProps {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
-  action: T_GenericAPIRequest<T_GenericDataRes>
+  action: T_GenericAPIRequest<any, T_GenericDataRes>
 }
 
 export const DialogCreateCollection = (props: IProps) => {
