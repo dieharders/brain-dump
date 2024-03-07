@@ -15,6 +15,7 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 import { I_Knowledge_State, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
+import { cn } from '@/lib/utils'
 
 export interface I_Charm {
   id: T_CharmId
@@ -171,48 +172,45 @@ export const CharmMenu = (props: I_Props) => {
         <div className="scrollbar flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
           {/* Microphone - use to input text */}
           {shouldRender('microphone') &&
-            <CharmItem
-              className={`${emptyRingStyle} ${isActive('microphone') && activeStyle}`}
-              actionText="Microphone - Transform speech to text"
-              onClick={() => toggleActiveCharm('microphone')}
-            >
-              <IconMicrophone className={iconStyle} />
-            </CharmItem>
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('microphone') && activeStyle),
+              actionText: 'Microphone - Transform speech to text',
+              onClick: () => toggleActiveCharm('microphone'),
+              children: <IconMicrophone className={iconStyle} />,
+            })
           }
 
           {/* Audio Response */}
           {shouldRender('speak') &&
-            <CharmItem
-              className={`${emptyRingStyle} ${isActive('speak') && activeStyle}`}
-              actionText="Speak - Have the Ai speak back to you"
-              onClick={() => toggleActiveCharm('speak')}
-            >
-              <IconSynth className={iconStyle} />
-            </CharmItem>
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('speak') && activeStyle),
+              children: <IconSynth className={iconStyle} />,
+              actionText: 'Speak - Have the Ai speak back to you',
+              onClick: () => toggleActiveCharm('speak'),
+            })
           }
 
           {/* Query Memory - target a memory collection to use as context */}
           {shouldRender('memory') &&
-            <CharmItem
-              className={emptyRingStyle}
-              actionText="Query Memory - Select a memory to use as context"
-              onClick={() => setOpenQueryCharmDialog(true)}
-            >
-              <IconBrain className={iconStyle} />
-            </CharmItem>
+            CharmItem({
+              className: emptyRingStyle,
+              children: <IconBrain className={iconStyle} />,
+              actionText: 'Query Memory - Select a memory to use as context',
+              onClick: () => setOpenQueryCharmDialog(true),
+            })
           }
 
           {/* Model Settings */}
           {shouldRender('prompt') &&
-            <CharmItem
-              className={emptyRingStyle}
-              actionText="Model Settings - Modify your Ai behavior"
-              onClick={async () => {
+            CharmItem({
+              className: emptyRingStyle,
+              children: <IconPromptTemplate className={iconStyle} />,
+              actionText: 'Model Settings - Modify your Ai behavior',
+              onClick: async () => {
                 await fetchData()
                 setOpenPromptCharmDialog(true)
-              }}>
-              <IconPromptTemplate className={iconStyle} />
-            </CharmItem>
+              }
+            })
           }
 
         </div>
