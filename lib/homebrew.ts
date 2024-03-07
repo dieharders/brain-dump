@@ -361,7 +361,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
 }
 
 export const defaultPort = '8008'
-export const defaultDomain = 'https://localhost' //'http://127.0.0.1'
+export const defaultDomain = 'http://localhost'
 const createDomainName = () => {
   const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
   const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain
