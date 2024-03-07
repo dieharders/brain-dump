@@ -398,7 +398,7 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 
   try {
-    // @TODO This api endpoint should come from the /connect endpoint
+    // @TODO Remove the use of fetching configs. Just use connect() and have it return everything fetchAPIConfig does.
     const endpoint = '/v1/services/api'
     const domain = createDomainName()
     const res = await fetch(`${domain}${endpoint}`, options)

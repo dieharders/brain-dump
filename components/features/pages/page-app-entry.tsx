@@ -82,7 +82,7 @@ export const AppEntry = () => {
             <Input
               name="domain"
               value={domainValue}
-              placeholder={`domain (${domainValue})`}
+              placeholder={defaultDomain}
               onChange={e => setDomainValue(e.target.value)}
               className={inputStyle}
             />
