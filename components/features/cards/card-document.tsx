@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import Link from "next/link"
 import { I_Document } from "@/lib/homebrew"
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -149,12 +148,11 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
         setIsActive(false)
       }}
     >
-      <Link
+      <div
         className={cn(
           buttonVariants({ variant: 'secondary' }),
           'hover-bg-accent relative h-auto w-full select-none flex-col overflow-hidden px-4',
         )}
-        href="/"
       >
         {/* Header */}
         <div className="my-1 flex h-fit w-full flex-row">
@@ -190,7 +188,7 @@ const DocumentCard = ({ document, index, fileExploreAction, updateAction, delete
           <p className="overflow-hidden text-ellipsis whitespace-nowrap">📅:{' '}{document.metadata.createdAt || "???"}</p>
           <p className="overflow-hidden text-ellipsis whitespace-nowrap">📁:{' '}{document.metadata.filePath || "???"}</p>
         </span>
-      </Link>
+      </div>
     </div>
   )
 }
