@@ -361,12 +361,10 @@ export interface I_ServiceApis extends I_BaseServiceApis {
 }
 
 export const defaultPort = '8008'
-export const defaultDomain = 'http://127.0.0.1' // always use http since server currently does not support https
-const createHostName = () => {
+export const defaultDomain = 'https://localhost' //'http://127.0.0.1'
+const createDomainName = () => {
   const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
-  const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain //localhost
-  // const isDev = !!process && process.env.NODE_ENV === 'development'
-  // const protocol = 'http' //isDev ? 'http' : 'https'
+  const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain
   const origin = `${DOMAIN}:${PORT}`
   return origin
 }
@@ -380,7 +378,8 @@ const fetchConnect = async (): Promise<I_ConnectResponse | null> => {
   }
 
   try {
-    const res = await fetch(`${createHostName()}/v1/connect`, options)
+    const domain = createDomainName()
+    const res = await fetch(`${domain}/v1/connect`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
     if (!res) throw new Error('[homebrew] No response received.')
     return res.json()
@@ -401,7 +400,8 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   try {
     // @TODO This api endpoint should come from the /connect endpoint
     const endpoint = '/v1/services/api'
-    const res = await fetch(`${createHostName()}${endpoint}`, options)
+    const domain = createDomainName()
+    const res = await fetch(`${domain}${endpoint}`, options)
     if (!res.ok) throw new Error(`[homebrew] HTTP error! Status: ${res.status}`)
     if (!res) throw new Error(`[homebrew] No response from ${endpoint}`)
     return res.json()
@@ -463,7 +463,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
   // Construct api funcs for each service
   response.forEach(api => {
-    const origin = `${createHostName()}`
+    const origin = `${createDomainName()}`
     const apiName = api.name
     const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
     let res: Response
@@ -546,7 +546,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   return serviceApis
 }
 
-export const connectToLocalProvider = async (): Promise<I_ConnectResponse | null> => {
+const connectToLocalProvider = async (): Promise<I_ConnectResponse | null> => {
   const conn = await fetchConnect()
   console.log('[homebrew] Connecting:', conn)
 
@@ -640,9 +640,18 @@ export const useHomebrew = () => {
     portValue: string
     domainValue: string
   }) => {
-    if (window.homebrewai?.api?.configs) window.homebrewai.api.configs.port = portValue
-    if (window.homebrewai?.api?.configs)
+    const configs = {
+      configs: {
+        port: portValue,
+        domain: domainValue,
+      },
+    } as T_APIRequests
+
+    if (!window.homebrewai?.api) window.homebrewai = { api: configs }
+    else {
+      window.homebrewai.api.configs.port = portValue
       window.homebrewai.api.configs.domain = domainValue
+    }
   }
 
   return { connect, getServices, getAPIConfigOptions, saveRemoteAddress }

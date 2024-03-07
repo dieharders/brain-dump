@@ -114,8 +114,7 @@ export const AppEntry = () => {
   }
 
   useEffect(() => {
-    if (!window.homebrewai?.api?.configs?.domain)
-      saveRemoteAddress({ domainValue, portValue })
+    saveRemoteAddress({ domainValue, portValue })
   }, [domainValue, portValue, saveRemoteAddress])
 
   useEffect(() => {
