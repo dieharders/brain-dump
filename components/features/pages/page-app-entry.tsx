@@ -82,7 +82,7 @@ export const AppEntry = () => {
             <Input
               name="domain"
               value={domainValue}
-              placeholder={`domain (${domainValue})`}
+              placeholder={defaultDomain}
               onChange={e => setDomainValue(e.target.value)}
               className={inputStyle}
             />
@@ -114,8 +114,7 @@ export const AppEntry = () => {
   }
 
   useEffect(() => {
-    if (!window.homebrewai?.api?.configs?.domain)
-      saveRemoteAddress({ domainValue, portValue })
+    saveRemoteAddress({ domainValue, portValue })
   }, [domainValue, portValue, saveRemoteAddress])
 
   useEffect(() => {
