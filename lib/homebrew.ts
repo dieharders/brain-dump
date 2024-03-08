@@ -60,7 +60,7 @@ type T_APIRequests = {
 }
 
 type T_ClientAPI = {
-  hasInitConnection?: boolean
+  hasServerConnection?: boolean
   api?: T_APIRequests
 }
 
@@ -451,7 +451,7 @@ const getSystemPrompts = async () => {
   return {
     success: true,
     message: 'Returned all system prompts for text inference.',
-    data: file.default,
+    data: file?.default,
   }
 }
 
@@ -607,11 +607,11 @@ export const useHomebrew = () => {
    * Attempt to connect to homebrew api.
    */
   const connect = useCallback(async () => {
-    // Track the initial attempt at a connection
-    if (store) store.hasInitConnection = true
-
     const result = await connectToLocalProvider()
     if (!result?.success) return null
+
+    // Track the initial attempt at a connection
+    if (store) store.hasServerConnection = true
 
     // Attempt to return api services
     await getServices()

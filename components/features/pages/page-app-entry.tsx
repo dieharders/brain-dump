@@ -7,6 +7,7 @@ import { ModelID } from '@/components/features/settings/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { IconSpinner } from '@/components/ui/icons'
 import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu-application-modes'
 import { toast } from 'react-hot-toast'
 import { useTheme } from 'next-themes'
@@ -32,6 +33,15 @@ export const AppEntry = () => {
   const [domainValue, setDomainValue] = useState(defaultDomain)
   const [portValue, setPortValue] = useState(defaultPort)
 
+  const fetchInstalledModelsAndConfigs = useCallback(async () => {
+    // Get all currently installed models
+    const listResponse = await services?.textInference.installed()
+    listResponse?.data && setInstalledList(listResponse.data)
+    // Get all model configs
+    const cfgs = await services?.textInference.getModelConfigs()
+    cfgs?.data && setModelConfigs(cfgs.data)
+  }, [services?.textInference])
+
   const connect = useCallback(async () => {
     setIsConnecting(true)
 
@@ -48,12 +58,6 @@ export const AppEntry = () => {
       if (res?.success) {
         toast.success(`Connected to local provider`)
         setIsConnected(true)
-        // Get all currently installed models
-        const listResponse = await services?.textInference.installed()
-        listResponse?.data && setInstalledList(listResponse.data)
-        // Get all model configs
-        const cfgs = await services?.textInference.getModelConfigs()
-        cfgs?.data && setModelConfigs(cfgs.data)
         // Success
         return true
       }
@@ -63,7 +67,7 @@ export const AppEntry = () => {
 
     setIsConnecting(false)
     return false
-  }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider, services?.textInference])
+  }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider])
 
   const ChooseBackendPage = () => {
     const containerStyle = 'flex w-[24rem] flex-row items-center justify-between gap-3 rounded-lg bg-background/20 p-4 overflow-hidden'
@@ -103,7 +107,10 @@ export const AppEntry = () => {
           {/* Connect */}
           <Button
             className="m-auto h-fit w-fit justify-self-end bg-blue-600 px-16 text-center text-primary hover:bg-blue-800"
-            onClick={connect}
+            onClick={async () => {
+              const success = await connect()
+              if (success) fetchInstalledModelsAndConfigs()
+            }}
             disabled={isConnecting}
           >
             Connect to HomeBrewAi
@@ -122,28 +129,37 @@ export const AppEntry = () => {
     services?.textInference.unload()
   }, [services?.textInference])
 
+  // Get all possible server endpoints
   useEffect(() => {
-    if (hasMounted) return
-    typeof theme === 'string' && setHasMounted(true)
-    // Get all possible server endpoints
     const action = async () => {
       const res = await getServices()
       if (res) setServices(res)
     }
-    action()
-  }, [getServices, hasMounted, theme])
+    if (!hasMounted && !services) action()
+  }, [getServices, hasMounted, services])
+
+  // Fetch menu data
+  useEffect(() => {
+    if (services) fetchInstalledModelsAndConfigs()
+  }, [services, fetchInstalledModelsAndConfigs])
+
+  // Make sure this is client side, otherwise theme is used incorrect
+  useEffect(() => {
+    if (hasMounted) return
+    typeof theme === 'string' && setHasMounted(true)
+  }, [hasMounted, theme])
 
   // Render
 
   // Prevent server/client render mismatch
   if (!hasMounted) return null
   // HomeBrewAi connection menu
-  if (!isConnected) return ChooseBackendPage()
+  if (!isConnected && !window.homebrewai?.hasServerConnection) return ChooseBackendPage()
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
       <div className={wrapperStyle}>
-        {/* Model Selection Menu */}
+        {/* Main Menu */}
         <ApplicationModesMenu
           setHasTextServiceConnected={setHasTextServiceConnected}
           isConnecting={isConnecting}
@@ -159,9 +175,9 @@ export const AppEntry = () => {
   // @TODO Put an indeterminant loading spinner here since we dont know what could be loading
   return (
     // Matrix bg ?
-    <div className={wrapperStyle}>
-      <div className="m-4 text-center">Loading LLM Model...
-      </div>
+    <div className={cn(wrapperStyle, 'flex flex-col items-center justify-center gap-4')}>
+      <div className="m-4 text-center text-lg font-bold">Loading LLM Model...</div>
+      <IconSpinner className="h-16 w-16 animate-spin" />
     </div>
   )
 }
