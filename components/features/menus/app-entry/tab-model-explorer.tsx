@@ -1,4 +1,5 @@
 import { PersonIcon } from '@radix-ui/react-icons'
+import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus } from '@/components/ui/icons'
 import { T_ModelConfig } from '@/lib/homebrew'
 
@@ -7,12 +8,12 @@ interface I_Props {
   Header: T_Component
   Title: T_Component
   Description: T_Component
-  Item: React.FC<{ title: string, Icon: any, className?: string }>
+  AddItem: React.FC<{ title: string, Icon: any, className?: string }>
   className: string
   data: { [key: string]: T_ModelConfig }
 }
 
-export const ModelExplorerMenu = ({ data, Header, Title, Description, Item, className }: I_Props) => {
+export const ModelExplorerMenu = ({ data, Header, Title, Description, AddItem, className }: I_Props) => {
   const presetBotClass = "opacity-40"
   const modelsList = Object.values(data)
 
@@ -27,8 +28,18 @@ export const ModelExplorerMenu = ({ data, Header, Title, Description, Item, clas
 
       {/* Content */}
       <div className={className}>
-        <Item title="Add New" Icon={IconPlus} />
-        {modelsList?.map(i => <Item key={i.id} title={i.name} Icon={PersonIcon} className={presetBotClass} />)}
+        <AddItem title="Add New" Icon={IconPlus} />
+        {modelsList?.map(i => <ModelCard
+          key={i.id}
+          title={i.name}
+          id={i.id}
+          description={i.description}
+          fileSize={i.fileSize}
+          licenses={i.licenses}
+          provider={i.provider}
+          icon={PersonIcon}
+          className={presetBotClass}
+        />)}
       </div>
     </div>
   )
