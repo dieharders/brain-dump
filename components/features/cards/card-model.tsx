@@ -53,14 +53,20 @@ export const ModelCard = ({ expandable = true, onClick = (id: string) => { }, fi
         {Icon && <Icon className="mr-1 inline text-foreground" />}
         {maker}{titlestr}
       </div>
+      {/* Arch Type */}
+
+      {/* Parameter Count */}
+
+      {/* File Format (GGUF) */}
+
       {/* Description */}
       <div className={cn("text-primary/50", !isOpen && "hidden")}>{description}</div>
       {/* Info/Stats */}
       <div className={cn("inline-flex w-full shrink-0 flex-col items-stretch justify-start gap-2 break-words p-0 text-left text-sm text-primary/50 lg:w-72", !isOpen && "hidden")}>
-        {fileSize && <p><p className={cn(secTextStyle)}>Disk: </p>{fileSize} Gb</p>}
-        {ramSize && <p><p className={cn(secTextStyle)}>RAM: </p>{ramSize} Gb</p>}
-        {provider && <p><p className={cn(secTextStyle)}>Provider: </p>{provider}</p>}
-        {licenses?.length && licenses?.length > 0 && <p><p className={cn(secTextStyle)}>License: </p>{licenses?.join(', ')}</p>}
+        {fileSize && <div><p className={cn(secTextStyle)}>Disk: </p>{fileSize} Gb</div>}
+        {ramSize && <div><p className={cn(secTextStyle)}>RAM: </p>{ramSize} Gb</div>}
+        {provider && <div><p className={cn(secTextStyle)}>Provider: </p>{provider}</div>}
+        {licenses?.length && licenses?.length > 0 && <div><p className={cn(secTextStyle)}>License: </p>{licenses?.join(', ')}</div>}
       </div>
     </Button>
   )
