@@ -248,7 +248,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const tabs = [
-    { label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({ data: modelConfigs, Header, Title, Description, AddItem: Item, className: gridContentClass }) },
+    { label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({ data: modelConfigs, Header, Title, Description }) },
     { label: 'playground', icon: "🌎", content: playgroundMenu },
     { label: 'bots', icon: "🤖", content: botsMenu },
     { label: 'assistants', icon: "👩‍🔬", content: assistantsMenu },

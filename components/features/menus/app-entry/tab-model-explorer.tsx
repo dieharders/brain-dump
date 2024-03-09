@@ -1,21 +1,23 @@
-import { PersonIcon } from '@radix-ui/react-icons'
+import { useState } from 'react'
 import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus } from '@/components/ui/icons'
 import { T_ModelConfig } from '@/lib/homebrew'
+import { cn } from '@/lib/utils'
 
 type T_Component = React.FC<{ children: React.ReactNode }>
 interface I_Props {
   Header: T_Component
   Title: T_Component
   Description: T_Component
-  AddItem: React.FC<{ title: string, Icon: any, className?: string }>
-  className: string
+  // AddItem: React.FC<{ title: string, Icon: any, className?: string }>
+  className?: string
   data: { [key: string]: T_ModelConfig }
 }
 
-export const ModelExplorerMenu = ({ data, Header, Title, Description, AddItem, className }: I_Props) => {
-  const presetBotClass = "opacity-40"
+export const ModelExplorerMenu = ({ data, Header, Title, Description, className }: I_Props) => {
   const modelsList = Object.values(data)
+  // @TODO Use selectedModel to load quantization data in right menu window
+  const [selectedModel, setSelectedModel] = useState('')
 
   return (
     <div>
@@ -27,19 +29,30 @@ export const ModelExplorerMenu = ({ data, Header, Title, Description, AddItem, c
       </Header>
 
       {/* Content */}
-      <div className={className}>
-        <AddItem title="Add New" Icon={IconPlus} />
-        {modelsList?.map(i => <ModelCard
-          key={i.id}
-          title={i.name}
-          id={i.id}
-          description={i.description}
-          fileSize={i.fileSize}
-          licenses={i.licenses}
-          provider={i.provider}
-          icon={PersonIcon}
-          className={presetBotClass}
-        />)}
+      <div className={cn("flex flex-col justify-items-center gap-4", className)}>
+        <ModelCard
+          title="Add New"
+          id="new"
+          Icon={IconPlus}
+          expandable={false}
+          onClick={() => {
+            // @TODO Open a menu to add a custom model config
+            // ...
+          }}
+        />
+        {modelsList?.map(i =>
+          <ModelCard
+            key={i.id}
+            title={i.name}
+            id={i.id}
+            description={i.description}
+            fileSize={i.fileSize}
+            licenses={i.licenses}
+            provider={i.provider}
+            fileName={i.fileName}
+            onClick={() => setSelectedModel(i.id)}
+          />
+        )}
       </div>
     </div>
   )
