@@ -18,7 +18,7 @@ export async function Header() {
         <MenuPanelTriggers session={session} />
       ) : (
         // Login
-        <Link href="/" target="_blank" rel="nofollow">
+        <Link href="/" target="_blank" rel="nofollow" prefetch={false}>
           <IconNextChat className="mr-2 h-6 w-6 dark:hidden" inverted />
           <IconNextChat className="mr-2 hidden h-6 w-6 dark:block" />
         </Link>
@@ -34,7 +34,7 @@ export async function Header() {
           <UserMenu user={session.user} />
         ) : (
           <Button variant="link" asChild>
-            <Link href="/sign-in?callbackUrl=/">Login</Link>
+            <Link href="/sign-in?callbackUrl=/" prefetch={false}>Login</Link>
           </Button>
         )}
         {/* Light/Dark Mode */}
