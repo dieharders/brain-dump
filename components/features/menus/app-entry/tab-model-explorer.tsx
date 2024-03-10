@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons"
 import { T_ModelConfig } from '@/lib/homebrew'
 import { cn } from '@/lib/utils'
 
@@ -17,12 +18,14 @@ interface I_Props {
 
 export const ModelExplorerMenu = ({ data, Header, Title, Description }: I_Props) => {
   const modelsList = Object.values(data)
-  // @TODO Use selectedModel to load quantization data in right menu window
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
+  const [expandLeftMenu, setExpandLeftMenu] = useState(true)
   const selectedModelConfig = data[selectedModelId || '']
   const rightContainerWidth = selectedModelId ? 'w-full' : 'w-0'
   const rightContainerBorder = selectedModelId ? 'border border-primary/40' : ''
-  const contentContainerGap = selectedModelId ? 'gap-6' : ''
+  const noBreakStyle = 'text-ellipsis whitespace-nowrap text-nowrap'
+  const contentContainerGap = selectedModelId && expandLeftMenu ? 'gap-6' : ''
+  const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'w-0 overflow-hidden'
   const router = useRouter()
 
   return (
@@ -35,11 +38,11 @@ export const ModelExplorerMenu = ({ data, Header, Title, Description }: I_Props)
       </Header>
 
       {/* Content Container */}
-      <div className={cn("flex flex-row items-start justify-items-stretch overflow-hidden transition-all duration-300 ease-in", contentContainerGap)}>
+      <div className={cn("flex flex-row items-start justify-items-stretch overflow-hidden", contentContainerGap)}>
         {/* Left Content Menu */}
-        <div className={cn("flex w-full flex-col justify-items-stretch gap-4")}>
+        <div className={cn("flex flex-col justify-items-stretch gap-4", leftMenuIsExpanded)}>
           <ModelCard
-            title="Add New"
+            title={expandLeftMenu ? "Add New" : ""}
             id="new"
             Icon={IconPlus}
             expandable={false}
@@ -58,22 +61,29 @@ export const ModelExplorerMenu = ({ data, Header, Title, Description }: I_Props)
               licenses={i.licenses}
               provider={i.provider}
               fileName={i.fileName}
-              onClick={() => setSelectedModelId(i.id)}
+              onClick={() => {
+                setSelectedModelId(i.id)
+                setExpandLeftMenu(true)
+              }}
             />
           )}
         </div>
-
         {/* Right Content Menu */}
         <div className={cn("flex flex-col justify-items-stretch gap-1 overflow-hidden rounded-md bg-accent", rightContainerWidth, rightContainerBorder)}>
-          <div className="flex h-[4rem] flex-row items-stretch justify-between justify-items-start gap-4 bg-primary/30 p-4">
+          <div className={cn("flex h-fit flex-row items-stretch justify-between justify-items-start gap-4 bg-primary/30 p-4", noBreakStyle)}>
             {/* Expand/Collapse Button */}
             <Button
               className="h-fit w-fit"
               variant="secondary"
-            >💥</Button>
-            <div className="self-center justify-self-start text-left">{selectedModelId}</div>
+              onClick={() => { setExpandLeftMenu(prev => !prev) }}
+            >
+              {expandLeftMenu ? <PinLeftIcon className="h-4 w-4" /> : <PinRightIcon className="h-4 w-4" />}
+            </Button>
+            <div className="flex w-full flex-col justify-items-start self-center overflow-hidden text-left">
+              {selectedModelId}
+            </div>
             <Button
-              className="w-fit"
+              className={cn("w-fit self-center", noBreakStyle)}
               variant="secondary"
               onClick={() => {
                 if (selectedModelConfig?.modelUrl?.length && selectedModelConfig?.modelUrl?.length > 0) {
@@ -82,8 +92,9 @@ export const ModelExplorerMenu = ({ data, Header, Title, Description }: I_Props)
               }}
             >Model Card 🤗</Button>
           </div>
-          <div className="h-fit p-4">Quantizations Available (12)</div>
-          <div className="h-fit bg-slate-700 p-4">
+          <div className={cn("h-fit p-4 text-accent", noBreakStyle)}>Quantizations Available (12)</div>
+          {/* List of Quants */}
+          <div className={cn("h-fit border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
             {/* Quant name */}
             {selectedModelConfig?.name}
             {/* Size */}
