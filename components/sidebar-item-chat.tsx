@@ -24,6 +24,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
       {/* @TODO This may be causing premature fetches of chat data each time we hover over links */}
       <Link
         href={chat.path}
+        prefetch={false}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'relative flex h-8 w-full flex-1 overflow-hidden pl-8 pr-2 text-left',

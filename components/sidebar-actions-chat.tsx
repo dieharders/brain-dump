@@ -123,6 +123,7 @@ export function SidebarActions(props: I_Props) {
             {chat.sharePath && (
               <Link
                 href={chat.sharePath}
+                prefetch={false}
                 className={cn(badgeVariants({ variant: 'secondary' }), 'mr-auto')}
                 target="_blank"
               >

@@ -62,7 +62,7 @@ export function NewItem(props: I_Props) {
               })
             }}
           >
-            <Link href="/">
+            <Link href="/" prefetch={false}>
               {isPending && <IconSpinner className="mr-2 animate-spin" />}
               Add
             </Link>
