@@ -50,6 +50,7 @@ export const DialogShareCollection = (props: I_Props) => {
           {sharePath && (
             <Link
               href={sharePath}
+              prefetch={false}
               className={cn(badgeVariants({ variant: 'secondary' }), 'mr-auto')}
               target="_blank"
             >

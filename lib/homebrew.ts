@@ -328,6 +328,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     >
     unload: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     model: T_GenericAPIRequest<T_GenericReqPayload, I_LoadedModelRes> // Currently loaded text model
+    modelExplore: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     installed: T_GenericAPIRequest<T_GenericReqPayload, T_InstalledTextModel[]> // List of currently installed text models
     getModelConfigs: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>

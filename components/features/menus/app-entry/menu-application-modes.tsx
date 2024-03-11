@@ -11,6 +11,7 @@ import { Playground } from '@/components/features/menus/app-entry/tab-playground
 import { BotCreationMenu } from '@/components/features/menus/app-entry/tab-bots'
 import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
+import { ModelExplorerMenu } from '@/components/features/menus/app-entry/tab-model-explorer'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { ROUTE_CHATBOT } from '@/app/constants'
@@ -60,6 +61,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
   // Styling
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
+  // Methods
+  const modelExploreAction = useCallback(async () => {
+    await services?.textInference?.modelExplore()
+    return
+  }, [services?.textInference])
 
   const goToKnowledgePage = () => router.push(ROUTE_KNOWLEDGE)
 
@@ -220,27 +226,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     </div>
   )
 
-  const modelsMenu = (
-    <div>
-      <Header>
-        <Title>Ai Model Explorer</Title>
-        <Description>
-          Browse and install thousands of Ai models to power your bots. Each model can be confgured to meet your hardware needs. A recommended list of models is curated by the team.
-        </Description>
-      </Header>
-
-      {/* Content */}
-      <div className={gridContentClass}>
-        <Item title="Add New" Icon={IconPlus} />
-        <Item title="Llama 2 13B" Icon={QuestionMarkIcon} className={presetBotClass} />
-        <Item title="Wizard Vicuna" Icon={IconConversationType} className={presetBotClass} />
-        <Item title="Mistral 7B" Icon={ClipboardIcon} className={presetBotClass} />
-        <Item title="Mixtral 8x7B" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Code Llama" Icon={PersonIcon} className={presetBotClass} />
-      </div>
-    </div>
-  )
-
   const playgroundMenu = (
     <div>
       <Header>
@@ -268,7 +253,15 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const tabs = [
-    { label: 'models', icon: "👨‍💻", content: modelsMenu },
+    {
+      label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({
+        data: modelConfigs,
+        Header,
+        Title,
+        Description,
+        onOpenDirAction: modelExploreAction
+      })
+    },
     { label: 'playground', icon: "🌎", content: playgroundMenu },
     { label: 'bots', icon: "🤖", content: botsMenu },
     { label: 'assistants', icon: "👩‍🔬", content: assistantsMenu },
