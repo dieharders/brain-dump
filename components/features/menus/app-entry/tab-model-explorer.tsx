@@ -12,7 +12,6 @@ interface I_Props {
   Header: T_Component
   Title: T_Component
   Description: T_Component
-  // AddItem: React.FC<{ title: string, Icon: any, className?: string }>
   data: { [key: string]: T_ModelConfig }
   onOpenDirAction: () => Promise<void>
 }
