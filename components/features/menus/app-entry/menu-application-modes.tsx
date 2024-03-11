@@ -61,6 +61,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
   // Styling
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
+  // Methods
+  const modelExploreAction = useCallback(async () => {
+    await services?.textInference?.modelExplore()
+    return
+  }, [services?.textInference])
 
   const goToKnowledgePage = () => router.push(ROUTE_KNOWLEDGE)
 
@@ -248,7 +253,15 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const tabs = [
-    { label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({ data: modelConfigs, Header, Title, Description }) },
+    {
+      label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({
+        data: modelConfigs,
+        Header,
+        Title,
+        Description,
+        onOpenDirAction: modelExploreAction
+      })
+    },
     { label: 'playground', icon: "🌎", content: playgroundMenu },
     { label: 'bots', icon: "🤖", content: botsMenu },
     { label: 'assistants', icon: "👩‍🔬", content: assistantsMenu },
