@@ -297,16 +297,5 @@
     "downloadUrl": "https://huggingface.co/Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf/resolve/main/f16-bling-sheared-llama-1.3b-0.1.gguf",
     "sha256": "38e1a893f9a9949be324ad8edacf627f60c7626432b622a6bed155af6773bf6c",
     "messageFormat": "<human>: {context_message}\n{prompt}\n<bot>:"
-  },
-  "example-cat-anim": {
-    "id": "example-cat-anim",
-    "name": "Example Cute Cat Animation",
-    "provider": "giphy",
-    "licenses": ["Academic", "Commercial", "Other"],
-    "description": "This is a test file (gif) for testing download behavior.",
-    "fileSize": 3060203,
-    "context_window": 4000,
-    "fileName": "cute-cat-anim.gif",
-    "downloadUrl": "https://media.giphy.com/media/04uUJdw2DliDjsNOZV/giphy.gif"
   }
 }

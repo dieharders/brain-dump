@@ -112,6 +112,14 @@ export const ApplicationModesMenu = (props: I_Props) => {
     [services?.textInference],
   )
 
+  const downloadModel = useCallback(
+    async ({ repo_id, filename }: { repo_id: string, filename: string }) => {
+      await services?.textInference.download({ body: { repo_id, filename } })
+      return
+    },
+    [services?.textInference],
+  )
+
   useEffect(() => {
     fetchBots()
   }, [fetchBots])
@@ -270,6 +278,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         Description,
         onOpenDirAction: modelExploreAction,
         fetchModelInfo,
+        downloadModel,
       })
     },
     { label: 'playground', icon: "🌎", content: playgroundMenu },

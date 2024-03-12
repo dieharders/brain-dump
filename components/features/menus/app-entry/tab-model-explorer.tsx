@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus, IconDownload } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons"
 import { T_ModelConfig } from '@/lib/homebrew'
-import { cn } from '@/lib/utils'
+import { calcFileSize, cn } from '@/lib/utils'
 
 type T_Component = React.FC<{ children: React.ReactNode }>
 interface I_Props {
@@ -15,6 +15,7 @@ interface I_Props {
   data: { [key: string]: T_ModelConfig }
   onOpenDirAction: () => Promise<void>
   fetchModelInfo: (repoId: string) => Promise<any>
+  downloadModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
 }
 
 export const ModelExplorerMenu = ({
@@ -23,13 +24,19 @@ export const ModelExplorerMenu = ({
   Title,
   Description,
   onOpenDirAction,
-  fetchModelInfo
+  fetchModelInfo,
+  downloadModel,
 }: I_Props) => {
   const modelsList = useMemo(() => Object.values(data) || [], [data])
-  const [modelInfo, setModelInfo] = useState<any[]>([])
+  const [modelsInfo, setModelsInfo] = useState<any[]>([])
   const [selectedModelId, setSelectedModelId] = useState<string | null>(modelsList?.[0]?.id || null)
   const [expandLeftMenu, setExpandLeftMenu] = useState(true)
   const selectedModelConfig = data[selectedModelId || '']
+  const numQuants = useMemo(() => {
+    const model = modelsInfo.find(i => i.id === selectedModelConfig.repoId)
+    const quants = model?.siblings?.filter((s: any) => s.lfs)
+    return quants?.length
+  }, [modelsInfo, selectedModelConfig])
   const rightContainerWidth = selectedModelId ? 'w-full' : 'w-0'
   const rightContainerBorder = selectedModelId ? 'border border-primary/40' : ''
   const noBreakStyle = 'text-ellipsis whitespace-nowrap text-nowrap'
@@ -37,7 +44,7 @@ export const ModelExplorerMenu = ({
   const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'w-0 overflow-hidden'
   const router = useRouter()
 
-  const QuantContainer = ({ fileName, name, fileSize, downloadUrl, action }: { fileName: string, name: string, fileSize: string, action?: (url: string) => void, downloadUrl?: string }) => {
+  const QuantContainer = useCallback(({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
     return (
       <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
         {/* Quant name */}
@@ -46,15 +53,14 @@ export const ModelExplorerMenu = ({
         </div>
         {/* File name */}
         <p className="w-full items-center self-center overflow-hidden text-ellipsis whitespace-nowrap text-primary">{fileName}</p>
-        <div className="flex w-full justify-end gap-2">
+        <div className="flex w-fit justify-end gap-2">
           {/* File Size */}
           <div className="flex items-center rounded-md bg-accent/50 p-2 text-primary">{fileSize}GB</div>
           {/* Download Button */}
           <Button
             variant="secondary"
-            onClick={() => {
-              // @TODO Add api call to download this model
-              action && action(downloadUrl || '')
+            onClick={async () => {
+              return downloadModel({ filename: fileName || '', repo_id })
             }}
             className="flex h-fit flex-row items-center gap-1 rounded-md bg-accent/50 p-2 text-lg text-primary"
           >
@@ -63,15 +69,37 @@ export const ModelExplorerMenu = ({
         </div>
       </div>
     )
-  }
+  }, [downloadModel])
+
+  const renderQuants = useCallback(() => {
+    const model = modelsInfo.find(i => i.id === selectedModelConfig.repoId)
+    const quants = model?.siblings?.filter((s: any) => s.lfs)
+    return quants?.map((q: any) => {
+      const splitName = q.rfilename.split('.')
+      const nameLen = splitName.length - 1
+      const name = splitName?.[nameLen - 1]
+      const fileName = q.rfilename
+      const byteSize = parseInt(q.lfs.size, 10)
+      const fileSize = calcFileSize(byteSize)
+      const fileSizeString = fileSize.toString().slice(0, 4)
+      return <QuantContainer
+        key={fileName}
+        fileName={fileName}
+        fileSize={fileSizeString}
+        name={name}
+        repo_id={model.id}
+      />
+    })
+  }, [QuantContainer, modelsInfo, selectedModelConfig.repoId])
 
   // Get model info for our curated list
   useEffect(() => {
     modelsList?.forEach(async (m) => {
       const info = await fetchModelInfo(m.repoId)
 
-      setModelInfo(prev => {
-        prev.push(info)
+      // @TODO We may want to cache this info data along with the installed_model or model_configs data
+      setModelsInfo(prev => {
+        prev.push(info.data)
         return prev
       })
 
@@ -389,7 +417,7 @@ export const ModelExplorerMenu = ({
               {expandLeftMenu ? <PinLeftIcon className="h-4 w-4" /> : <PinRightIcon className="h-4 w-4" />}
             </Button>
             <div className="flex w-full flex-col justify-items-start self-center overflow-hidden text-left">
-              {selectedModelId}
+              {modelsList?.find(i => i.id === selectedModelId)?.name}
             </div>
             <Button
               className={cn("w-fit self-center", noBreakStyle)}
@@ -401,16 +429,8 @@ export const ModelExplorerMenu = ({
               }}
             >Model Card 🤗</Button>
           </div>
-          <div className={cn("h-fit p-4 text-accent", noBreakStyle)}>Files Available (12)</div>
-          {/* List of Quants, @TODO Make a list of these from a quant list in configs */}
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="4.37" name="Q2_K" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="3.16" name="Q3_K_S" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="3.52" name="Q3_K_M" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="3.82" name="Q3_K_L" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="4.11" name="Q4_0" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="4.14" name="Q4_K_S" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="4.37" name="Q4_K_M" />
-          <QuantContainer fileName={selectedModelConfig?.fileName} fileSize="5.00" name="Q5_0" />
+          <div className={cn("h-fit p-4 text-accent", noBreakStyle)}>Files Available ({numQuants})</div>
+          {renderQuants()}
         </div>
       </div>
     </div>

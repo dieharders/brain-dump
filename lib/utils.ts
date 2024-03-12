@@ -48,3 +48,8 @@ export const constructMainBgStyle = (currentTheme: string | undefined) => {
   const wrapperStyle = `flex w-full flex-1 flex-col items-center self-stretch ${bgColor}`
   return wrapperStyle
 }
+
+// Convert Bytes into Gigabytes
+export const calcFileSize = (bytes: number) => {
+  return bytes / 1000000000
+}
