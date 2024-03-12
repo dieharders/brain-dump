@@ -103,6 +103,15 @@ export const ApplicationModesMenu = (props: I_Props) => {
     action()
   }, [services?.storage])
 
+  const fetchModelInfo = useCallback(
+    async (repoId: string) => {
+      const payload = { repoId }
+      const info = services?.textInference?.getModelInfo({ queryParams: payload })
+      return info
+    },
+    [services?.textInference],
+  )
+
   useEffect(() => {
     fetchBots()
   }, [fetchBots])
@@ -140,7 +149,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
               if (loadChatBot) {
                 setIsConnecting(true)
                 // Eject first
-                await services?.textInference.unload()
+                await services?.textInference?.unload()
                 // Load model
                 await loadChatBot(botId)
                 setHasTextServiceConnected(true)
@@ -259,7 +268,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
         Header,
         Title,
         Description,
-        onOpenDirAction: modelExploreAction
+        onOpenDirAction: modelExploreAction,
+        fetchModelInfo,
       })
     },
     { label: 'playground', icon: "🌎", content: playgroundMenu },

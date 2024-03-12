@@ -1,6 +1,7 @@
 {
   "mistral-7b": {
     "id": "mistral-7b",
+    "repoId": "TheBloke/Mistral-7B-v0.1-GGUF",
     "name": "Mistral 7B (chat)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -19,6 +20,7 @@
   },
   "mistral-7b-instruct-v0.2.Q5_K_S": {
     "id": "mistral-7b-instruct-v0.2.Q5_K_S",
+    "repoId": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
     "name": "Mistral 7B v0.2 (instruct)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -36,6 +38,7 @@
   },
   "llama-2-13b-chat": {
     "id": "llama-2-13b-chat",
+    "repoId": "TheBloke/Llama-2-13B-chat-GGUF",
     "name": "Llama 2 13B (chat)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -54,6 +57,7 @@
   },
   "llama2_7b_chat_uncensored.Q5_K_M": {
     "id": "llama2_7b_chat_uncensored.Q5_K_M",
+    "repoId": "TheBloke/llama2_7b_chat_uncensored-GGUF",
     "name": "Llama 2 7B (chat) (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -71,6 +75,7 @@
   },
   "llama-2-7b-32k-instruct.Q5_K_M": {
     "id": "llama-2-7b-32k-instruct.Q5_K_M",
+    "repoId": "TheBloke/Llama-2-7B-32K-Instruct-GGUF",
     "name": "Llama 2 7B 32k (instruct) (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -88,6 +93,7 @@
   },
   "codellama-7b.Q5_K_M": {
     "id": "codellama-7b.Q5_K_M",
+    "repoId": "TheBloke/CodeLlama-7B-GGUF",
     "name": "Code Llama 7B (coding)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -105,6 +111,7 @@
   },
   "dolphin-2.6-mistral-7b.Q5_K_S": {
     "id": "dolphin-2.6-mistral-7b.Q5_K_S",
+    "repoId": "TheBloke/dolphin-2.6-mistral-7B-GGUF",
     "name": "Dolphin Mistral 7B (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -123,6 +130,7 @@
   },
   "Mixtral-8x7B-Instruct-v0.1-GGUF": {
     "id": "Mixtral-8x7B-Instruct-v0.1-GGUF",
+    "repoId": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
     "name": "Mixtral 8x7B Instruct (scientific)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -140,6 +148,7 @@
   },
   "wizard-coder-python-13b": {
     "id": "wizard-coder-python-13b",
+    "repoId": "TheBloke/WizardCoder-Python-13B-V1.0-GGUF",
     "name": "WizardCoder 13B Python",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -158,6 +167,7 @@
   },
   "luna-ai-llama2-uncensored.Q5_K_M": {
     "id": "luna-ai-llama2-uncensored.Q5_K_M",
+    "repoId": "TheBloke/Luna-AI-Llama2-Uncensored-GGUF",
     "name": "Luna AI Llama2 (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -174,6 +184,7 @@
   },
   "openbuddy-openllama-7b-v12": {
     "id": "openbuddy-openllama-7b-v12",
+    "repoId": "TheBloke/openbuddy-openllama-7B-v12-bf16-GGUF",
     "name": "OpenBuddy 7B",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -193,6 +204,7 @@
   },
   "wizard-vicuna-13b": {
     "id": "wizard-vicuna-13b",
+    "repoId": "TheBloke/Wizard-Vicuna-13B-Uncensored-GGUF",
     "name": "Wizard Vicuna 13B (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -211,6 +223,7 @@
   },
   "law-llm-Q5_K_M": {
     "id": "law-llm-Q5_K_M",
+    "repoId": "TheBloke/law-LLM-GGUF",
     "name": "Law LLM (chat)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -230,6 +243,7 @@
   },
   "orca_mini_v3_7b.Q5_K_M": {
     "id": "orca_mini_v3_7b.Q5_K_M",
+    "repoId": "TheBloke/orca_mini_v3_7B-GGUF",
     "name": "Orca Mini 7B (instruct) (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -248,6 +262,7 @@
   },
   "zephyr-7b-beta": {
     "id": "zephyr-7b-beta",
+    "repoId": "TheBloke/zephyr-7B-beta-GGUF",
     "name": "Zephyr 7B Beta (search) (uncensored)",
     "archType": "transformer",
     "provider": "The Bloke",
@@ -266,6 +281,7 @@
   },
   "bling-sheared-llama-1.3b-0.1": {
     "id": "bling-sheared-llama-1.3b-0.1",
+    "repoId": "llmware/bling-sheared-llama-1.3b-0.1",
     "name": "Sheared Llama 1.3B (search)",
     "archType": "transformer",
     "provider": "Aryanne",
