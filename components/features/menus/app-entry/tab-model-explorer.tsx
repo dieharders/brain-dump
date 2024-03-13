@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus, IconDownload } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { IconSpinner } from '@/components/ui/icons'
 import { PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons"
 import { T_ModelConfig } from '@/lib/homebrew'
 import { calcFileSize, cn } from '@/lib/utils'
@@ -44,34 +45,41 @@ export const ModelExplorerMenu = ({
   const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'w-0 overflow-hidden'
   const router = useRouter()
 
-  const QuantContainer = useCallback(({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
-    return (
-      <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
-        {/* Quant name */}
-        <div className="flex items-center justify-center gap-1 rounded-md border border-primary/50 bg-muted p-2 text-primary/50">
-          Quantization<p className="text-primary">{name}</p>
-        </div>
-        {/* File name */}
-        <p className="w-full items-center self-center overflow-hidden text-ellipsis whitespace-nowrap text-primary">{fileName}</p>
-        <div className="flex w-fit justify-end gap-2">
-          {/* File Size */}
-          <div className="flex items-center rounded-md bg-accent/50 p-2 text-primary">{fileSize}GB</div>
-          {/* Download Button */}
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              return downloadModel({ filename: fileName || '', repo_id })
-            }}
-            className="flex h-fit flex-row items-center gap-1 rounded-md bg-accent/50 p-2 text-lg text-primary"
-          >
-            Download<IconDownload className="h-fit w-4" />
-          </Button>
-        </div>
-      </div>
-    )
-  }, [downloadModel])
-
   const renderQuants = useCallback(() => {
+    const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
+      const [isDownloading, setIsDownloading] = useState(false)
+
+      return (
+        <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
+          {/* Quant name */}
+          <div className="flex items-center justify-center gap-1 rounded-md border border-primary/50 bg-muted p-2 text-primary/50">
+            Quantization<p className="text-primary">{name}</p>
+          </div>
+          {/* File name */}
+          <p className="w-full items-center self-center overflow-hidden text-ellipsis whitespace-nowrap text-primary">{fileName}</p>
+          <div className="flex w-fit justify-end gap-2">
+            {/* File Size */}
+            <div className="flex items-center rounded-md bg-accent/50 p-2 text-primary">{fileSize}GB</div>
+            {/* Download Button */}
+            <Button
+              variant="secondary"
+              disabled={isDownloading}
+              onClick={async () => {
+                setIsDownloading(true)
+                await downloadModel({ filename: fileName || '', repo_id })
+                setIsDownloading(false)
+                return
+              }}
+              className="flex h-fit flex-row items-center gap-1 rounded-md bg-accent/50 p-2 text-lg text-primary"
+            >
+              {isDownloading && <IconSpinner className="mr-2 animate-spin" />}
+              Download<IconDownload className="h-fit w-4" />
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
     const model = modelsInfo.find(i => i.id === selectedModelConfig.repoId)
     const quants = model?.siblings?.filter((s: any) => s.lfs)
     return quants?.map((q: any) => {
@@ -90,7 +98,7 @@ export const ModelExplorerMenu = ({
         repo_id={model.id}
       />
     })
-  }, [QuantContainer, modelsInfo, selectedModelConfig.repoId])
+  }, [downloadModel, modelsInfo, selectedModelConfig.repoId])
 
   // Get model info for our curated list
   useEffect(() => {
