@@ -79,13 +79,13 @@ export const ModelExplorerMenu = ({
     }
 
     const model = modelsInfo.find(i => i.id === selectedModelConfig?.repoId)
-    const quants = model?.siblings?.filter((s: any) => s.lfs)
+    const quants = model?.siblings?.filter((s: any) => s?.lfs)
     return quants?.map((q: any) => {
-      const splitName = q.rfilename.split('.')
+      const splitName = q?.rfilename.split('.')
       const nameLen = splitName.length - 1
       const name = splitName?.[nameLen - 1]
-      const fileName = q.rfilename
-      const byteSize = parseInt(q.lfs.size, 10)
+      const fileName = q?.rfilename
+      const byteSize = parseInt(q?.lfs?.size, 10)
       const fileSize = calcFileSize(byteSize)
       const fileSizeString = fileSize.toString().slice(0, 4)
       return <QuantContainer
@@ -93,7 +93,7 @@ export const ModelExplorerMenu = ({
         fileName={fileName}
         fileSize={fileSizeString}
         name={name}
-        repo_id={model.id}
+        repo_id={model?.id}
       />
     })
   }, [downloadModel, modelsInfo, selectedModelConfig])
@@ -430,7 +430,7 @@ export const ModelExplorerMenu = ({
               variant="secondary"
               onClick={() => {
                 if (selectedModelConfig?.modelUrl?.length && selectedModelConfig?.modelUrl?.length > 0) {
-                  window?.open(selectedModelConfig.modelUrl, '_blank')
+                  window?.open(selectedModelConfig?.modelUrl, '_blank')
                 }
               }}
             >Model Card 🤗</Button>
