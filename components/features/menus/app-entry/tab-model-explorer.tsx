@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus, IconDownload } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
@@ -43,7 +42,6 @@ export const ModelExplorerMenu = ({
   const noBreakStyle = 'text-ellipsis whitespace-nowrap text-nowrap'
   const contentContainerGap = selectedModelId && expandLeftMenu ? 'gap-6' : ''
   const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'w-0 overflow-hidden'
-  const router = useRouter()
 
   const renderQuants = useCallback(() => {
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
@@ -432,7 +430,7 @@ export const ModelExplorerMenu = ({
               variant="secondary"
               onClick={() => {
                 if (selectedModelConfig?.modelUrl?.length && selectedModelConfig?.modelUrl?.length > 0) {
-                  router.push(selectedModelConfig.modelUrl)
+                  window?.open(selectedModelConfig.modelUrl, '_blank')
                 }
               }}
             >Model Card 🤗</Button>
