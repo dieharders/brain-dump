@@ -161,6 +161,7 @@ export interface I_GetCollectionData {
 
 export type T_ModelConfig = {
   id: string
+  repoId: string
   name: string
   description?: string
   archType?: string
@@ -330,6 +331,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     model: T_GenericAPIRequest<T_GenericReqPayload, I_LoadedModelRes> // Currently loaded text model
     modelExplore: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     installed: T_GenericAPIRequest<T_GenericReqPayload, T_InstalledTextModel[]> // List of currently installed text models
+    getModelMetadata: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getModelInfo: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    download: T_GenericAPIRequest<T_GenericReqPayload, string>
     getModelConfigs: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
