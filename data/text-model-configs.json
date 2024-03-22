@@ -281,7 +281,7 @@
   },
   "bling-sheared-llama-1.3b-0.1": {
     "id": "bling-sheared-llama-1.3b-0.1",
-    "repoId": "llmware/bling-sheared-llama-1.3b-0.1",
+    "repoId": "Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf",
     "name": "Sheared Llama 1.3B (search)",
     "archType": "transformer",
     "provider": "Aryanne",
@@ -293,7 +293,7 @@
     "modelType": "llama",
     "context_window": 2048,
     "num_gpu_layers": 24,
-    "modelUrl": "https://huggingface.co/llmware/bling-sheared-llama-1.3b-0.1",
+    "modelUrl": "https://huggingface.co/Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf",
     "downloadUrl": "https://huggingface.co/Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf/resolve/main/f16-bling-sheared-llama-1.3b-0.1.gguf",
     "sha256": "38e1a893f9a9949be324ad8edacf627f60c7626432b622a6bed155af6773bf6c",
     "messageFormat": "<human>: {context_message}\n{prompt}\n<bot>:"

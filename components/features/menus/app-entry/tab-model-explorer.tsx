@@ -30,7 +30,7 @@ export const ModelExplorerMenu = ({
 }: I_Props) => {
   const modelsList = useMemo(() => Object.values(data) || [], [data])
   const [modelsInfo, setModelsInfo] = useState<any[]>([])
-  const [selectedModelId, setSelectedModelId] = useState<string | null>(modelsList?.[0]?.id || null)
+  const [selectedModelId, setSelectedModelId] = useState<string>('')
   const [expandLeftMenu, setExpandLeftMenu] = useState(true)
   const selectedModelConfig = data[selectedModelId || '']
   const numQuants = useMemo(() => {
@@ -80,7 +80,7 @@ export const ModelExplorerMenu = ({
       )
     }
 
-    const model = modelsInfo.find(i => i.id === selectedModelConfig.repoId)
+    const model = modelsInfo.find(i => i.id === selectedModelConfig?.repoId)
     const quants = model?.siblings?.filter((s: any) => s.lfs)
     return quants?.map((q: any) => {
       const splitName = q.rfilename.split('.')
@@ -98,7 +98,7 @@ export const ModelExplorerMenu = ({
         repo_id={model.id}
       />
     })
-  }, [downloadModel, modelsInfo, selectedModelConfig.repoId])
+  }, [downloadModel, modelsInfo, selectedModelConfig])
 
   // Get model info for our curated list
   useEffect(() => {
@@ -391,7 +391,7 @@ export const ModelExplorerMenu = ({
               Icon={IconDownload}
               expandable={false}
               onClick={() => {
-                // Open the dir where models are saved
+                // Open the directory where models are saved
                 onOpenDirAction()
               }}
             />
