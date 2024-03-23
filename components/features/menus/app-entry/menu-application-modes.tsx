@@ -120,6 +120,15 @@ export const ApplicationModesMenu = (props: I_Props) => {
     [services?.textInference],
   )
 
+  const deleteModel = useCallback(
+    async () => {
+      // Remove the model weights file and installation details entry from json
+      // ...
+      return
+    },
+    [],
+  )
+
   useEffect(() => {
     fetchBots()
   }, [fetchBots])
@@ -273,12 +282,14 @@ export const ApplicationModesMenu = (props: I_Props) => {
     {
       label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({
         data: modelConfigs,
+        installedModelsInfo: installedList,
         Header,
         Title,
         Description,
         onOpenDirAction: modelExploreAction,
         fetchModelInfo,
         downloadModel,
+        deleteModel,
       })
     },
     { label: 'playground', icon: "🌎", content: playgroundMenu },

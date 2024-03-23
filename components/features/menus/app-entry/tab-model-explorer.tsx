@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ModelCard } from '@/components/features/cards/card-model'
-import { IconPlus, IconDownload } from '@/components/ui/icons'
+import { IconPlus, IconDownload, IconClose } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { IconSpinner } from '@/components/ui/icons'
 import { PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons"
@@ -15,7 +15,9 @@ interface I_Props {
   data: { [key: string]: T_ModelConfig }
   onOpenDirAction: () => Promise<void>
   fetchModelInfo: (repoId: string) => Promise<any>
+  installedModelsInfo: Array<{ [key: string]: any }>
   downloadModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
+  deleteModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
 }
 
 export const ModelExplorerMenu = ({
@@ -25,7 +27,9 @@ export const ModelExplorerMenu = ({
   Description,
   onOpenDirAction,
   fetchModelInfo,
+  installedModelsInfo,
   downloadModel,
+  deleteModel,
 }: I_Props) => {
   const modelsList = useMemo(() => Object.values(data) || [], [data])
   const [modelsInfo, setModelsInfo] = useState<any[]>([])
@@ -46,6 +50,8 @@ export const ModelExplorerMenu = ({
   const renderQuants = useCallback(() => {
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
       const [isDownloading, setIsDownloading] = useState(false)
+      const installInfo = installedModelsInfo.find(i => i.id === repo_id)
+      const isCached = installInfo?.savePath?.[fileName]
 
       return (
         <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
@@ -58,21 +64,39 @@ export const ModelExplorerMenu = ({
           <div className="flex w-fit justify-end gap-2">
             {/* File Size */}
             <div className="flex items-center rounded-md bg-accent/50 p-2 text-primary">{fileSize}GB</div>
-            {/* Download Button */}
-            <Button
-              variant="secondary"
-              disabled={isDownloading}
-              onClick={async () => {
-                setIsDownloading(true)
-                await downloadModel({ filename: fileName || '', repo_id })
-                setIsDownloading(false)
-                return
-              }}
-              className="flex h-fit flex-row items-center gap-1 rounded-md bg-accent/50 p-2 text-lg text-primary"
-            >
-              {isDownloading && <IconSpinner className="mr-2 animate-spin" />}
-              Download<IconDownload className="h-fit w-4" />
-            </Button>
+            {!isCached ? (
+              // Download Model Button
+              <Button
+                variant="outline"
+                disabled={isDownloading}
+                onClick={async () => {
+                  setIsDownloading(true)
+                  await downloadModel({ filename: fileName || '', repo_id })
+                  setIsDownloading(false)
+                  return
+                }}
+                className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"
+              >
+                {isDownloading && <IconSpinner className="mr-2 animate-spin" />}
+                Download<IconDownload className="h-fit w-4" />
+              </Button>
+            ) : (
+              // Delete Model Button
+              <Button
+                variant="outline"
+                disabled={isDownloading}
+                onClick={async () => {
+                  setIsDownloading(true)
+                  await deleteModel({ filename: fileName || '', repo_id })
+                  setIsDownloading(false)
+                  return
+                }}
+                className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-red-500 hover:text-red-100"
+              >
+                {isDownloading && <IconSpinner className="mr-2 animate-spin" />}
+                Delete<IconClose className="h-fit w-4" />
+              </Button>
+            )}
           </div>
         </div>
       )
@@ -96,7 +120,7 @@ export const ModelExplorerMenu = ({
         repo_id={model?.id}
       />
     })
-  }, [downloadModel, modelsInfo, selectedModelConfig])
+  }, [deleteModel, downloadModel, installedModelsInfo, modelsInfo, selectedModelConfig])
 
   // Get model info for our curated list
   useEffect(() => {
@@ -239,106 +263,6 @@ export const ModelExplorerMenu = ({
                   "pointer_size": 135
                 }
               },
-              {
-                "rfilename": "llama-2-13b-chat.Q3_K_M.gguf",
-                "size": 6337769344,
-                "blob_id": "3a6fafb60da74fc8aa05031e54563abaa534116b",
-                "lfs": {
-                  "size": 6337769344,
-                  "sha256": "a7c57a5e0e3587970a205295c70d3e41deb42ca047a30ff55e88864ccb1fe9c1",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q3_K_S.gguf",
-                "size": 5658980224,
-                "blob_id": "59d82aa03587adce37d3a234c7230c2c2da96b6c",
-                "lfs": {
-                  "size": 5658980224,
-                  "sha256": "8096954a2d80fc305e8249cf5950bf7a81075ae101ff751f13ebbbb59fc7c5f0",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q4_0.gguf",
-                "size": 7365834624,
-                "blob_id": "e2195652cd06c76c2abb3861b22caec12a0edad8",
-                "lfs": {
-                  "size": 7365834624,
-                  "sha256": "eda2a15d532bea4ce6fc14d15c2b72638243396816252f73a94dceeb0429112f",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q4_K_M.gguf",
-                "size": 7865956224,
-                "blob_id": "f7abe749063c301cd47c3817cddc81bc103d36f2",
-                "lfs": {
-                  "size": 7865956224,
-                  "sha256": "7ddfe27f61bf994542c22aca213c46ecbd8a624cca74abff02a7b5a8c18f787f",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q4_K_S.gguf",
-                "size": 7414331264,
-                "blob_id": "ad763a900a6ef2b2416550765c382b927aa7fc06",
-                "lfs": {
-                  "size": 7414331264,
-                  "sha256": "106d3b9c0a8e24217f588f2af44fce95ec8906c1ea92ca9391147ba29cc4d2a4",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q5_0.gguf",
-                "size": 8972285824,
-                "blob_id": "0eced747055809644e4c96fc924a53b09a70a953",
-                "lfs": {
-                  "size": 8972285824,
-                  "sha256": "3b4b725382d9e5f8e87ddb5eb90c7c8a94be0854c3395b4e5d482e5cfb601668",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q5_K_M.gguf",
-                "size": 9229924224,
-                "blob_id": "db220b52e081ec2120981e7b4fb855fe21b1b472",
-                "lfs": {
-                  "size": 9229924224,
-                  "sha256": "ef36e090240040f97325758c1ad8e23f3801466a8eece3a9eac2d22d942f548a",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q5_K_S.gguf",
-                "size": 8972285824,
-                "blob_id": "3c59279898d313dd62d17826f62f07a7db1392f3",
-                "lfs": {
-                  "size": 8972285824,
-                  "sha256": "7f6a86b6ec14db9efa27cc91cb3634bef636a54646b83f5ecd6fc8fede7f37b4",
-                  "pointer_size": 135
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q6_K.gguf",
-                "size": 10679140224,
-                "blob_id": "19def5c0df5cc9c05c7fa46bd4f7e5a3307c6942",
-                "lfs": {
-                  "size": 10679140224,
-                  "sha256": "5da6e8997c8fbb042d6b981270756e6fc8065e89fde5215b18ee1e93c87dba3f",
-                  "pointer_size": 136
-                }
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q8_0.gguf",
-                "size": 13831319424,
-                "blob_id": "04136dc4ca27f9df297bf5efa7d23f5e11fbeb92",
-                "lfs": {
-                  "size": 13831319424,
-                  "sha256": "9f4d06112114dd1b48023305578ad52b690d3aee42181631a2bddbe856f75ae6",
-                  "pointer_size": 136
-                }
-              }
             ],
             "spaces": [
               "Zenne/chatbot_for_files_langchain",
