@@ -310,6 +310,12 @@ type T_TextInferenceAPIRequest = (props: {
   body: I_InferenceGenerateOptions
 }) => (Response & I_GenericAPIResponse<any>) | null
 
+interface I_DeleteTextModelReqPayload {
+  repoId: string
+  filename: string
+  revision: string
+}
+
 export interface I_LoadedModelRes {
   modelId: string
   mode: T_ConversationMode
@@ -334,6 +340,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     getModelMetadata: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getModelInfo: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     download: T_GenericAPIRequest<T_GenericReqPayload, string>
+    delete: T_GenericAPIRequest<I_DeleteTextModelReqPayload, T_GenericDataRes>
     getModelConfigs: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
