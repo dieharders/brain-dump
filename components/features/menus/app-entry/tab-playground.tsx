@@ -62,7 +62,7 @@ export const Playground = (props: I_Props) => {
   const installedFiles = installedList?.map(item => {
     if (item.repoId !== selectedModelId || typeof item.savePath !== 'object') return null
     const savePaths = Object.entries(item.savePath)
-    return savePaths.map(([filename, path]) => (<SelectItem key={filename} value={path}>{filename}</SelectItem>))
+    return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
   })
 
   const connectTextServiceAction = useCallback(async () => {
