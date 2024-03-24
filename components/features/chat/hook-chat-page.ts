@@ -37,7 +37,7 @@ export const useChatPage = ({ services }: { services: I_ServiceApis | null }) =>
       }
       const listResponse = await services?.textInference.installed()
       const installedList = listResponse?.data
-      const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
+      const installPath = installedList?.find(i => i.repoId === selectedModelId)?.savePath
       // Load LLM
       const payload = {
         modelPath: installPath || '',

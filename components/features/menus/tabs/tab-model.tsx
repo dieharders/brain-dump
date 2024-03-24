@@ -33,9 +33,9 @@ export const defaultState: I_State = {
 export const ModelTab = (props: I_Props) => {
   const { installedList, modelConfigs, state, setState } = props
   const installedModels = installedList?.map(item => {
-    const cfg = modelConfigs?.[item.id]
+    const cfg = modelConfigs?.[item.repoId]
     const name = cfg?.name
-    return (<SelectItem key={item.id} value={item.id}>{name}</SelectItem>)
+    return (<SelectItem key={item.repoId} value={item.repoId}>{name}</SelectItem>)
   }) ?? []
 
   return (

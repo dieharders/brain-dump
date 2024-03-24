@@ -184,8 +184,8 @@ export interface I_ModelConfigs {
 }
 
 export type T_InstalledTextModel = {
-  id: string
-  savePath: string
+  repoId: string
+  savePath: { [key: string]: string }
   numTimesRun: number
   isFavorited: boolean
   validation: string
