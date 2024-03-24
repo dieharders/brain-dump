@@ -48,7 +48,7 @@ export const Playground = (props: I_Props) => {
     const settings = {
       attention: stateAttention,
       performance: statePerformance,
-      model: { id: selectedModelId },
+      model: { id: selectedModelId, filename: selectedModelFile },
     }
     return services?.storage.savePlaygroundSettings({ body: settings })
   }

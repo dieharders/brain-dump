@@ -279,6 +279,7 @@ export type I_Prompt_State = {
 export interface I_Model_State {
   id: string | undefined // @TODO change to modelId
   botName: string
+  filename: string
 }
 
 export interface I_System_State {
