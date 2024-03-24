@@ -121,12 +121,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const deleteModel = useCallback(
-    async () => {
+    async (args: { repoId: string, filename: string }) => {
       // Remove the model weights file and installation details entry from json
-      // ...
+      await services?.textInference.delete({ body: args })
       return
     },
-    [],
+    [services?.textInference],
   )
 
   useEffect(() => {

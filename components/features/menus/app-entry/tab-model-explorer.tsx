@@ -17,7 +17,7 @@ interface I_Props {
   fetchModelInfo: (repoId: string) => Promise<any>
   installedModelsInfo: Array<{ [key: string]: any }>
   downloadModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
-  deleteModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
+  deleteModel: ({ repoId, filename }: { repoId: string, filename: string }) => Promise<void>
 }
 
 export const ModelExplorerMenu = ({
@@ -51,7 +51,10 @@ export const ModelExplorerMenu = ({
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
       const [isDownloading, setIsDownloading] = useState(false)
       const installInfo = installedModelsInfo.find(i => i.id === repo_id)
-      const isCached = installInfo?.savePath?.[fileName]
+      const [isCached, setIsCached] = useState(installInfo?.savePath?.[fileName])
+      // const savePaths = modelsInfo?.find(i => i.id === repo_id)?.siblings
+      // const modelFileInfo = savePaths?.find((i: any) => i.rfilename === fileName)
+      // const revision = modelFileInfo?.blob_id
 
       return (
         <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
@@ -73,6 +76,7 @@ export const ModelExplorerMenu = ({
                   setIsDownloading(true)
                   await downloadModel({ filename: fileName || '', repo_id })
                   setIsDownloading(false)
+                  setIsCached(true)
                   return
                 }}
                 className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"
@@ -87,8 +91,9 @@ export const ModelExplorerMenu = ({
                 disabled={isDownloading}
                 onClick={async () => {
                   setIsDownloading(true)
-                  await deleteModel({ filename: fileName || '', repo_id })
+                  await deleteModel({ filename: fileName || '', repoId: repo_id })
                   setIsDownloading(false)
+                  setIsCached(false)
                   return
                 }}
                 className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-red-500 hover:text-red-100"
@@ -155,17 +160,6 @@ export const ModelExplorerMenu = ({
               "gguf",
               "llama",
               "facebook",
-              "meta",
-              "pytorch",
-              "llama-2",
-              "text-generation",
-              "en",
-              "arxiv:2307.09288",
-              "base_model:meta-llama/Llama-2-13b-chat-hf",
-              "license:llama2",
-              "has_space",
-              "text-generation-inference",
-              "region:us"
             ],
             "pipeline_tag": "text-generation",
             "mask_token": null,
@@ -174,27 +168,6 @@ export const ModelExplorerMenu = ({
               {
                 "text": "My name is Julien and I like to"
               },
-              {
-                "text": "My name is Thomas and my main"
-              },
-              {
-                "text": "My name is Mariama, my favorite"
-              },
-              {
-                "text": "My name is Clara and I am"
-              },
-              {
-                "text": "My name is Lewis and I like to"
-              },
-              {
-                "text": "My name is Merve and my favorite"
-              },
-              {
-                "text": "My name is Teven and I am"
-              },
-              {
-                "text": "Once upon a time,"
-              }
             ],
             "model_index": null,
             "config": {
@@ -253,28 +226,10 @@ export const ModelExplorerMenu = ({
                   "pointer_size": 135
                 }
               },
-              {
-                "rfilename": "llama-2-13b-chat.Q3_K_L.gguf",
-                "size": 6929559424,
-                "blob_id": "fd45e8ab4e629a29ee03506ffac98dbdbdc24980",
-                "lfs": {
-                  "size": 6929559424,
-                  "sha256": "cc468494ef443d82cc45c36787c988c0966e8c80267f9f793b37b67a06952a38",
-                  "pointer_size": 135
-                }
-              },
             ],
             "spaces": [
               "Zenne/chatbot_for_files_langchain",
               "Mahadih534/Open-Source_LLM_ChatBot",
-              "Lokesh1200/WebGPT",
-              "m9e/Llama-2-13B-chat-GPTQ",
-              "mohcineelharras/llama-index-docs-spaces",
-              "UldisKK/TestRAGonPDFs",
-              "Bobeabo/chatbot_for_files_langchain",
-              "ruslanmv/Open-Source-LLM-Chatbot",
-              "Kukedlc/Llama-13b",
-              "SammyRao/AndalemGPTChatbots"
             ],
             "safetensors": null
           }
