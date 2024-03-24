@@ -313,7 +313,6 @@ type T_TextInferenceAPIRequest = (props: {
 interface I_DeleteTextModelReqPayload {
   repoId: string
   filename: string
-  revision: string
 }
 
 export interface I_LoadedModelRes {

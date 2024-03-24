@@ -17,7 +17,7 @@ interface I_Props {
   fetchModelInfo: (repoId: string) => Promise<any>
   installedModelsInfo: Array<{ [key: string]: any }>
   downloadModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
-  deleteModel: ({ repoId, filename, revision }: { repoId: string, filename: string, revision: string }) => Promise<void>
+  deleteModel: ({ repoId, filename }: { repoId: string, filename: string }) => Promise<void>
 }
 
 export const ModelExplorerMenu = ({
@@ -51,10 +51,10 @@ export const ModelExplorerMenu = ({
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
       const [isDownloading, setIsDownloading] = useState(false)
       const installInfo = installedModelsInfo.find(i => i.id === repo_id)
-      const isCached = installInfo?.savePath?.[fileName]
-      const savePaths = modelsInfo?.find(i => i.id === repo_id)?.siblings
-      const modelFileInfo = savePaths?.find((i: any) => i.rfilename === fileName)
-      const revision = modelFileInfo?.blob_id
+      const [isCached, setIsCached] = useState(installInfo?.savePath?.[fileName])
+      // const savePaths = modelsInfo?.find(i => i.id === repo_id)?.siblings
+      // const modelFileInfo = savePaths?.find((i: any) => i.rfilename === fileName)
+      // const revision = modelFileInfo?.blob_id
 
       return (
         <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
@@ -76,6 +76,7 @@ export const ModelExplorerMenu = ({
                   setIsDownloading(true)
                   await downloadModel({ filename: fileName || '', repo_id })
                   setIsDownloading(false)
+                  setIsCached(true)
                   return
                 }}
                 className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"
@@ -90,8 +91,9 @@ export const ModelExplorerMenu = ({
                 disabled={isDownloading}
                 onClick={async () => {
                   setIsDownloading(true)
-                  await deleteModel({ filename: fileName || '', repoId: repo_id, revision })
+                  await deleteModel({ filename: fileName || '', repoId: repo_id })
                   setIsDownloading(false)
+                  setIsCached(false)
                   return
                 }}
                 className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-red-500 hover:text-red-100"
