@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -27,16 +27,22 @@ interface I_Props {
 
 export const defaultState: I_State = {
   id: undefined,
+  filename: '',
   botName: '',
 }
 
 export const ModelTab = (props: I_Props) => {
   const { installedList, modelConfigs, state, setState } = props
   const installedModels = installedList?.map(item => {
-    const cfg = modelConfigs?.[item.id]
+    const cfg = modelConfigs?.[item.repoId]
     const name = cfg?.name
-    return (<SelectItem key={item.id} value={item.id}>{name}</SelectItem>)
+    return (<SelectItem key={item.repoId} value={item.repoId}>{name}</SelectItem>)
   }) ?? []
+  const installedFiles = installedList?.map(item => {
+    if (item.repoId !== state.id || typeof item.savePath !== 'object') return null
+    const savePaths = Object.entries(item.savePath)
+    return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
+  })
 
   return (
     <div className="px-1">
@@ -50,7 +56,7 @@ export const ModelTab = (props: I_Props) => {
       {/* Content */}
       <div className="flex w-full flex-row items-start justify-between gap-2">
         <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 pb-4">
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-col gap-2">
             {/* Select a prev installed model to load */}
             <div className="w-full">
               <Select
@@ -58,7 +64,7 @@ export const ModelTab = (props: I_Props) => {
                 value={state.id}
                 onValueChange={(val: string) => setState({ ...state, id: val })}
               >
-                <SelectTrigger className="w-full flex-1">
+                <SelectTrigger className="w-full flex-1 hover:bg-accent">
                   <SelectValue placeholder="Select Ai Model"></SelectValue>
                 </SelectTrigger>
                 <SelectGroup>
@@ -69,6 +75,25 @@ export const ModelTab = (props: I_Props) => {
                 </SelectGroup>
               </Select>
             </div>
+            {/* Select a file (quant) to load for the model */}
+            {state.id &&
+              <div className="w-full">
+                <Select
+                  defaultValue={undefined}
+                  value={state.filename}
+                  onValueChange={(val: string) => setState({ ...state, filename: val })}
+                >
+                  <SelectTrigger className="w-full flex-1 hover:bg-accent">
+                    <SelectValue placeholder="Select a file"></SelectValue>
+                  </SelectTrigger>
+                  <SelectGroup>
+                    <SelectContent className="p-1">
+                      <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
+                      {installedFiles}
+                    </SelectContent>
+                  </SelectGroup>
+                </Select>
+              </div>}
           </div>
         </div>
       </div>

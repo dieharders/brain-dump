@@ -29,6 +29,7 @@ export const useChatPage = ({ services }: { services: I_ServiceApis | null }) =>
 
       // Make payload
       const selectedModelId = settings?.model.id
+      const filename = settings?.model.filename || ''
       const mode = settings?.attention.mode
       const initOptions = settings?.performance
       const callOptions = {
@@ -37,7 +38,8 @@ export const useChatPage = ({ services }: { services: I_ServiceApis | null }) =>
       }
       const listResponse = await services?.textInference.installed()
       const installedList = listResponse?.data
-      const installPath = installedList?.find(i => i.id === selectedModelId)?.savePath
+      const installedModel = installedList?.find(i => i.repoId === selectedModelId)
+      const installPath = installedModel?.savePath[filename]
       // Load LLM
       const payload = {
         modelPath: installPath || '',

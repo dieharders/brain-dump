@@ -1,6 +1,5 @@
 {
-  "mistral-7b": {
-    "id": "mistral-7b",
+  "TheBloke/Mistral-7B-v0.1-GGUF": {
     "repoId": "TheBloke/Mistral-7B-v0.1-GGUF",
     "name": "Mistral 7B (chat)",
     "archType": "transformer",
@@ -18,8 +17,7 @@
     "sha256": "ce6253d2e91adea0c35924b38411b0434fa18fcb90c52980ce68187dbcbbe40c",
     "messageFormat": "{system_message}\n\n{prompt}"
   },
-  "mistral-7b-instruct-v0.2.Q5_K_S": {
-    "id": "mistral-7b-instruct-v0.2.Q5_K_S",
+  "TheBloke/Mistral-7B-Instruct-v0.2-GGUF": {
     "repoId": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
     "name": "Mistral 7B v0.2 (instruct)",
     "archType": "transformer",
@@ -36,8 +34,7 @@
     "sha256": "83d1104865d0790ada7a5e1191f2f702b9956ff3a457d67109ded0ab6a56aafd",
     "messageFormat": "<s>[INST] {system_message}\n\n{prompt} [/INST]"
   },
-  "llama-2-13b-chat": {
-    "id": "llama-2-13b-chat",
+  "TheBloke/Llama-2-13B-chat-GGUF": {
     "repoId": "TheBloke/Llama-2-13B-chat-GGUF",
     "name": "Llama 2 13B (chat)",
     "archType": "transformer",
@@ -55,8 +52,7 @@
     "sha256": "7ddfe27f61bf994542c22aca213c46ecbd8a624cca74abff02a7b5a8c18f787f",
     "messageFormat": "[INST]<<SYS>>\n{system_message}\n<</SYS>>\n{prompt}[/INST]"
   },
-  "llama2_7b_chat_uncensored.Q5_K_M": {
-    "id": "llama2_7b_chat_uncensored.Q5_K_M",
+  "TheBloke/llama2_7b_chat_uncensored-GGUF": {
     "repoId": "TheBloke/llama2_7b_chat_uncensored-GGUF",
     "name": "Llama 2 7B (chat) (uncensored)",
     "archType": "transformer",
@@ -73,8 +69,7 @@
     "sha256": "5597c297e81774e476a0d56d153dafa32b0f5043d6e90cb13eb19db6651df791",
     "messageFormat": "### HUMAN:\n{system_message}\n\n{prompt}\n\n### RESPONSE:"
   },
-  "llama-2-7b-32k-instruct.Q5_K_M": {
-    "id": "llama-2-7b-32k-instruct.Q5_K_M",
+  "TheBloke/Llama-2-7B-32K-Instruct-GGUF": {
     "repoId": "TheBloke/Llama-2-7B-32K-Instruct-GGUF",
     "name": "Llama 2 7B 32k (instruct) (uncensored)",
     "archType": "transformer",
@@ -91,8 +86,7 @@
     "sha256": "5cf756efc061eeb4e01b2b6f5bec8dc0f0650b5f3012cc023dfb20a569f68379",
     "messageFormat": "[INST]\n{system_message}\n\n{prompt}\n[/INST]"
   },
-  "codellama-7b.Q5_K_M": {
-    "id": "codellama-7b.Q5_K_M",
+  "TheBloke/CodeLlama-7B-GGUF": {
     "repoId": "TheBloke/CodeLlama-7B-GGUF",
     "name": "Code Llama 7B (coding)",
     "archType": "transformer",
@@ -109,8 +103,7 @@
     "sha256": "f4222b2c639e3f5adee3cf2391f02fb0ee1307e5ef5a48399affb5f3802dd857",
     "messageFormat": "{prompt}"
   },
-  "dolphin-2.6-mistral-7b.Q5_K_S": {
-    "id": "dolphin-2.6-mistral-7b.Q5_K_S",
+  "TheBloke/dolphin-2.6-mistral-7B-GGUF": {
     "repoId": "TheBloke/dolphin-2.6-mistral-7B-GGUF",
     "name": "Dolphin Mistral 7B (uncensored)",
     "archType": "transformer",
@@ -128,8 +121,7 @@
     "sha256": "c4f7042ef8fd02a2e7c2fdd9cb7dfd70c930750475778f54f1cd49eafd0e18ee",
     "messageFormat": "<|im_start|>system\n{system_message}<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant"
   },
-  "Mixtral-8x7B-Instruct-v0.1-GGUF": {
-    "id": "Mixtral-8x7B-Instruct-v0.1-GGUF",
+  "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF": {
     "repoId": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
     "name": "Mixtral 8x7B Instruct (scientific)",
     "archType": "transformer",
@@ -146,8 +138,7 @@
     "sha256": "9193684683657e90707087bd1ed19fd0b277ab66358d19edeadc26d6fdec4f53",
     "messageFormat": "[INST] {system_message} {prompt} [/INST]"
   },
-  "wizard-coder-python-13b": {
-    "id": "wizard-coder-python-13b",
+  "TheBloke/WizardCoder-Python-13B-V1.0-GGUF": {
     "repoId": "TheBloke/WizardCoder-Python-13B-V1.0-GGUF",
     "name": "WizardCoder 13B Python",
     "archType": "transformer",
@@ -165,8 +156,7 @@
     "sha256": "50ff7a6a33357a063e0d09b6d43d95dbf62dda5450138541478e524e06a4fe2a",
     "messageFormat": "{system_message}\n\n### Instruction:\n{prompt}\n\n### Response:"
   },
-  "luna-ai-llama2-uncensored.Q5_K_M": {
-    "id": "luna-ai-llama2-uncensored.Q5_K_M",
+  "TheBloke/Luna-AI-Llama2-Uncensored-GGUF": {
     "repoId": "TheBloke/Luna-AI-Llama2-Uncensored-GGUF",
     "name": "Luna AI Llama2 (uncensored)",
     "archType": "transformer",
@@ -182,8 +172,7 @@
     "sha256": "dc9db1b59d0ec5264478e78883eb10a354269ec1e52d4090f9c96c9a61836237",
     "messageFormat": "USER: {system_message}\n\n{prompt}\nASSISTANT:"
   },
-  "openbuddy-openllama-7b-v12": {
-    "id": "openbuddy-openllama-7b-v12",
+  "TheBloke/openbuddy-openllama-7B-v12-bf16-GGUF": {
     "repoId": "TheBloke/openbuddy-openllama-7B-v12-bf16-GGUF",
     "name": "OpenBuddy 7B",
     "archType": "transformer",
@@ -202,8 +191,7 @@
     "sha256": "98d9e5b27fcd70acdeac0fcc4c862356a6106464ac96d88e59c0d3b56ff5c27a",
     "messageFormat": "You can speak fluently in many languages, for example: English, Chinese.\nYour vast knowledge is cutoff: 2021-09.{system_message}\n\nUser: {prompt}\nAssistant:"
   },
-  "wizard-vicuna-13b": {
-    "id": "wizard-vicuna-13b",
+  "TheBloke/Wizard-Vicuna-13B-Uncensored-GGUF": {
     "repoId": "TheBloke/Wizard-Vicuna-13B-Uncensored-GGUF",
     "name": "Wizard Vicuna 13B (uncensored)",
     "archType": "transformer",
@@ -221,8 +209,7 @@
     "sha256": "e5ca843fd4a8c0a898b036f5c664a1fac366fb278f20880f1a750f38a950db73",
     "messageFormat": "{system_message} USER: {prompt} ASSISTANT:"
   },
-  "law-llm-Q5_K_M": {
-    "id": "law-llm-Q5_K_M",
+  "TheBloke/law-LLM-GGUF": {
     "repoId": "TheBloke/law-LLM-GGUF",
     "name": "Law LLM (chat)",
     "archType": "transformer",
@@ -241,8 +228,7 @@
     "sha256": "3b8b1f96660780a4fbb91182a6e5a78450e19608bb98e38ff8ccfdb2cc6a56f3",
     "messageFormat": "{system_message}\n\n{prompt}"
   },
-  "orca_mini_v3_7b.Q5_K_M": {
-    "id": "orca_mini_v3_7b.Q5_K_M",
+  "TheBloke/orca_mini_v3_7B-GGUF": {
     "repoId": "TheBloke/orca_mini_v3_7B-GGUF",
     "name": "Orca Mini 7B (instruct) (uncensored)",
     "archType": "transformer",
@@ -260,8 +246,7 @@
     "sha256": "75d38891298b5d979a52425b8db75a10b2092ffdc035b02ba9072bc2e09e5cf4",
     "messageFormat": "### System:\n{system_message}\n\n### User:\n{prompt}\n\n### Assistant:"
   },
-  "zephyr-7b-beta": {
-    "id": "zephyr-7b-beta",
+  "TheBloke/zephyr-7B-beta-GGUF": {
     "repoId": "TheBloke/zephyr-7B-beta-GGUF",
     "name": "Zephyr 7B Beta (search) (uncensored)",
     "archType": "transformer",
@@ -279,8 +264,7 @@
     "sha256": "503580dce392c6e64669ad21a77023ba2a17baa0c381250fb67c11ba6406a85e",
     "messageFormat": "<|system|>\n{system_message}</s>\n<|user|>\n{prompt}</s>\n<|assistant|>\n"
   },
-  "bling-sheared-llama-1.3b-0.1": {
-    "id": "bling-sheared-llama-1.3b-0.1",
+  "Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf": {
     "repoId": "Aryanne/Bling-Sheared-Llama-1.3B-0.1-gguf",
     "name": "Sheared Llama 1.3B (search)",
     "archType": "transformer",

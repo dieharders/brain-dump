@@ -35,6 +35,7 @@ export const Playground = (props: I_Props) => {
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const router = useRouter()
   const { loadModel: loadPlaygroundModel } = useChatPage({ services })
+  const [selectedModelFile, setSelectedModelFile] = useState<string | undefined>(undefined)
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
     stateAttention,
@@ -47,15 +48,21 @@ export const Playground = (props: I_Props) => {
     const settings = {
       attention: stateAttention,
       performance: statePerformance,
-      model: { id: selectedModelId },
+      model: { id: selectedModelId, filename: selectedModelFile },
     }
     return services?.storage.savePlaygroundSettings({ body: settings })
   }
 
   const installedModels = installedList?.map(item => {
-    const cfg = modelConfigs?.[item.id]
+    const cfg = modelConfigs?.[item.repoId]
     const name = cfg?.name
-    return (<SelectItem key={item.id} value={item.id}>{name}</SelectItem>)
+    return (<SelectItem key={item.repoId} value={item.repoId}>{name}</SelectItem>)
+  })
+
+  const installedFiles = installedList?.map(item => {
+    if (item.repoId !== selectedModelId || typeof item.savePath !== 'object') return null
+    const savePaths = Object.entries(item.savePath)
+    return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
   })
 
   const connectTextServiceAction = useCallback(async () => {
@@ -130,8 +137,26 @@ export const Playground = (props: I_Props) => {
               </SelectGroup>
             </Select>
           </div>
+          {/* Select a file (quant) to load for the model */}
+          {selectedModelId && <div className="w-full">
+            <Select
+              defaultValue={undefined}
+              value={selectedModelFile}
+              onValueChange={setSelectedModelFile}
+            >
+              <SelectTrigger className="w-full flex-1 bg-accent">
+                <SelectValue placeholder="Select a file"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup>
+                <SelectContent className="p-1">
+                  <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
+                  {installedFiles}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+          </div>}
           {/* Start */}
-          {selectedModelId &&
+          {selectedModelId && selectedModelFile &&
             <Button
               className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"
               onClick={async () => {
@@ -149,7 +174,7 @@ export const Playground = (props: I_Props) => {
           }
           {/* Model Settings Button */}
           {selectedModelId && <Button
-            className="m-auto h-fit bg-accent hover:bg-accent-foreground"
+            className="m-auto h-fit bg-accent-foreground hover:bg-accent"
             variant="outline"
             onClick={() => setOpenResponseCharmDialog(true)}>
             <MixerHorizontalIcon className="mr-1" />Settings

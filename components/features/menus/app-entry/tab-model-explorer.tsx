@@ -32,15 +32,15 @@ export const ModelExplorerMenu = ({
   deleteModel,
 }: I_Props) => {
   const modelsList = useMemo(() => Object.values(data) || [], [data])
-  const [modelsInfo, setModelsInfo] = useState<any[]>([])
+  const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   const [selectedModelId, setSelectedModelId] = useState<string>('')
   const [expandLeftMenu, setExpandLeftMenu] = useState(true)
   const selectedModelConfig = data[selectedModelId || '']
   const numQuants = useMemo(() => {
-    const model = modelsInfo.find(i => i.id === selectedModelConfig.repoId)
+    const model = hfModelsInfo.find(i => i.id === selectedModelConfig?.repoId)
     const quants = model?.siblings?.filter((s: any) => s.lfs)
     return quants?.length
-  }, [modelsInfo, selectedModelConfig])
+  }, [hfModelsInfo, selectedModelConfig])
   const rightContainerWidth = selectedModelId ? 'w-full' : 'w-0'
   const rightContainerBorder = selectedModelId ? 'border border-primary/40' : ''
   const noBreakStyle = 'text-ellipsis whitespace-nowrap text-nowrap'
@@ -50,11 +50,8 @@ export const ModelExplorerMenu = ({
   const renderQuants = useCallback(() => {
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
       const [isDownloading, setIsDownloading] = useState(false)
-      const installInfo = installedModelsInfo.find(i => i.id === repo_id)
+      const installInfo = installedModelsInfo.find(i => i.repoId === repo_id)
       const [isCached, setIsCached] = useState(installInfo?.savePath?.[fileName])
-      // const savePaths = modelsInfo?.find(i => i.id === repo_id)?.siblings
-      // const modelFileInfo = savePaths?.find((i: any) => i.rfilename === fileName)
-      // const revision = modelFileInfo?.blob_id
 
       return (
         <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
@@ -107,7 +104,7 @@ export const ModelExplorerMenu = ({
       )
     }
 
-    const model = modelsInfo.find(i => i.id === selectedModelConfig?.repoId)
+    const model = hfModelsInfo.find(i => i.id === selectedModelConfig?.repoId)
     const quants = model?.siblings?.filter((s: any) => s?.lfs)
     return quants?.map((q: any) => {
       const splitName = q?.rfilename.split('.')
@@ -125,7 +122,7 @@ export const ModelExplorerMenu = ({
         repo_id={model?.id}
       />
     })
-  }, [deleteModel, downloadModel, installedModelsInfo, modelsInfo, selectedModelConfig])
+  }, [deleteModel, downloadModel, installedModelsInfo, hfModelsInfo, selectedModelConfig])
 
   // Get model info for our curated list
   useEffect(() => {
@@ -133,7 +130,7 @@ export const ModelExplorerMenu = ({
       const info = await fetchModelInfo(m.repoId)
 
       // @TODO We may want to cache this info data along with the installed_model or model_configs data
-      setModelsInfo(prev => {
+      setHFModelsInfo(prev => {
         prev.push(info.data)
         return prev
       })
@@ -275,16 +272,16 @@ export const ModelExplorerMenu = ({
           </div>
           {modelsList?.map(i =>
             <ModelCard
-              key={i.id}
+              key={i.repoId}
               title={i.name}
-              id={i.id}
+              id={i.repoId}
               description={i.description}
               fileSize={i.fileSize}
               licenses={i.licenses}
               provider={i.provider}
               fileName={i.fileName}
               onClick={() => {
-                setSelectedModelId(i.id)
+                setSelectedModelId(i.repoId)
                 setExpandLeftMenu(true)
               }}
             />
@@ -302,7 +299,7 @@ export const ModelExplorerMenu = ({
               {expandLeftMenu ? <PinLeftIcon className="h-4 w-4" /> : <PinRightIcon className="h-4 w-4" />}
             </Button>
             <div className="flex w-full flex-col justify-items-start self-center overflow-hidden text-left">
-              {modelsList?.find(i => i.id === selectedModelId)?.name}
+              {modelsList?.find(i => i.repoId === selectedModelId)?.name}
             </div>
             <Button
               className={cn("w-fit self-center", noBreakStyle)}
