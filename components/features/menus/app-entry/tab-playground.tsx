@@ -156,7 +156,7 @@ export const Playground = (props: I_Props) => {
             </Select>
           </div>}
           {/* Start */}
-          {selectedModelId &&
+          {selectedModelId && selectedModelFile &&
             <Button
               className="h-fit min-w-fit flex-1 bg-blue-600 px-8 text-center text-white hover:bg-blue-800"
               onClick={async () => {

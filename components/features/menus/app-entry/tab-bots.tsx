@@ -96,6 +96,10 @@ export const BotCreationMenu = (props: I_Props) => {
         toast.error('Please choose an LLM model')
         return
       }
+      if (!stateModel.filename) {
+        toast.error('Please choose a file to load')
+        return
+      }
       if (!stateModel.botName) {
         toast.error('Please choose a name for your bot')
         return
