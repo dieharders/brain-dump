@@ -160,20 +160,10 @@ export interface I_GetCollectionData {
 }
 
 export type T_ModelConfig = {
-  id: string
   repoId: string
   name: string
   description?: string
-  archType?: string
-  modelType?: string
-  provider?: string
-  licenses?: string[]
-  fileSize?: number
-  fileName: string
-  modelUrl?: string
-  downloadUrl: string
-  sha256?: string
-  quantTypes?: string[]
+  messageFormat?: string
   // used for model init
   context_window?: number
   num_gpu_layers?: number
