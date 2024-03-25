@@ -134,104 +134,6 @@ export const ModelExplorerMenu = ({
         prev.push(info.data)
         return prev
       })
-
-      // Example response...
-      /**
-       * {
-          "success": true,
-          "message": "Returned model info",
-          "data": {
-            "id": "TheBloke/Llama-2-13B-chat-GGUF",
-            "author": "TheBloke",
-            "sha": "4458acc949de0a9914c3eab623904d4fe999050a",
-            "created_at": "2023-09-04T17:20:15+00:00",
-            "last_modified": "2023-09-27T12:47:12+00:00",
-            "private": false,
-            "gated": false,
-            "disabled": false,
-            "downloads": 783,
-            "likes": 166,
-            "library_name": "transformers",
-            "tags": [
-              "transformers",
-              "gguf",
-              "llama",
-              "facebook",
-            ],
-            "pipeline_tag": "text-generation",
-            "mask_token": null,
-            "card_data": {},
-            "widget_data": [
-              {
-                "text": "My name is Julien and I like to"
-              },
-            ],
-            "model_index": null,
-            "config": {
-              "model_type": "llama"
-            },
-            "transformers_info": {
-              "auto_model": "AutoModel",
-              "custom_class": null,
-              "pipeline_tag": null,
-              "processor": null
-            },
-            "siblings": [
-              {
-                "rfilename": ".gitattributes",
-                "size": 2289,
-                "blob_id": "e29aa6246e8c8bd2c53eeb3a6722eebdcd8a88b0",
-                "lfs": null
-              },
-              {
-                "rfilename": "LICENSE.txt",
-                "size": 7020,
-                "blob_id": "51089e27e6764fb9f72c06a0f3710699fb6c9448",
-                "lfs": null
-              },
-              {
-                "rfilename": "Notice",
-                "size": 112,
-                "blob_id": "d03b5b952a843c5ee4b3c64b05c474b1c4ee14df",
-                "lfs": null
-              },
-              {
-                "rfilename": "README.md",
-                "size": 27534,
-                "blob_id": "3814bf53f59217511631602f61cb587f8765ab00",
-                "lfs": null
-              },
-              {
-                "rfilename": "USE_POLICY.md",
-                "size": 4766,
-                "blob_id": "abbcc199b2d1e4feb5d7e40c0bd67e1b0ce29e97",
-                "lfs": null
-              },
-              {
-                "rfilename": "config.json",
-                "size": 29,
-                "blob_id": "a4ba21b7cb475b3ebf33292c8eda7067b98f92a4",
-                "lfs": null
-              },
-              {
-                "rfilename": "llama-2-13b-chat.Q2_K.gguf",
-                "size": 5429348224,
-                "blob_id": "936ab9928b25a8ab4d2c3bac8b35d8069013ff80",
-                "lfs": {
-                  "size": 5429348224,
-                  "sha256": "fb69352085bf25c70bf0de94fc3dc9248609a255d7482a3fb308d102aabb066c",
-                  "pointer_size": 135
-                }
-              },
-            ],
-            "spaces": [
-              "Zenne/chatbot_for_files_langchain",
-              "Mahadih534/Open-Source_LLM_ChatBot",
-            ],
-            "safetensors": null
-          }
-        }
-       */
     })
   }, [fetchModelInfo, modelsList])
 
@@ -270,21 +172,29 @@ export const ModelExplorerMenu = ({
               }}
             />
           </div>
-          {modelsList?.map(i =>
-            <ModelCard
-              key={i.repoId}
-              title={i.name}
-              id={i.repoId}
-              description={i.description}
-              fileSize={i.fileSize}
-              licenses={i.licenses}
-              provider={i.provider}
-              fileName={i.fileName}
-              onClick={() => {
-                setSelectedModelId(i.repoId)
-                setExpandLeftMenu(true)
-              }}
-            />
+          {modelsList?.map(i => {
+            const modelInfo = hfModelsInfo.find(info => info.id === i.repoId)
+            const modelType = modelInfo?.config?.model_type
+
+            return (
+              <ModelCard
+                key={i.repoId}
+                title={i.name}
+                id={i.repoId}
+                description={i.description}
+                downloads={modelInfo?.downloads}
+                type={modelType}
+                provider={modelInfo?.author}
+                libraryName={modelInfo?.library_name}
+                tags={modelInfo?.tags}
+                // licenses={i.licenses}
+                onClick={() => {
+                  setSelectedModelId(i.repoId)
+                  setExpandLeftMenu(true)
+                }}
+              />
+            )
+          }
           )}
         </div>
         {/* Right Content Menu */}
@@ -305,9 +215,9 @@ export const ModelExplorerMenu = ({
               className={cn("w-fit self-center", noBreakStyle)}
               variant="secondary"
               onClick={() => {
-                if (selectedModelConfig?.modelUrl?.length && selectedModelConfig?.modelUrl?.length > 0) {
-                  window?.open(selectedModelConfig?.modelUrl, '_blank')
-                }
+                const m = modelsList?.find(i => i.repoId === selectedModelId)
+                const modelUrl = `https://huggingface.co/${m?.repoId}`
+                m && window?.open(modelUrl, '_blank')
               }}
             >Model Card 🤗</Button>
           </div>
