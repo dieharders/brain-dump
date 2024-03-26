@@ -9,10 +9,10 @@ import { Header } from '@/components/features/layout/header'
 
 export const metadata: Metadata = {
   title: {
-    default: 'DocuBot',
-    template: `%s - DocuBot - Your Ai Second Brain`,
+    default: 'OpenBrew Studio - Customize your Ai',
+    template: `%s - OpenBrew Studio - Customize your Ai`,
   },
-  description: 'Locally powered Ai chatbot that understands your private data.',
+  description: 'A Web UI for Ai engineers to build Ai Agents and Apps using OpenBrew Server.',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
