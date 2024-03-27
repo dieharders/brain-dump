@@ -2,10 +2,8 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
-import { ANON } from '@/lib/auth/providers/anonymous'
-import { LoginButton } from '@/components/login-button'
-import { IconUsers, IconGitHub } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { LoginForm } from '@/components/features/forms/form-login'
 
 export default async function SignInPage({
   // params,
@@ -26,29 +24,22 @@ export default async function SignInPage({
     if (s?.user) revalidatePath('/')
   }
 
-  // Login to account screen
-  if (searchParams?.login) {
-    return (
-      <div className="flex h-[calc(100vh-theme(spacing.16))] flex-col items-center justify-center gap-6 py-10">
-        <div>Welcome back</div>
-        <LoginButton name={ANON} icon={IconUsers} text="Login as Anonymous" onSuccess={onSuccess} />
-        <LoginButton name="github" icon={IconGitHub} onSuccess={onSuccess} />
-        <LoginButton name="google" text="Login with Google" onSuccess={onSuccess} />
-      </div>
-    )
-  }
-  // Create new account screen
-  if (searchParams?.create) {
-    // @TODO Add buttons to create account
-    return (
-      <div className="flex h-[calc(100vh-theme(spacing.16))] flex-col items-center justify-center gap-6 py-10">
-        <div className="text-xl font-bold">Create an account</div>
-        <LoginButton name={ANON} icon={IconUsers} text="Login as Anonymous" onSuccess={onSuccess} />
-        <LoginButton name="github" icon={IconGitHub} onSuccess={onSuccess} />
-        <LoginButton name="google" text="Login with Google" onSuccess={onSuccess} />
-      </div>
-    )
-  }
+  // "Login" screen
+  if (searchParams?.login || searchParams?.create) return <LoginForm onSuccess={onSuccess} />
+
+  // "Create account" screen
+  // @TODO Add buttons to create account
+  // if (searchParams?.create) {
+  //   return (
+  //     <div className="flex h-[calc(100vh-theme(spacing.16))] flex-col items-center justify-center gap-6 py-10">
+  //       <div className="text-xl font-bold">Create an account</div>
+  //       <LoginButton name={ANON} icon={IconUsers} text="Login as Anonymous" onSuccess={onSuccess} />
+  //       <LoginButton name="github" icon={IconGitHub} onSuccess={onSuccess} />
+  //       <LoginButton name="google" text="Login with Google" onSuccess={onSuccess} />
+  //     </div>
+  //   )
+  // }
+
   // Splash page
   return (
     <div className="flex flex-1 flex-row items-stretch justify-items-stretch self-stretch justify-self-stretch">

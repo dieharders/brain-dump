@@ -13,6 +13,8 @@ interface LoginButtonProps extends ButtonProps {
   callbackUrl?: string
   text?: string
   icon?: any
+  username?: string
+  password?: string
   onSuccess?: () => void
 }
 
@@ -21,6 +23,8 @@ export function LoginButton(args: LoginButtonProps) {
     name,
     text = 'Login with GitHub',
     icon,
+    username = '',
+    password = '',
     callbackUrl = '/',
     showIcon = true,
     onSuccess = () => { },
@@ -37,6 +41,8 @@ export function LoginButton(args: LoginButtonProps) {
         setIsLoading(true)
         // next-auth signIn() function doesn't work yet at Edge Runtime due to usage of BroadcastChannel
         const res = await signIn(name, {
+          username,
+          password,
           callbackUrl,
           // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
           redirect: false, // prevents page from refreshing
