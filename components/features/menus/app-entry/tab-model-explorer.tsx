@@ -45,7 +45,8 @@ export const ModelExplorerMenu = ({
   const rightContainerBorder = selectedModelId ? 'border border-primary/40' : ''
   const noBreakStyle = 'text-ellipsis whitespace-nowrap text-nowrap'
   const contentContainerGap = selectedModelId && expandLeftMenu ? 'gap-6' : ''
-  const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'w-0 overflow-hidden'
+  const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'hidden overflow-hidden'
+  const rightContainerBasis = selectedModelId && expandLeftMenu ? 'basis-1/2' : ''
 
   const renderQuants = useCallback(() => {
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
@@ -54,16 +55,16 @@ export const ModelExplorerMenu = ({
       const [isCached, setIsCached] = useState(installInfo?.savePath?.[fileName])
 
       return (
-        <div className={cn("flex h-full flex-row justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
+        <div className={cn("flex h-full flex-col justify-between gap-4 border-t border-dashed border-t-primary/50 bg-background p-4", noBreakStyle)}>
           {/* Quant name */}
           <div className="flex items-center justify-center gap-1 rounded-md border border-primary/50 bg-muted p-2 text-primary/50">
-            Quantization<p className="text-primary">{name}</p>
+            Quantization: {name}
           </div>
           {/* File name */}
           <p className="w-full items-center self-center overflow-hidden text-ellipsis whitespace-nowrap text-primary">{fileName}</p>
-          <div className="flex w-fit justify-end gap-2">
+          <div className="flex w-full flex-col justify-end gap-2 sm:flex-row">
             {/* File Size */}
-            <div className="flex items-center rounded-md bg-accent/50 p-2 text-primary">{fileSize}GB</div>
+            <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{fileSize}GB</div>
             {!isCached ? (
               // Download Model Button
               <Button
@@ -76,7 +77,7 @@ export const ModelExplorerMenu = ({
                   setIsCached(true)
                   return
                 }}
-                className="flex h-fit flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"
+                className="flex h-fit flex-1 flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"
               >
                 {isDownloading && <IconSpinner className="mr-2 animate-spin" />}
                 Download<IconDownload className="h-fit w-4" />
@@ -149,7 +150,7 @@ export const ModelExplorerMenu = ({
       {/* Content Container */}
       <div className={cn("flex flex-col items-start justify-items-stretch overflow-hidden xl:flex-row", contentContainerGap)}>
         {/* Left Content Menu */}
-        <div className={cn("flex flex-col justify-items-stretch gap-4", leftMenuIsExpanded)}>
+        <div className={cn("flex flex-col justify-items-stretch gap-4 overflow-hidden", leftMenuIsExpanded)}>
           <div className="flex flex-row gap-2">
             <ModelCard
               title="Add New"
@@ -197,8 +198,8 @@ export const ModelExplorerMenu = ({
           }
           )}
         </div>
-        {/* Right Content Menu */}
-        <div className={cn("order-first flex flex-col justify-items-stretch overflow-hidden rounded-md bg-accent xl:order-last", rightContainerWidth, rightContainerBorder)}>
+        {/* Right Content Menu (Quantization Files) */}
+        <div className={cn("order-first flex flex-col justify-items-stretch overflow-hidden rounded-md bg-accent xl:order-last", rightContainerWidth, rightContainerBorder, rightContainerBasis)}>
           <div className={cn("flex h-fit flex-row items-stretch justify-between justify-items-start gap-4 bg-primary/30 p-4", noBreakStyle)}>
             {/* Expand/Collapse Button */}
             <Button

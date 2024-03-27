@@ -36,16 +36,20 @@ export const {
       return !!auth?.user?.name // this ensures there is a logged in user for -every- request
     },
     async signIn({ profile, user, account, credentials }) {
-      const isUserAllowed = profile?.login === 'dieharders' || account?.provider === ANON
+      // @TODO Configure this to check provider accounts
+      const isUserAllowed = account?.provider === ANON
       return isUserAllowed
+
+      // Or you can return a URL to redirect to:
+      // return '/unauthorized'
     },
     async redirect({ url, baseUrl }) {
       // Where to go after successful sign-in (email, credentials only)
-      return '/'
+      return baseUrl
     },
   },
-  // pages: {
-  //   signIn: '/sign-in', // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
-  // },
+  pages: {
+    signIn: '/auth/sign-in', // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
+  },
   session: { strategy: 'jwt' },
 })

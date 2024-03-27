@@ -1,6 +1,7 @@
-# 🍺HomeBrewAi Chat Discovery
+# 🍺 OpenBrew Studio
 
-Chat with your documents and knowledgebase. A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).
+A developer tool for building custom Ai agents for use in your applications.
+A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).
 
 <!-- <a href="https://chat.vercel.ai/">
   <img alt="Next.js 13 and app template Router-ready AI chatbot." src="https://chat.vercel.ai/opengraph-image.png">

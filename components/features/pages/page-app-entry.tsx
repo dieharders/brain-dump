@@ -70,43 +70,45 @@ export const AppEntry = () => {
   }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider])
 
   const ChooseBackendPage = () => {
-    const containerStyle = 'flex w-[24rem] flex-row items-center justify-between gap-3 rounded-lg bg-background/20 p-4 overflow-hidden'
-    const inputStyle = 'w-fit border-none bg-muted text-center text-primary outline-none hover:bg-primary/20 transition-all ease-out duration-100'
+    const containerStyle = 'flex w-full flex-col sm:flex-row items-center justify-between gap-3 rounded-lg bg-background/20 p-4 bg-muted/60 overflow-hidden'
+    const inputStyle = 'sm:w-fit w-full border-none bg-muted text-center text-primary outline-none hover:bg-primary/20 transition-all ease-out duration-100'
     const labelStyle = 'text-left text-sm font-semibold text-primary/50'
 
     return (
-      <div className={cn(wrapperStyle, "items center flex h-full w-full flex-col justify-center")}>
-        <div className="flex h-[32rem] w-[32rem] flex-col items-center justify-start gap-4 rounded-xl border-2 border-accent bg-muted/60 p-8">
+      <div className={cn(wrapperStyle, "mt-64 flex h-full w-full flex-col items-center justify-start bg-background px-8")}>
+        <div className="light:border-black flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border p-8 dark:border-accent">
           {/* Title */}
-          <div className="justify-self-start text-center text-lg font-semibold text-primary">Connect to remote server</div>
+          <div className="mb-4 justify-self-start text-center text-2xl font-semibold text-primary">Connect to remote server</div>
 
-          {/* Enter remote server address */}
-          <div className={containerStyle}>
-            <Label htmlFor="domain" className={labelStyle}>Hostname</Label>
-            <Input
-              name="domain"
-              value={domainValue}
-              placeholder={defaultDomain}
-              onChange={e => setDomainValue(e.target.value)}
-              className={inputStyle}
-            />
-          </div>
+          <div className="mb-auto flex w-full flex-col items-center gap-4">
+            {/* Enter remote server address */}
+            <div className={containerStyle}>
+              <Label htmlFor="domain" className={labelStyle}>Hostname</Label>
+              <Input
+                name="domain"
+                value={domainValue}
+                placeholder={defaultDomain}
+                onChange={e => setDomainValue(e.target.value)}
+                className={inputStyle}
+              />
+            </div>
 
-          {/* Enter remote server port */}
-          <div className={containerStyle}>
-            <Label htmlFor="port" className={labelStyle}>Port</Label>
-            <Input
-              name="port"
-              value={portValue}
-              placeholder={`port (${defaultPort})`}
-              onChange={e => setPortValue(e.target.value)}
-              className={inputStyle}
-            />
+            {/* Enter remote server port */}
+            <div className={containerStyle}>
+              <Label htmlFor="port" className={labelStyle}>Port</Label>
+              <Input
+                name="port"
+                value={portValue}
+                placeholder={`port (${defaultPort})`}
+                onChange={e => setPortValue(e.target.value)}
+                className={inputStyle}
+              />
+            </div>
           </div>
 
           {/* Connect */}
           <Button
-            className="m-auto h-fit w-fit justify-self-end bg-blue-600 px-16 text-center text-primary hover:bg-blue-800"
+            className="light:text-primary h-fit w-full justify-center justify-self-end bg-blue-600 px-16 text-center hover:bg-blue-800 dark:text-primary"
             onClick={async () => {
               const success = await connect()
               if (success) fetchInstalledModelsAndConfigs()
