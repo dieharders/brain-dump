@@ -1,5 +1,6 @@
 export { auth as middleware } from './auth'
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  // This applies next-auth to all non /api routes before they are rendered.
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

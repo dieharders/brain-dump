@@ -1,7 +1,4 @@
-import Link from 'next/link'
 import { auth } from '@/auth'
-import { Button } from '@/components/ui/button'
-import { IconNextChat } from '@/components/ui/icons'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { UserMenu } from '@/components/user-menu'
 import { MenuPanelTriggers } from '@/components/features/layout/menu-panel-triggers'
@@ -17,15 +14,15 @@ export async function Header() {
         // Shortcuts, utility panels
         <MenuPanelTriggers session={session} />
       ) : (
-        // Login
-        <Link href="/" target="_blank" rel="nofollow" prefetch={false}>
-          <IconNextChat className="mr-2 h-6 w-6 dark:hidden" inverted />
-          <IconNextChat className="mr-2 hidden h-6 w-6 dark:block" />
-        </Link>
+        <div></div>
       )}
 
-      {/* Middle */}
-      <ModelReadout />
+      {/* Middle section */}
+      {session?.user ?
+        <ModelReadout />
+        :
+        <div className="w-full text-xl font-semibold">🍺 OpenBrew Studio</div>
+      }
 
       {/* Right side */}
       <div className="flex w-max items-center justify-end gap-x-2">
@@ -33,9 +30,7 @@ export async function Header() {
         {session?.user ? (
           <UserMenu user={session.user} />
         ) : (
-          <Button variant="link" asChild>
-            <Link href="/sign-in?callbackUrl=/" prefetch={false}>Login</Link>
-          </Button>
+          <div></div>
         )}
         {/* Light/Dark Mode */}
         <ThemeToggle />
