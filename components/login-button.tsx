@@ -44,11 +44,11 @@ export function LoginButton(args: LoginButtonProps) {
           username,
           password,
           callbackUrl,
-          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-          redirect: false, // prevents page from refreshing
+          redirect: false, // prevents page from refreshing, https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
         })
         if (res?.ok) onSuccess()
         else toast(`Sign in failed.\nStatus: ${res?.status}\nMsg: ${res?.error}`)
+        setIsLoading(false)
       }}
       disabled={isLoading}
       className={cn(className)}
