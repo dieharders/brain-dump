@@ -38,9 +38,11 @@ export const ModelCard = ({ expandable = true, onClick = (_id: string) => { }, t
     >
       {/* Name */}
       <div className="w-fit whitespace-nowrap text-left text-lg">
-        {/* Icon */}
-        {Icon && <Icon className="mr-1 inline text-foreground" />}
-        {maker}{title}
+        <div className="flex flex-row items-center gap-2">
+          {/* Icon */}
+          {Icon && <Icon className="text-foreground" />}
+          {maker}{title}
+        </div>
       </div>
 
       {/* Parameter Count */}
