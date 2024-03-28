@@ -1,5 +1,6 @@
-import { Root, List, Trigger, Content } from '@radix-ui/react-tabs'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import { Root, List, Trigger, Content } from '@radix-ui/react-tabs'
 
 interface I_Tab {
   label: string
@@ -44,8 +45,8 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
-                <div className={`border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary ${className}`} >
-                  {i.icon}<br />{i.label}
+                <div className={cn("text-md border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary lg:text-2xl", className)} >
+                  {i.icon}<br /><div className="hidden sm:block">{i.label}</div>
                 </div>
               </label>
             </Trigger>

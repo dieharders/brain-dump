@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { IconSpinner } from '@/components/ui/icons'
+import Link from 'next/link'
 import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu-application-modes'
 import { toast } from 'react-hot-toast'
 import { useTheme } from 'next-themes'
@@ -71,14 +72,19 @@ export const AppEntry = () => {
 
   const ChooseBackendPage = () => {
     const containerStyle = 'flex w-full flex-col sm:flex-row items-center justify-between gap-3 rounded-lg p-4 bg-muted overflow-hidden'
-    const inputStyle = 'sm:w-fit w-full border-none dark:bg-primary/10 bg-muted-background text-center text-primary outline-none dark:hover:bg-primary/20 hover:bg-primary/20 transition-all ease-out duration-100'
+    const inputStyle = 'sm:w-fit w-full border-none dark:bg-primary/20 bg-muted-background text-center text-primary outline-none dark:hover:bg-muted-foreground hover:bg-primary/20 transition-all ease-out duration-100'
     const labelStyle = 'text-left text-sm font-semibold text-muted-foreground'
 
     return (
-      <div className={cn(wrapperStyle, "mt-64 flex h-full w-full flex-col items-center justify-start bg-background px-8")}>
-        <div className="light:border-black flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border p-8 dark:border-accent">
+      <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start bg-background px-8")}>
+        {/* Header */}
+        <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br /><div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div></h1>
+
+        <div className="flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border border-neutral-500 p-8 dark:border-neutral-600">
           {/* Title */}
-          <div className="mb-4 justify-self-start text-center text-2xl font-semibold text-primary">Connect to remote server</div>
+          <h2 className="mb-4 justify-self-start text-center text-3xl font-semibold text-primary">
+            Connect to Ai server
+          </h2>
 
           <div className="mb-auto flex w-full flex-col items-center gap-4">
             {/* Enter remote server address */}
@@ -92,7 +98,6 @@ export const AppEntry = () => {
                 className={inputStyle}
               />
             </div>
-
             {/* Enter remote server port */}
             <div className={containerStyle}>
               <Label htmlFor="port" className={labelStyle}>Port</Label>
@@ -106,6 +111,11 @@ export const AppEntry = () => {
             </div>
           </div>
 
+          <div className="text-sm text-muted-foreground">
+            Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
+            You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
+          </div>
+
           {/* Connect */}
           <Button
             className="light:text-primary h-fit w-full justify-center justify-self-end bg-blue-600 px-16 text-center hover:bg-blue-800 dark:text-primary"
@@ -115,7 +125,7 @@ export const AppEntry = () => {
             }}
             disabled={isConnecting}
           >
-            Connect to HomeBrewAi
+            Connect
           </Button>
         </div>
       </div>

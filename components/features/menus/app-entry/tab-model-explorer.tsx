@@ -170,7 +170,7 @@ export const ModelExplorerMenu = ({
       <div className={cn("flex flex-col items-start justify-items-stretch overflow-hidden md:flex-row", contentContainerGap)}>
         {/* Left Content Menu */}
         <div className={cn("flex flex-col justify-items-stretch gap-4 overflow-hidden", leftMenuIsExpanded)}>
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-col gap-4 pb-8 lg:flex-row">
             <ModelCard
               title="Add New"
               id="new"
