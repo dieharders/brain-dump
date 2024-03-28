@@ -145,10 +145,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
       />
       {/* Title and description */}
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Bots</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Custom Bots</div></Title>
         <Description>
           <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Personalized Ai with unique knowledge and expertise in a specific domain. Ask questions or provide instructions and they will return text, images, or video as part of a conversation.
+            Personalized Ai with unique knowledge and expertise in a specific domain. Build your own with private data or use bots from our curated and community lists.
           </div>
         </Description>
       </Header>
@@ -192,10 +192,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const assistantsMenu = (
     <div>
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Assistants</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Empowered Assistants</div></Title>
         <Description>
           <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Organize several bots to create a deliverable. Submit a complex job to perform and get a result back over time.
+            Augment your Bots with access to tools and the internet. When assigned tasks, they will create a deliverable in the specified format you provide.
           </div>
         </Description>
       </Header>
@@ -219,7 +219,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         <Title><div className="my-2 text-center text-3xl font-bold">Team of Assistants</div></Title>
         <Description>
           <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            {`A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with a deadline and criteria to meet that goal. Several results are returned over time by individual assistants and collected into a report by a designated "CEO" until the goal is met.`}
+            {`A group of assistants working together under a "CEO" towards a stated goal. Submit criteria for a job to achieve by a specified deadline and get results back in the format you require.`}
           </div>
         </Description>
       </Header>
@@ -240,10 +240,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const knowledgeMenu = (
     <div>
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Knowledge Base</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Knowledge DataBase</div></Title>
         <Description>
           <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Add and edit documents (text, images, video, audio) to be retrieved from the vector database when you require specialized knowledge to be used by bots.
+            Upload text, images, video, audio when you require bots to memorize and understand specialized knowledge or private data. We provide you tools to easily access data from several sources.
           </div>
         </Description>
       </Header>
