@@ -145,9 +145,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
       />
       {/* Title and description */}
       <Header>
-        <Title>Bots</Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Bots</div></Title>
         <Description>
-          Personalized Ai with unique knowledge and expertise in a specific domain. Ask questions or provide instructions and they will return text, images, or video as part of a conversation.
+          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+            Personalized Ai with unique knowledge and expertise in a specific domain. Ask questions or provide instructions and they will return text, images, or video as part of a conversation.
+          </div>
         </Description>
       </Header>
 
@@ -190,9 +192,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const assistantsMenu = (
     <div>
       <Header>
-        <Title>Assistants</Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Assistants</div></Title>
         <Description>
-          Organize several bots to create a deliverable. Submit a complex job to perform and get a result back over time.
+          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+            Organize several bots to create a deliverable. Submit a complex job to perform and get a result back over time.
+          </div>
         </Description>
       </Header>
 
@@ -212,9 +216,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const crewsMenu = (
     <div>
       <Header>
-        <Title>Team of Assistants</Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Team of Assistants</div></Title>
         <Description>
-          {`A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with a deadline and criteria to meet that goal. Several results are returned over time by individual assistants and collected into a report by a designated "CEO" assistant until the goal is met.`}
+          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+            {`A group of assistants working together towards a goal and motivated by rewards. Submit a goal to achieve with a deadline and criteria to meet that goal. Several results are returned over time by individual assistants and collected into a report by a designated "CEO" until the goal is met.`}
+          </div>
         </Description>
       </Header>
 
@@ -234,9 +240,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const knowledgeMenu = (
     <div>
       <Header>
-        <Title>Knowledge Base</Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Knowledge Base</div></Title>
         <Description>
-          Add and edit documents (text, images, video, audio) to be retrieved from the vector database when you require specialized knowledge to be used by bots.
+          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+            Add and edit documents (text, images, video, audio) to be retrieved from the vector database when you require specialized knowledge to be used by bots.
+          </div>
         </Description>
       </Header>
 
@@ -255,9 +263,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const playgroundMenu = (
     <div>
       <Header>
-        <Title>Ai Playground</Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">
+          Ai Playground
+        </div></Title>
         <Description>
-          {`Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.`}
+          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+            {`Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.`}
+          </div>
         </Description>
       </Header>
 
@@ -321,7 +333,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       </div>
     )
     :
-    <div className="flex w-full flex-col overflow-hidden p-4 md:w-[70%]">
+    <div className="flex w-full flex-col overflow-hidden px-8 pb-4">
       <Tabs label="Application Modes" tabs={tabs} onChange={onTabChange} />
     </div>
   )
