@@ -71,9 +71,9 @@ export const AppEntry = () => {
   }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider])
 
   const ChooseBackendPage = () => {
-    const containerStyle = 'flex w-full flex-col sm:flex-row items-center justify-between gap-3 rounded-lg p-4 bg-muted overflow-hidden'
-    const inputStyle = 'sm:w-fit w-full border-none dark:bg-primary/20 bg-muted-background text-center text-primary outline-none dark:hover:bg-muted-foreground hover:bg-primary/20 transition-all ease-out duration-100'
-    const labelStyle = 'text-left text-sm font-semibold text-muted-foreground'
+    const containerStyle = cn('flex w-full flex-col items-center justify-between gap-3 overflow-hidden rounded-lg border border-neutral-600 bg-muted p-4 sm:flex-row')
+    const inputStyle = cn('bg-muted-background w-full border-none text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-primary/20 hover:text-black dark:bg-primary/20 dark:hover:bg-muted-foreground dark:hover:text-accent sm:w-fit')
+    const labelStyle = cn('text-left text-sm font-semibold text-muted-foreground')
 
     return (
       <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start bg-background px-8")}>

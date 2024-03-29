@@ -20,18 +20,21 @@ A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbo
 
 ## Features
 
-- Chat with your documents or knowledgebase
-- Streaming chat UI
-- Support for Local (default), OpenAi, Anthropic, Hugging Face, plus LangChain support
-- Chat history, share chat logs with other users
+- ✅ Run open source models locally for free
+- ✅ Streaming chat UI
+- ✅ Chat with your documents
+- ✅ Build custom bots from a mix of LLM's, software configs and prompt configs
+- ❌ Build assistants that have access to tools
+- ❌ Orchestrate multiple assistants together in a team
+- ❌ Save chat history and share chat logs with other users
 
 ## Model Providers
 
-- [Local](https://github.com/dieharders/ai-text-server)
-- [OpenAI](https://openai.com/chatgpt)
-- [Anthropic](https://anthropic.com)
-- [Hugging Face](https://huggingface.co)
-- [LangChain](https://js.langchain.com)
+This is a local model first project. We have future plans to support cloud inference providers as a config option.
+
+- ✅ [Local](https://github.com/dieharders/ai-text-server)
+- ❌ [OpenAI](https://openai.com/chatgpt)
+- ❌ [Google Gemini](https://gemini.google.com)
 
 ## Run locally
 
@@ -52,6 +55,24 @@ To preview:
 ```bash
 vercel deploy
 ```
+
+## Create a release version
+
+### Prerelease
+
+Increase the patch version by 1 (x.x.1 to x.x.2)
+
+### Patch
+
+Increase the patch version by 1 (x.x.1 to x.x.2)
+
+### Minor
+
+Increase the minor version by 1 (x.1.x to x.2.x)
+
+### Major
+
+Increase the major version by 1 (1.x.x to 2.x.x)
 
 ## Creating a KV Database Instance (for chat history, session)
 
