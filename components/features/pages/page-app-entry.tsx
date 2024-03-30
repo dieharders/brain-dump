@@ -121,7 +121,14 @@ export const AppEntry = () => {
             className="light:text-primary h-fit w-full justify-center justify-self-end bg-blue-600 px-16 text-center hover:bg-blue-800 dark:text-primary"
             onClick={async () => {
               const success = await connect()
-              if (success) fetchInstalledModelsAndConfigs()
+
+              if (success) {
+                if (!services) {
+                  const res = await getServices()
+                  if (res) setServices(res)
+                }
+                await fetchInstalledModelsAndConfigs()
+              }
             }}
             disabled={isConnecting}
           >
@@ -149,11 +156,6 @@ export const AppEntry = () => {
     }
     if (!hasMounted && !services) action()
   }, [getServices, hasMounted, services])
-
-  // Fetch menu data
-  useEffect(() => {
-    if (services) fetchInstalledModelsAndConfigs()
-  }, [services, fetchInstalledModelsAndConfigs])
 
   // Make sure this is client side, otherwise theme is used incorrect
   useEffect(() => {
