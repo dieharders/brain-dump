@@ -71,16 +71,16 @@ export const AppEntry = () => {
   }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider])
 
   const ChooseBackendPage = () => {
-    const containerStyle = cn('flex w-full flex-col items-center justify-between gap-3 overflow-hidden rounded-lg border border-neutral-600 bg-muted p-4 sm:flex-row')
-    const inputStyle = cn('bg-muted-background w-full border-none text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-primary/20 hover:text-black dark:bg-primary/20 dark:hover:bg-muted-foreground dark:hover:text-accent sm:w-fit')
-    const labelStyle = cn('text-left text-sm font-semibold text-muted-foreground')
+    const containerStyle = cn('flex w-full flex-col items-center justify-between gap-3 overflow-hidden rounded-lg border border-neutral-600 bg-neutral-200 p-4 dark:bg-muted/50 sm:flex-row')
+    const inputStyle = cn('bg-muted-background flex-1 border-none text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent sm:w-fit')
+    const labelStyle = cn('min-w-[6rem] text-center text-sm font-semibold text-muted-foreground sm:text-left')
 
     return (
-      <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start bg-background px-8")}>
+      <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start overflow-hidden bg-background px-8")}>
         {/* Header */}
         <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br /><div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div></h1>
 
-        <div className="flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border border-neutral-500 p-8 dark:border-neutral-600">
+        <div className="mb-16 flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border border-neutral-500 p-8 dark:border-neutral-600">
           {/* Title */}
           <h2 className="mb-4 justify-self-start text-center text-3xl font-semibold text-primary">
             Connect to Ai server
@@ -124,6 +124,7 @@ export const AppEntry = () => {
 
               if (success) {
                 if (!services) {
+                  // Get all possible server endpoints after successfull connection
                   const res = await getServices()
                   if (res) setServices(res)
                 }
@@ -147,15 +148,6 @@ export const AppEntry = () => {
     // Always unload current model
     services?.textInference.unload()
   }, [services?.textInference])
-
-  // Get all possible server endpoints
-  useEffect(() => {
-    const action = async () => {
-      const res = await getServices()
-      if (res) setServices(res)
-    }
-    if (!hasMounted && !services) action()
-  }, [getServices, hasMounted, services])
 
   // Make sure this is client side, otherwise theme is used incorrect
   useEffect(() => {
