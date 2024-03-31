@@ -20,7 +20,9 @@ interface I_Props {
   onSubmit: () => void
   services: I_ServiceApis | null
   modelConfigs: I_ModelConfigs
+  setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs | undefined>>
   installedList: T_InstalledTextModel[]
+  setInstalledList: Dispatch<SetStateAction<T_InstalledTextModel[]>>
   isConnecting: boolean
   setIsConnecting: Dispatch<SetStateAction<boolean>>
   setHasTextServiceConnected: Dispatch<SetStateAction<boolean>>
@@ -30,7 +32,7 @@ const Header = ({ children }: { children: React.ReactNode }) => <div className="
 
 const Title = ({ children }: { children: React.ReactNode }) => <h1 className="text-lg font-semibold leading-none tracking-tight">{children}</h1>
 
-const Description = ({ children }: { children: React.ReactNode }) => <p className="mb-4 text-sm text-muted-foreground">{children}</p>
+const Description = ({ className, children }: { className?: string, children: React.ReactNode }) => <p className={cn("mb-4 text-sm text-muted-foreground", className)}>{children}</p>
 
 const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?: () => void, Icon: any, className?: string }) => {
   return (
@@ -50,7 +52,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
-  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, installedList, modelConfigs } = props
+  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, modelConfigs, setModelConfigs, installedList, setInstalledList } = props
   const ROUTE_KNOWLEDGE = '/knowledge'
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
@@ -80,17 +82,19 @@ export const ApplicationModesMenu = (props: I_Props) => {
     onSubmit()
   }, [onSubmit])
 
-  const onTabChange = useCallback(
-    (_val: string) => {
-      // do stuff here ...
-    },
-    [],
-  )
-
   const createNewBotAction = () => {
     // show bot creation menu
     setOpenBotCreationMenu(true)
   }
+
+  const fetchInstalledModelsAndConfigs = useCallback(async () => {
+    // Get all currently installed models
+    const listResponse = await services?.textInference.installed()
+    listResponse?.data && setInstalledList(listResponse.data)
+    // Get all model configs
+    const cfgs = await services?.textInference.getModelConfigs()
+    cfgs?.data && setModelConfigs(cfgs.data)
+  }, [services?.textInference, setInstalledList, setModelConfigs])
 
   const saveBotConfig = useCallback((settings: I_Text_Settings) => {
     toast.success('New bot created!')
@@ -129,9 +133,35 @@ export const ApplicationModesMenu = (props: I_Props) => {
     [services?.textInference],
   )
 
-  useEffect(() => {
-    fetchBots()
-  }, [fetchBots])
+  const onTabChange = useCallback(
+    (val: string) => {
+      // do stuff here when tab is selected ...
+      switch (val) {
+        case 'models':
+          services && fetchInstalledModelsAndConfigs()
+          break
+        case 'playground':
+          // fetch installed models?
+          break
+        case 'bots':
+          services && fetchBots()
+          break
+        case 'assistants':
+          // services && fetchAssistants()
+          break
+        case 'teams':
+          // services && fetchTeams()
+          break
+        case 'knowledge':
+          // services && fetchKBs()
+          break
+        default:
+          // do nothing
+          break
+      }
+    },
+    [fetchBots, fetchInstalledModelsAndConfigs, services],
+  )
 
   // Menus
   const botsMenu = (
@@ -146,10 +176,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Title and description */}
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Custom Bots</div></Title>
-        <Description>
-          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Personalized Ai with unique knowledge and expertise in a specific domain. Build your own with private data or use bots from our curated and community lists.
-          </div>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          Personalized Ai with unique knowledge and expertise in a specific domain. Build your own with private data or use bots from our curated and community lists.
         </Description>
       </Header>
 
@@ -193,10 +221,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
     <div>
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Empowered Assistants</div></Title>
-        <Description>
-          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Augment your Bots with access to tools and the internet. When assigned tasks, they will create a deliverable in the specified format you provide.
-          </div>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          Augment your Bots with access to tools and the internet. When assigned tasks, they will create a deliverable in the specified format you provide.
         </Description>
       </Header>
 
@@ -217,10 +243,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
     <div>
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Team of Assistants</div></Title>
-        <Description>
-          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            {`A group of assistants working together under a "CEO" towards a stated goal. Submit criteria for a job to achieve by a specified deadline and get results back in the format you require.`}
-          </div>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          {`A group of assistants working together under a "CEO" towards a stated goal. Submit criteria for a job to achieve by a specified deadline and get results back in the format you require.`}
         </Description>
       </Header>
 
@@ -241,10 +265,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
     <div>
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Knowledge DataBase</div></Title>
-        <Description>
-          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Upload text, images, video, audio when you require bots to memorize and understand specialized knowledge or private data. We provide you tools to easily access data from several sources.
-          </div>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          Upload text, images, video, audio when you require bots to memorize and understand specialized knowledge or private data. We provide you tools to easily access data from several sources.
         </Description>
       </Header>
 
@@ -263,13 +285,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const playgroundMenu = (
     <div>
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">
-          Ai Playground
-        </div></Title>
-        <Description>
-          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            {`Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.`}
-          </div>
+        <Title>
+          <p className="my-2 text-center text-3xl font-bold">
+            Ai Playground
+          </p>
+        </Title>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          {`Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.`}
         </Description>
       </Header>
 
@@ -310,6 +332,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
     { label: 'teams', icon: "🙌", content: crewsMenu },
     { label: 'knowledge', icon: "📚", content: knowledgeMenu },
   ]
+
+  useEffect(() => {
+    // Invoke the default tab's behavior
+    onTabChange('models')
+  }, [onTabChange])
 
   return (isConnecting ?
     (

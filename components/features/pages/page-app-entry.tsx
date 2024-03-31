@@ -34,15 +34,6 @@ export const AppEntry = () => {
   const [domainValue, setDomainValue] = useState(defaultDomain)
   const [portValue, setPortValue] = useState(defaultPort)
 
-  const fetchInstalledModelsAndConfigs = useCallback(async () => {
-    // Get all currently installed models
-    const listResponse = await services?.textInference.installed()
-    listResponse?.data && setInstalledList(listResponse.data)
-    // Get all model configs
-    const cfgs = await services?.textInference.getModelConfigs()
-    cfgs?.data && setModelConfigs(cfgs.data)
-  }, [services?.textInference])
-
   const connect = useCallback(async () => {
     setIsConnecting(true)
 
@@ -57,12 +48,11 @@ export const AppEntry = () => {
       setIsConnecting(false)
 
       if (res?.success) {
-        toast.success(`Connected to local provider`)
-        setIsConnected(true)
         // Success
+        toast.success(`Connected to inference provider`)
         return true
       }
-      toast.error(`Failed to connect to local provider.`)
+      toast.error(`Failed to connect to inference provider.`)
       return false
     }
 
@@ -72,7 +62,7 @@ export const AppEntry = () => {
 
   const ChooseBackendPage = () => {
     const containerStyle = cn('flex w-full flex-col items-center justify-between gap-3 overflow-hidden rounded-lg border border-neutral-600 bg-neutral-200 p-4 dark:bg-muted/50 sm:flex-row')
-    const inputStyle = cn('bg-muted-background flex-1 border-none text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent sm:w-fit')
+    const inputStyle = cn('bg-muted-background flex-1 border-none text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold focus-visible:outline-neutral-500 focus-visible:ring-0 dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent sm:w-fit')
     const labelStyle = cn('min-w-[6rem] text-center text-sm font-semibold text-muted-foreground sm:text-left')
 
     return (
@@ -121,15 +111,22 @@ export const AppEntry = () => {
             className="light:text-primary h-fit w-full justify-center justify-self-end bg-blue-600 px-16 text-center hover:bg-blue-800 dark:text-primary"
             onClick={async () => {
               const success = await connect()
+              let res
 
               if (success) {
                 if (!services) {
                   // Get all possible server endpoints after successfull connection
-                  const res = await getServices()
+                  res = await getServices()
                   if (res) setServices(res)
                 }
-                await fetchInstalledModelsAndConfigs()
               }
+
+              if (success && res) {
+                setIsConnected(true)
+                return
+              }
+              toast.error(`Failed to connect to inference provider. Could not fetch services.`)
+              return
             }}
             disabled={isConnecting}
           >
@@ -141,23 +138,20 @@ export const AppEntry = () => {
   }
 
   useEffect(() => {
-    saveRemoteAddress({ domainValue, portValue })
-  }, [domainValue, portValue, saveRemoteAddress])
-
-  useEffect(() => {
     // Always unload current model
     services?.textInference.unload()
   }, [services?.textInference])
 
   // Get all possible server endpoints
-  useEffect(() => {
-    const action = async () => {
-      const res = await getServices()
-      if (res) setServices(res)
-    }
-    // Need to make sure this executes again even after failing until it succeeds
-    if (!hasMounted && !services) action()
-  }, [getServices, hasMounted, services])
+  // useEffect(() => {
+  //   const action = async () => {
+  //     const res = await getServices()
+  //     if (res) setServices(res)
+  //   }
+  //   // @TODO Need to make sure this executes again even after failing until it succeeds.
+  //   // (default value is incorrect, then after successful connection, all other components never re-fetch with updated services apis)
+  //   if (!hasMounted && !services) action()
+  // }, [getServices, hasMounted, services])
 
   // Make sure this is client side, otherwise theme is used incorrect
   useEffect(() => {
@@ -167,10 +161,11 @@ export const AppEntry = () => {
 
   // Render
 
+  // @TODO Implement SPA routing instead of rendering component pages here
   // Prevent server/client render mismatch
   if (!hasMounted) return null
   // HomeBrewAi connection menu
-  if (!isConnected && !window.homebrewai?.hasServerConnection) return ChooseBackendPage()
+  if (!isConnected) return ChooseBackendPage()
   // Inference connection menu
   if (!hasTextServiceConnected)
     return (
@@ -181,7 +176,9 @@ export const AppEntry = () => {
           isConnecting={isConnecting}
           setIsConnecting={setIsConnecting}
           modelConfigs={modelConfigs || {}}
+          setModelConfigs={setModelConfigs}
           installedList={installedList}
+          setInstalledList={setInstalledList}
           onSubmit={() => { /* exec logic when a route is navigated */ }}
           services={services}
         />
