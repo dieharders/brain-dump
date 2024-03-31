@@ -33,6 +33,7 @@ export const AppEntry = () => {
   // For inputs
   const [domainValue, setDomainValue] = useState(defaultDomain)
   const [portValue, setPortValue] = useState(defaultPort)
+  const docsUrl = `${domainValue}:${portValue}/docs`
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -68,7 +69,9 @@ export const AppEntry = () => {
     return (
       <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start overflow-hidden bg-background px-8")}>
         {/* Header */}
-        <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br /><div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div></h1>
+        <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br />
+          <div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div>
+        </h1>
 
         <div className="mb-16 flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border border-neutral-500 p-8 dark:border-neutral-600">
           {/* Title */}
@@ -101,9 +104,19 @@ export const AppEntry = () => {
             </div>
           </div>
 
-          <div className="text-sm text-muted-foreground">
-            Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
-            You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
+          <div className="pt-8 text-sm text-muted-foreground">
+            {/* Instructions */}
+            <div>
+              Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
+              You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
+            </div>
+            {/* API Docs link */}
+            <Link href={docsUrl} className="w-full">
+              <div className="inline">API docs:</div>
+              <Button variant="link" className="m-0 p-0 pl-1">
+                {docsUrl}
+              </Button>
+            </Link>
           </div>
 
           {/* Connect */}
@@ -114,17 +127,16 @@ export const AppEntry = () => {
               let res
 
               if (success) {
-                if (!services) {
-                  // Get all possible server endpoints after successfull connection
-                  res = await getServices()
-                  if (res) setServices(res)
-                }
+                // Get all possible server endpoints after successfull connection
+                res = await getServices()
+                if (res) setServices(res)
               }
 
               if (success && res) {
                 setIsConnected(true)
                 return
               }
+
               toast.error(`Failed to connect to inference provider. Could not fetch services.`)
               return
             }}
@@ -141,16 +153,6 @@ export const AppEntry = () => {
     // Always unload current model
     services?.textInference.unload()
   }, [services?.textInference])
-
-  // Get all possible server endpoints
-  useEffect(() => {
-    const action = async () => {
-      const res = await getServices()
-      if (res) setServices(res)
-    }
-    // Need to make sure this executes again even after failing until it succeeds
-    if (!hasMounted && !services) action()
-  }, [getServices, hasMounted, services])
 
   // Make sure this is client side, otherwise theme is used incorrect
   useEffect(() => {

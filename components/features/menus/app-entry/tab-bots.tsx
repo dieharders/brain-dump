@@ -68,6 +68,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const [stateSystem, setStateSystem] = useState<I_System_State>(defaults.system)
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaults.prompt)
   const [stateResponse, setStateResponse] = useState<I_Response_State>(defaults.response)
+  const [fetchOnce, setFetchOnce] = useState(false)
 
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
@@ -139,8 +140,10 @@ export const BotCreationMenu = (props: I_Props) => {
 
   // Fetch on mount
   useEffect(() => {
+    if (fetchOnce) return
+    setFetchOnce(true)
     fetchModelSettingsData()
-  }, [fetchModelSettingsData])
+  }, [fetchOnce, fetchModelSettingsData])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

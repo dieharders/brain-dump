@@ -75,7 +75,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     // Save menu forms to a json file
     const res = await services?.storage.getBotSettings()
     // Update this menu's list of items
-    res?.data && setBots(res.data)
+    res?.success && res?.data && setBots(res.data)
   }, [services?.storage])
 
   const onSelect = useCallback(() => {
@@ -89,11 +89,14 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const fetchInstalledModelsAndConfigs = useCallback(async () => {
     // Get all currently installed models
-    const listResponse = await services?.textInference.installed()
-    listResponse?.data && setInstalledList(listResponse.data)
+    services?.textInference.installed().then(listResponse =>
+      listResponse?.data && setInstalledList(listResponse.data)
+    )
     // Get all model configs
-    const cfgs = await services?.textInference.getModelConfigs()
-    cfgs?.data && setModelConfigs(cfgs.data)
+    services?.textInference.getModelConfigs().then(cfgs =>
+      cfgs?.data && setModelConfigs(cfgs.data)
+    )
+    return
   }, [services?.textInference, setInstalledList, setModelConfigs])
 
   const saveBotConfig = useCallback((settings: I_Text_Settings) => {
