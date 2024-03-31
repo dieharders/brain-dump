@@ -127,17 +127,16 @@ export const AppEntry = () => {
               let res
 
               if (success) {
-                if (!services) {
-                  // Get all possible server endpoints after successfull connection
-                  res = await getServices()
-                  if (res) setServices(res)
-                }
+                // Get all possible server endpoints after successfull connection
+                res = await getServices()
+                if (res) setServices(res)
               }
 
               if (success && res) {
                 setIsConnected(true)
                 return
               }
+
               toast.error(`Failed to connect to inference provider. Could not fetch services.`)
               return
             }}
@@ -154,16 +153,6 @@ export const AppEntry = () => {
     // Always unload current model
     services?.textInference.unload()
   }, [services?.textInference])
-
-  // Get all possible server endpoints
-  useEffect(() => {
-    const action = async () => {
-      const res = await getServices()
-      if (res) setServices(res)
-    }
-    // Need to make sure this executes again even after failing until it succeeds
-    if (!hasMounted && !services) action()
-  }, [getServices, hasMounted, services])
 
   // Make sure this is client side, otherwise theme is used incorrect
   useEffect(() => {
