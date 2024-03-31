@@ -142,6 +142,16 @@ export const AppEntry = () => {
     services?.textInference.unload()
   }, [services?.textInference])
 
+  // Get all possible server endpoints
+  useEffect(() => {
+    const action = async () => {
+      const res = await getServices()
+      if (res) setServices(res)
+    }
+    // Need to make sure this executes again even after failing until it succeeds
+    if (!hasMounted && !services) action()
+  }, [getServices, hasMounted, services])
+
   // Make sure this is client side, otherwise theme is used incorrect
   useEffect(() => {
     if (hasMounted) return
