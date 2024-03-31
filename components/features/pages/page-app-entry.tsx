@@ -69,7 +69,9 @@ export const AppEntry = () => {
     return (
       <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start overflow-hidden bg-background px-8")}>
         {/* Header */}
-        <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br /><div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div></h1>
+        <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br />
+          <div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div>
+        </h1>
 
         <div className="mb-16 flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border border-neutral-500 p-8 dark:border-neutral-600">
           {/* Title */}
@@ -102,14 +104,16 @@ export const AppEntry = () => {
             </div>
           </div>
 
-          <div className="pt-8">
-            <div className="text-sm text-muted-foreground">
+          <div className="pt-8 text-sm text-muted-foreground">
+            {/* Instructions */}
+            <div>
               Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
               You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
             </div>
-            <Link href={docsUrl} className="w-full text-center">
-              <div className="inline text-sm">API docs:</div>
-              <Button variant="link" className="m-0 p-0 pl-1 text-yellow-500 decoration-yellow-500">
+            {/* API Docs link */}
+            <Link href={docsUrl} className="w-full">
+              <div className="inline">API docs:</div>
+              <Button variant="link" className="m-0 p-0 pl-1">
                 {docsUrl}
               </Button>
             </Link>
