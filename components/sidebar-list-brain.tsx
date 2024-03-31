@@ -20,7 +20,7 @@ export interface SidebarBrainListProps {
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const APIConfigOptions = useRef({})
-  const { getServices, getAPIConfigOptions } = useHomebrew()
+  const { getServices, getAPIConfigs } = useHomebrew()
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasMounted, setHasMounted] = useState(false)
   const [collections, setCollections] = useState<Array<I_Collection>>([])
@@ -110,11 +110,11 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   // Fetch api options
   useEffect(() => {
     const action = async () => {
-      const options = await getAPIConfigOptions()
+      const options = await getAPIConfigs()
       if (options) APIConfigOptions.current = options
     }
     action()
-  }, [getAPIConfigOptions])
+  }, [getAPIConfigs])
 
   return (
     <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
