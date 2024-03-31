@@ -32,20 +32,12 @@ export const useModelSettingsMenu = ({
   const [ragTemplates, setRagTemplates] = useState<I_RAGPromptTemplates>({})
   const [ragModes, setRagModes] = useState<string[]>([])
 
-  // API
-  const fetchRagPromptTemplates = useCallback(
-    async () => services?.textInference.getRagPromptTemplates(),
-    [services?.textInference],
-  )
-  const fetchSystemPrompts = useCallback(
-    async () => services?.textInference.getSystemPrompts(),
-    [services?.textInference],
-  )
-
   // Fetch data
   const getSystemPrompts = useCallback(async () => {
-    return fetchSystemPrompts().then(res => res?.data && setSystemPrompts(res.data))
-  }, [fetchSystemPrompts])
+    return services?.textInference
+      .getSystemPrompts()
+      .then(res => res?.data && setSystemPrompts(res.data))
+  }, [services?.textInference])
 
   const getPromptTemplates = useCallback(async () => {
     const req = await services?.textInference.getPromptTemplates()
@@ -54,10 +46,10 @@ export const useModelSettingsMenu = ({
   }, [services?.textInference])
 
   const getRagTemplates = useCallback(async () => {
-    const req = await fetchRagPromptTemplates()
+    const req = await services?.textInference.getRagPromptTemplates()
     const data = req?.data || {}
     setRagTemplates(data)
-  }, [fetchRagPromptTemplates])
+  }, [services?.textInference])
 
   const getRagModes = useCallback(async () => {
     const data = await getAPIConfigs()
