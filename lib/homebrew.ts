@@ -584,6 +584,27 @@ export const useHomebrew = () => {
   }
 
   /**
+   * Return options for all endpoints
+   */
+  const getAPIConfigs = useCallback(async () => {
+    const configs = window?.homebrewai?.api?.configs
+    if (configs) return configs
+
+    const res = await getAPIConfig()
+    if (res) {
+      // Store all config options for endpoints
+      let configOptions: T_APIConfigOptions = {}
+      res?.forEach(i => {
+        if (i.configs) configOptions = { ...configOptions, ...i.configs }
+      })
+      if (window?.homebrewai?.api) window.homebrewai.api.configs = configOptions
+      return configOptions
+    }
+
+    return {}
+  }, [])
+
+  /**
    * Get all api configs for services.
    */
   const getServices = useCallback(async () => {
@@ -622,17 +643,6 @@ export const useHomebrew = () => {
   }, [getServices, store])
 
   /**
-   * Return options for all endpoints
-   */
-  const getAPIConfigOptions = async () => {
-    if (!store?.api) {
-      await getServices()
-      return store?.api?.configs
-    }
-    return store?.api?.configs
-  }
-
-  /**
    * Store remote address values for later api calls
    */
   const saveRemoteAddress = ({
@@ -656,5 +666,5 @@ export const useHomebrew = () => {
     }
   }
 
-  return { connect, getServices, getAPIConfigOptions, saveRemoteAddress }
+  return { connect, getServices, getAPIConfigs, saveRemoteAddress }
 }

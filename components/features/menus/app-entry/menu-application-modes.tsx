@@ -75,7 +75,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     // Save menu forms to a json file
     const res = await services?.storage.getBotSettings()
     // Update this menu's list of items
-    res?.data && setBots(res.data)
+    res?.success && res?.data && setBots(res.data)
   }, [services?.storage])
 
   const onSelect = useCallback(() => {

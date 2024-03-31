@@ -19,7 +19,7 @@ export const useModelSettingsMenu = ({
   services: I_ServiceApis | null
 }) => {
   // Deps
-  const { getAPIConfigOptions } = useHomebrew()
+  const { getAPIConfigs } = useHomebrew()
 
   // State values
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaultPromptState)
@@ -33,14 +33,6 @@ export const useModelSettingsMenu = ({
   const [ragModes, setRagModes] = useState<string[]>([])
 
   // API
-  const fetchRagModes = useCallback(
-    async () => getAPIConfigOptions(),
-    [getAPIConfigOptions],
-  )
-  const fetchPromptTemplates = useCallback(
-    async () => services?.textInference.getPromptTemplates(),
-    [services?.textInference],
-  )
   const fetchRagPromptTemplates = useCallback(
     async () => services?.textInference.getRagPromptTemplates(),
     [services?.textInference],
@@ -54,20 +46,23 @@ export const useModelSettingsMenu = ({
   const getSystemPrompts = useCallback(async () => {
     return fetchSystemPrompts().then(res => res?.data && setSystemPrompts(res.data))
   }, [fetchSystemPrompts])
+
   const getPromptTemplates = useCallback(async () => {
-    const req = await fetchPromptTemplates()
+    const req = await services?.textInference.getPromptTemplates()
     const data = req?.data || {}
     setPromptTemplates(data)
-  }, [fetchPromptTemplates])
+  }, [services?.textInference])
+
   const getRagTemplates = useCallback(async () => {
     const req = await fetchRagPromptTemplates()
     const data = req?.data || {}
     setRagTemplates(data)
   }, [fetchRagPromptTemplates])
+
   const getRagModes = useCallback(async () => {
-    const data = await fetchRagModes()
+    const data = await getAPIConfigs()
     setRagModes(data?.ragResponseModes || [])
-  }, [fetchRagModes])
+  }, [getAPIConfigs])
 
   // Fetch required data for menus
   const fetchData = async () => {
@@ -77,8 +72,7 @@ export const useModelSettingsMenu = ({
       getSystemPrompts(),
       getRagModes(),
     ]
-    await Promise.allSettled(actions)
-    return
+    return Promise.allSettled(actions)
   }
 
   return {
