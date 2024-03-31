@@ -33,6 +33,7 @@ export const AppEntry = () => {
   // For inputs
   const [domainValue, setDomainValue] = useState(defaultDomain)
   const [portValue, setPortValue] = useState(defaultPort)
+  const docsUrl = `${domainValue}:${portValue}/docs`
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -101,9 +102,17 @@ export const AppEntry = () => {
             </div>
           </div>
 
-          <div className="text-sm text-muted-foreground">
-            Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
-            You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
+          <div className="pt-8">
+            <div className="text-sm text-muted-foreground">
+              Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
+              You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
+            </div>
+            <Link href={docsUrl} className="w-full text-center">
+              <div className="inline text-sm">API docs:</div>
+              <Button variant="link" className="m-0 p-0 pl-1 text-yellow-500 decoration-yellow-500">
+                {docsUrl}
+              </Button>
+            </Link>
           </div>
 
           {/* Connect */}
