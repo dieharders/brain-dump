@@ -7,7 +7,7 @@ import { PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons"
 import { T_ModelConfig } from '@/lib/homebrew'
 import { calcFileSize, cn } from '@/lib/utils'
 
-type T_Component = React.FC<{ children: React.ReactNode }>
+type T_Component = React.FC<{ className?: string, children: React.ReactNode }>
 interface I_Props {
   Header: T_Component
   Title: T_Component
@@ -159,10 +159,8 @@ export const ModelExplorerMenu = ({
     <div>
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Ai Model Explorer</div></Title>
-        <Description>
-          <div className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-            Browse and install thousands of Ai models to power your bots. Each model can be confgured to meet your hardware needs. A recommended list of models is curated by the team.
-          </div>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          Browse and install thousands of Ai models to power your bots. Each model can be confgured to meet your hardware needs. A recommended list of models is curated by the team.
         </Description>
       </Header>
 
