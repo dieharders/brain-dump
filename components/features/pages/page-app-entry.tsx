@@ -108,10 +108,10 @@ export const AppEntry = () => {
             {/* Instructions */}
             <div>
               Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
-              You can download it <Link href="https://openbrewai.com" target="_blank"><Button variant="link" className="m-0 p-0">here</Button></Link>.
+              You can download it <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 p-0">here</Button></Link>.
             </div>
             {/* API Docs link */}
-            <Link href={docsUrl} className="w-full">
+            <Link href={docsUrl} className="w-full" prefetch={false}>
               <div className="inline">API docs:</div>
               <Button variant="link" className="m-0 p-0 pl-1">
                 {docsUrl}
