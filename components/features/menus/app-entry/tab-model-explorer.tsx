@@ -72,7 +72,7 @@ export const ModelExplorerMenu = ({
       return (
         <div className={cn("flex h-full flex-col justify-between gap-4 border-t border-dashed border-t-muted-foreground bg-background p-4", noBreakStyle)}>
           {/* File name */}
-          <div className="flex items-center justify-center gap-1 rounded-md border border-muted-foreground bg-muted p-2 text-muted-foreground">
+          <div className="block w-full gap-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-md border border-muted-foreground bg-muted p-2 text-muted-foreground">
             {fileName}
           </div>
           {/* Use-Case Description */}
@@ -81,7 +81,7 @@ export const ModelExplorerMenu = ({
             {/* File Size */}
             <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{fileSize}GB</div>
             {/* Quant name */}
-            <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{name}</div>
+            {name && name.length > 1 && <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{name}</div>}
             {!isCached ? (
               // Download Model Button
               <Button
@@ -97,7 +97,7 @@ export const ModelExplorerMenu = ({
                 className="flex h-fit flex-1 flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"
               >
                 {isDownloading && <IconSpinner className="mr-2 animate-spin" />}
-                Download<IconDownload className="h-fit w-4" />
+                Download<IconDownload className="h-full w-4" />
               </Button>
             ) : (
               // Delete Model Button
