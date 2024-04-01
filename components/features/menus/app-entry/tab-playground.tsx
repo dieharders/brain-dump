@@ -59,10 +59,22 @@ export const Playground = (props: I_Props) => {
     return (<SelectItem key={item.repoId} value={item.repoId}>{name}</SelectItem>)
   })
 
+  const nativeInstalledModels = installedList?.map(item => {
+    const cfg = modelConfigs?.[item.repoId]
+    const name = cfg?.name
+    return (<option key={item.repoId} value={item.repoId} label={name}>{name}</option>)
+  })
+
   const installedFiles = installedList?.map(item => {
     if (item.repoId !== selectedModelId || typeof item.savePath !== 'object') return null
     const savePaths = Object.entries(item.savePath)
     return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
+  })
+
+  const nativeInstalledFiles = installedList?.map(item => {
+    if (item.repoId !== selectedModelId || typeof item.savePath !== 'object') return null
+    const savePaths = Object.entries(item.savePath)
+    return savePaths.map(([filename, _path]) => (<option key={filename} value={filename}>{filename}</option>))
   })
 
   const connectTextServiceAction = useCallback(async () => {
@@ -119,7 +131,59 @@ export const Playground = (props: I_Props) => {
       />
       <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 p-1 pb-4">
         <div className="mx-auto flex w-full max-w-[48rem] flex-col gap-4">
-          <div className="mb-4 mt-8 flex flex-row gap-4">
+          {/* Select a prev installed model to load */}
+          <div className="w-full">
+            {/* Native select */}
+            {/* <label htmlFor="model_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Installed models</label> */}
+            <select id="model_select" onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Installed models">
+              <option value="" defaultValue="" disabled hidden>Select Ai model</option>
+              {nativeInstalledModels}
+            </select>
+            {/* Custom select */}
+            <Select
+              defaultValue=""
+              value={selectedModelId}
+              onValueChange={setSelectedModelId}
+            >
+              <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
+                <SelectValue placeholder="Select Ai Model"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup className="hidden [@media(hover:hover)]:flex">
+                <SelectContent className="p-1">
+                  <SelectLabel className="select-none uppercase text-indigo-500">Installed models</SelectLabel>
+                  {installedModels}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+          </div>
+          {/* Select a file (quant) to load for the model */}
+          {selectedModelId &&
+            <div className="w-full">
+              {/* Native select */}
+              {/* <label htmlFor="file_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Available files</label> */}
+              <select id="file_select" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
+                <option value="" defaultValue="" disabled hidden>Available files</option>
+                {nativeInstalledFiles}
+              </select>
+              {/* Custom select */}
+              <Select
+                defaultValue=""
+                value={selectedModelFile}
+                onValueChange={setSelectedModelFile}
+              >
+                <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
+                  <SelectValue placeholder="Select a file"></SelectValue>
+                </SelectTrigger>
+                <SelectGroup className="hidden [@media(hover:hover)]:flex">
+                  <SelectContent className="p-1">
+                    <SelectLabel className="select-none uppercase text-indigo-500">Available files</SelectLabel>
+                    {installedFiles}
+                  </SelectContent>
+                </SelectGroup>
+              </Select>
+            </div>
+          }
+          <div className="mb-8 mt-4 flex flex-row gap-4">
             {/* Start */}
             {selectedModelId && selectedModelFile &&
               <Button
@@ -145,42 +209,6 @@ export const Playground = (props: I_Props) => {
               <MixerHorizontalIcon className="mr-1" />Settings
             </Button>}
           </div>
-          {/* Select a prev installed model to load */}
-          <div className="w-full">
-            <Select
-              defaultValue={undefined}
-              value={selectedModelId}
-              onValueChange={setSelectedModelId}
-            >
-              <SelectTrigger className="w-full flex-1 bg-accent p-6 text-lg">
-                <SelectValue placeholder="Select Ai Model"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup>
-                <SelectContent className="p-1">
-                  <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
-                  {installedModels}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
-          </div>
-          {/* Select a file (quant) to load for the model */}
-          {selectedModelId && <div className="w-full">
-            <Select
-              defaultValue={undefined}
-              value={selectedModelFile}
-              onValueChange={setSelectedModelFile}
-            >
-              <SelectTrigger className="w-full flex-1 bg-accent p-6 text-lg">
-                <SelectValue placeholder="Select a file"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup>
-                <SelectContent className="p-1">
-                  <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
-                  {installedFiles}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
-          </div>}
         </div>
       </div>
     </>
