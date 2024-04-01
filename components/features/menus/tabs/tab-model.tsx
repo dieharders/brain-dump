@@ -78,8 +78,7 @@ export const ModelTab = (props: I_Props) => {
               </select>
               {/* Custom select */}
               <Select
-                defaultValue={undefined}
-                value={state.id}
+                value={state.id || undefined}
                 onValueChange={(val: string) => setState({ ...state, id: val })}
               >
                 <SelectTrigger className="hidden w-full flex-1 hover:bg-accent [@media(hover:hover)]:flex">
@@ -103,8 +102,7 @@ export const ModelTab = (props: I_Props) => {
                 </select>
                 {/* Custom select */}
                 <Select
-                  defaultValue={undefined}
-                  value={state.filename}
+                  value={state.filename || undefined}
                   onValueChange={(val: string) => setState({ ...state, filename: val })}
                 >
                   <SelectTrigger className="hidden w-full flex-1 hover:bg-accent [@media(hover:hover)]:flex">
