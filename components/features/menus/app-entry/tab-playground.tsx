@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
@@ -45,8 +45,6 @@ export const Playground = (props: I_Props) => {
     statePerformance,
     setStatePerformance,
   } = usePerformanceMenu()
-  console.log('@@ what is ', selectedModelId, selectedModelFile)
-
 
   const saveSettings = async () => {
     const settings = {
@@ -113,25 +111,6 @@ export const Playground = (props: I_Props) => {
     setIsConnecting(false)
     return result
   }, [loadPlaygroundModel, services?.storage, services?.textInference, setIsConnecting])
-
-  useEffect(() => {
-    // If only one item we need to trigger a set state
-    if (!selectedModelId && installedList?.length === 1) setSelectedModelId(installedList[0].repoId)
-    // The native <select> dont actually instantiate a state value, so force one
-    // else {}
-  }, [installedList, selectedModelId, setSelectedModelId])
-
-  useEffect(() => {
-    if (selectedModelId && !selectedModelFile) {
-      // If only one item we need to trigger a set state
-      const selItem = installedList.find(i => selectedModelId === i.repoId)
-      const savePaths = Object.entries(selItem?.savePath || '')
-      if (savePaths?.length === 1) {
-        const [filename, _path] = savePaths[0]
-        setSelectedModelFile(filename)
-      }
-    }
-  }, [installedList, selectedModelFile, selectedModelId])
 
   return (
     <>

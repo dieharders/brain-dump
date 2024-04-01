@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useEffect } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -55,27 +55,6 @@ export const ModelTab = (props: I_Props) => {
     const savePaths = Object.entries(item.savePath)
     return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
   })
-
-  console.log('@@ state', state.id, state.filename)
-
-
-  useEffect(() => {
-    // If only one item we need to trigger a set state
-    if (!state.id && installedList?.length === 1) setState({ ...state, id: installedList[0].repoId })
-  }, [installedList, setState, state])
-
-  useEffect(() => {
-    if (state.id && !state.filename) {
-      const selectedItem = installedList.find(d => d.repoId === state.id)
-      const savePaths = Object.entries(selectedItem?.savePath || '')
-
-      // If only one item we need to trigger a set state
-      if (savePaths?.length === 1) {
-        const [filename, _path] = savePaths[0]
-        setState({ ...state, filename: filename })
-      }
-    }
-  }, [installedList, setState, state])
 
   return (
     <div className="px-1">
