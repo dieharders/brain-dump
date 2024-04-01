@@ -37,8 +37,8 @@ export const PerformanceMenu = (props: I_Props) => {
   const performanceMenu = <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={modelConfig} />
 
   const tabs = [
-    { label: 'attention', content: attentionMenu },
-    { label: 'performance', content: performanceMenu },
+    { icon: '👀', label: 'attention', content: attentionMenu },
+    { icon: '🏃‍♂️', label: 'performance', content: performanceMenu },
   ]
 
   return (

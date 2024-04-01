@@ -118,7 +118,33 @@ export const Playground = (props: I_Props) => {
         modelConfig={modelConfigs?.[selectedModelId || '']}
       />
       <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 p-1 pb-4">
-        <div className="mx-auto flex w-full max-w-[48rem] flex-col gap-2">
+        <div className="mx-auto flex w-full max-w-[48rem] flex-col gap-4">
+          <div className="mb-4 mt-8 flex flex-row gap-4">
+            {/* Start */}
+            {selectedModelId && selectedModelFile &&
+              <Button
+                className="h-fit min-w-fit flex-1 bg-blue-600 p-2 text-center text-lg text-white hover:bg-blue-800"
+                onClick={async () => {
+                  setIsConnecting(true)
+                  const isConnected = await connectTextServiceAction()
+                  isConnected && setHasTextServiceConnected(true)
+                  await saveSettings()
+                  setIsConnecting(false)
+                  router.push(`/${ROUTE_PLAYGROUND}`)
+                }}
+                disabled={isConnecting}
+              >
+                <LightningBoltIcon className="mr-1" />Start
+              </Button>
+            }
+            {/* Model Settings Button */}
+            {selectedModelId && <Button
+              className="h-full flex-1 bg-accent-foreground p-2 text-lg hover:bg-accent"
+              variant="outline"
+              onClick={() => setOpenResponseCharmDialog(true)}>
+              <MixerHorizontalIcon className="mr-1" />Settings
+            </Button>}
+          </div>
           {/* Select a prev installed model to load */}
           <div className="w-full">
             <Select
@@ -155,32 +181,6 @@ export const Playground = (props: I_Props) => {
               </SelectGroup>
             </Select>
           </div>}
-          <div className="mt-8 flex flex-row gap-4">
-            {/* Start */}
-            {selectedModelId && selectedModelFile &&
-              <Button
-                className="h-fit min-w-fit flex-1 bg-blue-600 p-2 text-center text-lg text-white hover:bg-blue-800"
-                onClick={async () => {
-                  setIsConnecting(true)
-                  const isConnected = await connectTextServiceAction()
-                  isConnected && setHasTextServiceConnected(true)
-                  await saveSettings()
-                  setIsConnecting(false)
-                  router.push(`/${ROUTE_PLAYGROUND}`)
-                }}
-                disabled={isConnecting}
-              >
-                <LightningBoltIcon className="mr-1" />Start
-              </Button>
-            }
-            {/* Model Settings Button */}
-            {selectedModelId && <Button
-              className="h-full bg-accent-foreground p-2 text-lg hover:bg-accent"
-              variant="outline"
-              onClick={() => setOpenResponseCharmDialog(true)}>
-              <MixerHorizontalIcon className="mr-1" />Settings
-            </Button>}
-          </div>
         </div>
       </div>
     </>
