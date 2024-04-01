@@ -119,7 +119,43 @@ export const Playground = (props: I_Props) => {
       />
       <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 p-1 pb-4">
         <div className="mx-auto flex w-full max-w-[48rem] flex-col gap-4">
-          <div className="mb-4 mt-8 flex flex-row gap-4">
+          {/* Select a prev installed model to load */}
+          <div className="w-full">
+            <Select
+              defaultValue={undefined}
+              value={selectedModelId}
+              onValueChange={setSelectedModelId}
+            >
+              <SelectTrigger className="h-fit w-full flex-1 bg-accent p-4 text-lg">
+                <SelectValue placeholder="Select Ai Model"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup>
+                <SelectContent className="p-1">
+                  <SelectLabel className="select-none uppercase text-indigo-500">Installed models</SelectLabel>
+                  {installedModels}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+          </div>
+          {/* Select a file (quant) to load for the model */}
+          {selectedModelId && <div className="w-full">
+            <Select
+              defaultValue={undefined}
+              value={selectedModelFile}
+              onValueChange={setSelectedModelFile}
+            >
+              <SelectTrigger className="h-fit w-full flex-1 bg-accent p-4 text-lg">
+                <SelectValue placeholder="Select a file"></SelectValue>
+              </SelectTrigger>
+              <SelectGroup>
+                <SelectContent className="p-1">
+                  <SelectLabel className="select-none uppercase text-indigo-500">Available files</SelectLabel>
+                  {installedFiles}
+                </SelectContent>
+              </SelectGroup>
+            </Select>
+          </div>}
+          <div className="mb-8 mt-4 flex flex-row gap-4">
             {/* Start */}
             {selectedModelId && selectedModelFile &&
               <Button
@@ -145,42 +181,6 @@ export const Playground = (props: I_Props) => {
               <MixerHorizontalIcon className="mr-1" />Settings
             </Button>}
           </div>
-          {/* Select a prev installed model to load */}
-          <div className="w-full">
-            <Select
-              defaultValue={undefined}
-              value={selectedModelId}
-              onValueChange={setSelectedModelId}
-            >
-              <SelectTrigger className="w-full flex-1 bg-accent p-6 text-lg">
-                <SelectValue placeholder="Select Ai Model"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup>
-                <SelectContent className="p-1">
-                  <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
-                  {installedModels}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
-          </div>
-          {/* Select a file (quant) to load for the model */}
-          {selectedModelId && <div className="w-full">
-            <Select
-              defaultValue={undefined}
-              value={selectedModelFile}
-              onValueChange={setSelectedModelFile}
-            >
-              <SelectTrigger className="w-full flex-1 bg-accent p-6 text-lg">
-                <SelectValue placeholder="Select a file"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup>
-                <SelectContent className="p-1">
-                  <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
-                  {installedFiles}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
-          </div>}
         </div>
       </div>
     </>
