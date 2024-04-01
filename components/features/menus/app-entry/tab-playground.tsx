@@ -136,12 +136,12 @@ export const Playground = (props: I_Props) => {
             {/* Native select */}
             {/* <label htmlFor="model_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Installed models</label> */}
             <select id="model_select" value={selectedModelId} onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Installed models">
-              <option value="" defaultValue="" disabled>Installed models</option>
+              <option value="" defaultValue="" disabled hidden>Select Ai model</option>
               {nativeInstalledModels}
             </select>
             {/* Custom select */}
             <Select
-              defaultValue={undefined}
+              defaultValue=""
               value={selectedModelId}
               onValueChange={setSelectedModelId}
             >
@@ -161,13 +161,13 @@ export const Playground = (props: I_Props) => {
             <div className="w-full">
               {/* Native select */}
               {/* <label htmlFor="file_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Available files</label> */}
-              <select id="file_select" defaultValue="" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
-                <option value="" defaultValue="" disabled>Available files</option>
+              <select id="file_select" value={selectedModelFile} onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
+                <option value="" defaultValue="" disabled hidden>Available files</option>
                 {nativeInstalledFiles}
               </select>
               {/* Custom select */}
               <Select
-                defaultValue={undefined}
+                defaultValue=""
                 value={selectedModelFile}
                 onValueChange={setSelectedModelFile}
               >

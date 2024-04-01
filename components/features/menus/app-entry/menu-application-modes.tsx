@@ -57,7 +57,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
   const router = useRouter()
-  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined)
+  const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [bots, setBots] = useState<I_Text_Settings[]>([])
   // Styling

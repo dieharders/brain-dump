@@ -38,6 +38,16 @@ export const ModelTab = (props: I_Props) => {
     const name = cfg?.name
     return (<SelectItem key={item.repoId} value={item.repoId}>{name}</SelectItem>)
   }) ?? []
+  const nativeInstalledModels = installedList?.map(item => {
+    const cfg = modelConfigs?.[item.repoId]
+    const name = cfg?.name
+    return (<option key={item.repoId} value={item.repoId}>{name}</option>)
+  }) ?? []
+  const nativeInstalledFiles = installedList?.map(item => {
+    if (item.repoId !== state.id || typeof item.savePath !== 'object') return null
+    const savePaths = Object.entries(item.savePath)
+    return savePaths.map(([filename, _path]) => (<option key={filename} value={filename}>{filename}</option>))
+  })
   const installedFiles = installedList?.map(item => {
     if (item.repoId !== state.id || typeof item.savePath !== 'object') return null
     const savePaths = Object.entries(item.savePath)
@@ -59,17 +69,23 @@ export const ModelTab = (props: I_Props) => {
           <div className="flex flex-col gap-2">
             {/* Select a prev installed model to load */}
             <div className="w-full">
+              {/* Native select */}
+              <select id="model_select" onChange={({ target: { value } }) => setState({ ...state, id: value })} name="Select Ai Model" size={1} className="my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
+                <option value="" defaultValue="" disabled hidden>Installed models</option>
+                {nativeInstalledModels}
+              </select>
+              {/* Custom select */}
               <Select
                 defaultValue={undefined}
                 value={state.id}
                 onValueChange={(val: string) => setState({ ...state, id: val })}
               >
-                <SelectTrigger className="w-full flex-1 hover:bg-accent">
+                <SelectTrigger className="hidden w-full flex-1 hover:bg-accent [@media(hover:hover)]:flex">
                   <SelectValue placeholder="Select Ai Model"></SelectValue>
                 </SelectTrigger>
-                <SelectGroup>
+                <SelectGroup className="hidden [@media(hover:hover)]:flex">
                   <SelectContent className="p-1">
-                    <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
+                    <SelectLabel className="select-none uppercase text-indigo-500">Installed models</SelectLabel>
                     {installedModels}
                   </SelectContent>
                 </SelectGroup>
@@ -78,17 +94,23 @@ export const ModelTab = (props: I_Props) => {
             {/* Select a file (quant) to load for the model */}
             {state.id &&
               <div className="w-full">
+                {/* Native select */}
+                <select id="file_select" onChange={({ target: { value } }) => setState({ ...state, filename: value })} name="Select Ai Model" size={1} className="my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
+                  <option value="" defaultValue="" disabled hidden>Available files</option>
+                  {nativeInstalledFiles}
+                </select>
+                {/* Custom select */}
                 <Select
                   defaultValue={undefined}
                   value={state.filename}
                   onValueChange={(val: string) => setState({ ...state, filename: val })}
                 >
-                  <SelectTrigger className="w-full flex-1 hover:bg-accent">
+                  <SelectTrigger className="hidden w-full flex-1 hover:bg-accent [@media(hover:hover)]:flex">
                     <SelectValue placeholder="Select a file"></SelectValue>
                   </SelectTrigger>
-                  <SelectGroup>
+                  <SelectGroup className="hidden [@media(hover:hover)]:flex">
                     <SelectContent className="p-1">
-                      <SelectLabel className="select-none uppercase text-indigo-500">Installed</SelectLabel>
+                      <SelectLabel className="select-none uppercase text-indigo-500">Available files</SelectLabel>
                       {installedFiles}
                     </SelectContent>
                   </SelectGroup>
