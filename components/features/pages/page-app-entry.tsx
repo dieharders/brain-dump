@@ -104,16 +104,16 @@ export const AppEntry = () => {
             </div>
           </div>
 
-          <div className="pt-8 text-sm text-muted-foreground">
+          <div className="flex flex-col gap-4 pt-8 text-sm text-muted-foreground">
             {/* Instructions */}
             <div>
               Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
-              You can download it <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 p-0">here</Button></Link>.
+              You can download it <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0">here</Button></Link>.
             </div>
             {/* API Docs link */}
-            <Link href={docsUrl} className="w-full" prefetch={false}>
-              <div className="inline">API docs:</div>
-              <Button variant="link" className="m-0 p-0 pl-1">
+            <Link href={docsUrl} className="justify-left flex w-full flex-col items-center gap-2 sm:flex-row" prefetch={false}>
+              <div className="w-full min-w-[4rem] flex-1 text-left">API docs:</div>
+              <Button variant="link" className="h-fit w-full justify-start p-0 text-left">
                 {docsUrl}
               </Button>
             </Link>
