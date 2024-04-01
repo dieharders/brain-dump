@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select'
 import { I_ModelConfigs, I_Model_State as I_State, T_InstalledTextModel } from '@/lib/homebrew'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
   state: I_State,
@@ -32,6 +33,7 @@ export const defaultState: I_State = {
 }
 
 export const ModelTab = (props: I_Props) => {
+  const nativeSelectStyle = cn("my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden")
   const { installedList, modelConfigs, state, setState } = props
   const installedModels = installedList?.map(item => {
     const cfg = modelConfigs?.[item.repoId]
@@ -70,14 +72,13 @@ export const ModelTab = (props: I_Props) => {
             {/* Select a prev installed model to load */}
             <div className="w-full">
               {/* Native select */}
-              <select id="model_select" onChange={({ target: { value } }) => setState({ ...state, id: value })} name="Select Ai Model" size={1} className="my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
-                <option value="" defaultValue="" disabled hidden>Installed models</option>
+              <select id="model_select" onChange={({ target: { value } }) => setState({ ...state, id: value })} name="Select Ai Model" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
+                <option selected disabled hidden aria-hidden>Installed models</option>
                 {nativeInstalledModels}
               </select>
               {/* Custom select */}
               <Select
-                defaultValue={undefined}
-                value={state.id}
+                value={state.id || undefined}
                 onValueChange={(val: string) => setState({ ...state, id: val })}
               >
                 <SelectTrigger className="hidden w-full flex-1 hover:bg-accent [@media(hover:hover)]:flex">
@@ -95,14 +96,13 @@ export const ModelTab = (props: I_Props) => {
             {state.id &&
               <div className="w-full">
                 {/* Native select */}
-                <select id="file_select" onChange={({ target: { value } }) => setState({ ...state, filename: value })} name="Select Ai Model" size={1} className="my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
-                  <option value="" defaultValue="" disabled hidden>Available files</option>
+                <select id="file_select" onChange={({ target: { value } }) => setState({ ...state, filename: value })} name="Select Ai Model" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
+                  <option selected disabled hidden aria-hidden>Available files</option>
                   {nativeInstalledFiles}
                 </select>
                 {/* Custom select */}
                 <Select
-                  defaultValue={undefined}
-                  value={state.filename}
+                  value={state.filename || undefined}
                   onValueChange={(val: string) => setState({ ...state, filename: val })}
                 >
                   <SelectTrigger className="hidden w-full flex-1 hover:bg-accent [@media(hover:hover)]:flex">

@@ -19,6 +19,7 @@ import { PerformanceMenu } from '@/components/features/menus/playground/menu-per
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ROUTE_PLAYGROUND } from "@/app/constants"
+import { cn } from "@/lib/utils"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -32,10 +33,11 @@ interface I_Props {
 }
 
 export const Playground = (props: I_Props) => {
+  const nativeSelectStyle = cn("my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden")
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const router = useRouter()
   const { loadModel: loadPlaygroundModel } = useChatPage({ services })
-  const [selectedModelFile, setSelectedModelFile] = useState<string | undefined>(undefined)
+  const [selectedModelFile, setSelectedModelFile] = useState<string>('')
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
     stateAttention,
@@ -134,15 +136,13 @@ export const Playground = (props: I_Props) => {
           {/* Select a prev installed model to load */}
           <div className="w-full">
             {/* Native select */}
-            {/* <label htmlFor="model_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Installed models</label> */}
-            <select id="model_select" onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Installed models">
-              <option value="" defaultValue="" disabled hidden>Select Ai model</option>
+            <select id="model_select" onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className={nativeSelectStyle} aria-labelledby="Installed models">
+              <option selected disabled hidden aria-hidden>Select Ai model</option>
               {nativeInstalledModels}
             </select>
             {/* Custom select */}
             <Select
-              defaultValue=""
-              value={selectedModelId}
+              value={selectedModelId || undefined}
               onValueChange={setSelectedModelId}
             >
               <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
@@ -160,15 +160,13 @@ export const Playground = (props: I_Props) => {
           {selectedModelId &&
             <div className="w-full">
               {/* Native select */}
-              {/* <label htmlFor="file_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Available files</label> */}
-              <select id="file_select" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
-                <option value="" defaultValue="" disabled hidden>Available files</option>
+              <select id="file_select" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
+                <option selected disabled hidden aria-hidden>Available files</option>
                 {nativeInstalledFiles}
               </select>
               {/* Custom select */}
               <Select
-                defaultValue=""
-                value={selectedModelFile}
+                value={selectedModelFile || undefined}
                 onValueChange={setSelectedModelFile}
               >
                 <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
