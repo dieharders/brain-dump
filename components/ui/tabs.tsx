@@ -6,6 +6,7 @@ interface I_Tab {
   label: string
   title?: string
   icon?: string
+  key?: string
   content: React.ReactNode
 }
 
@@ -22,7 +23,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
   return (
     <Root
       className="flex flex-col justify-between overflow-hidden"
-      defaultValue={tabs[0].label}
+      defaultValue={tabs?.[0]?.label || tabs?.[0]?.key}
       onValueChange={(val) => {
         setChecked(val)
         onChange(val)
@@ -31,10 +32,12 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
       {/* Tabs */}
       <List className="mb-4 mt-8 flex shrink-0 rounded-none" aria-label={label}>
         {tabs.map(i => {
+          const itemKey = (i?.key && i.key.length > 0 && i.key) || i.label
+
           return (
             <Trigger
-              key={i.label}
-              value={i.label}
+              key={itemKey}
+              value={i.label || i.key || ''}
               className="min-h-4 flex w-full flex-1 cursor-default items-end justify-center text-xl font-semibold capitalize"
             >
               <label className="w-full" title={i.title}>
@@ -45,7 +48,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
-                <div className={cn("text-md border-b-2 py-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary lg:text-2xl", className)} >
+                <div className={cn("text-md border-b-2 p-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary lg:text-2xl", className)} >
                   {i.icon}<br /><div className="hidden sm:block">{i.label}</div>
                 </div>
               </label>
@@ -55,8 +58,9 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
       </List>
       {/* Content */}
       {tabs.map(i => {
+        const itemKey = (i?.key && i.key.length > 0 && i.key) || i.label
         return (
-          <Content key={i.label} value={i.label}>
+          <Content key={itemKey} value={itemKey}>
             {i.content}
           </Content>
         )

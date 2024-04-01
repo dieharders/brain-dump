@@ -80,13 +80,13 @@ export const BotCreationMenu = (props: I_Props) => {
   const performanceMenu = useMemo(() => <PerformanceTab state={statePerformance} setState={setStatePerformance} modelConfig={data.modelConfigs[stateModel.id ?? '']} />, [data.modelConfigs, stateModel.id, statePerformance])
 
   const tabs = useMemo(() => [
-    { label: '🤖', title: 'LLM Model', content: modelMenu },
-    { label: '👀', title: 'Attention', content: attentionMenu },
-    { label: '🏃‍♂️', title: 'Performance', content: performanceMenu },
-    { label: '📚', title: 'Knowledge', content: knowledgeMenu },
-    { label: '🤬', title: 'Personality', content: systemMessageMenu },
-    { label: '🧠', title: 'Thinking', content: promptMenu },
-    { label: '🙊', title: 'Response', content: responseMenu },
+    { icon: '🤖', label: '', key: 'Model', content: modelMenu },
+    { icon: '👀', label: '', key: 'Attention', content: attentionMenu },
+    { icon: '🏃‍♂️', label: '', key: 'Performance', content: performanceMenu },
+    { icon: '📚', label: '', key: 'Knowledge', content: knowledgeMenu },
+    { icon: '🤬', label: '', key: 'Personality', content: systemMessageMenu },
+    { icon: '🧠', label: '', key: 'Thinking', content: promptMenu },
+    { icon: '🙊', label: '', key: 'Response', content: responseMenu },
   ], [attentionMenu, knowledgeMenu, modelMenu, performanceMenu, promptMenu, responseMenu, systemMessageMenu])
 
   // Hooks
@@ -153,7 +153,6 @@ export const BotCreationMenu = (props: I_Props) => {
         </DialogHeader>
 
         <Tabs
-          className="text-2xl"
           label="ChatBot Settings"
           tabs={tabs}
         />
