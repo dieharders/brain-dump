@@ -134,8 +134,9 @@ export const Playground = (props: I_Props) => {
           {/* Select a prev installed model to load */}
           <div className="w-full">
             {/* Native select */}
-            <label htmlFor="model_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Installed models</label>
-            <select id="model_select" onClick={(v) => setSelectedModelId(v.currentTarget.value)} name="Installed models" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Installed models">
+            {/* <label htmlFor="model_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Installed models</label> */}
+            <select id="model_select" value={selectedModelId} onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Installed models">
+              <option value="" defaultValue="" disabled>Installed models</option>
               {nativeInstalledModels}
             </select>
             {/* Custom select */}
@@ -159,8 +160,9 @@ export const Playground = (props: I_Props) => {
           {selectedModelId &&
             <div className="w-full">
               {/* Native select */}
-              <label htmlFor="file_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Available files</label>
-              <select id="file_select" onClick={(v) => setSelectedModelFile(v.currentTarget.value)} name="Available files" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
+              {/* <label htmlFor="file_select" className="flex uppercase text-indigo-500 [@media(hover:hover)]:hidden">Available files</label> */}
+              <select id="file_select" defaultValue="" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className="my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
+                <option value="" defaultValue="" disabled>Available files</option>
                 {nativeInstalledFiles}
               </select>
               {/* Custom select */}
