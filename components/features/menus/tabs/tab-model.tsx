@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 import {
   DialogDescription,
   DialogHeader,
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select'
 import { I_ModelConfigs, I_Model_State as I_State, T_InstalledTextModel } from '@/lib/homebrew'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
   state: I_State,
@@ -32,6 +33,7 @@ export const defaultState: I_State = {
 }
 
 export const ModelTab = (props: I_Props) => {
+  const nativeSelectStyle = cn("my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden")
   const { installedList, modelConfigs, state, setState } = props
   const installedModels = installedList?.map(item => {
     const cfg = modelConfigs?.[item.repoId]
@@ -54,6 +56,27 @@ export const ModelTab = (props: I_Props) => {
     return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
   })
 
+  console.log('@@ state', state.id, state.filename)
+
+
+  useEffect(() => {
+    // If only one item we need to trigger a set state
+    if (!state.id && installedList?.length === 1) setState({ ...state, id: installedList[0].repoId })
+  }, [installedList, setState, state])
+
+  useEffect(() => {
+    if (state.id && !state.filename) {
+      const selectedItem = installedList.find(d => d.repoId === state.id)
+      const savePaths = Object.entries(selectedItem?.savePath || '')
+
+      // If only one item we need to trigger a set state
+      if (savePaths?.length === 1) {
+        const [filename, _path] = savePaths[0]
+        setState({ ...state, filename: filename })
+      }
+    }
+  }, [installedList, setState, state])
+
   return (
     <div className="px-1">
       {/* Choose model */}
@@ -70,8 +93,8 @@ export const ModelTab = (props: I_Props) => {
             {/* Select a prev installed model to load */}
             <div className="w-full">
               {/* Native select */}
-              <select id="model_select" onChange={({ target: { value } }) => setState({ ...state, id: value })} name="Select Ai Model" size={1} className="my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
-                <option value="" defaultValue="" disabled hidden>Installed models</option>
+              <select id="model_select" onChange={({ target: { value } }) => setState({ ...state, id: value })} name="Select Ai Model" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
+                <option selected disabled hidden aria-hidden>Installed models</option>
                 {nativeInstalledModels}
               </select>
               {/* Custom select */}
@@ -95,8 +118,8 @@ export const ModelTab = (props: I_Props) => {
             {state.id &&
               <div className="w-full">
                 {/* Native select */}
-                <select id="file_select" onChange={({ target: { value } }) => setState({ ...state, filename: value })} name="Select Ai Model" size={1} className="my-1 flex w-full rounded-md border border-accent bg-background p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden" aria-labelledby="Available files">
-                  <option value="" defaultValue="" disabled hidden>Available files</option>
+                <select id="file_select" onChange={({ target: { value } }) => setState({ ...state, filename: value })} name="Select Ai Model" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
+                  <option selected disabled hidden aria-hidden>Available files</option>
                   {nativeInstalledFiles}
                 </select>
                 {/* Custom select */}

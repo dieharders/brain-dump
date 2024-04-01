@@ -45,6 +45,8 @@ export const Playground = (props: I_Props) => {
     statePerformance,
     setStatePerformance,
   } = usePerformanceMenu()
+  console.log('@@ what is ', selectedModelId, selectedModelFile)
+
 
   const saveSettings = async () => {
     const settings = {
@@ -115,14 +117,19 @@ export const Playground = (props: I_Props) => {
   useEffect(() => {
     // If only one item we need to trigger a set state
     if (!selectedModelId && installedList?.length === 1) setSelectedModelId(installedList[0].repoId)
+    // The native <select> dont actually instantiate a state value, so force one
+    // else {}
   }, [installedList, selectedModelId, setSelectedModelId])
 
   useEffect(() => {
     if (selectedModelId && !selectedModelFile) {
       // If only one item we need to trigger a set state
-      const firstItem = installedList[0]
-      const savePaths = Object.entries(firstItem.savePath)
-      if (savePaths?.length === 1) setSelectedModelFile(firstItem.repoId)
+      const selItem = installedList.find(i => selectedModelId === i.repoId)
+      const savePaths = Object.entries(selItem?.savePath || '')
+      if (savePaths?.length === 1) {
+        const [filename, _path] = savePaths[0]
+        setSelectedModelFile(filename)
+      }
     }
   }, [installedList, selectedModelFile, selectedModelId])
 
@@ -151,7 +158,7 @@ export const Playground = (props: I_Props) => {
           <div className="w-full">
             {/* Native select */}
             <select id="model_select" onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className={nativeSelectStyle} aria-labelledby="Installed models">
-              <option value="" defaultValue="" disabled hidden>Select Ai model</option>
+              <option selected disabled hidden aria-hidden>Select Ai model</option>
               {nativeInstalledModels}
             </select>
             {/* Custom select */}
@@ -175,7 +182,7 @@ export const Playground = (props: I_Props) => {
             <div className="w-full">
               {/* Native select */}
               <select id="file_select" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
-                <option value="" defaultValue="" disabled hidden>Available files</option>
+                <option selected disabled hidden aria-hidden>Available files</option>
                 {nativeInstalledFiles}
               </select>
               {/* Custom select */}

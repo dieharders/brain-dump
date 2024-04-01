@@ -18,7 +18,7 @@ interface I_Props {
 }
 
 export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange = () => { } }: I_Props) => {
-  const [checked, setChecked] = useState<string>(tabs?.[0]?.label || '')
+  const [checked, setChecked] = useState<string>(tabs?.[0]?.label || tabs?.[0]?.key || '')
 
   return (
     <Root
@@ -44,7 +44,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
                 <input
                   className="peer hidden"
                   type="radio"
-                  checked={checked === i.label}
+                  checked={checked === i.label || checked === i.key}
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
