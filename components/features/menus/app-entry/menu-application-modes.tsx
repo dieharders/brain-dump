@@ -91,11 +91,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const fetchInstalledModelsAndConfigs = useCallback(async () => {
     // Get all currently installed models
-    services?.textInference.installed().then(listResponse =>
+    services?.textInference?.installed?.().then(listResponse =>
       listResponse?.data && setInstalledList(listResponse.data)
     )
     // Get all model configs
-    services?.textInference.getModelConfigs().then(cfgs =>
+    services?.textInference?.getModelConfigs?.().then(cfgs =>
       cfgs?.data && setModelConfigs(cfgs.data)
     )
     return
@@ -115,7 +115,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const fetchModelInfo = useCallback(
     async (repoId: string) => {
       const payload = { repoId }
-      const info = services?.textInference?.getModelInfo({ queryParams: payload })
+      const info = services?.textInference?.getModelInfo?.({ queryParams: payload })
       return info
     },
     [services?.textInference],
@@ -123,7 +123,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const downloadModel = useCallback(
     async ({ repo_id, filename }: { repo_id: string, filename: string }) => {
-      await services?.textInference.download({ body: { repo_id, filename } })
+      await services?.textInference?.download?.({ body: { repo_id, filename } })
       return
     },
     [services?.textInference],
@@ -132,7 +132,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const deleteModel = useCallback(
     async (args: { repoId: string, filename: string }) => {
       // Remove the model weights file and installation details entry from json
-      await services?.textInference.delete({ body: args })
+      await services?.textInference?.delete?.({ body: args })
       return
     },
     [services?.textInference],

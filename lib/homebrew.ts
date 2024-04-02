@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { type Message } from 'ai/react'
+import appSettings from '@/lib/localStorage'
 
 export enum ModelID {
   GPT3 = 'gpt3.5',
@@ -57,17 +58,6 @@ type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 type T_APIRequests = {
   services: I_ServiceApis
   configs: T_APIConfigOptions
-}
-
-type T_ClientAPI = {
-  hasServerConnection?: boolean
-  api?: T_APIRequests
-}
-
-declare global {
-  interface Window {
-    homebrewai?: T_ClientAPI
-  }
 }
 
 interface I_Endpoint {
@@ -365,8 +355,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
 export const defaultPort = '8008'
 export const defaultDomain = 'https://localhost'
 const createDomainName = () => {
-  const PORT = window?.homebrewai?.api?.configs?.port || defaultPort
-  const DOMAIN = window?.homebrewai?.api?.configs?.domain || defaultDomain
+  const { port, domain } = appSettings.getHostConnection()
+  const PORT = port || defaultPort
+  const DOMAIN = domain || defaultDomain
   const origin = `${DOMAIN}:${PORT}`
   return origin
 }
@@ -574,21 +565,12 @@ export const getAPIConfig = async () => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  // Init global context
-  let store = useMemo(() => ({} as T_ClientAPI), [])
-
-  if (typeof window !== 'undefined') {
-    // Client-side-only code
-    if (!window.homebrewai) window.homebrewai = {}
-    store = window.homebrewai
-  }
-
-  /**
-   * Return options for all endpoints
-   */
+  // Return options for all endpoints
+  // @TODO Merge into getServices
   const getAPIConfigs = useCallback(async () => {
-    const configs = window?.homebrewai?.api?.configs
-    if (configs) return configs
+    // Store in session storage
+    // const configs = appSettings.getApiConfigs()
+    // if (configs) return configs
 
     const res = await getAPIConfig()
     if (res) {
@@ -597,7 +579,7 @@ export const useHomebrew = () => {
       res?.forEach(i => {
         if (i.configs) configOptions = { ...configOptions, ...i.configs }
       })
-      if (window?.homebrewai?.api) window.homebrewai.api.configs = configOptions
+      appSettings.setApiConfigs(configOptions)
       return configOptions
     }
 
@@ -608,7 +590,8 @@ export const useHomebrew = () => {
    * Get all api configs for services.
    */
   const getServices = useCallback(async () => {
-    if (store.api?.services) return store.api?.services
+    const configs = appSettings.getServices()
+    if (configs.length > 0) return createServices(configs)
 
     const res = await getAPIConfig()
     // Store all config options for endpoints
@@ -618,13 +601,10 @@ export const useHomebrew = () => {
     })
     // Return readily usable request funcs
     const serviceApis = createServices(res)
-    if (store && serviceApis && configOptions) {
-      const d = { configs: configOptions, services: serviceApis }
-      if (!store?.api) store.api = d
-      store.api = d
-    }
+    // const result = { configs: configOptions, services: serviceApis }
+    appSettings.setServices(res)
     return serviceApis
-  }, [store])
+  }, [])
 
   /**
    * Attempt to connect to homebrew api.
@@ -633,38 +613,11 @@ export const useHomebrew = () => {
     const result = await connectToLocalProvider()
     if (!result?.success) return null
 
-    // Track the initial attempt at a connection
-    if (store) store.hasServerConnection = true
-
     // Attempt to return api services
     await getServices()
 
     return result
-  }, [getServices, store])
+  }, [getServices])
 
-  /**
-   * Store remote address values for later api calls
-   */
-  const saveRemoteAddress = ({
-    portValue,
-    domainValue,
-  }: {
-    portValue: string
-    domainValue: string
-  }) => {
-    const configs = {
-      configs: {
-        port: portValue,
-        domain: domainValue,
-      },
-    } as T_APIRequests
-
-    if (!window.homebrewai?.api) window.homebrewai = { api: configs }
-    else {
-      window.homebrewai.api.configs.port = portValue
-      window.homebrewai.api.configs.domain = domainValue
-    }
-  }
-
-  return { connect, getServices, getAPIConfigs, saveRemoteAddress }
+  return { connect, getServices, getAPIConfigs }
 }

@@ -13,6 +13,7 @@ import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu
 import { toast } from 'react-hot-toast'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
+import appSettings from '@/lib/localStorage'
 
 /**
  * This holds the main app behavior
@@ -26,7 +27,7 @@ export const AppEntry = () => {
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { provider: selectedProvider } = useSettings()
-  const { connect: connectToHomebrew, getServices, saveRemoteAddress } = useHomebrew()
+  const { connect: connectToHomebrew, getServices } = useHomebrew()
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
   const [hasMounted, setHasMounted] = useState(false)
@@ -37,9 +38,6 @@ export const AppEntry = () => {
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
-
-    // Record values to homebrew lib for later api calls
-    saveRemoteAddress({ domainValue, portValue })
 
     // Attempt to verify the local provider and text inference service exists.
     if (selectedProvider === ModelID.Local) {
@@ -59,7 +57,7 @@ export const AppEntry = () => {
 
     setIsConnecting(false)
     return false
-  }, [connectToHomebrew, domainValue, portValue, saveRemoteAddress, selectedProvider])
+  }, [connectToHomebrew, selectedProvider])
 
   const ChooseBackendPage = () => {
     const containerStyle = cn('flex w-full flex-col items-center justify-between gap-3 overflow-hidden rounded-lg border border-neutral-600 bg-neutral-200 p-4 dark:bg-muted/50 sm:flex-row')
@@ -134,6 +132,9 @@ export const AppEntry = () => {
 
               if (success && res) {
                 setIsConnected(true)
+                // Record connection options
+                appSettings.setHostConnection({ domain: domainValue, port: portValue })
+                appSettings.setHostConnectionFlag(true)
                 return
               }
 
@@ -159,6 +160,16 @@ export const AppEntry = () => {
     if (hasMounted) return
     typeof theme === 'string' && setHasMounted(true)
   }, [hasMounted, theme])
+
+  useEffect(() => {
+    const setting = appSettings.getHostConnectionFlag()
+    setIsConnected(setting)
+    const action = async () => {
+      const res = await getServices()
+      if (res) setServices(res)
+    }
+    if (setting) action()
+  }, [getServices])
 
   // Render
 
