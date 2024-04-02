@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
-import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu-application-modes'
+import { ApplicationModesMenu } from '@/components/features/menus/home/menu-application-modes'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
 import appSettings from '@/lib/localStorage'

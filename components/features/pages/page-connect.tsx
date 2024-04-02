@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { useSettings } from '@/components/features/settings/hooks'
 import appSettings from '@/lib/localStorage'
 
-export const AppEntry = () => {
+export const ConnectServerPage = () => {
   const { provider: selectedProvider } = useSettings()
   const router = useRouter()
   const { theme } = useTheme()
