@@ -6,6 +6,7 @@ import { IconSpinner } from '@/components/ui/icons'
 import { PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons"
 import { T_ModelConfig } from '@/lib/homebrew'
 import { calcFileSize, cn } from '@/lib/utils'
+import { notifications } from '@/lib/notifications'
 
 type T_Component = React.FC<{ className?: string, children: React.ReactNode }>
 interface I_Props {
@@ -62,6 +63,7 @@ export const ModelExplorerMenu = ({
   const contentContainerGap = selectedModelId && expandLeftMenu ? 'gap-6' : ''
   const leftMenuIsExpanded = expandLeftMenu ? 'w-full' : 'hidden overflow-hidden'
   const rightContainerBasis = selectedModelId && expandLeftMenu ? 'lg:basis-1/2' : ''
+  const { notAvailable: notAvailableNotification } = notifications()
 
   const renderQuants = useCallback(() => {
     const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
@@ -177,6 +179,7 @@ export const ModelExplorerMenu = ({
               onClick={() => {
                 // @TODO Open a menu to add a custom model config
                 // ...
+                notAvailableNotification()
               }}
             />
             <ModelCard

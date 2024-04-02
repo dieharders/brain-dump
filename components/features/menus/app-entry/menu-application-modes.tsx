@@ -15,6 +15,7 @@ import { ModelExplorerMenu } from '@/components/features/menus/app-entry/tab-mod
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { ROUTE_CHATBOT } from '@/app/constants'
+import { notifications } from '@/lib/notifications'
 
 interface I_Props {
   onSubmit: () => void
@@ -53,6 +54,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
 
 export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, modelConfigs, setModelConfigs, installedList, setInstalledList } = props
+  const { notAvailable: notAvailableNotification } = notifications()
   const ROUTE_KNOWLEDGE = '/knowledge'
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
@@ -231,13 +233,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
-        <Item title="Add New" Icon={IconPlus} />
-        <Item title="Stock Analyst" Icon={QuestionMarkIcon} className={presetBotClass} />
-        <Item title="Entertainer" Icon={IconConversationType} className={presetBotClass} />
-        <Item title="Software Developer" Icon={ClipboardIcon} className={presetBotClass} />
-        <Item title="Sci-Fi Author" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Lawyer" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Bio Researcher" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Add New" Icon={IconPlus} onAction={notAvailableNotification} />
+        <Item title="Stock Analyst" Icon={QuestionMarkIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Entertainer" Icon={IconConversationType} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Software Developer" Icon={ClipboardIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Sci-Fi Author" Icon={PersonIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Lawyer" Icon={PersonIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Bio Researcher" Icon={PersonIcon} onAction={notAvailableNotification} className={presetBotClass} />
       </div>
     </div>
   )
@@ -253,13 +255,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
-        <Item title="Add New" Icon={IconPlus} />
-        <Item title="Publisher" Icon={QuestionMarkIcon} className={presetBotClass} />
-        <Item title="Game Studio" Icon={IconConversationType} className={presetBotClass} />
-        <Item title="Advertising Company" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Quality Assurance" Icon={ClipboardIcon} className={presetBotClass} />
-        <Item title="Software Team" Icon={PersonIcon} className={presetBotClass} />
-        <Item title="Research Org" Icon={PersonIcon} className={presetBotClass} />
+        <Item title="Add New" Icon={IconPlus} onAction={notAvailableNotification} />
+        <Item title="Publisher" Icon={QuestionMarkIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Game Studio" Icon={IconConversationType} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Advertising Company" Icon={PersonIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Quality Assurance" Icon={ClipboardIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Software Team" Icon={PersonIcon} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Research Org" Icon={PersonIcon} onAction={notAvailableNotification} className={presetBotClass} />
       </div>
     </div>
   )
@@ -275,7 +277,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
-        <Item title="Add New" Icon={IconPlus} />
+        <Item title="Add New" Icon={IconPlus} onAction={goToKnowledgePage} />
         <Item title="Documentation" Icon={QuestionMarkIcon} className={presetBotClass} onAction={goToKnowledgePage} />
         <Item title="Best Practices" Icon={IconConversationType} className={presetBotClass} onAction={goToKnowledgePage} />
         <Item title="Code Repo" Icon={ClipboardIcon} className={presetBotClass} onAction={goToKnowledgePage} />
