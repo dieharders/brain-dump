@@ -353,6 +353,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
   return (
     <div className="flex w-full flex-col overflow-hidden px-8 pb-4">
       <Tabs label="Application Modes" tabs={tabs} onChange={onTabChange} />
-    </div >
+    </div>
   )
 }
