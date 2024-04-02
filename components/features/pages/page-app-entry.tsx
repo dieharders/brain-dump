@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
-import { IconSpinner } from '@/components/ui/icons'
 import { ApplicationModesMenu } from '@/components/features/menus/app-entry/menu-application-modes'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
@@ -25,6 +24,11 @@ export const AppEntry = () => {
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
   const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    // Go back to server connection menu if no connnection detected
+    if (hasMounted && !isConnected) router.replace('connect')
+  }, [hasMounted, isConnected, router])
 
   useEffect(() => {
     // Always unload current model
@@ -51,32 +55,25 @@ export const AppEntry = () => {
 
   // Prevent server/client render mismatch
   if (!hasMounted) return null
-  // Go to server connection menu
-  if (!isConnected) return router.replace('connect')
-  // Inference connection menu
-  if (!hasTextServiceConnected)
+  // Render empty (indeterminant loading) page
+  if (isConnecting || hasTextServiceConnected)
     return (
-      <div className={wrapperStyle}>
-        {/* Main Menu */}
-        <ApplicationModesMenu
-          setHasTextServiceConnected={setHasTextServiceConnected}
-          isConnecting={isConnecting}
-          setIsConnecting={setIsConnecting}
-          modelConfigs={modelConfigs || {}}
-          setModelConfigs={setModelConfigs}
-          installedList={installedList}
-          setInstalledList={setInstalledList}
-          onSubmit={() => { /* exec logic when a route is navigated */ }}
-          services={services}
-        />
-      </div>
+      <div className={cn(wrapperStyle, 'flex flex-col items-center justify-center')}></div>
     )
-  // Connected - Render "no selection" warning
-  // @TODO Put an indeterminant loading spinner here since we dont know what could be loading
+  // Main Menu
   return (
-    <div className={cn(wrapperStyle, 'flex flex-col items-center justify-center gap-4')}>
-      <div className="m-4 text-center text-lg font-bold">Loading LLM Model...</div>
-      <IconSpinner className="h-16 w-16 animate-spin" />
+    <div className={wrapperStyle}>
+      <ApplicationModesMenu
+        setHasTextServiceConnected={setHasTextServiceConnected}
+        isConnecting={isConnecting}
+        setIsConnecting={setIsConnecting}
+        modelConfigs={modelConfigs || {}}
+        setModelConfigs={setModelConfigs}
+        installedList={installedList}
+        setInstalledList={setInstalledList}
+        onSubmit={() => { /* exec logic when a list item is clicked */ }}
+        services={services}
+      />
     </div>
   )
 }
