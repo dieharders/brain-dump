@@ -34,6 +34,9 @@ export const ConnectServerPage = () => {
 
     // Attempt to verify the local provider and text inference service exists.
     if (selectedProvider === ModelID.Local) {
+      // Record connection options
+      appSettings.setHostConnection({ domain: domainValue, port: portValue })
+
       const res = await connectToHomebrew()
 
       // Record the attempt
@@ -50,8 +53,25 @@ export const ConnectServerPage = () => {
 
     setIsConnecting(false)
     return false
-  }, [connectToHomebrew, selectedProvider])
+  }, [connectToHomebrew, domainValue, portValue, selectedProvider])
 
+  const connectAction = async () => {
+    const success = await connect()
+
+    if (success) {
+      // Get all possible server endpoints after successfull connection
+      const res = await getServices()
+      if (res) {
+        // Record successful connection
+        appSettings.setHostConnectionFlag(true)
+        router.push('home')
+        return
+      }
+    }
+
+    toast.error(`Failed to connect to inference provider. Could not fetch services.`)
+    return
+  }
 
   return (
     <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start overflow-hidden bg-background px-8")}>
@@ -98,37 +118,22 @@ export const ConnectServerPage = () => {
             You can download it <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0">here</Button></Link>.
           </div>
           {/* API Docs link */}
-          <Link href={docsUrl} className="justify-left flex w-full flex-col items-center gap-2 sm:flex-row" prefetch={false}>
+          <div className="justify-left flex w-full flex-col items-center gap-2 sm:flex-row">
             <div className="w-full min-w-[4rem] flex-1 text-left">API docs:</div>
-            <Button variant="link" className="h-fit w-full justify-start p-0 text-left">
-              {docsUrl}
-            </Button>
-          </Link>
+            <div className="w-full">
+              <Link href={docsUrl} prefetch={false} className="justify-start">
+                <Button variant="link" className="h-fit p-0 text-left">
+                  {docsUrl}
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Connect */}
         <Button
           className="light:text-primary h-fit w-full justify-center justify-self-end bg-blue-600 px-16 text-center hover:bg-blue-800 dark:text-primary"
-          onClick={async () => {
-            const success = await connect()
-            let res
-
-            if (success) {
-              // Get all possible server endpoints after successfull connection
-              res = await getServices()
-            }
-
-            if (success && res) {
-              // Record connection options
-              appSettings.setHostConnection({ domain: domainValue, port: portValue })
-              appSettings.setHostConnectionFlag(true)
-              router.push('home')
-              return
-            }
-
-            toast.error(`Failed to connect to inference provider. Could not fetch services.`)
-            return
-          }}
+          onClick={connectAction}
           disabled={isConnecting}
         >
           Connect
