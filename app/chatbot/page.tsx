@@ -7,6 +7,7 @@ import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
 import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
+import toast from 'react-hot-toast'
 // import { type Metadata } from 'next'
 // import { notFound, redirect } from 'next/navigation'
 // import { auth } from '@/auth'
@@ -86,6 +87,7 @@ export default function BotPage(props: any) {
       if (hasFetched || !fetchChatBotSettings) return
 
       setIsLoading(true)
+      toast.loading('Fetching data...', { id: 'fetch-data' })
 
       const res = await fetchChatBotSettings(name)
       res && setSettings(res)
@@ -94,9 +96,13 @@ export default function BotPage(props: any) {
 
       setIsLoading(false)
       setHasFetched(true)
+      toast.dismiss('fetch-data')
     }
     action()
   }, [currentModel, fetchChatBotSettings, getModel, hasFetched, name])
+
+  if (isLoading)
+    return (<div className="h-full w-full flex-1 bg-neutral-900"></div>)
 
   return (currentModel?.modelId ?
     <LocalChat

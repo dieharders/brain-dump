@@ -198,15 +198,22 @@ export const ApplicationModesMenu = (props: I_Props) => {
           const pathname = `/${ROUTE_CHATBOT}${queryParams}`
           return (
             <Item key={botId} title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
+              onSelect()
               if (loadChatBot) {
                 setIsConnecting(true)
-                // Eject first
-                await services?.textInference?.unload()
-                // Load model
-                await loadChatBot(botId)
                 setHasTextServiceConnected(true)
+
+                const action = async () => {
+                  // Eject first
+                  await services?.textInference?.unload()
+                  // Load model
+                  const res = await loadChatBot(botId)
+                  return res
+                }
+
+                await notifications().loadModel(action())
+
                 setIsConnecting(false)
-                onSelect()
                 router.push(pathname)
               }
             }} />
@@ -343,28 +350,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     onTabChange('models')
   }, [onTabChange])
 
-  return (isConnecting ?
-    (
-      <div className="mx-auto mt-16 min-w-[50%] max-w-2xl px-4">
-        <div className="rounded-lg border bg-background p-8">
-          <h1 className="mb-2 text-lg font-semibold">
-            Loading
-          </h1>
-
-          <p className="mb-2 leading-normal text-muted-foreground">
-            Please wait while the model loads...
-          </p>
-
-          <div className="mt-8 flex flex-col items-start space-y-2">
-            <Button
-              className="h-auto text-base"
-              onClick={() => { setIsConnecting(false) }}
-            >Cancel</Button>
-          </div>
-        </div>
-      </div>
-    )
-    :
+  return (
     <div className="flex w-full flex-col overflow-hidden px-8 pb-4">
       <Tabs label="Application Modes" tabs={tabs} onChange={onTabChange} />
     </div>

@@ -15,6 +15,7 @@ import { defaultState as defaultResponse } from '@/components/features/menus/tab
 import { LocalChat } from "@/components/features/chat/interface-local-chat"
 import { EmptyModelScreen } from "@/components/features/chat/chat-empty-model-screen"
 import { ROUTE_PLAYGROUND } from "@/app/constants"
+import toast from "react-hot-toast"
 
 const defaultState = {
   attention: defaultAttentionState,
@@ -61,6 +62,7 @@ export default function PlaygroundPage() {
       if (hasFetched || !fetchSettings) return
 
       setIsLoading(true)
+      toast.loading('Fetching data...', { id: 'fetch-data' })
 
       const res = await fetchSettings()
       res && setSettings(res)
@@ -69,21 +71,26 @@ export default function PlaygroundPage() {
 
       setIsLoading(false)
       setHasFetched(true)
+      toast.dismiss('fetch-data')
     }
     action()
   }, [currentModel, fetchSettings, getModel, hasFetched])
 
-  return (currentModel?.modelId ?
-    <LocalChat
-      id={session_id}
-      routeId={routeId}
-      initialMessages={initialMessages}
-      services={services}
-      isLoading={isLoading}
-      setSettings={setSettings}
-      settings={settings}
-    />
-    :
+  if (isLoading)
+    return (<div className="h-full w-full flex-1 bg-neutral-900"></div>)
+  if (currentModel?.modelId)
+    return (
+      <LocalChat
+        id={session_id}
+        routeId={routeId}
+        initialMessages={initialMessages}
+        services={services}
+        isLoading={isLoading}
+        setSettings={setSettings}
+        settings={settings}
+      />
+    )
+  return (
     <EmptyModelScreen id={session_id} loadModel={async () => {
       setIsLoading(true)
       loadPlaygroundModel && await loadPlaygroundModel()

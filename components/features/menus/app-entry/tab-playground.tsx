@@ -20,6 +20,7 @@ import { usePerformanceMenu } from '@/components/features/menus/playground/hook-
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ROUTE_PLAYGROUND } from "@/app/constants"
 import { cn } from "@/lib/utils"
+import { notifications } from "@/lib/notifications"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -83,26 +84,24 @@ export const Playground = (props: I_Props) => {
     const action = async () => {
       try {
         // Eject first
-        await services?.textInference.unload()
-
+        await services?.textInference?.unload?.()
         // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
         const settingsResponse = await services?.storage.getPlaygroundSettings()
         if (!settingsResponse?.success) {
           toast.error(`${settingsResponse?.message}`)
         }
+
         const response = await loadPlaygroundModel?.()
         const success = response?.success
+        const err = response?.message
 
-        if (success) {
-          toast.success('Connected successfully to Ai')
-          return true
-        }
+        if (success) return response
 
-        toast.error(response?.message || 'Failed to connect to Ai.')
-        return false
+        toast.error(err || 'Failed to connect to Ai.')
+        return response
       } catch (error) {
         toast.error(`${error}`)
-        return false
+        return
       }
     }
 
@@ -188,11 +187,17 @@ export const Playground = (props: I_Props) => {
                 className="h-fit min-w-fit flex-1 bg-blue-600 p-2 text-center text-lg text-white hover:bg-blue-800"
                 onClick={async () => {
                   setIsConnecting(true)
-                  const isConnected = await connectTextServiceAction()
-                  isConnected && setHasTextServiceConnected(true)
-                  await saveSettings()
+                  setHasTextServiceConnected(true)
+
+                  const action = async () => {
+                    const res = await connectTextServiceAction()
+                    await saveSettings()
+                    return res
+                  }
+                  await notifications().loadModel(action())
+
                   setIsConnecting(false)
-                  router.push(`/${ROUTE_PLAYGROUND}`)
+                  router.push(ROUTE_PLAYGROUND)
                 }}
                 disabled={isConnecting}
               >

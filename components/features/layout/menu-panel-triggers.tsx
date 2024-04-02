@@ -16,7 +16,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const showKB = header_url === 'knowledge'
   const showChatThreads = header_url === ROUTE_CHATBOT || header_url === ROUTE_PLAYGROUND
   const showHomeShortcut = showChatThreads || showKB
-  const showHostConnPage = header_url !== 'connect'
+  const showHostConnPage = header_url !== 'home'
 
   return (
     <div className="flex items-center">
@@ -27,7 +27,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
             <Button
               variant="ghost"
               className="mx-1 h-9 w-9 p-0"
-              onClick={() => router.replace('/')}
+              onClick={() => router.replace('home')}
             >
               <IconArrowElbow className="h-6 w-6" />
               <span className="sr-only">Go back to main menu</span>
@@ -45,7 +45,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
               variant="ghost"
               className="mx-1 h-9 w-9 p-0"
               onClick={() => {
-                router.push('connect')
+                router.push('/')
               }}
             >
               <IconRefresh className="h-6 w-6" />
