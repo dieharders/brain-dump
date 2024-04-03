@@ -16,7 +16,7 @@ export const PopOver = ({ side = 'top', trigger, children = 'content' }: I_Props
         {trigger}
       </Trigger>
       <Content
-        className="w-48 rounded-md border border-primary/25 bg-neutral-900 p-3 text-sm text-primary/90 shadow-md"
+        className="w-48 rounded-md border border-neutral-600 bg-muted p-3 text-sm text-neutral-500"
         sideOffset={8}
         side={side}
       >
