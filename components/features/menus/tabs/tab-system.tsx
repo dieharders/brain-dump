@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem
-} from '@/components/ui/select'
+} from '@/components/ui/select-custom'
 import { T_SystemPrompt, T_SystemPrompts, I_System_State as I_State } from '@/lib/homebrew'
 
 type T_TemplateSource = 'custom_default' | string

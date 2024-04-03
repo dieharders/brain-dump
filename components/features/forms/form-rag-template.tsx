@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem
-} from '@/components/ui/select'
+} from '@/components/ui/select-custom'
 import { I_RAGPromptTemplates, T_RAGPromptTemplate } from '@/lib/homebrew'
 
 const CUSTOM_NAME = 'Custom'

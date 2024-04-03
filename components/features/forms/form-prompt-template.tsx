@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem
-} from '@/components/ui/select'
+} from '@/components/ui/select-custom'
 import { I_PromptTemplates, T_PromptTemplate } from '@/lib/homebrew'
 import { useCallback } from 'react'
 

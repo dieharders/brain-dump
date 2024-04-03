@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem,
-} from '@/components/ui/select'
+} from '@/components/ui/select-custom'
 import { cn } from '@/lib/utils'
 import { T_DocPayload } from '@/components/features/crud/actions'
 

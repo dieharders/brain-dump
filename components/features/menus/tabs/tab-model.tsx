@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem
-} from '@/components/ui/select'
+} from '@/components/ui/select-custom'
 import { I_ModelConfigs, I_Model_State as I_State, T_InstalledTextModel } from '@/lib/homebrew'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'

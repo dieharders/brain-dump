@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectItem,
-} from '@/components/ui/select'
+} from '@/components/ui/select-custom'
 import { Label } from '@/components/ui/label'
 import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
