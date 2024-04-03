@@ -10,27 +10,6 @@ import {
   SelectItem as SelectItemCustom,
 } from '@/components/ui/select-custom'
 
-// export const SelectGroup = ({ name, children }: { name: string, children: ReactNode }) => {
-//   return <>
-//     <NativeItemGroup name={name}>{children}</NativeItemGroup>
-//     <SelectLabelCustom className="hidden select-none uppercase text-indigo-500 [@media(hover:hover)]:flex">{name}</SelectLabelCustom>
-//   </>
-// }
-
-// interface I_ItemProps {
-//   value: string
-//   name: string
-// }
-
-// export const SelectItem = ({ value, name }: I_ItemProps) => {
-//   return <>
-//     {/* Native Item */}
-//     <NativeItem name={name} value={value}>{value}</NativeItem>
-//     {/* Custom Item */}
-//     <SelectItemCustom value={value}>{value}</SelectItemCustom>
-//   </>
-// }
-
 type T_Group = {
   name: string
   value?: string
@@ -44,7 +23,7 @@ interface I_SelectProps {
   name?: string
   value: string | undefined
   placeholder?: string
-  onChange: Dispatch<SetStateAction<string | undefined>>
+  onChange: (val: string) => void
   items: Array<T_Group & T_Item | null>
 }
 

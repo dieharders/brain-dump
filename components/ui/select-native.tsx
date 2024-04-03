@@ -26,7 +26,7 @@ interface I_SelectProps {
     name?: string
     size?: number
     children: ReactNode | Array<ReactNode>
-    onChange: Dispatch<SetStateAction<string | undefined>>
+    onChange: (val: string) => void
     className?: string
 }
 
