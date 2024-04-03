@@ -1,36 +1,41 @@
 import toast from 'react-hot-toast'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 export const notifications = () => {
-  const dismissStyle = "rounded-md border border-accent bg-primary p-2 text-muted hover:bg-muted-foreground hover:text-primary"
+  const dismissStyle = cn("rounded-md border p-4")
 
   const notAvailable = () =>
     toast('Pardon our dust.\nThis feature is not yet available.', { icon: '🧹💨' })
 
   const loadModel = async (promise: Promise<any>, cancel?: () => void) =>
     toast.promise(promise, {
-      loading: <>
-        <div className="flex flex-col gap-1 pr-2">
-          <b>Loading model 🤖</b>
-          <p>Please wait...</p>
-        </div>
-        <button
-          className={dismissStyle}
-          onClick={() => {
-            cancel?.()
-            toast.dismiss('loading-model')
-          }}>Cancel</button>
-      </>,
+      loading:
+        <div className={cn("flex flex-row items-center justify-center")}>
+          <div className="flex flex-col gap-1 pr-2">
+            <b>Loading model 🤖</b>
+            <p>Please wait...</p>
+          </div>
+          <Button
+            variant="default"
+            className={dismissStyle}
+            onClick={() => {
+              cancel?.()
+              toast.dismiss('loading-model')
+            }}>Cancel</Button>
+        </div>,
       success: (data: any) =>
         <div className="flex flex-row items-center justify-center">
           <span>
             <b className="pr-2">Model loaded!</b>
             <br />{data?.message}
           </span>
-          <button
+          <Button
+            variant="default"
             className={dismissStyle}
             onClick={() => {
               toast.dismiss('loading-model')
-            }}>Dismiss</button>
+            }}>Dismiss</Button>
         </div>,
       error: (err: any) => <b>Could not load model. {err}</b>,
     },
