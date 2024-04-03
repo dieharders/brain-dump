@@ -65,7 +65,7 @@ export const KnowledgeTab = (props: I_Props) => {
           onCheckedChange={onChange}
           onMouseEnter={() => setIsActive(true)}
           onMouseLeave={() => setIsActive(false)}
-          className="flex h-6 w-6 items-center justify-center rounded border border-gray-800 bg-black hover:bg-gray-900 hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
+          className="flex h-6 w-6 items-center justify-center rounded border border-gray-800 bg-background hover:shadow-[0_0_0.5rem_0.1rem_rgba(10,10,10,0.5)] dark:hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
         >
           <Indicator>
             <CheckIcon className="h-4 w-4" />

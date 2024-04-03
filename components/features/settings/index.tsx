@@ -262,7 +262,7 @@ export function Settings() {
         </Button>
       </div>
       {/* Exit button */}
-      <Link href="/" prefetch={false} rel="noopener noreferrer" className="self-end px-2">
+      <Link href="home" prefetch={false} rel="noopener noreferrer" className="self-end px-2">
         <Button>Done</Button>
       </Link>
     </div>
