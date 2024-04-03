@@ -12,11 +12,11 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const pathname = usePathname()
   const router = useRouter()
   const routeId = pathname.split('/')[1] // base url
-  const header_url = routeId || 'home'
+  const header_url = routeId || '/'
   const showKB = header_url === 'knowledge'
   const showChatThreads = header_url === ROUTE_CHATBOT || header_url === ROUTE_PLAYGROUND
   const showHomeShortcut = showChatThreads || showKB
-  const showHostConnPage = header_url !== 'home'
+  const showHostConnPage = header_url === 'home'
 
   return (
     <div className="flex items-center">
@@ -45,7 +45,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
               variant="ghost"
               className="mx-1 h-9 w-9 p-0"
               onClick={() => {
-                router.push('/')
+                router.replace('/')
               }}
             >
               <IconRefresh className="h-6 w-6" />
