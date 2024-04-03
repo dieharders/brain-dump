@@ -19,9 +19,9 @@ export const ConnectServerPage = () => {
   const router = useRouter()
   const { theme } = useTheme()
   const { connect: connectToHomebrew, getServices } = useHomebrew()
-  const containerStyle = cn('flex w-full flex-col items-center justify-between gap-3 overflow-hidden rounded-lg border border-neutral-600 bg-neutral-200 p-4 dark:bg-muted/50 sm:flex-row')
-  const inputStyle = cn('bg-muted-background flex-1 border-none text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold focus-visible:outline-neutral-500 focus-visible:ring-0 dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent sm:w-fit')
-  const labelStyle = cn('min-w-[6rem] text-center text-sm font-semibold text-muted-foreground sm:text-left')
+  const containerStyle = cn('bg-neutral-transparent relative w-full items-center justify-between rounded-lg border border-neutral-600 p-4')
+  const inputStyle = cn('bg-muted-background w-full border-none bg-neutral-200 text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold focus-visible:outline-neutral-500 focus-visible:ring-0 dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent')
+  const labelStyle = cn('absolute -top-2 left-[50%] z-50 min-w-[5rem] -translate-x-1/2 rounded-sm bg-background p-0 text-center text-xs font-bold text-muted-foreground sm:left-4 sm:translate-x-0')
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnecting, setIsConnecting] = useState(false)
   // For inputs
@@ -86,10 +86,9 @@ export const ConnectServerPage = () => {
           Connect to Ai server
         </h2>
 
-        <div className="mb-auto flex w-full flex-col items-center gap-4">
+        <div className="mb-auto flex w-full flex-col items-center gap-8">
           {/* Enter remote server address */}
           <div className={containerStyle}>
-            <Label htmlFor="domain" className={labelStyle}>Hostname</Label>
             <Input
               name="domain"
               value={domainValue}
@@ -97,10 +96,10 @@ export const ConnectServerPage = () => {
               onChange={e => setDomainValue(e.target.value)}
               className={inputStyle}
             />
+            <Label htmlFor="domain" className={labelStyle}>Hostname</Label>
           </div>
           {/* Enter remote server port */}
           <div className={containerStyle}>
-            <Label htmlFor="port" className={labelStyle}>Port</Label>
             <Input
               name="port"
               value={portValue}
@@ -108,6 +107,7 @@ export const ConnectServerPage = () => {
               onChange={e => setPortValue(e.target.value)}
               className={inputStyle}
             />
+            <Label htmlFor="port" className={labelStyle}>Port</Label>
           </div>
         </div>
 
