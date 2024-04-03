@@ -42,12 +42,10 @@ export const ConnectServerPage = () => {
       // Record the attempt
       setIsConnecting(false)
 
-      if (res?.success) {
-        // Success
-        toast.success(`Connected to inference provider`)
-        return true
-      }
-      toast.error(`Failed to connect to inference provider.`)
+      // Success
+      if (res?.success) return true
+
+      // Fail
       return false
     }
 
@@ -133,7 +131,11 @@ export const ConnectServerPage = () => {
         {/* Connect */}
         <Button
           className="light:text-primary h-fit w-full justify-center justify-self-end bg-blue-600 px-16 text-center hover:bg-blue-800 dark:text-primary"
-          onClick={connectAction}
+          onClick={() => toast.promise(connectAction(), {
+            loading: 'Connecting to Ai server.',
+            success: 'Success! Loading app...',
+            error: 'Failed to connect to Ai server.',
+          })}
           disabled={isConnecting}
         >
           Connect
