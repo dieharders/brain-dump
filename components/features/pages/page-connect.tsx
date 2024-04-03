@@ -21,7 +21,7 @@ export const ConnectServerPage = () => {
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const containerStyle = cn('bg-neutral-transparent relative w-full items-center justify-between rounded-lg border border-neutral-600 p-4')
   const inputStyle = cn('bg-muted-background w-full border-none bg-neutral-200 text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold focus-visible:outline-neutral-500 focus-visible:ring-0 dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent')
-  const labelStyle = cn('absolute -top-2 left-[50%] z-50 min-w-[5rem] -translate-x-1/2 rounded-sm bg-background p-0 text-center text-xs font-bold text-muted-foreground sm:left-4 sm:translate-x-0')
+  const labelStyle = cn('absolute -top-2 left-[50%] w-fit -translate-x-1/2 rounded-sm bg-background p-0 text-center text-xs font-bold text-muted-foreground sm:left-4 sm:translate-x-0')
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnecting, setIsConnecting] = useState(false)
   // For inputs
@@ -94,7 +94,7 @@ export const ConnectServerPage = () => {
               onChange={e => setDomainValue(e.target.value)}
               className={inputStyle}
             />
-            <Label htmlFor="domain" className={labelStyle}>Hostname</Label>
+            <Label htmlFor="domain" className={labelStyle}><div className="px-4">Hostname</div></Label>
           </div>
           {/* Enter remote server port */}
           <div className={containerStyle}>
@@ -105,7 +105,7 @@ export const ConnectServerPage = () => {
               onChange={e => setPortValue(e.target.value)}
               className={inputStyle}
             />
-            <Label htmlFor="port" className={labelStyle}>Port</Label>
+            <Label htmlFor="port" className={labelStyle}><div className="px-4">Port</div></Label>
           </div>
         </div>
 
