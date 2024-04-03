@@ -48,7 +48,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
                   onChange={() => { /* Prevent browser error msg */ }}
                   name="trigger-radio-button"
                 />
-                <div className={cn("text-md border-b-2 border-b-neutral-300 p-2 text-primary/50 hover:border-b-primary/50 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary dark:border-b-accent lg:text-2xl", className)} >
+                <div className={cn("text-md border-b-2 border-b-neutral-300 p-2 text-primary/50 hover:border-b-neutral-400 hover:text-primary peer-checked:border-b-primary peer-checked:text-primary dark:border-b-accent dark:hover:border-b-neutral-600 lg:text-2xl", className)} >
                   {i.icon}<br /><div className="hidden sm:block">{i.label}</div>
                 </div>
               </label>
