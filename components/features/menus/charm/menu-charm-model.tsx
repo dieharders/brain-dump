@@ -85,9 +85,9 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [setStateSystem, stateSystem, systemPrompts])
 
   const tabs = [
-    { label: 'Response', title: 'Response', content: responseMenu },
-    { label: 'Thinking', title: 'Thinking', content: promptMenu },
-    { label: 'Personality', title: 'Personality', content: systemMessageMenu },
+    { icon: '🙊', label: 'Response', title: 'Response', content: responseMenu },
+    { icon: '🧠', label: 'Thinking', title: 'Thinking', content: promptMenu },
+    { icon: '🤬', label: 'Personality', title: 'Personality', content: systemMessageMenu },
   ]
 
   return (
