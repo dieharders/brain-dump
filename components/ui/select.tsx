@@ -1,11 +1,11 @@
 import { NativeItem, NativeSelect, NativeItemGroup } from '@/components/ui/select-native'
 import {
   Select as SelectCustom,
-  SelectContent,
+  SelectContent as SelectContentCustom,
   SelectGroup as SelectGroupCustom,
   SelectLabel as SelectLabelCustom,
-  SelectTrigger,
-  SelectValue,
+  SelectTrigger as SelectTriggerCustom,
+  SelectValue as SelectValueCustom,
   SelectItem as SelectItemCustom,
 } from '@/components/ui/select-custom'
 import { cn } from '@/lib/utils'
@@ -48,13 +48,13 @@ export const Select = ({ id, name, value, placeholder = '', className, onChange,
         value={value || undefined}
         onValueChange={onChange}
       >
-        <SelectTrigger className={cn("text-md hidden h-fit w-full bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
-          <SelectValue placeholder={placeholder}></SelectValue>
-        </SelectTrigger>
+        <SelectTriggerCustom className={cn("text-md hidden h-fit w-full bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
+          <SelectValueCustom placeholder={placeholder}></SelectValueCustom>
+        </SelectTriggerCustom>
         <SelectGroupCustom className="hidden [@media(hover:hover)]:flex">
-          <SelectContent className="max-h-64 p-1">
+          <SelectContentCustom className="max-h-64 p-1">
             {customItems}
-          </SelectContent>
+          </SelectContentCustom>
         </SelectGroupCustom>
       </SelectCustom>
     </>
