@@ -34,7 +34,7 @@ export const RAGTemplateForm = (props: I_Props) => {
     const groups = Object.keys(config)
     return groups.map((groupName) => {
       const configs = config[groupName]
-      // We should specify which templates are for "chat" or "completion"
+      // @TODO We should specify which templates are for "chat" or "completion"
       const items = configs?.map(i => ({ name: i.name, value: i.id })) || []
       return [
         { name: groupName, isLabel: true },
