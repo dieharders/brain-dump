@@ -1,19 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from '@/components/ui/select-custom'
+import { Select } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
@@ -33,23 +26,20 @@ export const defaultState = {
 
 export const RAGStrategyForm = (props: I_Props) => {
   const { state, setState, ragModes } = props
-  const [responseModes, setResponseModes] = useState<JSX.Element[]>([])
   const infoClass = "flex w-full flex-row gap-2"
   const inputContainerClass = "grid w-full gap-1"
 
-  const createResponseModes = useCallback(() => {
+  const responseModes = useMemo(() => {
     const parseName = (str: string) => {
       const list = str.split('_')
       const words = list.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       return words.join(' ')
     }
-    return ragModes?.map(mode => <SelectItem key={mode} value={mode}>{parseName(mode)}</SelectItem>)
+    return ragModes?.map(mode => ({
+      name: parseName(mode),
+      value: mode
+    }))
   }, [ragModes])
-
-  useEffect(() => {
-    const modeComponents = createResponseModes()
-    setResponseModes(modeComponents)
-  }, [createResponseModes])
 
   return (
     <>
@@ -93,19 +83,13 @@ export const RAGStrategyForm = (props: I_Props) => {
           </div>
           <div className="w-full">
             <Select
-              defaultValue={undefined}
+              id="rag_response_select"
+              placeholder="Select Response Mode"
+              name="Select Response Mode"
               value={state?.response_mode}
-              onValueChange={value => setState({ ...state, response_mode: value })}
-            >
-              <SelectTrigger className="w-full flex-1">
-                <SelectValue placeholder="Select Response Mode"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup>
-                <SelectContent className="p-1">
-                  {responseModes}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
+              items={[{ name: 'Response modes', isLabel: true }, ...responseModes]}
+              onChange={(value: string) => setState({ ...state, response_mode: value })}
+            />
           </div>
         </div>
       </div>
