@@ -83,7 +83,7 @@ export const RAGTemplateForm = (props: I_Props) => {
       </DialogHeader >
 
       {/* Select where to load from */}
-      < div className="mb-2 w-full" >
+      < div className="mb-4 w-full" >
         <Select
           id="rag_template_select"
           placeholder="Select a source"
