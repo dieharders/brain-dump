@@ -6,15 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-  SelectItem
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import { I_RAGPromptTemplates, T_RAGPromptTemplate } from '@/lib/homebrew'
 
 const CUSTOM_NAME = 'Custom'
@@ -42,27 +34,43 @@ export const RAGTemplateForm = (props: I_Props) => {
     const groups = Object.keys(config)
     return groups.map((groupName) => {
       const configs = config[groupName]
-      const items = configs?.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)
-      return (
-        <SelectGroup key={groupName}>
-          <SelectLabel className="select-none">{groupName}</SelectLabel>
-          {/* We should specify which templates are for "chat" or "completion" */}
-          {items}
-        </SelectGroup>
-      )
-    })
+      // @TODO We should specify which templates are for "chat" or "completion"
+      const items = configs?.map(i => ({ name: i.name, value: i.id })) || []
+      return [
+        { name: groupName, isLabel: true },
+        ...items,
+      ]
+    }).flatMap(x => x)
   }
 
   const ragPromptTemplateOptions = useCallback(() => {
-    const presets = constructOptionsGroups(templates)
-    const customGroup = (
-      <SelectGroup key="custom">
-        <SelectLabel className="select-none">{CUSTOM_NAME}</SelectLabel>
-        <SelectItem value="custom_default">{CUSTOM_NAME} (Editable)</SelectItem>
-      </SelectGroup>
-    )
-    return [customGroup, ...presets]
+    return [
+      { name: CUSTOM_NAME, isLabel: true },
+      { value: 'custom_default', name: `${CUSTOM_NAME} (Editable)` },
+      ...constructOptionsGroups(templates),
+    ]
   }, [templates])
+
+  const onSelect = (val: string) => {
+    if (val === CUSTOM_ID) {
+      if (state) {
+        const template = {
+          id: val,
+          name: CUSTOM_NAME,
+          text: state.text,
+          type: defaultCustomType, // hard-code since user has no way of inputting
+        }
+        setState(template)
+      }
+    }
+    else {
+      const items = Object.values(templates).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+      const newTemplate = items.find(i => i.id === val)
+      if (newTemplate) {
+        setState(newTemplate)
+      }
+    }
+  }
 
   return (
     <>
@@ -77,35 +85,13 @@ export const RAGTemplateForm = (props: I_Props) => {
       {/* Select where to load from */}
       < div className="mb-2 w-full" >
         <Select
+          id="rag_template_select"
+          placeholder="Select a source"
+          name="Select a source"
           value={state.id}
-          onValueChange={(val: string) => {
-            if (val === CUSTOM_ID) {
-              if (state) {
-                const template = {
-                  id: val,
-                  name: CUSTOM_NAME,
-                  text: state.text,
-                  type: defaultCustomType, // hard-code since user has no way of inputting
-                }
-                setState(template)
-              }
-            }
-            else {
-              const items = Object.values(templates).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
-              const newTemplate = items.find(i => i.id === val)
-              if (newTemplate) {
-                setState(newTemplate)
-              }
-            }
-          }}
-        >
-          <SelectTrigger className="w-full flex-1">
-            <SelectValue placeholder="Select a source"></SelectValue>
-          </SelectTrigger>
-          <SelectContent className="max-h-[16rem] p-1">
-            {ragPromptTemplateOptions()}
-          </SelectContent>
-        </Select>
+          items={ragPromptTemplateOptions()}
+          onChange={onSelect}
+        />
       </div >
 
       {/* Content */}

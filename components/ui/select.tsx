@@ -1,120 +1,62 @@
-'use client'
-
-import * as React from 'react'
-import * as SelectPrimitive from '@radix-ui/react-select'
-
+import { NativeItem, NativeSelect, NativeItemGroup } from '@/components/ui/select-native'
+import {
+  Select as SelectCustom,
+  SelectContent as SelectContentCustom,
+  SelectGroup as SelectGroupCustom,
+  SelectLabel as SelectLabelCustom,
+  SelectTrigger as SelectTriggerCustom,
+  SelectValue as SelectValueCustom,
+  SelectItem as SelectItemCustom,
+} from '@/components/ui/select-custom'
 import { cn } from '@/lib/utils'
-import { IconCheck } from '@/components/ui/icons'
-import { ChevronDownIcon } from '@radix-ui/react-icons'
 
-const Select = SelectPrimitive.Root
+type T_Group = {
+  name: string
+  value?: string
+}
+type T_Item = {
+  name: string
+  isLabel?: boolean
+}
+interface I_SelectProps {
+  id?: string
+  name?: string
+  value: string | undefined
+  placeholder?: string
+  onChange: (val: string) => void
+  items: Array<T_Group & T_Item | null>
+  className?: string
+}
 
-const SelectGroup = SelectPrimitive.Group
+export const Select = ({ id, name, value, placeholder = '', className, onChange, items }: I_SelectProps) => {
+  const nativeItems = items.map(i => {
+    if (i?.isLabel) return <NativeItemGroup key={i?.name} name={i?.name}>{i?.name}</NativeItemGroup>
+    return <NativeItem key={i?.value} name={i?.name || ''} value={i?.value || ''}>{i?.value}</NativeItem>
+  })
 
-const SelectValue = SelectPrimitive.Value
+  const customItems = items.map(i => {
+    if (i?.isLabel) return <SelectLabelCustom key={i?.name} className="select-none uppercase text-indigo-500">{i?.name}</SelectLabelCustom>
+    return <SelectItemCustom key={i?.value} value={i?.value || ''}>{i?.name}</SelectItemCustom>
+  })
 
-const SelectTrigger = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      'flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-      className
-    )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDownIcon className="opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-))
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
-
-const SelectContent = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = 'popper', ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        'relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-80',
-        position === 'popper' && 'translate-y-1',
-        className
-      )}
-      position={position}
-      {...props}
-    >
-      <SelectPrimitive.Viewport
-        className={cn(
-          'p-1',
-          position === 'popper' &&
-          'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
-        )}
+  return (
+    <>
+      {/* Native select */}
+      <NativeSelect id={id} name={name} onChange={onChange} className={className}>{nativeItems}</NativeSelect>
+      {/* Custom select */}
+      <SelectCustom
+        value={value || undefined}
+        onValueChange={onChange}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-))
-SelectContent.displayName = SelectPrimitive.Content.displayName
-
-const SelectLabel = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Label
-    ref={ref}
-    className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold uppercase text-indigo-500', className)}
-    {...props}
-  />
-))
-SelectLabel.displayName = SelectPrimitive.Label.displayName
-
-const SelectItem = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <IconCheck className="h-4 w-4" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-  </SelectPrimitive.Item>
-))
-SelectItem.displayName = SelectPrimitive.Item.displayName
-
-const SelectSeparator = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Separator
-    ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-muted', className)}
-    {...props}
-  />
-))
-SelectSeparator.displayName = SelectPrimitive.Separator.displayName
-
-export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator
+        <SelectTriggerCustom className={cn("text-md hidden h-fit w-full bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
+          <SelectValueCustom placeholder={placeholder}></SelectValueCustom>
+        </SelectTriggerCustom>
+        <SelectGroupCustom className="hidden [@media(hover:hover)]:flex">
+          <SelectContentCustom className="max-h-64 p-1">
+            {customItems}
+          </SelectContentCustom>
+        </SelectGroupCustom>
+      </SelectCustom>
+    </>
+  )
 }

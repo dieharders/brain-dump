@@ -5,21 +5,12 @@ import { useRouter } from "next/navigation"
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-  SelectItem
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ROUTE_PLAYGROUND } from "@/app/constants"
-import { cn } from "@/lib/utils"
 import { notifications } from "@/lib/notifications"
 
 interface I_Props {
@@ -34,11 +25,10 @@ interface I_Props {
 }
 
 export const Playground = (props: I_Props) => {
-  const nativeSelectStyle = cn("my-1 flex w-full rounded-md bg-accent p-4 text-lg capitalize outline-2 outline-offset-2 outline-muted focus:hover:outline [@media(hover:hover)]:hidden")
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const router = useRouter()
   const { loadModel: loadPlaygroundModel } = useChatPage({ services })
-  const [selectedModelFile, setSelectedModelFile] = useState<string>('')
+  const [selectedModelFile, setSelectedModelFile] = useState<string | undefined>('')
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
     stateAttention,
@@ -56,29 +46,20 @@ export const Playground = (props: I_Props) => {
     return services?.storage.savePlaygroundSettings({ body: settings })
   }
 
-  const installedModels = installedList?.map(item => {
+  const installedModelsItems = installedList?.map(item => {
     const cfg = modelConfigs?.[item.repoId]
     const name = cfg?.name
-    return (<SelectItem key={item.repoId} value={item.repoId}>{name}</SelectItem>)
+    return { value: item.repoId, name: name }
   })
+  const installedModels = [{ name: 'Installed models', isLabel: true }, ...installedModelsItems]
 
-  const nativeInstalledModels = installedList?.map(item => {
-    const cfg = modelConfigs?.[item.repoId]
-    const name = cfg?.name
-    return (<option key={item.repoId} value={item.repoId} label={name}>{name}</option>)
-  })
-
-  const installedFiles = installedList?.map(item => {
+  const installedFilesList = installedList?.map(item => {
     if (item.repoId !== selectedModelId || typeof item.savePath !== 'object') return null
     const savePaths = Object.entries(item.savePath)
-    return savePaths.map(([filename, _path]) => (<SelectItem key={filename} value={filename}>{filename}</SelectItem>))
-  })
+    return savePaths.map(([filename, _path]) => ({ value: filename, name: filename }))
+  }).flatMap(x => x).filter(val => !!val)
+  const installedFiles = [{ name: 'Available files', isLabel: true }, ...installedFilesList]
 
-  const nativeInstalledFiles = installedList?.map(item => {
-    if (item.repoId !== selectedModelId || typeof item.savePath !== 'object') return null
-    const savePaths = Object.entries(item.savePath)
-    return savePaths.map(([filename, _path]) => (<option key={filename} value={filename}>{filename}</option>))
-  })
 
   const connectTextServiceAction = useCallback(async () => {
     const action = async () => {
@@ -134,50 +115,28 @@ export const Playground = (props: I_Props) => {
         <div className="mx-auto flex w-full max-w-[48rem] flex-col gap-4">
           {/* Select a prev installed model to load */}
           <div className="w-full">
-            {/* Native select */}
-            <select id="model_select" onChange={({ target: { value } }) => setSelectedModelId(value)} name="Installed models" size={1} className={nativeSelectStyle} aria-labelledby="Installed models">
-              <option selected disabled hidden aria-hidden>Select Ai model</option>
-              {nativeInstalledModels}
-            </select>
-            {/* Custom select */}
             <Select
-              value={selectedModelId || undefined}
-              onValueChange={setSelectedModelId}
-            >
-              <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
-                <SelectValue placeholder="Select Ai Model"></SelectValue>
-              </SelectTrigger>
-              <SelectGroup className="hidden [@media(hover:hover)]:flex">
-                <SelectContent className="p-1">
-                  <SelectLabel className="select-none uppercase text-indigo-500">Installed models</SelectLabel>
-                  {installedModels}
-                </SelectContent>
-              </SelectGroup>
-            </Select>
+              id="model_select"
+              placeholder="Select model"
+              name="Installed models"
+              value={selectedModelId}
+              items={installedModels}
+              onChange={setSelectedModelId}
+              className="bg-accent text-lg"
+            />
           </div>
           {/* Select a file (quant) to load for the model */}
           {selectedModelId &&
             <div className="w-full">
-              {/* Native select */}
-              <select id="file_select" onChange={({ target: { value } }) => setSelectedModelFile(value)} name="Available files" size={1} className={nativeSelectStyle} aria-labelledby="Available files">
-                <option selected disabled hidden aria-hidden>Available files</option>
-                {nativeInstalledFiles}
-              </select>
-              {/* Custom select */}
               <Select
-                value={selectedModelFile || undefined}
-                onValueChange={setSelectedModelFile}
-              >
-                <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
-                  <SelectValue placeholder="Select a file"></SelectValue>
-                </SelectTrigger>
-                <SelectGroup className="hidden [@media(hover:hover)]:flex">
-                  <SelectContent className="p-1">
-                    <SelectLabel className="select-none uppercase text-indigo-500">Available files</SelectLabel>
-                    {installedFiles}
-                  </SelectContent>
-                </SelectGroup>
-              </Select>
+                id="file_select"
+                placeholder="Select file"
+                name="Available files"
+                value={selectedModelFile}
+                items={installedFiles}
+                onChange={setSelectedModelFile}
+                className="bg-accent text-lg"
+              />
             </div>
           }
           <div className="mb-8 mt-4 flex flex-row gap-4">

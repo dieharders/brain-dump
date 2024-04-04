@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'reac
 import { useRouter } from "next/navigation"
 import { IconConversationType } from '@/components/ui/icons'
 import { QuestionMarkIcon, PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'

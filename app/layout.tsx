@@ -9,10 +9,10 @@ import { Header } from '@/components/features/layout/header'
 
 export const metadata: Metadata = {
   title: {
-    default: 'OpenBrew Studio - Customize your Ai',
-    template: `%s - OpenBrew Studio - Customize your Ai`,
+    default: 'Obrew Studio - Customize your Ai',
+    template: `%s - Obrew Studio - Customize your Ai`,
   },
-  description: 'A Web UI for Ai engineers to build Ai Agents and Apps using OpenBrew Server.',
+  description: 'A Web UI for building Ai agents and companies using Obrew Server.',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },

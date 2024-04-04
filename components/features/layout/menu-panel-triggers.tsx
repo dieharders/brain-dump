@@ -1,12 +1,13 @@
 'use client'
 import { Session } from 'next-auth'
-import { IconArrowElbow, IconRefresh } from '@/components/ui/icons'
+import { IconArrowElbow } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ChatsButton } from '@/components/features/panels/chats-panel-button'
 import { CollectionsButton } from '@/components/features/panels/collections-panel-button'
 import { usePathname, useRouter } from 'next/navigation'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
+import { CubeIcon } from '@radix-ui/react-icons'
 
 export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const pathname = usePathname()
@@ -48,7 +49,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
                 router.replace('/')
               }}
             >
-              <IconRefresh className="h-6 w-6" />
+              <CubeIcon className="h-6 w-6" />
               <span className="sr-only">Go to connection menu</span>
             </Button>
           </TooltipTrigger>
