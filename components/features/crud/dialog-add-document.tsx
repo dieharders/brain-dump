@@ -63,6 +63,7 @@ export const DialogAddDocument = (props: I_Props) => {
     const name = parseName(strat)
     return { value: strat, name: name }
   }) || []
+  const chunkingItems = [{ name: 'Chunking Methods', isLabel: true }, ...chunkingStrategies]
 
   // Store ref to our selected file
   const handleFileSelected = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -237,7 +238,7 @@ export const DialogAddDocument = (props: I_Props) => {
           placeholder="Pick Chunking Method"
           name="Chunking Method"
           value={chunkingStrategy || undefined}
-          items={chunkingStrategies}
+          items={chunkingItems}
           onChange={setChunkingStrategy}
         />
       </div>

@@ -115,12 +115,28 @@ export const Playground = (props: I_Props) => {
         <div className="mx-auto flex w-full max-w-[48rem] flex-col gap-4">
           {/* Select a prev installed model to load */}
           <div className="w-full">
-            <Select id="model_select" placeholder="Select model" name="Installed models" value={selectedModelId} items={installedModels} onChange={setSelectedModelId} />
+            <Select
+              id="model_select"
+              placeholder="Select model"
+              name="Installed models"
+              value={selectedModelId}
+              items={installedModels}
+              onChange={setSelectedModelId}
+              className="bg-accent text-lg"
+            />
           </div>
           {/* Select a file (quant) to load for the model */}
           {selectedModelId &&
             <div className="w-full">
-              <Select id="file_select" placeholder="Select file" name="Available files" value={selectedModelFile} items={installedFiles} onChange={setSelectedModelFile} />
+              <Select
+                id="file_select"
+                placeholder="Select file"
+                name="Available files"
+                value={selectedModelFile}
+                items={installedFiles}
+                onChange={setSelectedModelFile}
+                className="bg-accent text-lg"
+              />
             </div>
           }
           <div className="mb-8 mt-4 flex flex-row gap-4">

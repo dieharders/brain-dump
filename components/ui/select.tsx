@@ -8,6 +8,7 @@ import {
   SelectValue,
   SelectItem as SelectItemCustom,
 } from '@/components/ui/select-custom'
+import { cn } from '@/lib/utils'
 
 type T_Group = {
   name: string
@@ -24,9 +25,10 @@ interface I_SelectProps {
   placeholder?: string
   onChange: (val: string) => void
   items: Array<T_Group & T_Item | null>
+  className?: string
 }
 
-export const Select = ({ id, name, value, placeholder = '', onChange, items }: I_SelectProps) => {
+export const Select = ({ id, name, value, placeholder = '', className, onChange, items }: I_SelectProps) => {
   const nativeItems = items.map(i => {
     if (i?.isLabel) return <NativeItemGroup key={i?.name} name={i?.name}>{i?.name}</NativeItemGroup>
     return <NativeItem key={i?.value} name={i?.name || ''} value={i?.value || ''}>{i?.value}</NativeItem>
@@ -46,11 +48,11 @@ export const Select = ({ id, name, value, placeholder = '', onChange, items }: I
         value={value || undefined}
         onValueChange={onChange}
       >
-        <SelectTrigger className="hidden h-fit w-full bg-accent p-4 text-lg [@media(hover:hover)]:flex">
+        <SelectTrigger className={cn("text-md hidden h-fit w-full bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
           <SelectValue placeholder={placeholder}></SelectValue>
         </SelectTrigger>
         <SelectGroupCustom className="hidden [@media(hover:hover)]:flex">
-          <SelectContent className="p-1">
+          <SelectContent className="max-h-64 p-1">
             {customItems}
           </SelectContent>
         </SelectGroupCustom>
