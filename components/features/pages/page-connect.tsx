@@ -12,9 +12,12 @@ import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSettings } from '@/components/features/settings/hooks'
+import { Highlight, InfoLink } from '@/components/ui/info'
 import appSettings from '@/lib/localStorage'
+import { useSearchParams } from 'next/navigation'
 
 export const ConnectServerPage = () => {
+  const searchParams = useSearchParams()
   const { provider: selectedProvider } = useSettings()
   const router = useRouter()
   const { theme } = useTheme()
@@ -25,8 +28,10 @@ export const ConnectServerPage = () => {
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnecting, setIsConnecting] = useState(false)
   // For inputs
-  const [domainValue, setDomainValue] = useState(defaultDomain)
-  const [portValue, setPortValue] = useState(defaultPort)
+  const hostParam = searchParams.get('hostname')
+  const portParam = searchParams.get('port')
+  const [domainValue, setDomainValue] = useState(hostParam || defaultDomain)
+  const [portValue, setPortValue] = useState(portParam || defaultPort)
   const docsUrl = `${domainValue}:${portValue}/docs`
 
   const connect = useCallback(async () => {
@@ -109,16 +114,26 @@ export const ConnectServerPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 pt-8 text-sm text-muted-foreground">
+        <div className="mb-1 flex flex-col gap-2 pt-3 text-sm text-muted-foreground">
           {/* Instructions */}
-          <div>
-            Please be sure to startup <u>Obrew Server</u> on a local or remote machine before attempting to connect.
-            You can download it <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0">here</Button></Link>.
+          <div className="leading-snug">
+            Please be sure to download and startup <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0">Obrew Server</Button></Link> on a local or remote machine before attempting to connect.{' '}
+            {/* Issues */}
+            <InfoLink label="Click to resolve issues" title="Issues connecting?" className="inline-block text-left">
+              <span>
+                If you cannot connect to the <Highlight>Obrew Server</Highlight> make sure you have entered the address shown on the host computer correctly and click {' '}
+                <Link href={`${domainValue}:${portValue}`} target="_blank" prefetch={false}>
+                  <Button variant="link" className="m-0 h-fit p-0">
+                    here
+                  </Button></Link>
+                {`. If it is blocked, click the "advanced" option and choose "accept the risk" then navigate back and connect again.`}
+              </span>
+            </InfoLink>
           </div>
           {/* API Docs link */}
-          <div className="justify-left flex w-full flex-col items-center gap-2 sm:flex-row">
-            <div className="w-full min-w-[4rem] flex-1 text-left">API docs:</div>
-            <div className="w-full">
+          <div className="justify-left flex w-full flex-row flex-wrap items-start gap-2">
+            <div className="inline-block w-fit min-w-[4rem] text-left">API docs:</div>
+            <div className="inline-block w-fit">
               <Link href={docsUrl} prefetch={false} className="justify-start">
                 <Button variant="link" className="h-fit p-0 text-left">
                   {docsUrl}
