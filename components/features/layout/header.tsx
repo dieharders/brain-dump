@@ -21,7 +21,7 @@ export async function Header() {
       {session?.user ?
         <ModelReadout />
         :
-        <div className="w-full text-xl font-semibold">🍺 OpenBrew Studio</div>
+        <div className="w-full text-xl font-semibold">Obrew🍺Studio</div>
       }
 
       {/* Right side */}

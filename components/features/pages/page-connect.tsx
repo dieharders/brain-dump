@@ -20,7 +20,7 @@ export const ConnectServerPage = () => {
   const { theme } = useTheme()
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const containerStyle = cn('bg-neutral-transparent relative w-full items-center justify-between rounded-lg border border-neutral-600 p-4')
-  const inputStyle = cn('bg-muted-background w-full border-none bg-neutral-200 text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-muted-foreground hover:font-bold hover:text-accent focus:font-bold focus-visible:outline-neutral-500 focus-visible:ring-0 dark:bg-primary/20 dark:hover:bg-primary dark:hover:font-bold dark:hover:text-accent')
+  const inputStyle = cn('hover:text-muted-background dark:hover:text-muted-background w-full border-none bg-neutral-200 text-center text-primary outline-none transition-all duration-100 ease-out hover:bg-neutral-300 hover:font-bold focus:font-bold focus-visible:outline-neutral-500 focus-visible:ring-0 dark:bg-primary/20 dark:hover:bg-neutral-600 dark:hover:font-bold')
   const labelStyle = cn('absolute -top-2 left-[50%] w-fit -translate-x-1/2 rounded-sm bg-background p-0 text-center text-xs font-bold text-muted-foreground sm:left-4 sm:translate-x-0')
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnecting, setIsConnecting] = useState(false)
@@ -75,7 +75,7 @@ export const ConnectServerPage = () => {
     <div className={cn(wrapperStyle, "mt-8 flex h-full w-full flex-col items-center justify-start overflow-hidden bg-background px-8")}>
       {/* Header */}
       <h1 className="p-8 text-center text-4xl font-bold">Welcome to<br />
-        <div className="py-2 text-5xl leading-snug">🍺OpenBrew Studio</div>
+        <div className="py-2 text-5xl leading-snug">Obrew🍺Studio</div>
       </h1>
 
       <div className="mb-16 flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border border-neutral-500 p-8 dark:border-neutral-600">
@@ -112,7 +112,7 @@ export const ConnectServerPage = () => {
         <div className="flex flex-col gap-4 pt-8 text-sm text-muted-foreground">
           {/* Instructions */}
           <div>
-            Please be sure to startup <u>OpenBrew Server</u> on a local or remote machine before attempting to connect.
+            Please be sure to startup <u>Obrew Server</u> on a local or remote machine before attempting to connect.
             You can download it <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0">here</Button></Link>.
           </div>
           {/* API Docs link */}

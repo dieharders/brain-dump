@@ -1,4 +1,4 @@
-# 🍺 OpenBrew Studio
+# 🍺 Obrew Studio
 
 A developer tool for building custom Ai agents for use in your applications.
 A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).

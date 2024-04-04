@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react'
 import { NativeItem, NativeSelect, NativeItemGroup } from '@/components/ui/select-native'
 import {
   Select as SelectCustom,
