@@ -9,6 +9,20 @@ interface I_Props {
   className?: string
 }
 
+export const InfoLink = ({ label = 'Info', title, children, className }: I_Props & { title: string }) => {
+  const trigger = (
+    <Button
+      variant="link"
+      title={label}
+      className={cn("m-0 flex cursor-pointer flex-col items-center justify-center self-center p-0 shadow-none", className)}
+    >
+      {title}
+    </Button>
+  )
+
+  return <PopOver trigger={trigger}>{children}</PopOver>
+}
+
 export const Info = ({ label = 'Info', children, className }: I_Props) => {
   const trigger = (
     <Button
