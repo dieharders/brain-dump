@@ -17,15 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from '@/components/ui/select-custom'
+import { Select } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { T_DocPayload } from '@/components/features/crud/actions'
 
@@ -69,8 +61,8 @@ export const DialogAddDocument = (props: I_Props) => {
       return words.join(' ')
     }
     const name = parseName(strat)
-    return (<SelectItem key={strat} value={strat}>{name}</SelectItem>)
-  })
+    return { value: strat, name: name }
+  }) || []
 
   // Store ref to our selected file
   const handleFileSelected = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -241,20 +233,13 @@ export const DialogAddDocument = (props: I_Props) => {
       {/* Chunking Strategy */}
       <div className="w-full">
         <Select
-          defaultValue={undefined}
-          value={chunkingStrategy}
-          onValueChange={setChunkingStrategy}
-        >
-          <SelectTrigger className="w-full flex-1">
-            <SelectValue placeholder="Select Chunking Strategy"></SelectValue>
-          </SelectTrigger>
-          <SelectGroup>
-            <SelectContent className="p-1">
-              <SelectLabel className="select-none uppercase text-indigo-500">Chunking Strategy</SelectLabel>
-              {chunkingStrategies}
-            </SelectContent>
-          </SelectGroup>
-        </Select>
+          id="chunking_select"
+          placeholder="Pick Chunking Method"
+          name="Chunking Method"
+          value={chunkingStrategy || undefined}
+          items={chunkingStrategies}
+          onChange={setChunkingStrategy}
+        />
       </div>
     </div>
   )
