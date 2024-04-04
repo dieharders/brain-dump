@@ -89,6 +89,7 @@ export const RAGStrategyForm = (props: I_Props) => {
               value={state?.response_mode}
               items={[{ name: 'Response modes', isLabel: true }, ...responseModes]}
               onChange={(value: string) => setState({ ...state, response_mode: value })}
+              className="py-2 text-sm"
             />
           </div>
         </div>

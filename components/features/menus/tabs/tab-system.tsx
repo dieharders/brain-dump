@@ -6,15 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-  SelectItem
-} from '@/components/ui/select-custom'
+import { Select } from '@/components/ui/select'
 import { T_SystemPrompt, T_SystemPrompts, I_System_State as I_State } from '@/lib/homebrew'
 
 type T_TemplateSource = 'custom_default' | string
@@ -43,28 +35,35 @@ export const SystemTab = (props: I_Props) => {
     const groups = Object.keys(config)
     return groups.map((groupName) => {
       const configs = config[groupName]
-      const items = configs.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)
-      return (
-        <SelectGroup key={groupName}>
-          <SelectLabel className="select-none">{groupName}</SelectLabel>
-          {/* @TODO We should specify which templates are for "chat" or "completion" */}
-          {items}
-        </SelectGroup>
-      )
-    })
+      // @TODO We should specify which templates are for "chat" or "completion"
+      return [
+        { name: groupName, isLabel: true },
+        ...configs.map(i => ({ name: i.name, value: i.id }))
+      ]
+    }).flatMap(x => x)
   }
 
   const systemPromptOptions = useCallback(() => {
     const config = systemPrompts?.presets ?? {}
     const presets = constructOptionsGroups(config)
-    const customGroup = (
-      <SelectGroup key="custom">
-        <SelectLabel className="select-none">Editable</SelectLabel>
-        <SelectItem value="custom_default">Custom</SelectItem>
-      </SelectGroup>
-    )
-    return [customGroup, ...presets]
+    return [
+      { name: 'Editable', isLabel: true },
+      { name: 'Custom', value: 'custom_default' },
+      ...presets
+    ]
   }, [systemPrompts?.presets])
+
+  const onChange = (val: string) => {
+    val && setState(prev => ({ ...prev, systemMessageName: val as T_TemplateSource }))
+    let template = ''
+    if (val === 'custom_default') template = state?.systemMessage || ''
+    else {
+      const configs = systemPrompts?.presets ?? {}
+      const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+      template = items.find(i => i.id === val)?.text || ''
+    }
+    if (template) setState(prev => ({ ...prev, systemMessage: template }))
+  }
 
   return (
     <div className="px-1">
@@ -80,26 +79,13 @@ export const SystemTab = (props: I_Props) => {
       {/* Select where to load from */}
       <div className="mb-4 w-full">
         <Select
-          value={state.systemMessageName}
-          onValueChange={val => {
-            val && setState(prev => ({ ...prev, systemMessageName: val as T_TemplateSource }))
-            let template = ''
-            if (val === 'custom_default') template = state?.systemMessage || ''
-            else {
-              const configs = systemPrompts?.presets ?? {}
-              const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
-              template = items.find(i => i.id === val)?.text || ''
-            }
-            if (template) setState(prev => ({ ...prev, systemMessage: template }))
-          }}
-        >
-          <SelectTrigger className="w-full flex-1">
-            <SelectValue placeholder="Select a template"></SelectValue>
-          </SelectTrigger>
-          <SelectContent className="max-h-[16rem] p-1">
-            {systemPromptOptions()}
-          </SelectContent>
-        </Select>
+          id="sys_msg_select"
+          placeholder="Select a template"
+          name="Select a template"
+          value={state.systemMessageName || undefined}
+          items={systemPromptOptions()}
+          onChange={onChange}
+        />
       </div>
 
       {/* Prompt Area */}

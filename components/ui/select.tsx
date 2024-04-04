@@ -42,7 +42,7 @@ export const Select = ({ id, name, value, placeholder = '', className, onChange,
   return (
     <>
       {/* Native select */}
-      <NativeSelect id={id} name={name} onChange={onChange}>{nativeItems}</NativeSelect>
+      <NativeSelect id={id} name={name} onChange={onChange} className={className}>{nativeItems}</NativeSelect>
       {/* Custom select */}
       <SelectCustom
         value={value || undefined}
