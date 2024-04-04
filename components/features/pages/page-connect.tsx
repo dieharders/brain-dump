@@ -29,7 +29,6 @@ export const ConnectServerPage = () => {
   // For inputs
   const hostParam = searchParams.get('hostname')
   const portParam = searchParams.get('port')
-
   const [domainValue, setDomainValue] = useState(hostParam || defaultDomain)
   const [portValue, setPortValue] = useState(portParam || defaultPort)
   const docsUrl = `${domainValue}:${portValue}/docs`
