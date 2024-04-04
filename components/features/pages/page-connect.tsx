@@ -13,8 +13,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSettings } from '@/components/features/settings/hooks'
 import appSettings from '@/lib/localStorage'
+import { useSearchParams } from 'next/navigation'
 
 export const ConnectServerPage = () => {
+  const searchParams = useSearchParams()
   const { provider: selectedProvider } = useSettings()
   const router = useRouter()
   const { theme } = useTheme()
@@ -25,8 +27,11 @@ export const ConnectServerPage = () => {
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnecting, setIsConnecting] = useState(false)
   // For inputs
-  const [domainValue, setDomainValue] = useState(defaultDomain)
-  const [portValue, setPortValue] = useState(defaultPort)
+  const hostParam = searchParams.get('hostname')
+  const portParam = searchParams.get('port')
+
+  const [domainValue, setDomainValue] = useState(hostParam || defaultDomain)
+  const [portValue, setPortValue] = useState(portParam || defaultPort)
   const docsUrl = `${domainValue}:${portValue}/docs`
 
   const connect = useCallback(async () => {
