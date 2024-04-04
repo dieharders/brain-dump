@@ -74,8 +74,6 @@ export const SystemTab = (props: I_Props) => {
         </DialogDescription>
       </DialogHeader>
 
-      {/* Content */}
-
       {/* Select where to load from */}
       <div className="mb-4 w-full">
         <Select

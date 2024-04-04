@@ -1,21 +1,13 @@
 'use client'
 
+import { useCallback } from 'react'
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-  SelectItem
-} from '@/components/ui/select-custom'
+import { Select } from '@/components/ui/select'
 import { I_PromptTemplates, T_PromptTemplate } from '@/lib/homebrew'
-import { useCallback } from 'react'
 
 interface I_Props {
   state: T_PromptTemplate
@@ -41,28 +33,36 @@ export const PromptTemplateForm = (props: I_Props) => {
     const groups = Object.keys(config)
     return groups.map((groupName) => {
       const configs = config?.[groupName]
-      const items = configs?.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)
-      return (
-        <SelectGroup key={groupName}>
-          <SelectLabel className="select-none">{groupName}</SelectLabel>
-          {/* We should specify which templates are for "chat" or "completion" */}
-          {items}
-        </SelectGroup>
-      )
-    })
+      // @TODO We should specify which templates are for "chat" or "completion"
+      const items = configs?.map(i => ({ name: i.name, value: i.id }))
+      return [
+        { name: groupName, isLabel: true },
+        ...items
+      ]
+    }).flatMap(x => x)
   }
 
   const promptTemplateOptions = useCallback(() => {
     const config = templates ?? {}
     const presets = constructOptionsGroups(config)
-    const customGroup = (
-      <SelectGroup key="custom">
-        <SelectLabel className="select-none">Editable</SelectLabel>
-        <SelectItem value={CUSTOM_ID}>{CUSTOM_NAME} (Editable)</SelectItem>
-      </SelectGroup>
-    )
-    return [customGroup, ...presets]
+    return [
+      { name: 'Editable', isLabel: true },
+      { name: `${CUSTOM_NAME} (Editable)`, value: CUSTOM_ID },
+      ...presets
+    ]
   }, [templates])
+
+  const onChange = (val: string) => {
+    let template = {} as T_PromptTemplate
+    if (val === CUSTOM_ID) template = { id: CUSTOM_ID, name: CUSTOM_NAME, text: state.text }
+    else {
+      const configs = templates ?? {}
+      const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
+      const t = items.find(i => i.id === val)
+      if (t) template = t
+    }
+    if (template?.id) setState(template)
+  }
 
   return (
     <>
@@ -77,26 +77,13 @@ export const PromptTemplateForm = (props: I_Props) => {
       {/* Select where to load from */}
       <div className="mb-4 w-full">
         <Select
-          value={state.id}
-          onValueChange={val => {
-            let template = {} as T_PromptTemplate
-            if (val === CUSTOM_ID) template = { id: CUSTOM_ID, name: CUSTOM_NAME, text: state.text }
-            else {
-              const configs = templates ?? {}
-              const items = Object.values(configs).reduce((accumulator, currentValue) => [...accumulator, ...currentValue])
-              const t = items.find(i => i.id === val)
-              if (t) template = t
-            }
-            if (template?.id) setState(template)
-          }}
-        >
-          <SelectTrigger className="w-full flex-1">
-            <SelectValue placeholder="Select a template"></SelectValue>
-          </SelectTrigger>
-          <SelectContent className="max-h-[16rem] p-1">
-            {promptTemplateOptions()}
-          </SelectContent>
-        </Select>
+          id="prompt_select"
+          placeholder="Select a template"
+          name="Select a template"
+          value={state.id || undefined}
+          items={promptTemplateOptions()}
+          onChange={onChange}
+        />
       </div>
 
       {/* Content */}
