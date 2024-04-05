@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: 'Obrew Studio - Customize your Ai',
     template: `%s - Obrew Studio - Customize your Ai`,
   },
-  description: 'A Web UI for building Ai agents and companies using Obrew Server.',
+  description: 'A tool for building Ai agents and companies.',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
