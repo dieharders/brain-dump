@@ -9,7 +9,7 @@ export async function Header() {
   const session = await auth()
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b bg-background/70 px-4 backdrop-blur-md">
+    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between gap-2 overflow-hidden border-b bg-background/70 px-4 backdrop-blur-md">
       {/* Left side */}
       {session?.user ? (
         // Shortcuts, utility panels

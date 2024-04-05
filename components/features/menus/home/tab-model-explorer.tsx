@@ -56,9 +56,9 @@ export const ModelExplorerMenu = ({
       </Header>
 
       {/* Content Container */}
-      <div className="flex flex-col items-start justify-items-stretch overflow-hidden">
+      <div className="flex flex-col items-start justify-items-stretch gap-8 overflow-hidden">
         {/* Model Management Buttons */}
-        <div className="flex w-full flex-row items-center justify-center justify-items-stretch gap-4 pb-8">
+        <div className="flex w-full flex-col justify-center gap-4 overflow-hidden sm:flex-row">
           <ModelCard
             title="Add New"
             id="new"
@@ -69,7 +69,6 @@ export const ModelExplorerMenu = ({
               // ...
               notAvailableNotification()
             }}
-            className="w-full flex-1 justify-self-stretch"
           />
           <ModelCard
             title="Manage Models"
@@ -80,7 +79,6 @@ export const ModelExplorerMenu = ({
               // Open the directory where models are saved
               onOpenDirAction()
             }}
-            className="w-full flex-1 justify-self-stretch"
           />
         </div>
         {/* Content Menu */}
