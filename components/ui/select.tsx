@@ -29,12 +29,12 @@ interface I_SelectProps {
 }
 
 export const Select = ({ id, name, value, placeholder = '', className, onChange, items }: I_SelectProps) => {
-  const nativeItems = items.map(i => {
+  const nativeItems = items?.map(i => {
     if (i?.isLabel) return <NativeItemGroup key={i?.name} name={i?.name}>{i?.name}</NativeItemGroup>
     return <NativeItem key={i?.value} name={i?.name || ''} value={i?.value || ''}>{i?.value}</NativeItem>
   })
 
-  const customItems = items.map(i => {
+  const customItems = items?.map(i => {
     if (i?.isLabel) return <SelectLabelCustom key={i?.name} className="select-none uppercase text-indigo-500">{i?.name}</SelectLabelCustom>
     return <SelectItemCustom key={i?.value} value={i?.value || ''}>{i?.name}</SelectItemCustom>
   })
@@ -48,7 +48,7 @@ export const Select = ({ id, name, value, placeholder = '', className, onChange,
         value={value || undefined}
         onValueChange={onChange}
       >
-        <SelectTriggerCustom className={cn("text-md hidden h-fit w-full bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
+        <SelectTriggerCustom className={cn("text-md hidden h-fit w-full truncate bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
           <SelectValueCustom placeholder={placeholder}></SelectValueCustom>
         </SelectTriggerCustom>
         <SelectGroupCustom className="hidden [@media(hover:hover)]:flex">
