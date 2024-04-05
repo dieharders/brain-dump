@@ -29,7 +29,7 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
   }
 
   return (
-    <Sidebar title="Knowledge Graph" icon="brain">
+    <Sidebar title="Knowledge Base" icon="brain">
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         <SidebarBrainList userId={session?.user?.id} />
