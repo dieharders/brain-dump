@@ -44,6 +44,7 @@ This is a local model first project. We have future plans to support cloud infer
 ### Run locally
 
 ```bash
+pnpm i
 pnpm dev
 ```
 
