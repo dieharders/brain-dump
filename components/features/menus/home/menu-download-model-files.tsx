@@ -65,7 +65,7 @@ export const DownloadModelMenu = (props: I_Props) => {
         <div className={cn("flex h-full flex-col justify-between gap-4 border-t border-dashed border-t-muted-foreground bg-background p-4", noBreakStyle)}>
           {/* File name */}
           <div className="w-full gap-1 truncate rounded-md border border-muted-foreground bg-muted p-2 text-muted-foreground">
-            <Select id="select_model_file" name={fileName} value={fileName} onChange={setSelected} items={quantItems} className="w-full bg-accent" />
+            <Select id="select_model_file" name={fileName} value={fileName} placeholder="Select a file" onChange={setSelected} items={quantItems} className="w-full bg-accent" />
           </div>
           {/* Use-Case Description */}
           <p className="w-full items-center self-center whitespace-normal text-muted-foreground">{qDescr[name] || ''}</p>
