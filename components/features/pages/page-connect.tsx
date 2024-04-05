@@ -93,7 +93,7 @@ export const ConnectServerPage = () => {
       {/* Inputs Container */}
       <div className="mb-16 flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-6 rounded-xl border-neutral-500 p-0 dark:border-neutral-600 sm:border sm:p-8">
         {/* Title */}
-        <h2 className="self-center justify-self-start text-center text-lg font-semibold text-primary">
+        <h2 className="self-center justify-self-start text-center text-2xl font-semibold text-primary">
           Connect to server
         </h2>
 
