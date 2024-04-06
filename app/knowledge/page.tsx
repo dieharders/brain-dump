@@ -21,8 +21,9 @@ export default function KnowledgeBasePage() {
     </div>
   )
 
-  return id ?
+  const doc = (
     <div>Some document</div>
-    :
-    renderNotFound
+  )
+
+  return id ? doc : renderNotFound
 }

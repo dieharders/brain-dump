@@ -1,9 +1,9 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { useRouter } from "next/navigation"
 import { PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
@@ -16,7 +16,7 @@ import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { ROUTE_CHATBOT } from '@/app/constants'
 import { notifications } from '@/lib/notifications'
-
+import { IconEdit } from '@/components/ui/icons'
 interface I_Props {
   onSubmit: () => void
   services: I_ServiceApis | null
@@ -35,9 +35,9 @@ const Title = ({ children }: { children: React.ReactNode }) => <h1 className="te
 
 const Description = ({ className, children }: { className?: string, children: React.ReactNode }) => <p className={cn("mb-4 text-sm text-muted-foreground", className)}>{children}</p>
 
-const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?: () => void, Icon: any, className?: string }) => {
+const Item = ({ title, onAction, Icon, children, className }: { children?: ReactNode, title?: string, onAction?: () => void, Icon: any, className?: string }) => {
   return (
-    <div className={`flex h-[10rem] w-[10rem] flex-col items-center justify-center gap-2 rounded-md bg-accent p-2 ${className}`}>
+    <div className={`flex h-[12rem] w-[12rem] flex-col items-center justify-center gap-2 rounded-md bg-accent p-4 ${className}`}>
       <div
         onClick={onAction}
         className={cn(
@@ -48,6 +48,7 @@ const Item = ({ title, onAction, Icon, className }: { title?: string, onAction?:
         <Icon className="h-[50%] w-[50%] text-foreground" />
       </div>
       <div className="text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-muted-foreground">{title}</div>
+      {children}
     </div>
   )
 }
@@ -65,7 +66,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const [collections, setCollections] = useState<Array<I_Collection>>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   // Styling
-  const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] justify-items-center gap-6"
+  const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
   // Methods
   const modelExploreAction = useCallback(async () => {
@@ -335,7 +336,17 @@ export const ApplicationModesMenu = (props: I_Props) => {
             title={c?.name}
             Icon={ClipboardIcon}
             onAction={() => goToKnowledgePage(c?.id)}
-          />
+            className="relative overflow-hidden"
+          >
+            <Button
+              className="absolute bottom-0 m-auto flex w-[20rem] flex-row items-center justify-center gap-2 bg-neutral-900/50 text-sm hover:bg-neutral-700"
+              variant="secondary"
+              onClick={() => {
+                setCreateCollectionDialogOpen(true)
+              }}>
+              <IconEdit />Edit
+            </Button>
+          </Item>
         ))}
         <Item title="Documentation" Icon={ClipboardIcon} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
         <Item title="Best Practices" Icon={() => <div className="text-4xl">📈</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
