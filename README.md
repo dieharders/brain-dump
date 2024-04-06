@@ -24,12 +24,13 @@ Fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot)
 - ✅ Chat with your documents (RAG)
 - ✅ Build custom bots from a mix of LLM's, software configs and prompt configs
 - ✅ CPU & GPU support
-- ✅ Support Windows OS
-- ❌ Support MacOS & Linux
+- ✅ Windows OS build
+- ❌ MacOS & Linux builds
 - ❌ Build assistants that have access to tools
-- ❌ Orchestrate multiple assistants together in a team
-- ❌ Save chat history and share chat logs with other users
-- ❌ Share document embeddings with other users
+- ❌ Orchestrate multiple assistants in a team
+- ❌ Save chat history and share chat logs with community
+- ❌ Share document embeddings with community
+- ❌ Share model configs with community
 
 ## Model Providers
 
