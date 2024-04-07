@@ -65,6 +65,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const [bots, setBots] = useState<I_Text_Settings[]>([])
   const [collections, setCollections] = useState<Array<I_Collection>>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
+  const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   // Styling
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
@@ -389,23 +390,31 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const tabs = [
     {
-      label: 'models', icon: "👨‍💻", content: ModelExplorerMenu({
-        data: modelConfigs,
-        installedModelsInfo: installedList,
-        Header,
-        Title,
-        Description,
-        onOpenDirAction: modelExploreAction,
-        fetchModelInfo,
-        downloadModel,
-        deleteModel,
-      })
+      label: 'models',
+      icon: "👨‍💻",
+      content: (<ModelExplorerMenu
+        data={modelConfigs}
+        installedModelsInfo={installedList}
+        Header={Header}
+        Title={Title}
+        Description={Description}
+        onOpenDirAction={modelExploreAction}
+        fetchModelInfo={fetchModelInfo}
+        downloadModel={downloadModel}
+        deleteModel={deleteModel}
+        hfModelsInfo={hfModelsInfo}
+        setHFModelsInfo={setHFModelsInfo}
+      />)
     },
     { label: 'playground', icon: "🌎", content: playgroundMenu },
     { label: 'bots', icon: "🤖", content: botsMenu },
     { label: 'assistants', icon: "👩‍🔬", content: assistantsMenu },
     { label: 'teams', icon: "🙌", content: crewsMenu },
-    { label: 'knowledge', icon: "📚", content: knowledgeMenu },
+    {
+      label: 'knowledge',
+      icon: "📚",
+      content: knowledgeMenu
+    },
   ]
 
   useEffect(() => {

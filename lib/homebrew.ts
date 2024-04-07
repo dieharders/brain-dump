@@ -591,7 +591,7 @@ export const useHomebrew = () => {
    */
   const getServices = useCallback(async () => {
     const configs = appSettings.getServices()
-    if (configs.length > 0) return createServices(configs)
+    if (configs?.length > 0) return createServices(configs)
 
     const res = await getAPIConfig()
     // Store all config options for endpoints
@@ -602,7 +602,7 @@ export const useHomebrew = () => {
     // Return readily usable request funcs
     const serviceApis = createServices(res)
     // const result = { configs: configOptions, services: serviceApis }
-    appSettings.setServices(res)
+    res && res.length > 0 && appSettings.setServices(res)
     return serviceApis
   }, [])
 

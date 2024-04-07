@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useMemo } from 'react'
 import { ModelCard } from '@/components/features/cards/card-model'
 import { IconPlus, IconDownload } from '@/components/ui/icons'
 import { T_ModelConfig } from '@/lib/homebrew'
@@ -16,6 +16,8 @@ interface I_Props {
   installedModelsInfo: Array<{ [key: string]: any }>
   downloadModel: ({ repo_id, filename }: { repo_id: string, filename: string }) => Promise<void>
   deleteModel: ({ repoId, filename }: { repoId: string, filename: string }) => Promise<void>
+  hfModelsInfo: any[]
+  setHFModelsInfo: Dispatch<SetStateAction<any[]>>
 }
 
 export const ModelExplorerMenu = ({
@@ -28,23 +30,24 @@ export const ModelExplorerMenu = ({
   onOpenDirAction,
   fetchModelInfo,
   deleteModel,
+  hfModelsInfo,
+  setHFModelsInfo,
 }: I_Props) => {
   const modelsList = useMemo(() => Object.values(data) || [], [data])
-  const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   const { notAvailable: notAvailableNotification } = notifications()
 
   // Get model info for our curated list
-  useEffect(() => {
-    modelsList?.forEach(async (m) => {
+  const getModelInfo = useCallback((m: T_ModelConfig) => {
+    const action = async () => {
       const info = await fetchModelInfo(m.repoId)
 
       // @TODO We may want to cache this info data along with the installed_model or model_configs data
-      setHFModelsInfo(prev => {
-        prev.push(info.data)
-        return prev
+      setHFModelsInfo((prev: any) => {
+        return [info.data, ...prev]
       })
-    })
-  }, [fetchModelInfo, modelsList])
+    }
+    action()
+  }, [fetchModelInfo, setHFModelsInfo])
 
   return (
     <div>
@@ -84,7 +87,7 @@ export const ModelExplorerMenu = ({
         {/* Content Menu */}
         <div className="flex w-full flex-col justify-items-stretch gap-4 overflow-hidden">
           {modelsList?.map(i => {
-            const modelInfo = hfModelsInfo.find(info => info.id === i.repoId)
+            const modelInfo = hfModelsInfo?.find?.(info => info.id === i.repoId)
             const modelType = modelInfo?.config?.model_type
 
             return (
@@ -98,8 +101,10 @@ export const ModelExplorerMenu = ({
                 provider={modelInfo?.author}
                 libraryName={modelInfo?.library_name}
                 tags={modelInfo?.tags}
-              // licenses={i.licenses}
-              // onClick={() => {}}
+                // licenses={i.licenses}
+                onClick={({ id, isOpen }) => {
+                  if (!isOpen && !modelInfo) getModelInfo(i)
+                }}
               >
                 <DownloadModelMenu
                   id={i.repoId}
