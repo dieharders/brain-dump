@@ -60,6 +60,7 @@ export const CharmMenu = (props: I_Props) => {
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
   const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
+  const { fetchCollections } = useMemoryActions()
 
   const {
     fetchData,
@@ -87,8 +88,6 @@ export const CharmMenu = (props: I_Props) => {
       </Badge>
     )
   }
-
-  const { fetchCollections } = useMemoryActions(services)
 
   const saveModelSettings = useCallback((args: I_ModelSettings) => {
     const action = async () => {

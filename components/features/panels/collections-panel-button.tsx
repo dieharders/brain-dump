@@ -8,6 +8,7 @@ import { SidebarFooter } from '@/components/sidebar-footer'
 import { ClearData } from '@/components/clear-data'
 import { useHomebrew } from '@/lib/homebrew'
 import { toast } from 'react-hot-toast'
+import { ArchiveIcon } from '@radix-ui/react-icons'
 
 export const CollectionsButton = ({ session }: { session: Session }) => {
   const { getServices } = useHomebrew()
@@ -29,7 +30,7 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
   }
 
   return (
-    <Sidebar title="Knowledge Base" icon="brain">
+    <Sidebar title="Collections" icon={ArchiveIcon}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         <SidebarBrainList userId={session?.user?.id} />

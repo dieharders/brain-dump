@@ -117,11 +117,14 @@ export interface I_DocSource {
   id: string // Globally unique id
   name: string // Source id
   filePath: string // Update sources paths (where original uploaded files are stored)
+  fileName: string
+  chunk_ids: string // json string -> Array<string>
   urlPath: string
   description: string
   tags: string
   createdAt: string
   checksum: string
+  type?: string // @TODO Introduce this on backend
 }
 
 export interface I_Document {

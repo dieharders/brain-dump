@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { I_Collection, I_GenericAPIResponse, I_ServiceApis, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
+import { I_Collection, I_GenericAPIResponse, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
 // import { NewItem } from '@/components/sidebar-item-new'
 import { CollectionCard } from '@/components/sidebar-item-brain'
-import { CollectionActions } from '@/components/sidebar-actions-brain'
+// import { CollectionActions } from '@/components/sidebar-actions-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
@@ -13,6 +13,10 @@ import { DialogAddDocument } from '@/components/features/crud/dialog-add-documen
 import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
 import { DialogRemoveCollection } from '@/components/features/crud/dialog-remove-collection'
 import { DialogExploreDocuments } from '@/components/features/crud/dialog-explore-documents'
+import { ROUTE_KNOWLEDGE } from '@/app/constants'
+import { useRouter } from 'next/navigation'
+import { useGlobalContext } from '@/contexts'
+import { useMemoryActions } from '@/components/features/crud/actions'
 
 export interface SidebarBrainListProps {
   userId?: string
@@ -20,31 +24,23 @@ export interface SidebarBrainListProps {
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const APIConfigOptions = useRef({})
+  const router = useRouter()
   const { getServices, getAPIConfigs } = useHomebrew()
-  const [services, setServices] = useState<I_ServiceApis | null>(null)
+  const { collections, setCollections, setDocuments, setSelectedCollectionId, services, setServices } = useGlobalContext()
   const [hasMounted, setHasMounted] = useState(false)
-  const [collections, setCollections] = useState<Array<I_Collection>>([])
+  // const [collections, setCollections] = useState<Array<I_Collection>>([])
   const [selectedCollection, setSelectedCollection] = useState<I_Collection | null>(null)
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
+  const { fetchCollections } = useMemoryActions()
 
-  const updateListAction = useCallback(async (apis: I_ServiceApis | null) => {
-    try {
-      const response = await apis?.memory.getAllCollections()
-
-      if (!response?.success) throw new Error('Failed to refresh documents')
-
-      const data = response.data
-      data && setCollections(data)
-      return data
-    } catch (error) {
-      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
-      return
-    }
-  }, [])
+  const updateListAction = useCallback(async () => {
+    const data = await fetchCollections()
+    data && setCollections(data)
+  }, [fetchCollections, setCollections])
 
   const addCollection: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
     const promise = new Promise((resolve, reject) => {
@@ -53,7 +49,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         // Error
         if (!result || !result?.success) reject(result?.message)
         // Success
-        await updateListAction(services)
+        await updateListAction()
         resolve(result)
       }
       action()
@@ -69,7 +65,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     )
 
     return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
-  }, [updateListAction, services])
+  }, [services?.memory, updateListAction])
 
   const addDocument: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
     return services?.memory.addDocument(args) || null
@@ -78,9 +74,9 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const removeCollection = useCallback(async () => {
     const id = selectedCollection?.name || ''
     const res = await services?.memory.deleteCollection({ queryParams: { collection_id: id } }) || null
-    updateListAction(services)
+    updateListAction()
     return res
-  }, [updateListAction, selectedCollection?.name, services])
+  }, [selectedCollection?.name, services?.memory, updateListAction])
 
   const shareCollection = async (collection: I_Collection) => {
     const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
@@ -93,28 +89,13 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     toast.success('Copied collection id to clipboard')
   }
 
-  // Fetch collections
+  // Fetch data when opend
   useEffect(() => {
     const action = async () => {
-      const res = await getServices()
-
-      if (res) {
-        setServices(res)
-        updateListAction(res)
-        setHasMounted(true)
-      }
-    }
-    if (!hasMounted) action()
-  }, [getServices, hasMounted, updateListAction])
-
-  // Fetch api options
-  useEffect(() => {
-    const action = async () => {
-      const options = await getAPIConfigs()
-      if (options) APIConfigOptions.current = options
+      updateListAction()
     }
     action()
-  }, [getAPIConfigs])
+  }, [updateListAction])
 
   return (
     <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
@@ -127,7 +108,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         ></NewItem> */}
         {/* @TODO Make this work with NewItem so it can show pending progress. Pass the form as prop. */}
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
-        <RefreshButton action={() => updateListAction(services)} />
+        <RefreshButton action={() => updateListAction()} />
       </div>
       {/* Collections */}
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
@@ -146,17 +127,18 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
                   key={collection?.id}
                   collection={collection}
                   onClick={() => {
-                    setSelectedCollection(collection)
-                    setExploreDialogOpen(true)
+                    setSelectedCollectionId(collection?.id)
+                    setDocuments([])
+                    router.push(`/${ROUTE_KNOWLEDGE}?collectionId=${collection?.id}`, { shallow: true })
                   }}>
-                  <CollectionActions
+                  {/* <CollectionActions
                     setAddDocumentDialogOpen={setAddDocumentDialogOpen}
                     setExploreDialogOpen={setExploreDialogOpen}
                     setShareDialogOpen={setShareDialogOpen}
                     setDeleteDialogOpen={setDeleteDialogOpen}
                     setSelectedCollection={() => setSelectedCollection(collection)}
                     copyCollectionId={() => copyCollectionId(collection?.name)}
-                  />
+                  /> */}
                 </CollectionCard>
               )
             )}

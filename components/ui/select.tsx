@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select-custom'
 import { cn } from '@/lib/utils'
 
-type T_Group = {
+export type T_Group = {
   name: string
   value?: string
 }

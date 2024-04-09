@@ -8,15 +8,17 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_Collection, I_GenericAPIResponse, I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_GenericAPIRequest, T_GenericDataRes, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_GenericAPIResponse, I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_GenericAPIRequest, T_GenericDataRes, T_InstalledTextModel } from '@/lib/homebrew'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
-import { ROUTE_CHATBOT } from '@/app/constants'
+import { ROUTE_CHATBOT, ROUTE_KNOWLEDGE } from '@/app/constants'
 import { notifications } from '@/lib/notifications'
 import { IconEdit } from '@/components/ui/icons'
+import { useGlobalContext } from '@/contexts'
+
 interface I_Props {
   onSubmit: () => void
   services: I_ServiceApis | null
@@ -56,14 +58,13 @@ const Item = ({ title, onAction, Icon, children, className }: { children?: React
 export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, modelConfigs, setModelConfigs, installedList, setInstalledList } = props
   const { notAvailable: notAvailableNotification } = notifications()
-  const ROUTE_KNOWLEDGE = '/knowledge'
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
+  const { collections, setCollections } = useGlobalContext()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [bots, setBots] = useState<I_Text_Settings[]>([])
-  const [collections, setCollections] = useState<Array<I_Collection>>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   // Styling
@@ -75,7 +76,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     return
   }, [services?.textInference])
 
-  const goToKnowledgePage = (id: string) => router.push(`${ROUTE_KNOWLEDGE}/?id=${id}`)
+  const goToKnowledgePage = (id: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionId=${id}`)
 
   const fetchBots = useCallback(async () => {
     // Save menu forms to a json file
@@ -101,7 +102,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
       return
     }
-  }, [])
+  }, [setCollections])
 
   const addCollection: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
     const promise = new Promise((resolve, reject) => {
@@ -277,9 +278,9 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const assistantsMenu = (
     <div>
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Empowered Assistants</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Assistants</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Augment your Bots with access to tools and the internet. When assigned tasks, they will create a deliverable in the specified format you provide.
+          Augment your Bots with access to tools and the internet. They can be assigned 1 or more tasks in sequence, and will create a deliverable in the specified format you provide.
         </Description>
       </Header>
 
@@ -301,7 +302,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Team of Assistants</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          {`A group of assistants working together under a "Director" towards a goal. Submit criteria for a job with a given deadline and get back your results in the format you specify.`}
+          {`A group of Bots and Assistants working together under a "Director" towards a goal. Submit criteria for a job and get your results in a format you specify.`}
         </Description>
       </Header>
 

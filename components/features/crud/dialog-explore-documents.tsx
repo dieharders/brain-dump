@@ -27,7 +27,7 @@ interface I_Props {
 export const DialogExploreDocuments = (props: I_Props) => {
   const { collection, services, dialogOpen, setDialogOpen } = props
   const [documents, setDocuments] = useState<I_Document[]>([])
-  const { fetchAll } = useMemoryActions(services)
+  const { fetchDocuments } = useMemoryActions()
 
   const fileExploreAction = async (document: I_Document) => {
     await services?.memory.fileExplore({ queryParams: { filePath: document.metadata.filePath } })
@@ -76,11 +76,11 @@ export const DialogExploreDocuments = (props: I_Props) => {
   // Fetch documents only when we are open and on every collection change
   useEffect(() => {
     const action = async () => {
-      const docs = await fetchAll(collection)
+      const docs = await fetchDocuments(collection)
       docs && setDocuments(docs)
     }
     if (dialogOpen && collection) action()
-  }, [collection, dialogOpen, fetchAll])
+  }, [collection, dialogOpen, fetchDocuments])
 
   // Clear documents data when menu closed
   useEffect(() => {
@@ -106,12 +106,12 @@ export const DialogExploreDocuments = (props: I_Props) => {
         {/* Description */}
         <DialogTitle >📄 Description</DialogTitle>
         <DialogDescription>
-          {collection?.metadata?.description || "Add a detailed description of the contents..."}
+          {collection?.metadata?.description || "Add a detailed description of the contents."}
         </DialogDescription>
         {/* Tags */}
         <DialogTitle >🔖 Tags</DialogTitle>
         <DialogDescription>
-          {collection?.metadata?.tags || "Add hashtags to link similar memories..."}
+          {collection?.metadata?.tags || "Add hashtags to link similar memories."}
         </DialogDescription>
         <Separator className="my-4" />
         {/* List of files */}

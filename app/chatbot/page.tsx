@@ -76,7 +76,7 @@ export default function BotPage(props: any) {
   useEffect(() => {
     const action = async () => {
       const services = await getServices()
-      setServices(services)
+      services && setServices(services)
     }
     if (!services) action()
   }, [getServices, services])

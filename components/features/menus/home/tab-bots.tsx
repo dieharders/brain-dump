@@ -37,7 +37,7 @@ interface I_Props {
 
 export const BotCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit, data } = props
-  const { fetchCollections } = useMemoryActions(data.services)
+  const { fetchCollections } = useMemoryActions()
 
   // Defaults
   const defaults: I_Text_Settings = useMemo(() => ({

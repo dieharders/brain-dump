@@ -1,15 +1,21 @@
 import { useCallback } from 'react'
-import { I_Collection, I_Document, I_ServiceApis } from '@/lib/homebrew'
+import { I_Collection, I_Document } from '@/lib/homebrew'
 import toast from 'react-hot-toast'
+import { useGlobalContext } from '@/contexts'
 
 export type T_DocPayload = { [key: string]: any } | FormData
 
-export const useMemoryActions = (services: I_ServiceApis | null) => {
-  // Fetch the current collection and all its' source ids
+export const useMemoryActions = () => {
+  const { services } = useGlobalContext()
+
+  /**
+   * Fetch the current collection and all its' source ids
+   */
   const fetchCollection = useCallback(
     async (collection: I_Collection) => {
       try {
         if (!collection) throw new Error('No collection specified')
+        if (!services) return null
 
         const body = { id: collection?.name }
         const res = await services?.memory.getCollection({ body })
@@ -20,17 +26,18 @@ export const useMemoryActions = (services: I_ServiceApis | null) => {
         )
       } catch (err) {
         toast.error(`${err}`)
-        return false
+        return null
       }
     },
-    [services?.memory],
+    [services],
   )
 
   // Fetch all documents for collection
-  const fetchAllDocuments = useCallback(
+  const fetchDocumentsFromCollection = useCallback(
     async (collection: I_Collection, document_ids: string[]): Promise<I_Document[]> => {
       try {
         if (!collection) throw new Error('No collection or document ids specified')
+        if (!services) return []
 
         const body = {
           collection_id: collection?.name,
@@ -47,11 +54,13 @@ export const useMemoryActions = (services: I_ServiceApis | null) => {
         return []
       }
     },
-    [services?.memory],
+    [services],
   )
 
-  // Fetch all documents for the specified collection
-  const fetchAll = useCallback(
+  /**
+   * Fetch all documents for the specified collection
+   */
+  const fetchDocuments = useCallback(
     async (collection: I_Collection | null) => {
       if (!collection) return
 
@@ -62,14 +71,19 @@ export const useMemoryActions = (services: I_ServiceApis | null) => {
 
       if (!sources || sources.length === 0) return null
 
-      const res = await fetchAllDocuments(collection, sources)
+      const res = await fetchDocumentsFromCollection(collection, sources)
       return res
     },
-    [fetchAllDocuments, fetchCollection],
+    [fetchDocumentsFromCollection, fetchCollection],
   )
 
+  /**
+   * Fetch all collections from index
+   */
   const fetchCollections = useCallback(async () => {
     try {
+      if (!services) return
+
       const response = await services?.memory.getAllCollections()
 
       if (!response?.success) throw new Error('Failed to fetch collections')
@@ -80,7 +94,7 @@ export const useMemoryActions = (services: I_ServiceApis | null) => {
       toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
       return
     }
-  }, [services?.memory])
+  }, [services])
 
-  return { fetchAll, fetchCollections, fetchCollection, fetchAllDocuments }
+  return { fetchDocuments, fetchCollections, fetchCollection }
 }
