@@ -21,11 +21,19 @@ interface I_Props {
 
 export const DocumentsButton = ({ session, collectionId }: I_Props) => {
   const { getServices } = useHomebrew()
-  const { setSelectedDocumentId, documents, setDocuments } = useGlobalContext()
-  const { fetchDocuments, fetchCollections } = useMemoryActions()
+  const { setSelectedDocumentId, documents, setDocuments, documentChunks, setDocumentChunks, services, setServices, collections } = useGlobalContext()
+  const { fetchDocuments, fetchCollections, fetchDocumentChunks } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [chunks, setChunks] = useState<Array<any>>([])
-  const numChunks = chunks?.length || 0
+  const numChunks = documentChunks?.length || 0
+
+  // Get all chunks for document
+  const fetchChunksForDocument = useCallback(
+    async (id: string | null, doc: any) => {
+      const chunkResponse = await fetchDocumentChunks(id, doc)
+      chunkResponse.length > 0 && setDocumentChunks(chunkResponse)
+    },
+    [fetchDocumentChunks, setDocumentChunks],
+  )
 
   const items = useMemo(() => documents?.map(
     document => (
@@ -34,10 +42,14 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
         document={document}
         numChunks={numChunks}
         onClick={() => {
+          // Fetch document and its chunks when selected
           setSelectedDocumentId(document?.metadata?.id)
+          const coll = collections.find(c => c.id === collectionId)
+          const collectionName = coll?.name || null
+          fetchChunksForDocument(collectionName, document)
         }} />
     )
-  ), [documents, numChunks, setSelectedDocumentId])
+  ), [collectionId, collections, documents, fetchChunksForDocument, numChunks, setSelectedDocumentId])
 
   const documentCards = documents?.length ?
     items
@@ -52,7 +64,6 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
    */
   const clearDocuments = async () => {
     try {
-      const services = await getServices()
       const result = await services?.memory.wipe()
       if (!result?.success) throw new Error(result?.message)
       toast.success('All documents successfully removed')
@@ -70,11 +81,8 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
       const documentsResponse = await fetchDocuments(currentCollection)
 
       if (documentsResponse?.length === 0) throw new Error('Failed to fetch documents.')
-
-      // @TODO Get chunks for document ...
-      // setChunks(chunkResponse?.data)
-
       documentsResponse && setDocuments(documentsResponse)
+
       return documentsResponse
     } catch (error) {
       toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
@@ -108,6 +116,14 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
       </div>
     )
   }
+
+  useEffect(() => {
+    const action = async () => {
+      const s = await getServices()
+      s && setServices(s)
+    }
+    if (!services) action()
+  }, [getServices, services, setServices])
 
   return (
     <Sidebar title="Documents" icon={FileIcon}>

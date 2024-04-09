@@ -13,6 +13,8 @@ interface IGlobalContextProps {
   setSelectedDocumentId: (id: string) => void
   documents: Array<I_Document>
   setDocuments: (documents: I_Document[]) => void
+  documentChunks: Array<any>
+  setDocumentChunks: (chunks: Array<any>) => void
 }
 
 export const GlobalContext = React.createContext<IGlobalContextProps>({
@@ -27,6 +29,8 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setSelectedDocumentId: () => { },
   documents: [],
   setDocuments: () => { },
+  documentChunks: [],
+  setDocumentChunks: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -35,6 +39,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [documents, setDocuments] = useState<Array<I_Document>>([])
   const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [collections, setCollections] = useState<Array<I_Collection>>([])
+  const [documentChunks, setDocumentChunks] = useState<Array<any>>([])
 
   return (
     <GlobalContext.Provider
@@ -50,6 +55,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setSelectedCollectionId,
         documents,
         setDocuments,
+        documentChunks,
+        setDocumentChunks,
       }}
     >
       {children}

@@ -28,7 +28,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const { getServices, getAPIConfigs } = useHomebrew()
   const { collections, setCollections, setDocuments, setSelectedCollectionId, services, setServices } = useGlobalContext()
   const [hasMounted, setHasMounted] = useState(false)
-  // const [collections, setCollections] = useState<Array<I_Collection>>([])
   const [selectedCollection, setSelectedCollection] = useState<I_Collection | null>(null)
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)

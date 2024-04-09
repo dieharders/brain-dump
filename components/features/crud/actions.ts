@@ -32,8 +32,35 @@ export const useMemoryActions = () => {
     [services],
   )
 
-  // Fetch all documents for collection
-  const fetchDocumentsFromCollection = useCallback(
+  const fetchDocumentChunks = useCallback(
+    async (collectionName: string | null, doc: any) => {
+      try {
+        if (!collectionName || !doc)
+          throw new Error('No collection or document specified')
+        if (!services) return []
+
+        const body = {
+          collectionId: collectionName,
+          document: doc,
+        }
+
+        const res = await services?.memory.getChunks({ body })
+
+        if (!res?.success)
+          throw new Error(`No document chunks found for collection:\n${collectionName}`)
+
+        const chunks = res?.data || []
+        return chunks
+      } catch (err) {
+        toast.error(`Failed to fetch document chunks: ${err}`)
+        return []
+      }
+    },
+    [services],
+  )
+
+  // Fetch one or more documents from a collection
+  const fetchDocumentsById = useCallback(
     async (collection: I_Collection, document_ids: string[]): Promise<I_Document[]> => {
       try {
         if (!collection) throw new Error('No collection or document ids specified')
@@ -71,10 +98,10 @@ export const useMemoryActions = () => {
 
       if (!sources || sources.length === 0) return null
 
-      const res = await fetchDocumentsFromCollection(collection, sources)
+      const res = await fetchDocumentsById(collection, sources)
       return res
     },
-    [fetchDocumentsFromCollection, fetchCollection],
+    [fetchDocumentsById, fetchCollection],
   )
 
   /**
@@ -96,5 +123,11 @@ export const useMemoryActions = () => {
     }
   }, [services])
 
-  return { fetchDocuments, fetchCollections, fetchCollection }
+  return {
+    fetchDocumentChunks,
+    fetchDocumentsById,
+    fetchDocuments,
+    fetchCollections,
+    fetchCollection,
+  }
 }

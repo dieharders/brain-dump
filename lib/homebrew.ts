@@ -334,6 +334,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   memory: {
     addDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getChunks: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     updateDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     deleteDocuments: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
