@@ -21,10 +21,9 @@ interface I_Props {
 
 export const DocumentsButton = ({ session, collectionId }: I_Props) => {
   const { getServices } = useHomebrew()
-  const { setSelectedDocumentId, documents, setDocuments, documentChunks, setDocumentChunks, services, setServices, collections } = useGlobalContext()
+  const { selectedDocumentId, setSelectedDocumentId, documents, setDocuments, setDocumentChunks, services, setServices, collections } = useGlobalContext()
   const { fetchDocuments, fetchCollections, fetchDocumentChunks } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const numChunks = documentChunks?.length || 0
 
   // Get all chunks for document
   const fetchChunksForDocument = useCallback(
@@ -40,8 +39,9 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
       <CardDocument
         key={document?.metadata?.id}
         document={document}
-        numChunks={numChunks}
+        numChunks={JSON.parse(document?.metadata?.chunk_ids)?.length}
         onClick={() => {
+          if (document.metadata.id === selectedDocumentId) return
           // Fetch document and its chunks when selected
           setSelectedDocumentId(document?.metadata?.id)
           const coll = collections.find(c => c.id === collectionId)
@@ -49,7 +49,7 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
           fetchChunksForDocument(collectionName, document)
         }} />
     )
-  ), [collectionId, collections, documents, fetchChunksForDocument, numChunks, setSelectedDocumentId])
+  ), [collectionId, collections, documents, fetchChunksForDocument, selectedDocumentId, setSelectedDocumentId])
 
   const documentCards = documents?.length ?
     items

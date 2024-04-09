@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { cn } from '@/lib/utils'
@@ -15,13 +15,14 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 import { useHomebrew } from '@/lib/homebrew'
 
 export default function KnowledgeBasePage() {
-  const { services, setServices, documents, setDocuments, selectedDocumentId, collections, setCollections, selectedCollectionId } = useGlobalContext()
+  const { services, setServices, documents, setDocuments, setDocumentChunks, selectedDocumentId, collections, setCollections, selectedCollectionId, documentChunks } = useGlobalContext()
   const search = useSearchParams()
   const id = search.get('collectionId') || selectedCollectionId
   const router = useRouter()
   const { getServices } = useHomebrew()
   const { fetchCollections } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
+  // Data
   const collection = collections.find((c: any) => c.id === id)
   const document = documents.find(d => d.metadata.id === selectedDocumentId)
   const documentName = document?.metadata?.name
@@ -32,16 +33,16 @@ export default function KnowledgeBasePage() {
   const documentType = document?.metadata?.type
   const documentPath = document?.metadata?.filePath
   const documentUrlPath = document?.metadata.urlPath
-  const chunks = document?.metadata?.chunk_ids
-  const documentChunkIds = chunks ? JSON.parse(chunks) : []
   const documentText = document?.documents
   const description = document?.metadata?.description
   const collectionName = collection?.name
   const collectionTags = collection?.metadata?.tags || ''
-  const chunkItems = documentChunkIds?.map?.((ch: string, index: number) => ({ name: `Chunk: ${index + 1}`, value: ch }))
+  const documentChunkIds = document?.metadata?.chunk_ids ? JSON.parse(document?.metadata?.chunk_ids) : []
+  const chunkItems = documentChunks?.map((ch: any, index) => ({ name: `Chunk: ${index + 1}`, value: ch.hash, text: ch.text }))
   // State
   const [mounted, setMounted] = useState(false)
   const [toggleTextMode, setToggleTextMode] = useState<string>('document')
+  const [currentChunkItem, setCurrentChunkItem] = useState<any>(null)
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
   // Styles
   const toggleStyle = cn("self-center rounded-sm p-4 text-lg")
@@ -88,6 +89,7 @@ export default function KnowledgeBasePage() {
         <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
           <Button variant="outline" className="w-fit p-5 text-lg">Open</Button>
           <Button variant="outline" className="w-fit p-5 text-lg">Edit</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg">Update</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(documentId)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg">Share</Button>
           <Button variant="destructive" className="w-fit p-5 text-lg">Delete</Button>
@@ -102,13 +104,15 @@ export default function KnowledgeBasePage() {
             <p className={descriptionStyle}>📅: {documentDate}</p>
             <p className={descriptionStyle}>📄: {documentFileName}</p>
             <p className={descriptionStyle}>📁: {documentPath}</p>
+            <p className={descriptionStyle}>🍪: {documentChunkIds?.length || 0}</p>
             {documentUrlPath && <p className={descriptionStyle}>🌐: {documentUrlPath}</p>}
-            {documentType && <p className={descriptionStyle}>📎: {documentType}</p>}
+            {documentType && <p className={descriptionStyle}>💾: {documentType}</p>}
           </div>
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
           {/* Document Text/Chunks */}
-          <div className="flex flex-1 flex-col items-center justify-start gap-4 overflow-hidden px-1">
+          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-4 overflow-hidden px-1">
+            <h1 className={subHeadingStyle}>View document content</h1>
             {/* Toggle Group */}
             <ToggleGroup
               label="Text Mode"
@@ -128,7 +132,7 @@ export default function KnowledgeBasePage() {
               <div id="chunk">
                 <Tooltip delayDuration={250}>
                   <TooltipTrigger asChild>
-                    <div className={toggleStyle}>🧱</div>
+                    <div className={toggleStyle}>🍪</div>
                   </TooltipTrigger>
                   <TooltipContent>Chunk</TooltipContent>
                 </Tooltip>
@@ -137,7 +141,11 @@ export default function KnowledgeBasePage() {
             {/* Select chunk */}
             {toggleTextMode === 'chunk' && <Select value={selectedChunk} onChange={setSelectedChunk} items={chunkItems || []} placeholder="Select chunk" />}
             {/* Document/Chunk Output text */}
-            <p className={descriptionStyle}>{documentText}</p>
+            {toggleTextMode === 'document' ?
+              <p className={descriptionStyle}>{documentText}</p>
+              :
+              <p className={descriptionStyle}>{currentChunkItem?.text}</p>
+            }
           </div>
         </div>
       </div>
@@ -194,12 +202,19 @@ export default function KnowledgeBasePage() {
     if (!mounted) action()
   }, [fetchCollections, getServices, mounted, services, setCollections, setServices])
 
+  // Update selected chunk when document is changed
+  useEffect(() => {
+    const item = documentChunks.find(ch => ch.hash === selectedChunk)
+    setCurrentChunkItem(item)
+  }, [document, documentChunks, selectedChunk])
+
   // Reset data on page exit
   useEffect(() => {
     return () => {
       setDocuments([])
+      setDocumentChunks([])
     }
-  }, [setDocuments])
+  }, [setDocumentChunks, setDocuments])
 
   return id ? collectionPage : collectionNotFound
 }

@@ -80,7 +80,7 @@ export const CardDocument = (props: I_Props) => {
             className="focus:bg-muted focus:ring-1 focus:ring-ring"
           >
             <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-              🧱: {numChunks}
+              🍪: {numChunks}
             </span>
           </TooltipTrigger>
           <TooltipContent>Chunks</TooltipContent>

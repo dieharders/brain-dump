@@ -36,8 +36,8 @@ export const useMemoryActions = () => {
     async (collectionName: string | null, doc: any) => {
       try {
         if (!collectionName || !doc)
-          throw new Error('No collection or document specified')
-        if (!services) return []
+          throw new Error('No collection or document specified.')
+        if (!services) new Error('No services available.')
 
         const body = {
           collectionId: collectionName,
@@ -47,7 +47,7 @@ export const useMemoryActions = () => {
         const res = await services?.memory.getChunks({ body })
 
         if (!res?.success)
-          throw new Error(`No document chunks found for collection:\n${collectionName}`)
+          throw new Error(`No document chunks found for collection:\n${collectionName}.`)
 
         const chunks = res?.data || []
         return chunks
