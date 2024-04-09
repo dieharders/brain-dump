@@ -202,11 +202,11 @@ export default function KnowledgeBasePage() {
     if (!mounted) action()
   }, [fetchCollections, getServices, mounted, services, setCollections, setServices])
 
-  // Update selected chunk when document is changed
+  // Update displayed chunk when selected chunk is changed
   useEffect(() => {
     const item = documentChunks.find(ch => ch.hash === selectedChunk)
     setCurrentChunkItem(item)
-  }, [document, documentChunks, selectedChunk])
+  }, [documentChunks, selectedChunk])
 
   // Reset data on page exit
   useEffect(() => {

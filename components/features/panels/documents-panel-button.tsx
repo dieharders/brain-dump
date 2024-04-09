@@ -42,6 +42,8 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
         numChunks={JSON.parse(document?.metadata?.chunk_ids)?.length}
         onClick={() => {
           if (document.metadata.id === selectedDocumentId) return
+          // Reset chunks when changing docs
+          setDocumentChunks([])
           // Fetch document and its chunks when selected
           setSelectedDocumentId(document?.metadata?.id)
           const coll = collections.find(c => c.id === collectionId)
@@ -49,7 +51,7 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
           fetchChunksForDocument(collectionName, document)
         }} />
     )
-  ), [collectionId, collections, documents, fetchChunksForDocument, selectedDocumentId, setSelectedDocumentId])
+  ), [collectionId, collections, documents, fetchChunksForDocument, selectedDocumentId, setDocumentChunks, setSelectedDocumentId])
 
   const documentCards = documents?.length ?
     items
