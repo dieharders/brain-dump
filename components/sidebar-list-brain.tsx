@@ -34,59 +34,12 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
-  const { fetchCollections } = useMemoryActions()
+  const { fetchCollections, addCollection } = useMemoryActions()
 
   const updateListAction = useCallback(async () => {
     const data = await fetchCollections()
     data && setCollections(data)
   }, [fetchCollections, setCollections])
-
-  const addCollection: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
-    const promise = new Promise((resolve, reject) => {
-      const action = async () => {
-        const result = await services?.memory.addCollection(args)
-        // Error
-        if (!result || !result?.success) reject(result?.message)
-        // Success
-        await updateListAction()
-        resolve(result)
-      }
-      action()
-    })
-
-    toast.promise(
-      promise,
-      {
-        loading: 'Adding collection...',
-        success: <b>Collection saved!</b>,
-        error: (err: Error) => <p><b>Could not save collection 😐</b>{"\n"}{`${err?.message}`}</p>,
-      }
-    )
-
-    return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
-  }, [services?.memory, updateListAction])
-
-  const addDocument: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
-    return services?.memory.addDocument(args) || null
-  }, [services?.memory])
-
-  const removeCollection = useCallback(async () => {
-    const id = selectedCollection?.name || ''
-    const res = await services?.memory.deleteCollection({ queryParams: { collection_id: id } }) || null
-    updateListAction()
-    return res
-  }, [selectedCollection?.name, services?.memory, updateListAction])
-
-  const shareCollection = async (collection: I_Collection) => {
-    const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
-    toast(msg, { icon: '💰' })
-    return collection
-  }
-
-  const copyCollectionId = (id: string) => {
-    navigator.clipboard.writeText(id)
-    toast.success('Copied collection id to clipboard')
-  }
 
   // Fetch data when opend
   useEffect(() => {
@@ -100,12 +53,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
       {/* "Add New" and "Refresh" buttons */}
       <div className="flex items-center justify-center gap-4 px-4">
-        {/* <NewItem
-          action={async () => setDialogOpen(true)}
-          actionTitle="+ New Brain"
-          actionDescription="This will add a new brain to your collection."
-        ></NewItem> */}
-        {/* @TODO Make this work with NewItem so it can show pending progress. Pass the form as prop. */}
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
         <RefreshButton action={() => updateListAction()} />
       </div>
@@ -113,10 +60,9 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
         {/* Pop-Up Menus */}
         <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
-        <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions.current} />
-        <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} />
-        <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} />
-        <DialogExploreDocuments dialogOpen={exploreDialogOpen} setDialogOpen={setExploreDialogOpen} collection={selectedCollection} services={services} />
+        {/* <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions.current} /> */}
+        {/* <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} /> */}
+        {/* <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} /> */}
         {/* List of data */}
         {collections?.length ? (
           <div className="space-y-4">
@@ -130,14 +76,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
                     setDocuments([])
                     router.push(`/${ROUTE_KNOWLEDGE}?collectionId=${collection?.id}`, { shallow: true })
                   }}>
-                  {/* <CollectionActions
-                    setAddDocumentDialogOpen={setAddDocumentDialogOpen}
-                    setExploreDialogOpen={setExploreDialogOpen}
-                    setShareDialogOpen={setShareDialogOpen}
-                    setDeleteDialogOpen={setDeleteDialogOpen}
-                    setSelectedCollection={() => setSelectedCollection(collection)}
-                    copyCollectionId={() => copyCollectionId(collection?.name)}
-                  /> */}
                 </CollectionCard>
               )
             )}

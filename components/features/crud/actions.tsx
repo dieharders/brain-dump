@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
-import { I_Collection, I_Document } from '@/lib/homebrew'
-import toast from 'react-hot-toast'
 import { useGlobalContext } from '@/contexts'
+import toast from 'react-hot-toast'
+import { I_Collection, I_Document, I_GenericAPIResponse, T_GenericAPIRequest, T_GenericDataRes } from '@/lib/homebrew'
 
 export type T_DocPayload = { [key: string]: any } | FormData
 
@@ -123,7 +123,102 @@ export const useMemoryActions = () => {
     }
   }, [services])
 
+  const addDocument: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
+    return services?.memory.addDocument(args) || null
+  }, [services?.memory])
+
+  const addCollection: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
+    const promise = new Promise((resolve, reject) => {
+      const action = async () => {
+        const result = await services?.memory.addCollection(args)
+        // Error
+        if (!result || !result?.success) reject(result?.message)
+        // Success
+        resolve(result)
+      }
+      action()
+    })
+
+    toast.promise(
+      promise,
+      {
+        loading: 'Adding collection...',
+        success: <b>Collection saved!</b>,
+        error: (err: Error) => <p><b>Could not save collection 😐</b>{"\n"}{`${err?.message}`}</p>,
+      }
+    )
+
+    return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
+  }, [services?.memory])
+
+  const removeCollection = useCallback(async (collectionName: string) => {
+    const res = await services?.memory.deleteCollection({ queryParams: { collection_id: collectionName } }) || null
+    return res
+  }, [services?.memory])
+
+  const updateDocument = async (collectionName: string, document: I_Document) => {
+    const chunkSize = null // @TODO should come from a edit menu
+    const chunkOverlap = null // @TODO should come from a edit menu
+    const chunkStrategy = null // @TODO should come from a edit menu
+    const payload = {
+      body: {
+        collectionName,
+        documentId: document.metadata.id,
+        documentName: document.metadata.name,
+        metadata: document.metadata, // optional, if we want to upload new ones from a form
+        urlPath: document.metadata.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
+        filePath: document.metadata.filePath,
+        chunkSize: chunkSize,
+        chunkOverlap: chunkOverlap,
+        chunkStrategy: chunkStrategy,
+      }
+    }
+    const res = await services?.memory.updateDocument(payload)
+    if (!res?.success) toast.error(`Error ${res?.message}`)
+    return null
+  }
+
+  const deleteDocument = async (collectionName: string, document: I_Document) => {
+    const res = await services?.memory.deleteDocuments({
+      body: {
+        collection_id: collectionName,
+        document_ids: [document.metadata.id],
+      }
+    })
+    if (!res?.success) {
+      toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)
+      return false
+    }
+    // Successful
+    return true
+  }
+
+  const shareMemory = async () => {
+    const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
+    toast(msg, { icon: '💰' })
+    return false
+  }
+
+  const copyId = (id: string | null) => {
+    if (!id) return
+    navigator.clipboard.writeText(id)
+    toast.success('Copied item id to clipboard!')
+  }
+
+  const fileExploreAction = async (document: I_Document) => {
+    await services?.memory.fileExplore({ queryParams: { filePath: document.metadata.filePath } })
+    return
+  }
+
   return {
+    fileExploreAction,
+    shareMemory,
+    copyId,
+    updateDocument,
+    deleteDocument,
+    addDocument,
+    addCollection,
+    removeCollection,
     fetchDocumentChunks,
     fetchDocumentsById,
     fetchDocuments,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { cn } from '@/lib/utils'
@@ -9,10 +9,11 @@ import { Separator } from '@/components/ui/separator'
 import { useRenderText } from '@/components/ui/useRenderText'
 import { Select } from '@/components/ui/select'
 import ToggleGroup from '@/components/ui/toggle-group'
-import toast from 'react-hot-toast'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useHomebrew } from '@/lib/homebrew'
+import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
+import { notifications } from '@/lib/notifications'
 
 export default function KnowledgeBasePage() {
   const { services, setServices, documents, setDocuments, setDocumentChunks, selectedDocumentId, collections, setCollections, selectedCollectionId, documentChunks } = useGlobalContext()
@@ -20,7 +21,7 @@ export default function KnowledgeBasePage() {
   const id = search.get('collectionId') || selectedCollectionId
   const router = useRouter()
   const { getServices } = useHomebrew()
-  const { fetchCollections } = useMemoryActions()
+  const { fetchCollections, shareMemory, copyId } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
   // Data
   const collection = collections.find((c: any) => c.id === id)
@@ -44,18 +45,13 @@ export default function KnowledgeBasePage() {
   const [toggleTextMode, setToggleTextMode] = useState<string>('document')
   const [currentChunkItem, setCurrentChunkItem] = useState<any>(null)
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
   // Styles
   const toggleStyle = cn("self-center rounded-sm p-4 text-lg")
   const headingStyle = cn("text-2xl font-bold")
   const subHeadingStyle = cn("text-lg font-semibold")
   const descriptionStyle = cn("text-md text-muted-foreground")
   const tagStyle = cn("flex flex-row flex-wrap items-center justify-start gap-2")
-
-  const copyId = (id: string | undefined) => {
-    if (!id) return
-    navigator.clipboard.writeText(id)
-    toast.success('Copied collection id to clipboard')
-  }
 
   const collectionNotFound = (
     <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-8 p-8">
@@ -90,7 +86,7 @@ export default function KnowledgeBasePage() {
           <Button variant="outline" className="w-fit p-5 text-lg">Open</Button>
           <Button variant="outline" className="w-fit p-5 text-lg">Edit</Button>
           <Button variant="outline" className="w-fit p-5 text-lg">Update</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(documentId)}>Copy Id</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg">Share</Button>
           <Button variant="destructive" className="w-fit p-5 text-lg">Delete</Button>
         </div>
@@ -157,7 +153,24 @@ export default function KnowledgeBasePage() {
     <div className="flex h-full w-full flex-1 flex-col items-center justify-start gap-8 p-8">
       {/* Collection info */}
       <div className="flex w-fit flex-col items-start justify-start gap-2">
-        <div className={cn("self-center text-center", headingStyle)}>Collection</div>
+        {/* Pop-up Action Menus */}
+        <DialogShareCollection
+          action={shareMemory}
+          dialogOpen={shareDialogOpen}
+          setDialogOpen={setShareDialogOpen}
+          name={collection?.name}
+          sharePath={collection?.metadata?.sharePath}
+          createdAt={collection?.metadata?.createdAt}
+          sources={collection?.metadata?.sources || []}
+        />
+        {/* Header */}
+        <div className={cn("self-center pb-4 text-center", headingStyle)}>Collection</div>
+        {/* Actions */}
+        <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden pb-4">
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(id)}>Copy Id</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
+        </div>
         {/* Title */}
         <h1 className={subHeadingStyle} >{collectionName || "Explore files in this collection"}</h1>
         {/* Description */}
