@@ -13,6 +13,7 @@ import { CardDocument } from '@/components/features/panels/card-document'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
 import { FileIcon } from '@radix-ui/react-icons'
+import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
 
 interface I_Props {
   session: Session
@@ -22,7 +23,7 @@ interface I_Props {
 export const DocumentsButton = ({ session, collectionId }: I_Props) => {
   const { getServices } = useHomebrew()
   const { selectedDocumentId, setSelectedDocumentId, documents, setDocuments, setDocumentChunks, services, setServices, collections } = useGlobalContext()
-  const { fetchDocuments, fetchCollections, fetchDocumentChunks } = useMemoryActions()
+  const { addDocument, fetchDocuments, fetchCollections, fetchDocumentChunks } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   // Get all chunks for document
@@ -93,6 +94,8 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
   }, [collectionId, fetchCollections, fetchDocuments, setDocuments])
 
   const DocumentsList = ({ children }: { children: ReactNode }) => {
+    const currentCollection = collections?.find(c => c.id === collectionId) || null
+
     // Fetch data when this panel is opened
     useEffect(() => {
       const action = async () => {
@@ -104,6 +107,8 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
 
     return (
       <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
+        {/* Action Menus */}
+        <DialogAddDocument action={addDocument} dialogOpen={createDialogOpen} setDialogOpen={setCreateDialogOpen} collection={currentCollection} options={services?.memory.configs} />
         {/* "Add New" and "Refresh" buttons */}
         <div className="flex items-center justify-center gap-4 px-4">
           <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>

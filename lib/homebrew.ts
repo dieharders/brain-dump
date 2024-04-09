@@ -328,6 +328,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getSystemPrompts: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    configs: {
+      ragResponseModes: Array<string>
+    }
   }
   /**
    * Use to add/create/update/delete embeddings from database
@@ -344,6 +347,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     deleteCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     fileExplore: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     wipe: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    configs: {
+      chunkingStrategies: Array<string>
+    }
   }
   /**
    * Use to persist data
@@ -462,7 +468,9 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   response.forEach(api => {
     const origin = `${createDomainName()}`
     const apiName = api.name
-    const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
+    const endpoints: { [key: string]: (args: any) => Promise<Response | null> } & {
+      configs?: T_APIConfigOptions
+    } = {}
     let res: Response
 
     // Parse endpoint urls
@@ -529,6 +537,8 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
       // Add request function for this endpoint
       endpoints[endpoint.name] = request
+      // Set api configs
+      endpoints.configs = api.configs || {}
     })
     // Set api callbacks
     serviceApis[apiName] = endpoints
