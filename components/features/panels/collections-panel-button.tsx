@@ -6,28 +6,11 @@ import { Sidebar } from '@/components/sidebar'
 import { SidebarBrainList } from '@/components/sidebar-list-brain'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ClearData } from '@/components/clear-data'
-import { useHomebrew } from '@/lib/homebrew'
-import { toast } from 'react-hot-toast'
 import { ArchiveIcon } from '@radix-ui/react-icons'
+import { useMemoryActions } from '@/components/features/crud/actions'
 
 export const CollectionsButton = ({ session }: { session: Session }) => {
-  const { getServices } = useHomebrew()
-
-  /**
-   * Wipe entire vector database
-   */
-  const clearCollections = async () => {
-    try {
-      const services = await getServices()
-      const result = await services?.memory.wipe()
-      if (!result?.success) throw new Error(result?.message)
-      toast.success('All memories successfully removed')
-      return true
-    } catch (err) {
-      toast.error(`${err}`)
-      return false
-    }
-  }
+  const { deleteAllCollections } = useMemoryActions()
 
   return (
     <Sidebar title="Collections" icon={ArchiveIcon}>
@@ -37,7 +20,7 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
       </Suspense>
       {/* Align footer to bottom of panel */}
       <SidebarFooter className="mt-auto py-8">
-        <ClearData clearAction={clearCollections} actionTitle="Delete all collections" />
+        <ClearData clearAction={deleteAllCollections} actionTitle="Delete all collections" />
       </SidebarFooter>
     </Sidebar>
   )

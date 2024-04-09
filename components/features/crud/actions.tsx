@@ -193,6 +193,21 @@ export const useMemoryActions = () => {
     return true
   }
 
+  /**
+   * Wipe entire vector database
+   */
+  const deleteAllCollections = async () => {
+    try {
+      const result = await services?.memory.wipe()
+      if (!result?.success) throw new Error(result?.message)
+      toast.success('All collections successfully removed ☠')
+      return true
+    } catch (err) {
+      toast.error(`${err}`)
+      return false
+    }
+  }
+
   const shareMemory = async () => {
     const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
     toast(msg, { icon: '💰' })
@@ -216,6 +231,7 @@ export const useMemoryActions = () => {
     copyId,
     updateDocument,
     deleteDocument,
+    deleteAllCollections,
     addDocument,
     addCollection,
     removeCollection,
