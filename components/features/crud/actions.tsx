@@ -173,26 +173,33 @@ export const useMemoryActions = () => {
     return res
   }, [services?.memory])
 
-  const updateDocument = async (collectionName: string, document: I_Document) => {
-    const chunkSize = null // @TODO should come from a edit menu
-    const chunkOverlap = null // @TODO should come from a edit menu
-    const chunkStrategy = null // @TODO should come from a edit menu
-    const payload = {
-      body: {
-        collectionName,
-        documentId: document.metadata.id,
-        documentName: document.metadata.name,
-        metadata: document.metadata, // optional, if we want to upload new ones from a form
-        urlPath: document.metadata.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
-        filePath: document.metadata.filePath,
-        chunkSize: chunkSize,
-        chunkOverlap: chunkOverlap,
-        chunkStrategy: chunkStrategy,
+  const updateDocument = async (collectionName: string | undefined, document: I_Document) => {
+    try {
+      if (!collectionName) throw new Error('No collection name provided.')
+
+      const chunkSize = null // @TODO should come from a edit menu
+      const chunkOverlap = null // @TODO should come from a edit menu
+      const chunkStrategy = null // @TODO should come from a edit menu
+      const payload = {
+        body: {
+          collectionName,
+          documentId: document.metadata.id,
+          documentName: document.metadata.name,
+          metadata: document.metadata, // optional, if we want to upload new ones from a form
+          urlPath: document.metadata.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
+          filePath: document.metadata.filePath,
+          chunkSize: chunkSize,
+          chunkOverlap: chunkOverlap,
+          chunkStrategy: chunkStrategy,
+        }
       }
+      const res = await services?.memory.updateDocument(payload)
+      if (!res?.success) toast.error(`Error ${res?.message}`)
+      return null
+    } catch (err) {
+      toast.error(`${err}`)
+      return null
     }
-    const res = await services?.memory.updateDocument(payload)
-    if (!res?.success) toast.error(`Error ${res?.message}`)
-    return null
   }
 
   const deleteDocument = async (collectionName: string | undefined, document: I_Document) => {

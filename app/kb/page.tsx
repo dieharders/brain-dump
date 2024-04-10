@@ -34,7 +34,7 @@ export default function KnowledgeBasePage() {
   const id = search.get('collectionId') || selectedCollectionId
   const router = useRouter()
   const { getServices } = useHomebrew()
-  const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteDocument } = useMemoryActions()
+  const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteDocument, updateDocument } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
   // Data
   const collection = collections.find((c: any) => c.id === id)
@@ -98,7 +98,7 @@ export default function KnowledgeBasePage() {
         <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg">Update</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => updateDocument(collectionName, document)}>Update</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
           <ClearData
