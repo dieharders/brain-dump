@@ -1,18 +1,14 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
-import { I_Collection, I_GenericAPIResponse, T_GenericAPIRequest, T_GenericDataRes, useHomebrew } from '@/lib/homebrew'
-// import { NewItem } from '@/components/sidebar-item-new'
+import { useCallback, useEffect, useState } from 'react'
 import { CollectionCard } from '@/components/sidebar-item-brain'
-// import { CollectionActions } from '@/components/sidebar-actions-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
-import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
-import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
-import { DialogRemoveCollection } from '@/components/features/crud/dialog-remove-collection'
-import { DialogExploreDocuments } from '@/components/features/crud/dialog-explore-documents'
+// import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
+// import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
+// import { DialogRemoveCollection } from '@/components/features/crud/dialog-remove-collection'
+// import { DialogExploreDocuments } from '@/components/features/crud/dialog-explore-documents'
 import { ROUTE_KNOWLEDGE } from '@/app/constants'
 import { useRouter } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
@@ -23,17 +19,13 @@ export interface SidebarBrainListProps {
 }
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
-  const APIConfigOptions = useRef({})
   const router = useRouter()
-  const { getServices, getAPIConfigs } = useHomebrew()
-  const { collections, setCollections, setDocuments, setSelectedCollectionId, services, setServices } = useGlobalContext()
-  const [hasMounted, setHasMounted] = useState(false)
-  const [selectedCollection, setSelectedCollection] = useState<I_Collection | null>(null)
+  const { collections, setCollections, setSelectedDocumentId, setDocuments, setSelectedCollectionId } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
-  const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
-  const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
+  // const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
+  // const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  // const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
   const { fetchCollections, addCollection } = useMemoryActions()
 
   const updateListAction = useCallback(async () => {
@@ -73,7 +65,10 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
                   collection={collection}
                   onClick={() => {
                     setSelectedCollectionId(collection?.id)
+                    // Reset data when changing collections
                     setDocuments([])
+                    setSelectedDocumentId('')
+                    // Update url to reflect selected id
                     router.push(`/${ROUTE_KNOWLEDGE}?collectionId=${collection?.id}`, { shallow: true })
                   }}>
                 </CollectionCard>

@@ -36,10 +36,10 @@ export default function KnowledgeBasePage() {
   const documentUrlPath = document?.metadata.urlPath
   const documentText = document?.documents
   const description = document?.metadata?.description
-  const collectionName = collection?.name
-  const collectionTags = collection?.metadata?.tags || ''
   const documentChunkIds = document?.metadata?.chunk_ids ? JSON.parse(document?.metadata?.chunk_ids) : []
   const chunkItems = documentChunks?.map((ch: any, index) => ({ name: `Chunk: ${index + 1}`, value: ch.hash, text: ch.text }))
+  const collectionName = collection?.name
+  const collectionTags = collection?.metadata?.tags || ''
   // State
   const [mounted, setMounted] = useState(false)
   const [toggleTextMode, setToggleTextMode] = useState<string>('document')
