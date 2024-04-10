@@ -23,7 +23,7 @@ interface I_Props {
 export const DocumentsButton = ({ session, collectionId }: I_Props) => {
   const { getServices } = useHomebrew()
   const { selectedDocumentId, setSelectedDocumentId, documents, setDocuments, setDocumentChunks, services, setServices, collections } = useGlobalContext()
-  const { addDocument, fetchDocuments, fetchCollections, fetchDocumentChunks } = useMemoryActions()
+  const { addDocument, fetchDocumentsFromId, fetchDocumentChunks, deleteAllDocuments } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   // Get all chunks for document
@@ -62,45 +62,14 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
       </div>
     )
 
-  /**
-   * @TODO Delete all documents in this collection or delete entire collection ?
-   */
-  const clearDocuments = async () => {
-    try {
-      const result = await services?.memory.wipe()
-      if (!result?.success) throw new Error(result?.message)
-      toast.success('All documents successfully removed')
-      return true
-    } catch (err) {
-      toast.error(`${err}`)
-      return false
-    }
-  }
-
-  const updateAction = useCallback(async () => {
-    try {
-      const allCollections = await fetchCollections()
-      const currentCollection = allCollections.find((c: I_Collection) => c.id === collectionId)
-      const documentsResponse = await fetchDocuments(currentCollection)
-
-      if (documentsResponse?.length === 0) throw new Error('Failed to fetch documents.')
-      documentsResponse && setDocuments(documentsResponse)
-
-      return documentsResponse
-    } catch (error) {
-      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
-      return
-    }
-  }, [collectionId, fetchCollections, fetchDocuments, setDocuments])
-
   const DocumentsList = ({ children }: { children: ReactNode }) => {
     const currentCollection = collections?.find(c => c.id === collectionId) || null
 
     // Fetch data when this panel is opened
     useEffect(() => {
       const action = async () => {
-        const res = await updateAction()
-        res && setDocuments(res as any)
+        const res = await fetchDocumentsFromId(collectionId)
+        res && setDocuments(res)
       }
       if (!documents || documents.length === 0) action()
     }, [])
@@ -112,7 +81,10 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
         {/* "Add New" and "Refresh" buttons */}
         <div className="flex items-center justify-center gap-4 px-4">
           <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
-          <RefreshButton action={updateAction} />
+          <RefreshButton action={async () => {
+            const res = await fetchDocumentsFromId(collectionId)
+            res && setDocuments(res)
+          }} />
         </div>
         {/* List of documents */}
         <div className="scrollbar overflow-x-hidden pl-4 pr-2">
@@ -140,7 +112,7 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
       </Suspense>
       {/* Align footer to bottom of panel */}
       <SidebarFooter className="mt-auto py-8">
-        <ClearData clearAction={clearDocuments} actionTitle="Delete all documents" />
+        <ClearData clearAction={deleteAllDocuments} actionTitle="Delete all documents" />
       </SidebarFooter>
     </Sidebar>
   )

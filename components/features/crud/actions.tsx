@@ -123,6 +123,23 @@ export const useMemoryActions = () => {
     }
   }, [services])
 
+  /**
+ * Fetch all documents from collection id
+ */
+  const fetchDocumentsFromId = useCallback(async (collectionId: string | null) => {
+    try {
+      const allCollections = await fetchCollections()
+      const currentCollection = allCollections.find((c: I_Collection) => c.id === collectionId)
+      const documentsResponse = await fetchDocuments(currentCollection)
+
+      if (documentsResponse?.length === 0) throw new Error('Failed to fetch documents.')
+      return documentsResponse
+    } catch (error) {
+      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
+      return
+    }
+  }, [fetchCollections, fetchDocuments])
+
   const addDocument: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
     return services?.memory.addDocument(args) || null
   }, [services?.memory])
@@ -208,6 +225,23 @@ export const useMemoryActions = () => {
     }
   }
 
+  /**
+   * Delete all documents in this collection
+   */
+  const deleteAllDocuments = async () => {
+    try {
+      // @TODO Loop through all documents and remove them ...
+      return true
+      const result = await services?.memory.wipe()
+      if (!result?.success) throw new Error(result?.message)
+      toast.success('All documents successfully removed')
+      return true
+    } catch (err) {
+      toast.error(`${err}`)
+      return false
+    }
+  }
+
   const shareMemory = async () => {
     const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
     toast(msg, { icon: '💰' })
@@ -232,12 +266,14 @@ export const useMemoryActions = () => {
     updateDocument,
     deleteDocument,
     deleteAllCollections,
+    deleteAllDocuments,
     addDocument,
     addCollection,
     removeCollection,
     fetchDocumentChunks,
     fetchDocumentsById,
     fetchDocuments,
+    fetchDocumentsFromId,
     fetchCollections,
     fetchCollection,
   }
