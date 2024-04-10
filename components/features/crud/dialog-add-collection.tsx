@@ -25,19 +25,20 @@ export const DialogCreateCollection = (props: IProps) => {
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
   const [tagsValue, setTagsValue] = useState('')
+  const [iconValue, setIconValue] = useState('')
 
   // Send form to backend
   const onSubmit = useCallback(async () => {
     try {
       // Send form input as url query params
-      const formInputs = { collectionName: nameValue, description: descrValue, tags: tagsValue }
+      const formInputs = { collectionName: nameValue, description: descrValue, tags: tagsValue, icon: iconValue }
       // Send request
       const result = await action({ queryParams: formInputs })
       return result?.success
     } catch {
       return false
     }
-  }, [action, descrValue, nameValue, tagsValue])
+  }, [action, descrValue, iconValue, nameValue, tagsValue])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -55,6 +56,13 @@ export const DialogCreateCollection = (props: IProps) => {
             value={nameValue}
             placeholder="Collection name (3-63 lowercase chars)"
             onChange={e => setNameValue(e.target.value)}
+          />
+          {/* Icon */}
+          <Input
+            name="icon"
+            value={iconValue}
+            placeholder="Icon (optional, emoji only)"
+            onChange={e => setIconValue(e.target.value)}
           />
           {/* Description */}
           <Input

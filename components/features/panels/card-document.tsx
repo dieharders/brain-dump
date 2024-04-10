@@ -3,16 +3,8 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { FileTextIcon, VideoIcon, SpeakerLoudIcon, CodeIcon, QuestionMarkIcon } from '@radix-ui/react-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { I_Document } from '@/lib/homebrew'
-
-const iconLookUp: { [key: string]: any } = {
-  'text': () => '📄',//FileTextIcon,
-  'video': VideoIcon,
-  'audio': () => '🔊',//SpeakerLoudIcon,
-  'code': CodeIcon,
-}
 
 interface I_Props {
   document: I_Document
@@ -29,11 +21,12 @@ export const CardDocument = (props: I_Props) => {
   const { document, numChunks, onClick, isSelected, isActive: isHighlighted } = props
   const [isActive, setIsActive] = useState(false)
   const numTags = document?.metadata?.tags?.split(' ').length || 0
-  const description = document?.metadata?.description || 'No description...'
+  const description = document?.metadata?.description || 'No description.'
   const name = document?.metadata?.name || 'No title'
-  const createdAt = document?.metadata?.createdAt || '???'
-  const documentType = document?.metadata?.type || 'text'
-  const Icon = iconLookUp[documentType || ''] || QuestionMarkIcon
+  const createdAt = document?.metadata?.createdAt || '?'
+  const documentType = document?.metadata?.fileType || '?'
+  const toolTipStyle = cn("min-w-0 focus:bg-muted focus:ring-1 focus:ring-ring")
+  const labelStyle = cn("max-w-12 w-full truncate")
 
   return (
     <div
@@ -58,7 +51,7 @@ export const CardDocument = (props: I_Props) => {
       {/* Header */}
       <div className="flex w-full items-stretch overflow-hidden">
         {/* Card name */}
-        <span className="h-100 my-auto w-full overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="h-100 my-auto w-full truncate">
           {name}
         </span>
       </div>
@@ -77,53 +70,52 @@ export const CardDocument = (props: I_Props) => {
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className={labelStyle}>
               🍪: {numChunks}
-            </span>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Chunks</TooltipContent>
+          <TooltipContent>Chunks: {numChunks}</TooltipContent>
         </Tooltip>
 
         {/* Type of Document */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-              {/* <Icon />:{documentType.toUpperCase()} */}
-              <Icon className="inline-block" /><div className="inline-block">:{' '}{documentType.toUpperCase()}</div>
-            </span>
+            <div className={labelStyle}>
+              <div className="inline-block" >💾<div className="inline-block">:{' '}{documentType}</div></div>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Document Type: {documentType}</TooltipContent>
+          <TooltipContent>Document type: {documentType}</TooltipContent>
         </Tooltip>
 
         {/* Number of metadata tags */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className={labelStyle}>
               🔖: {numTags}
-            </span>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Tags</TooltipContent>
+          <TooltipContent>Tag count: {numTags}</TooltipContent>
         </Tooltip>
 
         {/* Creation date */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-              📆: ?
-            </span>
+            <div className="max-w-[4rem] truncate">
+              📆: {createdAt}
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Created at {createdAt}</TooltipContent>
+          <TooltipContent>Created: {createdAt}</TooltipContent>
         </Tooltip>
       </div>
     </div>

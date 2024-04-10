@@ -24,7 +24,10 @@ export const CollectionCard = (props: SidebarItemProps) => {
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags?.split(' ').length || 0
   const numSources = collection?.metadata?.sources?.length || 0
-  const createdAt = collection?.metadata?.createdAt || '???'
+  const createdAt = collection?.metadata?.createdAt || '?'
+  const icon = collection?.metadata?.icon || ''
+  const toolTipStyle = cn("min-w-0 focus:bg-muted focus:ring-1 focus:ring-ring")
+  const labelStyle = cn("max-w-12 w-full truncate")
 
   return (
     <div
@@ -55,13 +58,13 @@ export const CollectionCard = (props: SidebarItemProps) => {
               tabIndex={-1}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
             >
-              <IconBrain className="mr-2" />
+              {icon ? <div className="mr-2">{icon}</div> : <IconBrain className="mr-2" />}
             </TooltipTrigger>
             <TooltipContent>Collection</TooltipContent>
           </Tooltip>
         </div>
         {/* Card name */}
-        <span className="h-100 my-auto w-full overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="h-100 my-auto w-full truncate">
           {collection.name}
         </span>
         {/* Button actions */}
@@ -72,7 +75,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
       <div className="my-2 flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
         {/* Card name */}
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
-          {collection.metadata?.description || 'No description...'}
+          {collection.metadata?.description || 'No description.'}
         </span>
       </div>
 
@@ -81,52 +84,52 @@ export const CollectionCard = (props: SidebarItemProps) => {
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className={labelStyle}>
               📂: {numSources}
-            </span>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Sources</TooltipContent>
+          <TooltipContent>Source count: {numSources}</TooltipContent>
         </Tooltip>
 
         {/* Number of times favorited */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className={labelStyle}>
               ⭐: {numFavorites}
-            </span>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Favorites</TooltipContent>
+          <TooltipContent>Favorite count: {numFavorites}</TooltipContent>
         </Tooltip>
 
         {/* Number of metadata tags */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className={labelStyle}>
               🔖: {numTags}
-            </span>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Tags</TooltipContent>
+          <TooltipContent>Tag count: {numTags}</TooltipContent>
         </Tooltip>
 
         {/* Creation date */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
-            className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            className={toolTipStyle}
           >
-            <span className="max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
-              📆: ?
-            </span>
+            <div className="max-w-[4rem] truncate">
+              📆: {createdAt}
+            </div>
           </TooltipTrigger>
-          <TooltipContent>Created at {createdAt}</TooltipContent>
+          <TooltipContent>Created: {createdAt}</TooltipContent>
         </Tooltip>
       </div>
     </div>

@@ -124,7 +124,7 @@ export interface I_DocSource {
   tags: string
   createdAt: string
   checksum: string
-  type?: string // @TODO Introduce this on backend
+  fileType: string // @TODO Introduce this on backend
 }
 
 export interface I_Document {
@@ -141,6 +141,7 @@ export interface I_Collection {
     sources: string[]
     description: string
     tags: string
+    icon: string
     createdAt?: string
     sharePath?: string
     favorites?: number

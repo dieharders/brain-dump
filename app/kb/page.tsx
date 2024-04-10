@@ -48,7 +48,7 @@ export default function KnowledgeBasePage() {
   const documentFileName = document?.metadata?.fileName
   const documentTags = document?.metadata?.tags
   const documentDate = document?.metadata?.createdAt
-  const documentType = document?.metadata?.type
+  const documentType = document?.metadata?.fileType
   const documentPath = document?.metadata?.filePath
   const documentUrlPath = document?.metadata.urlPath
   const documentText = document?.documents
@@ -165,11 +165,11 @@ export default function KnowledgeBasePage() {
             <div className={subHeadingStyle}>Info</div>
             <p className={descriptionStyle}>🍪: {documentChunkIds?.length || 0}</p>
             {documentTags && <div className={tagStyle}>🔖: {<RandomUnderlinedText className="text-muted-foreground" text={documentTags || ''} /> || 'Add some tags'}</div>}
+            {documentType && <p className={descriptionStyle}>💾: {documentType}</p>}
             <p className={descriptionStyle}>📅: {documentDate}</p>
             <p className={descriptionStyle}>📄: {documentFileName}</p>
-            <p className={descriptionStyle}>📁: {documentPath}</p>
             {documentUrlPath && <p className={descriptionStyle}>🌐: {documentUrlPath}</p>}
-            {documentType && <p className={descriptionStyle}>💾: {documentType}</p>}
+            <p className={descriptionStyle}>📁: {documentPath}</p>
           </div>
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
@@ -237,7 +237,7 @@ export default function KnowledgeBasePage() {
         <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
           <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
             <span className="w-fit">📂 Documents: <span className="text-white">{collection?.metadata?.sources?.length || 0}</span></span>
-            <span className="w-fit">📆 Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "???"}</span></span>
+            <span className="w-fit">📆 Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "?"}</span></span>
           </p>
         </div>
         {/* Tags */}
@@ -246,7 +246,7 @@ export default function KnowledgeBasePage() {
           {
             collectionTags?.length > 0 ?
               <RandomUnderlinedText className="text-muted-foreground" text={collectionTags} /> :
-              <p className={descriptionStyle}>Add hashtags to link similar memories</p>
+              <p className={descriptionStyle}>Add hashtags to link similar memories...</p>
           }
         </div>
       </div>

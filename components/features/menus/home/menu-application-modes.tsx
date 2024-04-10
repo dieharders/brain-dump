@@ -3,7 +3,7 @@
 import { Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { useRouter } from "next/navigation"
 import { PersonIcon, ClipboardIcon, Cross1Icon } from '@radix-ui/react-icons'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
@@ -50,7 +50,7 @@ const Item = ({ title, onAction, Icon, children, className }: { children?: React
       >
         <Icon className="h-[50%] w-[50%] text-foreground" />
       </div>
-      <div className="text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-muted-foreground">{title}</div>
+      <div className="text-md w-full cursor-default overflow-hidden text-ellipsis whitespace-nowrap text-center text-muted-foreground">{title}</div>
       {children}
     </div>
   )
@@ -313,12 +313,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
           <Item
             key={c?.id}
             title={c?.name}
-            Icon={ClipboardIcon}
+            Icon={c?.metadata?.icon ? () => <div className="text-4xl">{c?.metadata?.icon}</div> : ClipboardIcon}
             onAction={() => goToKnowledgePage(c?.id)}
             className="relative overflow-hidden"
           >
             <ClearData
-              className="absolute right-0 top-0 m-auto flex h-[2rem] w-[2rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-neutral-300 p-2 text-sm hover:bg-red-500 dark:bg-neutral-950 dark:hover:bg-red-500"
+              className="absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
               variant="secondary"
               action={async () => {
                 const res = await deleteCollection(c.name)

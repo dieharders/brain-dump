@@ -111,7 +111,7 @@ export const DialogExploreDocuments = (props: I_Props) => {
         {/* Tags */}
         <DialogTitle >🔖 Tags</DialogTitle>
         <DialogDescription>
-          {collection?.metadata?.tags || "Add hashtags to link similar memories."}
+          {collection?.metadata?.tags || "Add hashtags to link similar memories..."}
         </DialogDescription>
         <Separator className="my-4" />
         {/* List of files */}
