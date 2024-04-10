@@ -5,9 +5,6 @@ import { CollectionCard } from '@/components/sidebar-item-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
-// import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
-// import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
-// import { DialogExploreDocuments } from '@/components/features/crud/dialog-explore-documents'
 import { ROUTE_KNOWLEDGE } from '@/app/constants'
 import { useRouter } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
@@ -21,9 +18,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const router = useRouter()
   const { collections, setCollections, setSelectedDocumentId, setDocuments, setSelectedCollectionId } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
-  // const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
-  // const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  // const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
   const { fetchCollections, addCollection } = useMemoryActions()
 
   const updateListAction = useCallback(async () => {
@@ -50,8 +44,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
         {/* Pop-Up Menus */}
         <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
-        {/* <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions.current} /> */}
-        {/* <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} /> */}
         {/* List of data */}
         {collections?.length ? (
           <div className="space-y-4">

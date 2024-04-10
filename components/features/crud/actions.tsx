@@ -240,11 +240,10 @@ export const useMemoryActions = () => {
 
   /**
    * Delete all documents in this collection
+   * @TODO Loop through all documents and remove them
    */
   const deleteAllDocuments = async () => {
     try {
-      // @TODO Loop through all documents and remove them ...
-      return true
       const result = await services?.memory.wipe()
       if (!result?.success) throw new Error(result?.message)
       toast.success('All documents successfully removed')

@@ -5,8 +5,8 @@ import { Session } from 'next-auth/types'
 import { Sidebar } from '@/components/sidebar'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
-import { SidebarFooter } from '@/components/sidebar-footer'
-import { ClearData } from '@/components/features/crud/dialog-clear-data'
+// import { SidebarFooter } from '@/components/sidebar-footer'
+// import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { useHomebrew } from '@/lib/homebrew'
 import { CardDocument } from '@/components/features/panels/card-document'
 import { useMemoryActions } from '@/components/features/crud/actions'
@@ -22,7 +22,7 @@ interface I_Props {
 export const DocumentsButton = ({ session, collectionId }: I_Props) => {
   const { getServices } = useHomebrew()
   const { selectedDocumentId, setSelectedDocumentId, documents, setDocuments, setDocumentChunks, services, setServices, collections } = useGlobalContext()
-  const { addDocument, fetchDocumentsFromId, fetchDocumentChunks, deleteAllDocuments } = useMemoryActions()
+  const { addDocument, fetchDocumentsFromId, fetchDocumentChunks } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   // Get all chunks for document
@@ -110,9 +110,9 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
         <DocumentsList>{documentCards}</DocumentsList>
       </Suspense>
       {/* Align footer to bottom of panel */}
-      <SidebarFooter className="mt-auto py-8">
+      {/* <SidebarFooter className="mt-auto py-8">
         <ClearData action={deleteAllDocuments} actionTitle="Delete all documents" />
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   )
 }
