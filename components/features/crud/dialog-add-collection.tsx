@@ -17,10 +17,11 @@ interface IProps {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   action: T_GenericAPIRequest<any, T_GenericDataRes>
+  onSuccess?: () => void
 }
 
 export const DialogCreateCollection = (props: IProps) => {
-  const { dialogOpen, setDialogOpen, action } = props
+  const { dialogOpen, setDialogOpen, action, onSuccess } = props
   const [disableForm, setDisableForm] = useState(false)
   const [nameValue, setNameValue] = useState('')
   const [descrValue, setDescrValue] = useState('')
@@ -34,17 +35,19 @@ export const DialogCreateCollection = (props: IProps) => {
       const formInputs = { collectionName: nameValue, description: descrValue, tags: tagsValue, icon: iconValue }
       // Send request
       const result = await action({ queryParams: formInputs })
-      return result?.success
+      const success = result?.success
+      if (success && onSuccess) onSuccess()
+      return success
     } catch {
       return false
     }
-  }, [action, descrValue, iconValue, nameValue, tagsValue])
+  }, [action, onSuccess, descrValue, iconValue, nameValue, tagsValue])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a collection of memories</DialogTitle>
+          <DialogTitle className="mb-4">Create a collection of memories</DialogTitle>
           <DialogDescription>
             Adding a short description and tags helps the Ai understand better.
           </DialogDescription>

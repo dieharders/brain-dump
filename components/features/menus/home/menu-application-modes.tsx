@@ -298,11 +298,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Content */}
       <div className={gridContentClass}>
         <DialogCreateCollection
-          action={async () => {
-            const res = await addCollection()
-            if (res) await updateKBCollections()
-            return res
-          }}
+          action={addCollection}
+          onSuccess={updateKBCollections}
           dialogOpen={createCollectionDialogOpen}
           setDialogOpen={setCreateCollectionDialogOpen}
         />
