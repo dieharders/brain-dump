@@ -5,7 +5,7 @@ import { Session } from 'next-auth/types'
 import { Sidebar } from '@/components/sidebar'
 import { SidebarBrainList } from '@/components/sidebar-list-brain'
 import { SidebarFooter } from '@/components/sidebar-footer'
-import { ClearData } from '@/components/clear-data'
+import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { ArchiveIcon } from '@radix-ui/react-icons'
 import { useMemoryActions } from '@/components/features/crud/actions'
 
@@ -20,7 +20,7 @@ export const CollectionsButton = ({ session }: { session: Session }) => {
       </Suspense>
       {/* Align footer to bottom of panel */}
       <SidebarFooter className="mt-auto py-8">
-        <ClearData clearAction={deleteAllCollections} actionTitle="Delete all collections" />
+        <ClearData action={deleteAllCollections} actionTitle="Delete all collections" />
       </SidebarFooter>
     </Sidebar>
   )

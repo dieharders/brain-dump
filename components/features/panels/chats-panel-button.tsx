@@ -5,7 +5,7 @@ import { Session } from 'next-auth/types'
 import { SidebarChatList } from '@/components/sidebar-list-chat'
 import { Sidebar } from '@/components/sidebar'
 import { SidebarFooter } from '@/components/sidebar-footer'
-import { ClearData } from '@/components/clear-data'
+import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { IconChat } from '@/components/ui/icons'
 
 export const ChatsButton = ({ session }: { session: Session }) => {
@@ -17,7 +17,7 @@ export const ChatsButton = ({ session }: { session: Session }) => {
         <SidebarChatList userId={session?.user?.id} />
       </Suspense>
       <SidebarFooter>
-        <ClearData clearAction={clearChats} actionTitle="Clear history" />
+        <ClearData action={clearChats} actionTitle="Clear history" />
       </SidebarFooter>
     </Sidebar>
   )

@@ -1,7 +1,6 @@
 'use client'
 
-import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -15,33 +14,35 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
+import toast from 'react-hot-toast'
 
 interface ClearDataProps {
-  clearAction: () => Promise<boolean>
+  Icon?: any
+  action: () => Promise<boolean>
   actionTitle?: string
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost"
   className?: string
 }
 
 export function ClearData(props: ClearDataProps) {
-  const { clearAction, actionTitle, variant, className } = props
-  const [open, setOpen] = React.useState(false)
-  const [isPending, startTransition] = React.useTransition()
-  const router = useRouter()
+  const { action, actionTitle, Icon, variant, className } = props
+  const [open, setOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger className="w-full" asChild>
         <Button variant={variant || "ghost"} disabled={isPending} className={className}>
           {isPending && <IconSpinner className="mr-2" />}
-          {actionTitle || 'Delete data'}
+          {Icon && <Icon />}
+          {actionTitle || ''}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently remove all data from storage There is no undo.
+            This will permanently remove data from storage. There is no undo.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -52,9 +53,11 @@ export function ClearData(props: ClearDataProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                await clearAction()
+                await action()
                 setOpen(false)
-                router.push('/')
+                // router.push('/')
+                toast.success(`Item deleted`)
+                return
               })
             }}
           >

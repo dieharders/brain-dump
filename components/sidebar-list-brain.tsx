@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { CollectionCard } from '@/components/sidebar-item-brain'
-import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
+import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 // import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
 // import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
-// import { DialogRemoveCollection } from '@/components/features/crud/dialog-remove-collection'
 // import { DialogExploreDocuments } from '@/components/features/crud/dialog-explore-documents'
 import { ROUTE_KNOWLEDGE } from '@/app/constants'
 import { useRouter } from 'next/navigation'
@@ -24,7 +23,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   // const [addDocumentDialogOpen, setAddDocumentDialogOpen] = useState(false)
   // const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   // const [exploreDialogOpen, setExploreDialogOpen] = useState(false)
   const { fetchCollections, addCollection } = useMemoryActions()
 
@@ -54,7 +52,6 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
         <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
         {/* <DialogAddDocument action={addDocument} dialogOpen={addDocumentDialogOpen} setDialogOpen={setAddDocumentDialogOpen} collection={selectedCollection} options={APIConfigOptions.current} /> */}
         {/* <DialogShareCollection action={shareCollection} dialogOpen={shareDialogOpen} setDialogOpen={setShareDialogOpen} collection={selectedCollection} /> */}
-        {/* <DialogRemoveCollection action={removeCollection} dialogOpen={deleteDialogOpen} setDialogOpen={setDeleteDialogOpen} collection={selectedCollection} /> */}
         {/* List of data */}
         {collections?.length ? (
           <div className="space-y-4">

@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/sidebar'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 import { SidebarFooter } from '@/components/sidebar-footer'
-import { ClearData } from '@/components/clear-data'
+import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { useHomebrew } from '@/lib/homebrew'
 import { CardDocument } from '@/components/features/panels/card-document'
 import { useMemoryActions } from '@/components/features/crud/actions'
@@ -111,7 +111,7 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
       </Suspense>
       {/* Align footer to bottom of panel */}
       <SidebarFooter className="mt-auto py-8">
-        <ClearData clearAction={deleteAllDocuments} actionTitle="Delete all documents" />
+        <ClearData action={deleteAllDocuments} actionTitle="Delete all documents" />
       </SidebarFooter>
     </Sidebar>
   )

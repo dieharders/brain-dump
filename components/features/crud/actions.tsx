@@ -107,7 +107,7 @@ export const useMemoryActions = () => {
   /**
    * Fetch all collections from index
    */
-  const fetchCollections = useCallback(async () => {
+  const fetchCollections: () => Promise<Array<any>> = useCallback(async () => {
     try {
       if (!services) return
 
@@ -119,7 +119,7 @@ export const useMemoryActions = () => {
       return data
     } catch (error) {
       toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
-      return
+      return []
     }
   }, [services])
 
@@ -168,7 +168,7 @@ export const useMemoryActions = () => {
     return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
   }, [services?.memory])
 
-  const removeCollection = useCallback(async (collectionName: string) => {
+  const deleteCollection = useCallback(async (collectionName: string) => {
     const res = await services?.memory.deleteCollection({ queryParams: { collection_id: collectionName } }) || null
     return res
   }, [services?.memory])
@@ -280,9 +280,9 @@ export const useMemoryActions = () => {
     deleteDocument,
     deleteAllCollections,
     deleteAllDocuments,
+    deleteCollection,
     addDocument,
     addCollection,
-    removeCollection,
     fetchDocumentChunks,
     fetchDocumentsById,
     fetchDocuments,

@@ -14,7 +14,11 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 import { useHomebrew } from '@/lib/homebrew'
 import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
 import { notifications } from '@/lib/notifications'
-import { ClearData } from '@/components/clear-data'
+import { ClearData } from '@/components/features/crud/dialog-clear-data'
+import { MemoizedReactMarkdown } from '@/components/markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import { CodeBlock } from '@/components/ui/codeblock'
 
 export default function KnowledgeBasePage() {
   const {
@@ -60,11 +64,47 @@ export default function KnowledgeBasePage() {
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   // Styles
-  const toggleStyle = cn("self-center rounded-sm p-4 text-lg")
+  const toggleStyle = cn("flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl")
   const headingStyle = cn("text-2xl font-bold")
   const subHeadingStyle = cn("text-lg font-semibold")
   const descriptionStyle = cn("text-md text-muted-foreground")
   const tagStyle = cn("flex flex-row flex-wrap items-center justify-start gap-2")
+
+  // Render markdown string
+  const mkdn = (text: string | undefined) => {
+    return <MemoizedReactMarkdown
+      className={cn("prose min-h-[16rem] w-full break-words rounded-md bg-muted p-4 dark:prose-invert prose-p:leading-relaxed prose-pre:p-0", descriptionStyle)}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      components={{
+        p({ children }) {
+          return <p className="mb-2 last:mb-0">{children}</p>
+        },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        code({ node, inline, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '')
+
+          if (inline) {
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            )
+          }
+
+          return (
+            <CodeBlock
+              key={Math.random()}
+              language={(match && match[1]) || ''}
+              value={String(children).replace(/\n$/, '')}
+              {...props}
+            />
+          )
+        }
+      }}
+    >
+      {text || ''}
+    </MemoizedReactMarkdown>
+  }
 
   const collectionNotFound = (
     <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-8 p-8">
@@ -104,7 +144,7 @@ export default function KnowledgeBasePage() {
           <ClearData
             className="w-fit p-5 text-lg"
             variant="destructive"
-            clearAction={async () => {
+            action={async () => {
               await deleteDocument(collectionName, document)
               // Reset data
               setCurrentChunkItem(null)
@@ -120,14 +160,14 @@ export default function KnowledgeBasePage() {
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden md:flex-row">
           {/* Document info */}
           <div className="flex w-fit flex-1 flex-col items-start justify-start gap-3">
-            <h1 className={subHeadingStyle}>{documentName || 'No title'}</h1>
+            <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
             <p className={descriptionStyle}>{description || 'No description'}</p>
             <div className={subHeadingStyle}>Info</div>
-            <div className={tagStyle}>🔖: {<RandomUnderlinedText className="text-muted-foreground" text={documentTags || ''} /> || 'Add some tags'}</div>
+            <p className={descriptionStyle}>🍪: {documentChunkIds?.length || 0}</p>
+            {documentTags && <div className={tagStyle}>🔖: {<RandomUnderlinedText className="text-muted-foreground" text={documentTags || ''} /> || 'Add some tags'}</div>}
             <p className={descriptionStyle}>📅: {documentDate}</p>
             <p className={descriptionStyle}>📄: {documentFileName}</p>
             <p className={descriptionStyle}>📁: {documentPath}</p>
-            <p className={descriptionStyle}>🍪: {documentChunkIds?.length || 0}</p>
             {documentUrlPath && <p className={descriptionStyle}>🌐: {documentUrlPath}</p>}
             {documentType && <p className={descriptionStyle}>💾: {documentType}</p>}
           </div>
@@ -141,33 +181,21 @@ export default function KnowledgeBasePage() {
               label="Text Mode"
               value={toggleTextMode}
               onChange={setToggleTextMode}
+              className="rounded-xl"
             >
               {/* Document Text */}
-              <div id="document">
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger asChild>
-                    <div className={toggleStyle}>📄</div>
-                  </TooltipTrigger>
-                  <TooltipContent>Document</TooltipContent>
-                </Tooltip>
-              </div>
+              <div id="document" className={toggleStyle}>📄<p className="text-xs">Document</p></div>
               {/* Document Chunks */}
-              <div id="chunk">
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger asChild>
-                    <div className={toggleStyle}>🍪</div>
-                  </TooltipTrigger>
-                  <TooltipContent>Chunk</TooltipContent>
-                </Tooltip>
-              </div>
+              <div id="chunk" className={toggleStyle}>🍪<p className="text-xs">Chunks</p></div>
             </ToggleGroup>
+
             {/* Select chunk */}
             {toggleTextMode === 'chunk' && <Select value={selectedChunk} onChange={setSelectedChunk} items={chunkItems || []} placeholder="Select chunk" />}
             {/* Document/Chunk Output text */}
             {toggleTextMode === 'document' ?
-              <p className={descriptionStyle}>{documentText}</p>
+              mkdn(documentText)
               :
-              <p className={descriptionStyle}>{currentChunkItem?.text}</p>
+              mkdn(currentChunkItem?.text)
             }
           </div>
         </div>
@@ -199,7 +227,7 @@ export default function KnowledgeBasePage() {
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
         </div>
         {/* Title */}
-        <h1 className={subHeadingStyle} >{collectionName || "Explore files in this collection"}</h1>
+        <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
         {/* Description */}
         <p className={descriptionStyle}>
           {collection?.metadata?.description || "Add a detailed description of the contents..."}

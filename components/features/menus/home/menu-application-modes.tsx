@@ -2,7 +2,7 @@
 
 import { Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { useRouter } from "next/navigation"
-import { PersonIcon, ClipboardIcon } from '@radix-ui/react-icons'
+import { PersonIcon, ClipboardIcon, Cross1Icon } from '@radix-ui/react-icons'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
@@ -11,14 +11,14 @@ import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
 import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
-import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
+import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { ROUTE_CHATBOT, ROUTE_KNOWLEDGE } from '@/app/constants'
 import { notifications } from '@/lib/notifications'
-import { IconEdit } from '@/components/ui/icons'
 import { useGlobalContext } from '@/contexts'
 import { useMemoryActions } from '@/components/features/crud/actions'
+import { ClearData } from '@/components/features/crud/dialog-clear-data'
 
 interface I_Props {
   onSubmit: () => void
@@ -61,7 +61,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const { notAvailable: notAvailableNotification } = notifications()
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
-  const { fetchCollections, addCollection } = useMemoryActions()
+  const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
   const { collections, setCollections } = useGlobalContext()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
@@ -91,9 +91,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
     onSubmit()
   }, [onSubmit])
 
-  const updateListAction = useCallback(async () => {
-    const response = await fetchCollections()
-    const data = response.data
+  const updateKBCollections = useCallback(async () => {
+    const data = await fetchCollections()
     data && setCollections(data)
   }, [fetchCollections, setCollections])
 
@@ -172,14 +171,14 @@ export const ApplicationModesMenu = (props: I_Props) => {
           break
         case 'knowledge':
           // Fetch collections
-          updateListAction()
+          updateKBCollections()
           break
         default:
           // do nothing
           break
       }
     },
-    [fetchBots, fetchInstalledModelsAndConfigs, services, updateListAction],
+    [fetchBots, fetchInstalledModelsAndConfigs, services, updateKBCollections],
   )
 
   // Menus
@@ -298,12 +297,18 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
-        <DialogCreateCollection action={async () => {
-          const res = await addCollection()
-          if (res) await updateListAction()
-          return res
-        }} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
+        <DialogCreateCollection
+          action={async () => {
+            const res = await addCollection()
+            if (res) await updateKBCollections()
+            return res
+          }}
+          dialogOpen={createCollectionDialogOpen}
+          setDialogOpen={setCreateCollectionDialogOpen}
+        />
+        {/* Add new item */}
         <Item title="Add New" Icon={IconPlus} onAction={() => setCreateCollectionDialogOpen(true)} />
+        {/* Fetched, user created items */}
         {collections?.map(c => (
           <Item
             key={c?.id}
@@ -312,16 +317,22 @@ export const ApplicationModesMenu = (props: I_Props) => {
             onAction={() => goToKnowledgePage(c?.id)}
             className="relative overflow-hidden"
           >
-            <Button
-              className="absolute bottom-0 m-auto flex w-[20rem] flex-row items-center justify-center gap-2 bg-neutral-900/50 text-sm hover:bg-neutral-700"
+            <ClearData
+              className="absolute right-0 top-0 m-auto flex h-[2rem] w-[2rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-neutral-300 p-2 text-sm hover:bg-red-500 dark:bg-neutral-950 dark:hover:bg-red-500"
               variant="secondary"
-              onClick={() => {
-                setCreateCollectionDialogOpen(true)
-              }}>
-              <IconEdit />Edit
-            </Button>
+              action={async () => {
+                const res = await deleteCollection(c.name)
+                if (res) {
+                  await updateKBCollections()
+                  return true
+                }
+                return false
+              }}
+              Icon={Cross1Icon}
+            />
           </Item>
         ))}
+        {/* Preset items, @TODO Add values to their config menus */}
         <Item title="Documentation" Icon={ClipboardIcon} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
         <Item title="Best Practices" Icon={() => <div className="text-4xl">📈</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
         <Item title="Code Repo" Icon={() => <div className="text-4xl">📂</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
