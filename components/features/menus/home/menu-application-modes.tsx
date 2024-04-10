@@ -8,7 +8,7 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_GenericAPIResponse, I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_GenericAPIRequest, T_GenericDataRes, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-create-collection'
@@ -18,6 +18,7 @@ import { ROUTE_CHATBOT, ROUTE_KNOWLEDGE } from '@/app/constants'
 import { notifications } from '@/lib/notifications'
 import { IconEdit } from '@/components/ui/icons'
 import { useGlobalContext } from '@/contexts'
+import { useMemoryActions } from '@/components/features/crud/actions'
 
 interface I_Props {
   onSubmit: () => void
@@ -60,6 +61,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const { notAvailable: notAvailableNotification } = notifications()
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
+  const { fetchCollections, addCollection } = useMemoryActions()
   const { collections, setCollections } = useGlobalContext()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
@@ -89,45 +91,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
     onSubmit()
   }, [onSubmit])
 
-  const updateListAction = useCallback(async (apis: I_ServiceApis | null) => {
-    try {
-      const response = await apis?.memory.getAllCollections()
-
-      if (!response?.success) throw new Error('Failed to refresh documents')
-
-      const data = response.data
-      data && setCollections(data)
-      return data
-    } catch (error) {
-      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
-      return
-    }
-  }, [setCollections])
-
-  const addCollection: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (args) => {
-    const promise = new Promise((resolve, reject) => {
-      const action = async () => {
-        const result = await services?.memory.addCollection(args)
-        // Error
-        if (!result || !result?.success) reject(result?.message)
-        // Success
-        await updateListAction(services)
-        resolve(result)
-      }
-      action()
-    })
-
-    toast.promise(
-      promise,
-      {
-        loading: 'Adding collection...',
-        success: <b>Collection saved!</b>,
-        error: (err: Error) => <p><b>Could not save collection 😐</b>{"\n"}{`${err?.message}`}</p>,
-      }
-    )
-
-    return promise as unknown as I_GenericAPIResponse<T_GenericDataRes>
-  }, [updateListAction, services])
+  const updateListAction = useCallback(async () => {
+    const response = await fetchCollections()
+    const data = response.data
+    data && setCollections(data)
+  }, [fetchCollections, setCollections])
 
   const createNewBotAction = () => {
     // show bot creation menu
@@ -204,7 +172,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           break
         case 'knowledge':
           // Fetch collections
-          services && updateListAction(services)
+          updateListAction()
           break
         default:
           // do nothing
@@ -330,7 +298,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
-        <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
+        <DialogCreateCollection action={async () => {
+          const res = await addCollection()
+          if (res) await updateListAction()
+          return res
+        }} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
         <Item title="Add New" Icon={IconPlus} onAction={() => setCreateCollectionDialogOpen(true)} />
         {collections?.map(c => (
           <Item
