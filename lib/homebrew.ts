@@ -531,7 +531,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
           // Return raw response from llama-cpp-python server text inference
           return res
         } catch (err) {
-          console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
+          console.log(`[homebrew] Endpoint "${endpoint.name}":`, err)
           return { success: false, message: err }
         }
       }
