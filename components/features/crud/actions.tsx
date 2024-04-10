@@ -195,19 +195,25 @@ export const useMemoryActions = () => {
     return null
   }
 
-  const deleteDocument = async (collectionName: string, document: I_Document) => {
-    const res = await services?.memory.deleteDocuments({
-      body: {
-        collection_id: collectionName,
-        document_ids: [document.metadata.id],
-      }
-    })
-    if (!res?.success) {
-      toast.error(`Error removing ${document.metadata.name}: ${res?.message}`)
+  const deleteDocument = async (collectionName: string | undefined, document: I_Document) => {
+    try {
+      if (!collectionName) throw new Error('No collection name provided.')
+
+      const res = await services?.memory.deleteDocuments({
+        body: {
+          collection_id: collectionName,
+          document_ids: [document.metadata.id],
+        }
+      })
+      // Fail
+      if (!res?.success)
+        throw new Error(`Failed to remove ${document.metadata.name}: ${res?.message}`)
+      // Successful
+      return true
+    } catch (err) {
+      toast.error(`${err}`)
       return false
     }
-    // Successful
-    return true
   }
 
   /**

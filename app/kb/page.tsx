@@ -14,14 +14,27 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 import { useHomebrew } from '@/lib/homebrew'
 import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
 import { notifications } from '@/lib/notifications'
+import { ClearData } from '@/components/clear-data'
 
 export default function KnowledgeBasePage() {
-  const { services, setServices, documents, setDocuments, setDocumentChunks, selectedDocumentId, collections, setCollections, selectedCollectionId, documentChunks } = useGlobalContext()
+  const {
+    services,
+    setServices,
+    documents,
+    setDocuments,
+    setDocumentChunks,
+    selectedDocumentId,
+    collections,
+    setCollections,
+    selectedCollectionId,
+    documentChunks,
+    setSelectedDocumentId,
+  } = useGlobalContext()
   const search = useSearchParams()
   const id = search.get('collectionId') || selectedCollectionId
   const router = useRouter()
   const { getServices } = useHomebrew()
-  const { fetchCollections, shareMemory, copyId } = useMemoryActions()
+  const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteDocument } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
   // Data
   const collection = collections.find((c: any) => c.id === id)
@@ -83,12 +96,26 @@ export default function KnowledgeBasePage() {
         <div className={cn("w-full self-center text-center", headingStyle)}>Document</div>
         {/* Actions */}
         <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
-          <Button variant="outline" className="w-fit p-5 text-lg">Open</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg">Edit</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
           <Button variant="outline" className="w-fit p-5 text-lg">Update</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg">Share</Button>
-          <Button variant="destructive" className="w-fit p-5 text-lg">Delete</Button>
+          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
+          <ClearData
+            className="w-fit p-5 text-lg"
+            variant="destructive"
+            clearAction={async () => {
+              await deleteDocument(collectionName, document)
+              // Reset data
+              setCurrentChunkItem(null)
+              setSelectedChunk('')
+              setDocuments([])
+              setDocumentChunks([])
+              setSelectedDocumentId('')
+              return true
+            }}
+            actionTitle="Delete"
+          />
         </div>
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden md:flex-row">
           {/* Document info */}
