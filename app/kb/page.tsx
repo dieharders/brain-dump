@@ -276,7 +276,7 @@ export default function KnowledgeBasePage() {
   // Update displayed chunk when selected chunk is changed
   useEffect(() => {
     const item = documentChunks.find(ch => ch.hash === selectedChunk)
-    setCurrentChunkItem(item)
+    item && setCurrentChunkItem(item)
   }, [documentChunks, selectedChunk])
 
   // Reset data on page exit

@@ -9,7 +9,7 @@ export const useMemoryActions = () => {
   const { services } = useGlobalContext()
 
   /**
-   * Fetch the current collection and all its' source ids
+   * Fetch the specified collection and all its' source ids
    */
   const fetchCollection = useCallback(
     async (collection: I_Collection) => {

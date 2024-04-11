@@ -55,10 +55,10 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 
-type T_APIRequests = {
-  services: I_ServiceApis
-  configs: T_APIConfigOptions
-}
+// type T_APIRequests = {
+//   services: I_ServiceApis
+//   configs: T_APIConfigOptions
+// }
 
 interface I_Endpoint {
   name: string

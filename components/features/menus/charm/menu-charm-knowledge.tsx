@@ -29,8 +29,6 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
   const {
     disableForm,
     setDisableForm,
-    collections,
-    setCollections,
     type,
     setType,
     selected,
@@ -44,11 +42,9 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
       selected={selected}
       setSelected={setSelected}
       fetchListAction={fetchListAction}
-      collections={collections}
-      setCollections={setCollections}
       disableForm={disableForm}
       setDisableForm={setDisableForm}
-    />, [collections, disableForm, fetchListAction, selected, setCollections, setDisableForm, setSelected, setType, type])
+    />, [disableForm, fetchListAction, selected, setDisableForm, setSelected, setType, type])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

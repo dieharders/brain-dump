@@ -58,8 +58,6 @@ export const BotCreationMenu = (props: I_Props) => {
     setSelected: setKnowledgeIndex,
     disableForm,
     setDisableForm,
-    collections,
-    setCollections,
   } = useKnowledgeMenu()
   const { fetchData: fetchModelSettingsData, systemPrompts, promptTemplates, ragTemplates, ragModes } = useModelSettingsMenu({ services: data.services })
   const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
@@ -73,7 +71,7 @@ export const BotCreationMenu = (props: I_Props) => {
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [stateSystem, systemPrompts])
-  const knowledgeMenu = useMemo(() => <KnowledgeTab type={knowledgeType} setType={setKnowledgeType} selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} collections={collections} setCollections={setCollections} disableForm={disableForm} setDisableForm={setDisableForm} />, [collections, disableForm, fetchCollections, knowledgeType, knowledgeIndex, setCollections, setDisableForm, setKnowledgeIndex, setKnowledgeType])
+  const knowledgeMenu = useMemo(() => <KnowledgeTab type={knowledgeType} setType={setKnowledgeType} selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchCollections, knowledgeIndex, knowledgeType, setDisableForm, setKnowledgeIndex, setKnowledgeType])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [stateResponse])
   const modelMenu = useMemo(() => <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />, [data.installedList, data.modelConfigs, stateModel])
   const attentionMenu = useMemo(() => <AttentionTab state={stateAttention} setState={setStateAttention} />, [stateAttention])
