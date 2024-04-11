@@ -133,34 +133,36 @@ export default function KnowledgeBasePage() {
     document ?
       <div className="flex w-full flex-1 flex-col items-center justify-start gap-8">
         <div className={cn("w-full self-center text-center", headingStyle)}>Document</div>
-        {/* Actions */}
-        <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
-          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => updateDocument(collectionName, document)}>Update</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
-          <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
-          <ClearData
-            className="w-fit p-5 text-lg"
-            variant="destructive"
-            action={async () => {
-              await deleteDocument(collectionName, document)
-              // Reset data
-              setCurrentChunkItem(null)
-              setSelectedChunk('')
-              setDocuments([])
-              setDocumentChunks([])
-              setSelectedDocumentId('')
-              return true
-            }}
-            actionTitle="Delete"
-          />
-        </div>
+
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden md:flex-row">
           {/* Document info */}
-          <div className="flex h-fit w-full flex-1 flex-col items-center justify-start">
+          <div className="flex h-fit w-full flex-1 flex-col items-center justify-start gap-8">
+            {/* Actions */}
+            <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
+            <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
+              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
+              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
+              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => updateDocument(collectionName, document)}>Update</Button>
+              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
+              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
+              <ClearData
+                className="w-fit p-5 text-lg"
+                variant="destructive"
+                action={async () => {
+                  await deleteDocument(collectionName, document)
+                  // Reset data
+                  setCurrentChunkItem(null)
+                  setSelectedChunk('')
+                  setDocuments([])
+                  setDocumentChunks([])
+                  setSelectedDocumentId('')
+                  return true
+                }}
+                actionTitle="Delete"
+              />
+            </div>
             <div className="flex w-fit max-w-[36rem] flex-1 flex-col items-start justify-start gap-3 rounded-lg bg-muted p-8">
-              <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
+              <h1 className={subHeadingStyle}>Description</h1>
               <p className={descriptionStyle}>{description || 'No description.'}</p>
               <div className={subHeadingStyle}>Info</div>
               <p className={descriptionStyle}>🍪 <span className="text-primary">Chunks:</span> {documentChunkIds?.length || 0}</p>
