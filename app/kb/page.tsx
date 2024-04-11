@@ -158,17 +158,19 @@ export default function KnowledgeBasePage() {
         </div>
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden md:flex-row">
           {/* Document info */}
-          <div className="flex w-fit flex-1 flex-col items-start justify-start gap-3">
-            <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
-            <p className={descriptionStyle}>{description || 'No description'}</p>
-            <div className={subHeadingStyle}>Info</div>
-            <p className={descriptionStyle}>🍪: {documentChunkIds?.length || 0}</p>
-            {documentTags && <div className={tagStyle}>🔖: {<RandomUnderlinedText className="text-muted-foreground" text={documentTags || ''} /> || 'Add some tags'}</div>}
-            {documentType && <p className={descriptionStyle}>💾: {documentType}</p>}
-            <p className={descriptionStyle}>📅: {documentDate}</p>
-            <p className={descriptionStyle}>📄: {documentFileName}</p>
-            {documentUrlPath && <p className={descriptionStyle}>🌐: {documentUrlPath}</p>}
-            <p className={descriptionStyle}>📁: {documentPath}</p>
+          <div className="flex h-fit w-full flex-1 flex-col items-center justify-start">
+            <div className="flex w-fit max-w-[36rem] flex-1 flex-col items-start justify-start gap-3 rounded-lg bg-muted p-8">
+              <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
+              <p className={descriptionStyle}>{description || 'No description.'}</p>
+              <div className={subHeadingStyle}>Info</div>
+              <p className={descriptionStyle}>🍪 <span className="text-primary">Chunks:</span> {documentChunkIds?.length || 0}</p>
+              {documentTags && <div className={tagStyle}>🔖 <span className="text-primary">Tags:</span> {<RandomUnderlinedText className="text-muted-foreground" text={documentTags || ''} /> || 'Add some tags'}</div>}
+              {documentType && <p className={descriptionStyle}>💾 <span className="text-primary">File type:</span> {documentType}</p>}
+              <p className={descriptionStyle}>📅 <span className="text-primary">Created:</span> {documentDate}</p>
+              <p className={descriptionStyle}>📄 <span className="text-primary">File name:</span> {documentFileName}</p>
+              {documentUrlPath && <p className={descriptionStyle}>🌐 <span className="text-primary">Url:</span> {documentUrlPath}</p>}
+              <p className={descriptionStyle}>📁 <span className="text-primary">Location:</span> {documentPath}</p>
+            </div>
           </div>
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
@@ -194,7 +196,7 @@ export default function KnowledgeBasePage() {
             {toggleTextMode === 'document' ?
               mkdn(documentText)
               :
-              mkdn(currentChunkItem?.text)
+              mkdn(currentChunkItem?.text || 'No chunk data found...')
             }
           </div>
         </div>
@@ -225,28 +227,30 @@ export default function KnowledgeBasePage() {
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(id)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
         </div>
-        {/* Title */}
-        <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
-        {/* Description */}
-        <p className={descriptionStyle}>
-          {collection?.metadata?.description || "Add a detailed description of the contents..."}
-        </p>
-        {/* Info */}
-        <div className={subHeadingStyle}>Info</div>
-        <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
-          <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
-            <span className="w-fit">📂 Documents: <span className="text-white">{collection?.metadata?.sources?.length || 0}</span></span>
-            <span className="w-fit">📆 Last Modified: <span className="text-white">{collection?.metadata?.createdAt || "?"}</span></span>
+        <div className="flex w-fit max-w-[40rem] flex-col items-start justify-start gap-2 rounded-lg bg-muted p-8">
+          {/* Title */}
+          <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
+          {/* Description */}
+          <p className={descriptionStyle}>
+            {collection?.metadata?.description || "Add a detailed description of the contents..."}
           </p>
-        </div>
-        {/* Tags */}
-        <div className={subHeadingStyle} >Tags</div>
-        <div className={tagStyle}>
-          {
-            collectionTags?.length > 0 ?
-              <RandomUnderlinedText className="text-muted-foreground" text={collectionTags} /> :
-              <p className={descriptionStyle}>Add hashtags to link similar memories...</p>
-          }
+          {/* Info */}
+          <div className={subHeadingStyle}>Info</div>
+          <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
+            <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
+              <span className="w-fit">📂 <span className="text-primary">Documents:</span> {collection?.metadata?.sources?.length || 0}</span>
+              <span className="w-fit">📆 <span className="text-primary">Created:</span> {collection?.metadata?.createdAt || "?"}</span>
+            </p>
+          </div>
+          {/* Tags */}
+          <div className={subHeadingStyle} >Tags</div>
+          <div className={tagStyle}>
+            {
+              collectionTags?.length > 0 ?
+                <RandomUnderlinedText className="text-muted-foreground" text={collectionTags} /> :
+                <p className={descriptionStyle}>Add hashtags to link similar memories...</p>
+            }
+          </div>
         </div>
       </div>
       <Separator />

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 // import { SidebarFooter } from '@/components/sidebar-footer'
 // import { ClearData } from '@/components/features/crud/dialog-clear-data'
-import { useHomebrew } from '@/lib/homebrew'
+import { I_Document, useHomebrew } from '@/lib/homebrew'
 import { CardDocument } from '@/components/features/panels/card-document'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
@@ -27,9 +27,10 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
 
   // Get all chunks for document
   const fetchChunksForDocument = useCallback(
-    async (id: string | null, doc: any) => {
+    async (id: string | null, doc: I_Document) => {
       const chunkResponse = await fetchDocumentChunks(id, doc)
-      chunkResponse.length > 0 && setDocumentChunks(chunkResponse)
+      chunkResponse?.length > 0 && setDocumentChunks(chunkResponse)
+      return
     },
     [fetchDocumentChunks, setDocumentChunks],
   )
@@ -40,18 +41,17 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
         key={document?.metadata?.id}
         document={document}
         numChunks={JSON.parse(document?.metadata?.chunk_ids)?.length}
-        onClick={() => {
-          if (document.metadata.id === selectedDocumentId) return
+        onClick={async () => {
+          const docId = document?.metadata?.id
+          if (docId === selectedDocumentId) return
           // Reset chunks when changing docs
           setDocumentChunks([])
           // Fetch document and its chunks when selected
-          setSelectedDocumentId(document?.metadata?.id)
-          const coll = collections.find(c => c.id === collectionId)
-          const collectionName = coll?.name || null
-          fetchChunksForDocument(collectionName, document)
+          setSelectedDocumentId(docId)
+          fetchChunksForDocument(docId, document)
         }} />
     )
-  ), [collectionId, collections, documents, fetchChunksForDocument, selectedDocumentId, setDocumentChunks, setSelectedDocumentId])
+  ), [documents, fetchChunksForDocument, selectedDocumentId, setDocumentChunks, setSelectedDocumentId])
 
   const documentCards = documents?.length ?
     items
