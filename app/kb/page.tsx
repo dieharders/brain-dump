@@ -6,7 +6,7 @@ import remarkMath from 'remark-math'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { cn } from '@/lib/utils'
-import { useHomebrew } from '@/lib/homebrew'
+import { I_Collection, I_DocumentChunk, useHomebrew } from '@/lib/homebrew'
 import { notifications } from '@/lib/notifications'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -25,41 +25,42 @@ export default function KnowledgeBasePage() {
     setServices,
     documents,
     setDocuments,
-    setDocumentChunks,
     selectedDocumentId,
     collections,
     setCollections,
-    selectedCollectionId,
-    documentChunks,
+    chunks,
+    selectedCollectionName,
+    setSelectedCollectionName,
     setSelectedDocumentId,
   } = useGlobalContext()
   const search = useSearchParams()
-  const id = search.get('collectionId') || selectedCollectionId
+  const id = search.get('collectionName') || selectedCollectionName
   const router = useRouter()
   const { getServices } = useHomebrew()
   const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteDocument, updateDocument } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
   // Data
-  const collection = collections.find((c: any) => c.id === id)
-  const document = documents.find(d => d.metadata.id === selectedDocumentId)
-  const documentName = document?.metadata?.name
-  const documentId = document?.metadata?.id
-  const documentFileName = document?.metadata?.fileName
-  const documentTags = document?.metadata?.tags
-  const documentDate = document?.metadata?.createdAt
-  const documentType = document?.metadata?.fileType
-  const documentPath = document?.metadata?.filePath
-  const documentUrlPath = document?.metadata.urlPath
-  const documentText = document?.documents
-  const description = document?.metadata?.description
-  const documentChunkIds = document?.metadata?.chunk_ids ? JSON.parse(document?.metadata?.chunk_ids) : []
-  const chunkItems = documentChunks?.map((ch: any, index) => ({ name: `Chunk: ${index + 1}`, value: ch.hash, text: ch.text }))
+  const collection = collections?.find((c: I_Collection) => c.name === id)
+  const document = documents?.find?.(d => d?.id === selectedDocumentId)
+  const documentName = document?.name
+  const documentId = document?.id
+  const documentFileName = document?.fileName
+  const documentTags = document?.tags
+  const documentDate = document?.createdAt
+  const documentType = document?.fileType
+  const documentSize = document?.fileSize || 0
+  const documentPath = document?.filePath
+  const documentUrlPath = document?.urlPath
+  const description = document?.description
+  const numDocumentChunks = document?.chunkIds?.length || 0
+  const documentText = () => chunks?.map(ch => ch.text).join('')
+  const chunkItems = () => chunks?.map((ch, index) => ({ name: `Chunk: ${index + 1}`, value: ch.id, text: ch.text }))
   const collectionName = collection?.name
   const collectionTags = collection?.metadata?.tags || ''
   // State
   const [mounted, setMounted] = useState(false)
   const [toggleTextMode, setToggleTextMode] = useState<string>('document')
-  const [currentChunkItem, setCurrentChunkItem] = useState<any>(null)
+  const [currentChunkItem, setCurrentChunkItem] = useState<I_DocumentChunk | null>(null)
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   // Styles
@@ -134,7 +135,7 @@ export default function KnowledgeBasePage() {
       <div className="flex w-full flex-1 flex-col items-center justify-start gap-8">
         <div className={cn("w-full self-center text-center", headingStyle)}>Document</div>
 
-        <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden md:flex-row">
+        <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden lg:flex-row">
           {/* Document info */}
           <div className="flex h-fit w-full flex-1 flex-col items-center justify-start gap-8">
             {/* Actions */}
@@ -154,20 +155,20 @@ export default function KnowledgeBasePage() {
                   setCurrentChunkItem(null)
                   setSelectedChunk('')
                   setDocuments([])
-                  setDocumentChunks([])
                   setSelectedDocumentId('')
                   return true
                 }}
                 actionTitle="Delete"
               />
             </div>
-            <div className="flex w-fit max-w-[36rem] flex-1 flex-col items-start justify-start gap-3 rounded-lg bg-muted p-8">
+            <div className="flex w-fit min-w-[24rem] max-w-[36rem] flex-1 flex-col items-start justify-start gap-3 rounded-lg bg-muted p-8">
               <h1 className={subHeadingStyle}>Description</h1>
               <p className={descriptionStyle}>{description || 'No description.'}</p>
               <div className={subHeadingStyle}>Info</div>
-              <p className={descriptionStyle}>🍪 <span className="text-primary">Chunks:</span> {documentChunkIds?.length || 0}</p>
+              <p className={descriptionStyle}>🍪 <span className="text-primary">Chunks:</span> {numDocumentChunks}</p>
               {documentTags && <div className={tagStyle}>🔖 <span className="text-primary">Tags:</span> {<RandomUnderlinedText className="text-muted-foreground" text={documentTags || ''} /> || 'Add some tags'}</div>}
               {documentType && <p className={descriptionStyle}>💾 <span className="text-primary">File type:</span> {documentType}</p>}
+              <p className={descriptionStyle}>#️⃣ <span className="text-primary">File size:</span> {documentSize}</p>
               <p className={descriptionStyle}>📅 <span className="text-primary">Created:</span> {documentDate}</p>
               <p className={descriptionStyle}>📄 <span className="text-primary">File name:</span> {documentFileName}</p>
               {documentUrlPath && <p className={descriptionStyle}>🌐 <span className="text-primary">Url:</span> {documentUrlPath}</p>}
@@ -191,12 +192,11 @@ export default function KnowledgeBasePage() {
               {/* Document Chunks */}
               <div id="chunk" className={toggleStyle}>🍪<p className="text-xs">Chunks</p></div>
             </ToggleGroup>
-
             {/* Select chunk */}
-            {toggleTextMode === 'chunk' && <Select value={selectedChunk} onChange={setSelectedChunk} items={chunkItems || []} placeholder="Select chunk" />}
+            {toggleTextMode === 'chunk' && <Select value={selectedChunk} onChange={setSelectedChunk} items={chunkItems() || []} placeholder="Select chunk" />}
             {/* Document/Chunk Output text */}
             {toggleTextMode === 'document' ?
-              mkdn(documentText)
+              mkdn(documentText())
               :
               mkdn(currentChunkItem?.text || 'No chunk data found...')
             }
@@ -219,7 +219,7 @@ export default function KnowledgeBasePage() {
           name={collection?.name}
           sharePath={collection?.metadata?.sharePath}
           createdAt={collection?.metadata?.createdAt}
-          sources={collection?.metadata?.sources || []}
+          numSources={collection?.metadata?.sources.length || 0}
         />
         {/* Header */}
         <div className={cn("self-center pb-4 text-center", headingStyle)}>Collection</div>
@@ -240,7 +240,7 @@ export default function KnowledgeBasePage() {
           <div className={subHeadingStyle}>Info</div>
           <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
             <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
-              <span className="w-fit">📂 <span className="text-primary">Documents:</span> {collection?.metadata?.sources?.length || 0}</span>
+              <span className="w-fit">📂 <span className="text-primary">Documents:</span> {collection?.metadata?.sources.length || 0}</span>
               <span className="w-fit">📆 <span className="text-primary">Created:</span> {collection?.metadata?.createdAt || "?"}</span>
             </p>
           </div>
@@ -268,26 +268,32 @@ export default function KnowledgeBasePage() {
       }
       const data = await fetchCollections()
       if (data) {
+        id && setSelectedCollectionName(id) // Set initial selected collection
         setCollections(data)
         setMounted(true)
       }
     }
     if (!mounted) action()
-  }, [fetchCollections, getServices, mounted, services, setCollections, setServices])
+  }, [fetchCollections, getServices, id, mounted, services, setCollections, setSelectedCollectionName, setServices])
 
   // Update displayed chunk when selected chunk is changed
   useEffect(() => {
-    const item = documentChunks.find(ch => ch.hash === selectedChunk)
+    const item = chunks?.find(ch => ch.id === selectedChunk)
     item && setCurrentChunkItem(item)
-  }, [documentChunks, selectedChunk])
+  }, [chunks, selectedChunk, selectedDocumentId])
+
+  // Reset chunk displayed when document changed
+  useEffect(() => {
+    setCurrentChunkItem(null)
+    setSelectedChunk('')
+  }, [document])
 
   // Reset data on page exit
   useEffect(() => {
     return () => {
       setDocuments([])
-      setDocumentChunks([])
     }
-  }, [setDocumentChunks, setDocuments])
+  }, [setDocuments])
 
   return id ? collectionPage : collectionNotFound
 }

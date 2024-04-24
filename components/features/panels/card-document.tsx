@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { I_Document } from '@/lib/homebrew'
+import { I_Source } from '@/lib/homebrew'
 
 interface I_Props {
-  document: I_Document
+  document: I_Source
   numChunks: number
   isActive?: boolean
   isSelected?: boolean
@@ -20,11 +20,11 @@ interface I_Props {
 export const CardDocument = (props: I_Props) => {
   const { document, numChunks, onClick, isSelected, isActive: isHighlighted } = props
   const [isActive, setIsActive] = useState(false)
-  const numTags = document?.metadata?.tags?.split(' ').length || 0
-  const description = document?.metadata?.description || 'No description.'
-  const name = document?.metadata?.name || 'No title'
-  const createdAt = document?.metadata?.createdAt || '?'
-  const documentType = document?.metadata?.fileType || '?'
+  const numTags = document?.tags ? document?.tags?.split(' ').length : 0
+  const description = document?.description || 'No description.'
+  const name = document?.name || 'No title'
+  const createdAt = document?.createdAt || '?'
+  const documentType = document?.fileType || '?'
   const toolTipStyle = cn("min-w-0 focus:bg-muted focus:ring-1 focus:ring-ring")
   const labelStyle = cn("max-w-12 w-full truncate")
 

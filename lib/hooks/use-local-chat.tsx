@@ -5,21 +5,20 @@ import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
-import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Text_Settings } from '@/lib/homebrew'
 
 interface IProps {
   initialMessages: Message[] | undefined
-  services: I_ServiceApis | null
   settings?: I_Text_Settings
 }
 
 export const useLocalInference = (props: IProps) => {
   const {
     initialMessages = [],
-    services,
     settings,
   } = props
-  const { getServices } = useHomebrew()
+  const { services } = useGlobalContext()
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
   const [input, setInput] = useState('')
@@ -115,7 +114,6 @@ export const useLocalInference = (props: IProps) => {
       abortRef.current = false
 
       // Get model data
-      const services = await getServices()
       const model_configs = await services?.textInference.getModelConfigs()
       const current_text_model = await services?.textInference.model()
       const current_text_model_id = current_text_model?.data?.modelId || ''

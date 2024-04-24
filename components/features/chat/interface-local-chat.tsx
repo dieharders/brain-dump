@@ -9,13 +9,12 @@ import { ChatPage } from '@/components/features/chat/chat-page'
 import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
-import { I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
+import { I_Text_Settings } from '@/lib/homebrew'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   routeId?: string
-  services: I_ServiceApis | null
   isLoading?: boolean
   settings?: I_Text_Settings
   setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
@@ -24,11 +23,10 @@ interface IProps extends React.ComponentProps<'div'> {
 export const LocalChat = (props: IProps) => {
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
-  const { id, routeId, initialMessages, services, isLoading: isModelLoading, className, settings, setSettings = () => { } } = props
+  const { id, routeId, initialMessages, isLoading: isModelLoading, className, settings, setSettings = () => { } } = props
   const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading } =
     useLocalInference({
       initialMessages,
-      services,
       settings,
     })
   const isLoading = isModelLoading || isChatLoading

@@ -19,7 +19,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const pathname = usePathname()
   const search = useSearchParams()
   const router = useRouter()
-  const selectedCollectionId = search.get('collectionId')
+  const selectedCollectionName = search.get('collectionName')
   const routeId = pathname.split('/')[1] // base url
   const header_url = routeId || '/'
   const showKB = header_url === ROUTE_KNOWLEDGE
@@ -89,11 +89,15 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
       {/* Documents - Open Pane Button */}
       {showKB &&
         <Tooltip delayDuration={450}>
-          <TooltipTrigger asChild>
+          <TooltipTrigger asChild
+            onClick={async (e) => {
+              // console.log('list opened', e)
+            }}
+          >
             <div>
               <DocumentsButton
                 session={session}
-                collectionId={selectedCollectionId}
+                collectionName={selectedCollectionName}
               />
               <span className="sr-only">List of knowledge base documents</span>
             </div>

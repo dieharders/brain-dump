@@ -22,13 +22,13 @@ interface I_Props {
   name: string | undefined
   sharePath: string | undefined
   createdAt: string | undefined
-  sources: Array<any>
+  numSources: number
   action: () => Promise<any>
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
 }
 export const DialogShareCollection = (props: I_Props) => {
-  const { action, dialogOpen, setDialogOpen, sharePath, createdAt, sources, name } = props
+  const { action, dialogOpen, setDialogOpen, sharePath, createdAt, numSources, name } = props
   const [isSharePending, startShareTransition] = useTransition()
 
   return (
@@ -43,7 +43,7 @@ export const DialogShareCollection = (props: I_Props) => {
         <div className="space-y-1 rounded-md border p-4 text-sm">
           <div className="font-medium">{name}</div>
           <div className="text-muted-foreground">
-            {formatDate(createdAt || '')} · {sources?.length} collections
+            {formatDate(createdAt || '')} · {numSources} collections
           </div>
         </div>
         <DialogFooter className="items-center">
@@ -62,15 +62,12 @@ export const DialogShareCollection = (props: I_Props) => {
             disabled={isSharePending}
             onClick={() => {
               startShareTransition(async () => {
-                notifications().notAvailable()
-                return
-
                 if (!sharePath) {
-                  toast.error('No share path provided.')
+                  // @TODO Implement a share feature for memories
+                  notifications().notAvailable()
+                  // toast.error('No share path provided.')
                   return
                 }
-
-                // @TODO Implement a share feature for memories
 
                 // if (sharePath) {
                 //   await new Promise(resolve => setTimeout(resolve, 500))

@@ -28,9 +28,9 @@ export const useChatPage = ({ services }: { services: I_ServiceApis | null }) =>
         : await fetchPlaygroundSettings()
 
       // Make payload
-      const selectedModelId = settings?.model.id
-      const filename = settings?.model.filename || ''
-      const mode = settings?.attention.mode
+      const selectedModelId = settings?.model?.id
+      const filename = settings?.model?.filename || ''
+      const mode = settings?.attention?.mode
       const initOptions = settings?.performance
       const callOptions = {
         model: 'local' as ModelID, // @TODO should load from settings

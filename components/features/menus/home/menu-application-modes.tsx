@@ -8,7 +8,7 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_Knowledge_State, I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
@@ -78,7 +78,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     return
   }, [services?.textInference])
 
-  const goToKnowledgePage = (id: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionId=${id}`)
+  const goToKnowledgePage = (name: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionName=${name}`)
 
   const fetchBots = useCallback(async () => {
     // Save menu forms to a json file
@@ -113,7 +113,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     return
   }, [services?.textInference, setInstalledList, setModelConfigs])
 
-  const saveBotConfig = useCallback((settings: I_Text_Settings) => {
+  const saveBotConfig = useCallback((settings: I_Knowledge_State) => {
     toast.success('New bot created!')
     const action = async () => {
       // Save menu forms to a json file
@@ -311,7 +311,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
             key={c?.id}
             title={c?.name}
             Icon={c?.metadata?.icon ? () => <div className="text-4xl">{c?.metadata?.icon}</div> : ClipboardIcon}
-            onAction={() => goToKnowledgePage(c?.id)}
+            onAction={() => goToKnowledgePage(c?.name)}
             className="relative overflow-hidden"
           >
             <ClearData

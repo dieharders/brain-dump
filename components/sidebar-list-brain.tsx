@@ -16,7 +16,7 @@ export interface SidebarBrainListProps {
 
 export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
   const router = useRouter()
-  const { collections, setCollections, setSelectedDocumentId, setDocuments, setSelectedCollectionId } = useGlobalContext()
+  const { collections, setCollections, setSelectedDocumentId, setDocuments, setSelectedCollectionName } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const { fetchCollections, addCollection } = useMemoryActions()
 
@@ -53,12 +53,12 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
                   key={collection?.id}
                   collection={collection}
                   onClick={() => {
-                    setSelectedCollectionId(collection?.id)
+                    setSelectedCollectionName(collection?.name)
                     // Reset data when changing collections
                     setDocuments([])
                     setSelectedDocumentId('')
                     // Update url to reflect selected id
-                    router.push(`/${ROUTE_KNOWLEDGE}?collectionId=${collection?.id}`, { shallow: true })
+                    router.push(`/${ROUTE_KNOWLEDGE}?collectionName=${collection.name}`, { shallow: true })
                   }}>
                 </CollectionCard>
               )

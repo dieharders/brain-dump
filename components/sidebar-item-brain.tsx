@@ -22,8 +22,8 @@ export const CollectionCard = (props: SidebarItemProps) => {
   const { collection, onClick, isSelected, isActive: isHighlighted, children } = props
   const [isActive, setIsActive] = useState(false)
   const numFavorites = collection?.metadata?.favorites || 0
-  const numTags = collection?.metadata?.tags?.split(' ').length || 0
-  const numSources = collection?.metadata?.sources?.length || 0
+  const numTags = collection?.metadata?.tags ? collection?.metadata?.tags?.split(' ').length : 0
+  const numSources = collection?.metadata?.sources.length || 0
   const createdAt = collection?.metadata?.createdAt || '?'
   const icon = collection?.metadata?.icon || ''
   const toolTipStyle = cn("min-w-0 focus:bg-muted focus:ring-1 focus:ring-ring")

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 // import { SidebarFooter } from '@/components/sidebar-footer'
 // import { ClearData } from '@/components/features/crud/dialog-clear-data'
-import { I_Document, useHomebrew } from '@/lib/homebrew'
+import { I_Collection, useHomebrew } from '@/lib/homebrew'
 import { CardDocument } from '@/components/features/panels/card-document'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
@@ -16,42 +16,34 @@ import { DialogAddDocument } from '@/components/features/crud/dialog-add-documen
 
 interface I_Props {
   session: Session
-  collectionId: string | null
+  collectionName: string | null
 }
 
-export const DocumentsButton = ({ session, collectionId }: I_Props) => {
+export const DocumentsButton = ({ session, collectionName }: I_Props) => {
   const { getServices } = useHomebrew()
-  const { selectedDocumentId, setSelectedDocumentId, documents, setDocuments, setDocumentChunks, services, setServices, collections } = useGlobalContext()
-  const { addDocument, fetchDocumentsFromId, fetchDocumentChunks } = useMemoryActions()
+  const { fetchDocumentChunks } = useMemoryActions()
+  const { setChunks, selectedDocumentId, setSelectedDocumentId, documents, setDocuments, services, setServices, collections, setCollections, selectedCollectionName } = useGlobalContext()
+  const { addDocument, fetchDocuments, fetchCollection } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [doOnce, setDoOnce] = useState(false)
 
-  // Get all chunks for document
-  const fetchChunksForDocument = useCallback(
-    async (id: string | null, doc: I_Document) => {
-      const chunkResponse = await fetchDocumentChunks(id, doc)
-      chunkResponse?.length > 0 && setDocumentChunks(chunkResponse)
-      return
-    },
-    [fetchDocumentChunks, setDocumentChunks],
-  )
+  const items = useMemo(() => documents?.map?.(
+    document => {
+      const docId = document?.id
+      const numChunks = document?.chunkIds?.length || 0
 
-  const items = useMemo(() => documents?.map(
-    document => (
-      <CardDocument
-        key={document?.metadata?.id}
+      return <CardDocument
+        key={docId}
         document={document}
-        numChunks={JSON.parse(document?.metadata?.chunk_ids)?.length}
+        numChunks={numChunks}
         onClick={async () => {
-          const docId = document?.metadata?.id
           if (docId === selectedDocumentId) return
-          // Reset chunks when changing docs
-          setDocumentChunks([])
-          // Fetch document and its chunks when selected
           setSelectedDocumentId(docId)
-          fetchChunksForDocument(docId, document)
+          const res = await fetchDocumentChunks({ collectionId: selectedCollectionName, documentId: docId })
+          res && setChunks(res)
         }} />
-    )
-  ), [documents, fetchChunksForDocument, selectedDocumentId, setDocumentChunks, setSelectedDocumentId])
+    }
+  ), [documents, fetchDocumentChunks, selectedCollectionName, selectedDocumentId, setChunks, setSelectedDocumentId])
 
   const documentCards = documents?.length ?
     items
@@ -62,28 +54,36 @@ export const DocumentsButton = ({ session, collectionId }: I_Props) => {
     )
 
   const DocumentsList = ({ children }: { children: ReactNode }) => {
-    const currentCollection = collections?.find(c => c.id === collectionId) || null
+    const currentCollection = collections?.find(c => c.name === collectionName) || null
+
+    const fetchAction = useCallback(async () => {
+      // Need to re-fetch all collections before getting documents
+      const collRes = await fetchCollection(collectionName)
+      collRes && setCollections((prev: I_Collection[]) => [...prev, collRes])
+      // Update documents data
+      const res = await fetchDocuments(collectionName, collRes)
+      res.length > 0 && setDocuments(res)
+      return
+    }, [])
 
     // Fetch data when this panel is opened
     useEffect(() => {
       const action = async () => {
-        const res = await fetchDocumentsFromId(collectionId)
-        res && setDocuments(res)
+        // Prevent infinite fetches
+        await fetchAction()
+        setDoOnce(true)
       }
-      if (!documents || documents.length === 0) action()
-    }, [])
+      if (!doOnce && (!documents || documents.length === 0)) action()
+    }, [fetchAction])
 
     return (
       <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
         {/* Action Menus */}
-        <DialogAddDocument action={addDocument} dialogOpen={createDialogOpen} setDialogOpen={setCreateDialogOpen} collection={currentCollection} options={services?.memory.configs} />
+        <DialogAddDocument action={addDocument} dialogOpen={createDialogOpen} setDialogOpen={setCreateDialogOpen} collection={currentCollection} />
         {/* "Add New" and "Refresh" buttons */}
         <div className="flex items-center justify-center gap-4 px-4">
           <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
-          <RefreshButton action={async () => {
-            const res = await fetchDocumentsFromId(collectionId)
-            res && setDocuments(res)
-          }} />
+          <RefreshButton action={fetchAction} />
         </div>
         {/* List of documents */}
         <div className="scrollbar overflow-x-hidden pl-4 pr-2">

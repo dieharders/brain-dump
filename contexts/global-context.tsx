@@ -1,20 +1,22 @@
-import React, { ReactNode, useState } from 'react'
-import { I_Collection, I_Document, I_ServiceApis } from '@/lib/homebrew'
+import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { I_Collection, I_DocumentChunk, I_ServiceApis, I_Source } from '@/lib/homebrew'
+
+export type T_Chunks_Map = Array<I_DocumentChunk>
 
 interface IGlobalContextProps {
   services: I_ServiceApis | null
   setServices: (services: I_ServiceApis) => void
   downloads: any
   collections: Array<I_Collection>
-  setCollections: (collections: Array<I_Collection>) => void
-  selectedCollectionId: string | null
-  setSelectedCollectionId: (id: string) => void
+  setCollections: Dispatch<SetStateAction<Array<I_Collection>>>
+  selectedCollectionName: string | null
+  setSelectedCollectionName: (id: string) => void
   selectedDocumentId: string | null
   setSelectedDocumentId: (id: string) => void
-  documents: Array<I_Document>
-  setDocuments: (documents: I_Document[]) => void
-  documentChunks: Array<any>
-  setDocumentChunks: (chunks: Array<any>) => void
+  documents: Array<I_Source>
+  setDocuments: (documents: I_Source[]) => void
+  chunks: T_Chunks_Map
+  setChunks: (chunks: T_Chunks_Map) => void
 }
 
 export const GlobalContext = React.createContext<IGlobalContextProps>({
@@ -23,23 +25,23 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   downloads: {}, // Used for tracking in progress downloads
   collections: [],
   setCollections: () => { },
-  selectedCollectionId: null,
-  setSelectedCollectionId: () => { },
+  selectedCollectionName: null,
+  setSelectedCollectionName: () => { },
   selectedDocumentId: null,
   setSelectedDocumentId: () => { },
   documents: [],
   setDocuments: () => { },
-  documentChunks: [],
-  setDocumentChunks: () => { },
+  chunks: [],
+  setChunks: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null)
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
-  const [documents, setDocuments] = useState<Array<I_Document>>([])
+  const [selectedCollectionName, setSelectedCollectionName] = useState<string | null>(null)
   const [services, setServices] = useState<I_ServiceApis | null>(null)
+  const [chunks, setChunks] = useState<T_Chunks_Map>([])
+  const [documents, setDocuments] = useState<Array<I_Source>>([])
   const [collections, setCollections] = useState<Array<I_Collection>>([])
-  const [documentChunks, setDocumentChunks] = useState<Array<any>>([])
 
   return (
     <GlobalContext.Provider
@@ -51,12 +53,12 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setServices,
         collections,
         setCollections,
-        selectedCollectionId,
-        setSelectedCollectionId,
+        selectedCollectionName,
+        setSelectedCollectionName,
         documents,
         setDocuments,
-        documentChunks,
-        setDocumentChunks,
+        chunks,
+        setChunks,
       }}
     >
       {children}

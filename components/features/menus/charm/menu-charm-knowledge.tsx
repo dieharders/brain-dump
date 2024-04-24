@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
-import { I_Collection, T_Memory_Type } from '@/lib/homebrew'
+import { I_Collection, I_Knowledge_State } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
 import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { KnowledgeTab } from '@/components/features/menus/tabs/tab-knowledge'
@@ -18,7 +18,7 @@ interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   fetchListAction: () => Promise<I_Collection[]>
-  onSubmit: (settings: { type: T_Memory_Type, index: string[] }) => void
+  onSubmit: (settings: { knowledge: I_Knowledge_State }) => void
 }
 
 export const charmId: T_CharmId = 'memory'
@@ -74,7 +74,7 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
             onClick={async () => {
               setDisableForm(true)
               // Save the list based on currently selected checkboxes
-              const payload = { type, index: selected }
+              const payload = { knowledge: { type, index: selected } }
               onSubmit(payload)
               setDialogOpen(false)
               setDisableForm(false)

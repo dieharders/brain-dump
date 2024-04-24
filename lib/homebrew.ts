@@ -55,11 +55,6 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 
-// type T_APIRequests = {
-//   services: I_ServiceApis
-//   configs: T_APIConfigOptions
-// }
-
 interface I_Endpoint {
   name: string
   urlPath: string
@@ -113,44 +108,48 @@ export type T_GenericAPIRequest<ReqPayload, DataResType> = (
 ) => Promise<I_GenericAPIResponse<DataResType> | null>
 
 // These are the sources (documents) kept track by a collection
-export interface I_DocSource {
-  id: string // Globally unique id
-  name: string // Source id
-  filePath: string // Update sources paths (where original uploaded files are stored)
-  fileName: string
-  chunk_ids: string // json string -> Array<string>
+export interface I_Source {
+  id: string
+  name: string
+  checksum: string
   urlPath: string
+  filePath: string
+  fileType: string
+  fileName: string
+  fileSize: number
+  modifiedLast: string
+  createdAt: string
   description: string
   tags: string
-  createdAt: string
-  checksum: string
-  fileType: string // @TODO Introduce this on backend
+  order: number
+  chunkIds: Array<string>
 }
 
 export interface I_Document {
   ids: string
   documents: string
   embeddings: number[]
-  metadata: I_DocSource
+  metadata: I_Source
+}
+
+export interface I_DocumentChunk {
+  text: string
+  id: string
+  metadata: I_Source
 }
 
 export interface I_Collection {
   id: string
   name: string
   metadata: {
-    sources: string[]
     description: string
     tags: string
     icon: string
+    sources: Array<I_Source>
     createdAt?: string
     sharePath?: string
     favorites?: number
   }
-}
-
-export interface I_GetCollectionData {
-  collection: I_Collection
-  numItems: number
 }
 
 export type T_ModelConfig = {
@@ -246,7 +245,7 @@ export type T_Memory_Type = 'training' | 'augmented_retrieval'
 
 export interface I_Knowledge_State {
   type: T_Memory_Type
-  index: string[]
+  index: string[] // collection names
 }
 
 export interface I_RAG_Strat_State {
@@ -339,12 +338,11 @@ export interface I_ServiceApis extends I_BaseServiceApis {
   memory: {
     addDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getChunks: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    getDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     updateDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     deleteDocuments: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getAllCollections: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     addCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    getCollection: T_GenericAPIRequest<T_GenericReqPayload, I_GetCollectionData>
+    getCollection: T_GenericAPIRequest<T_GenericReqPayload, I_Collection>
     deleteCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     fileExplore: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     wipe: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
@@ -580,34 +578,10 @@ export const getAPIConfig = async () => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  // Return options for all endpoints
-  // @TODO Merge into getServices
-  const getAPIConfigs = useCallback(async () => {
-    // Store in session storage
-    // const configs = appSettings.getApiConfigs()
-    // if (configs) return configs
-
-    const res = await getAPIConfig()
-    if (res) {
-      // Store all config options for endpoints
-      let configOptions: T_APIConfigOptions = {}
-      res?.forEach(i => {
-        if (i.configs) configOptions = { ...configOptions, ...i.configs }
-      })
-      appSettings.setApiConfigs(configOptions)
-      return configOptions
-    }
-
-    return {}
-  }, [])
-
   /**
    * Get all api configs for services.
    */
   const getServices = useCallback(async () => {
-    const configs = appSettings.getServices()
-    if (configs?.length > 0) return createServices(configs)
-
     const res = await getAPIConfig()
     // Store all config options for endpoints
     let configOptions: T_APIConfigOptions = {}
@@ -616,8 +590,6 @@ export const useHomebrew = () => {
     })
     // Return readily usable request funcs
     const serviceApis = createServices(res)
-    // const result = { configs: configOptions, services: serviceApis }
-    res && res.length > 0 && appSettings.setServices(res)
     return serviceApis
   }, [])
 
@@ -634,5 +606,8 @@ export const useHomebrew = () => {
     return result
   }, [getServices])
 
-  return { connect, getServices, getAPIConfigs }
+  return {
+    connect,
+    getServices,
+  }
 }

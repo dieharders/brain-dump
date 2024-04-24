@@ -7,7 +7,6 @@ import {
   I_ServiceApis,
   I_System_State,
   T_SystemPrompts,
-  useHomebrew,
 } from '@/lib/homebrew'
 import { defaultState as defaultSystemState } from '@/components/features/menus/tabs/tab-system'
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
@@ -18,9 +17,6 @@ export const useModelSettingsMenu = ({
 }: {
   services: I_ServiceApis | null
 }) => {
-  // Deps
-  const { getAPIConfigs } = useHomebrew()
-
   // State values
   const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaultPromptState)
   const [stateSystem, setStateSystem] = useState<I_System_State>(defaultSystemState)
@@ -52,9 +48,10 @@ export const useModelSettingsMenu = ({
   }, [services?.textInference])
 
   const getRagModes = useCallback(async () => {
-    const data = await getAPIConfigs()
-    setRagModes(data?.ragResponseModes || [])
-  }, [getAPIConfigs])
+    if (!services) return
+    const data = services?.textInference.configs.ragResponseModes
+    data && setRagModes(data)
+  }, [services])
 
   // Fetch required data for menus
   const fetchData = async () => {

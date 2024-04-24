@@ -119,7 +119,7 @@ export const BotCreationMenu = (props: I_Props) => {
       // Close
       setDialogOpen(false)
     },
-    [stateModel, onSubmit, stateAttention, statePerformance, stateSystem, statePrompt, knowledgeType, stateResponse, knowledgeIndex, setDialogOpen],
+    [knowledgeIndex, knowledgeType, onSubmit, setDialogOpen, stateAttention, stateModel, statePerformance, statePrompt, stateResponse, stateSystem],
   )
 
   useEffect(() => {
