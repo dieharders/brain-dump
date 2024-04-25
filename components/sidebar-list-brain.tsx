@@ -35,7 +35,7 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       {/* "Add New" and "Refresh" buttons */}
       <div className="flex items-center justify-center gap-4 px-4">
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
-        <RefreshButton action={() => updateListAction()} />
+        <RefreshButton action={updateListAction} />
       </div>
       {/* Collections */}
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
