@@ -1,23 +1,39 @@
 'use client'
+import { useEffect } from 'react'
 import { Session } from 'next-auth'
 import { IconArrowElbow } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { ChatsButton } from '@/components/features/panels/chats-panel-button'
 import { CollectionsButton } from '@/components/features/panels/collections-panel-button'
-import { usePathname, useRouter } from 'next/navigation'
-import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
+import { ChatsButton } from '@/components/features/panels/chats-panel-button'
+import { DocumentsButton } from '@/components/features/panels/documents-panel-button'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { ROUTE_CHATBOT, ROUTE_KNOWLEDGE, ROUTE_PLAYGROUND } from '@/app/constants'
 import { CubeIcon } from '@radix-ui/react-icons'
+import { useHomebrew } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
 
 export const MenuPanelTriggers = ({ session }: { session: Session }) => {
+  const { getServices } = useHomebrew()
+  const { services, setServices } = useGlobalContext()
   const pathname = usePathname()
+  const search = useSearchParams()
   const router = useRouter()
+  const selectedCollectionName = search.get('collectionName')
   const routeId = pathname.split('/')[1] // base url
   const header_url = routeId || '/'
-  const showKB = header_url === 'knowledge'
+  const showKB = header_url === ROUTE_KNOWLEDGE
   const showChatThreads = header_url === ROUTE_CHATBOT || header_url === ROUTE_PLAYGROUND
   const showHomeShortcut = showChatThreads || showKB
   const showHostConnPage = header_url === 'home'
+
+  useEffect(() => {
+    const action = async () => {
+      const s = await getServices()
+      s && setServices(s)
+    }
+    if (!services) action()
+  }, [getServices, services, setServices])
 
   return (
     <div className="flex items-center">
@@ -70,16 +86,36 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
         </Tooltip>
       }
 
-      {/* Knowledge Base Pane Button */}
+      {/* Documents - Open Pane Button */}
+      {showKB &&
+        <Tooltip delayDuration={450}>
+          <TooltipTrigger asChild
+            onClick={async (e) => {
+              // console.log('list opened', e)
+            }}
+          >
+            <div>
+              <DocumentsButton
+                session={session}
+                collectionName={selectedCollectionName}
+              />
+              <span className="sr-only">List of knowledge base documents</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>Documents</TooltipContent>
+        </Tooltip>
+      }
+
+      {/* Collections - Open Pane Button */}
       {showKB &&
         <Tooltip delayDuration={450}>
           <TooltipTrigger asChild>
             <div>
               <CollectionsButton session={session} />
-              <span className="sr-only">Explore Ai knowledge base</span>
+              <span className="sr-only">List of knowledge base collections</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent>Knowledge Base</TooltipContent>
+          <TooltipContent>Collections</TooltipContent>
         </Tooltip>
       }
     </div>

@@ -16,10 +16,10 @@ interface I_Props {
   className?: string
   expandable?: boolean
   children?: ReactNode
-  onClick?: (id: string) => void
+  onClick?: ({ id, isOpen }: { id: string, isOpen: boolean }) => void
 }
 
-export const ModelCard = ({ expandable = true, onClick = (_id: string) => { }, title, id, description, type = '?', libraryName = '', tags = [], downloads = 0, licenses, provider, Icon, children, className }: I_Props) => {
+export const ModelCard = ({ expandable = true, onClick = (_props: { id: string, isOpen: boolean }) => { }, title, id, description, type = '?', libraryName = '', tags = [], downloads = 0, licenses, provider, Icon, children, className }: I_Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const secTextStyle = 'text-primary inline'
   const maker = (isOpen && provider) ? `${provider}/` : ''
@@ -34,7 +34,7 @@ export const ModelCard = ({ expandable = true, onClick = (_id: string) => { }, t
         onClick={() => {
           // Expand down to show description, and load the quantization menu
           expandable && setIsOpen(prev => !prev)
-          onClick(id)
+          onClick({ id, isOpen })
         }}
       >
         {/* Name */}

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
 import { Root, Item, Indicator } from '@radix-ui/react-radio-group'
-import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, T_APIConfigOptions } from '@/lib/homebrew'
+import { T_GenericDataRes, T_GenericAPIRequest, I_Collection } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,7 +20,7 @@ import { Separator } from '@/components/ui/separator'
 import { Select } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { T_DocPayload } from '@/components/features/crud/actions'
-
+import { useGlobalContext } from '@/contexts'
 
 type T_SourceFile = 'urlFile' | 'localFile' | 'inputText'
 
@@ -29,17 +29,18 @@ interface I_Props {
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
   action: T_GenericAPIRequest<T_DocPayload, T_GenericDataRes>
-  options?: T_APIConfigOptions
 }
 
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
+  const { services } = useGlobalContext()
+  const options = services?.memory.configs
   const fieldContainer = "grid gap-4 rounded-md border p-4"
   const radioGroupItemStyle = "mr-4 h-7 w-8 rounded-full border border-muted bg-background hover:border-primary/50 hover:bg-accent focus:border-primary/25 focus:bg-muted/50"
   const radioGroupIndicatorStyle = "flex h-full w-full items-center justify-center text-xl after:h-[1rem] after:w-[1rem] after:rounded-full after:bg-primary/50 after:content-['']"
   const labelStyle = "w-full"
   const inputContainer = "flex flex-row items-center"
-  const { action, collection, dialogOpen, setDialogOpen, options } = props
+  const { action, collection, dialogOpen, setDialogOpen } = props
   const defaultFileSource = 'urlFile'
   const [fileSource, setFileSource] = useState<T_SourceFile>(defaultFileSource)
   const [nameValue, setNameValue] = useState('')

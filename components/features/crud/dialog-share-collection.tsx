@@ -15,35 +15,35 @@ import { cn, formatDate } from '@/lib/utils'
 import { badgeVariants } from '@/components/ui/badge'
 import { IconSpinner, IconUsers } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
-import { I_Collection } from '@/lib/homebrew'
 import Link from 'next/link'
+import { notifications } from '@/lib/notifications'
 
 interface I_Props {
-  collection: I_Collection | null
-  action: (collection: I_Collection) => Promise<I_Collection>
+  name: string | undefined
+  sharePath: string | undefined
+  createdAt: string | undefined
+  numSources: number
+  action: () => Promise<any>
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
 }
 export const DialogShareCollection = (props: I_Props) => {
-  const { action, collection, dialogOpen, setDialogOpen } = props
+  const { action, dialogOpen, setDialogOpen, sharePath, createdAt, numSources, name } = props
   const [isSharePending, startShareTransition] = useTransition()
-  const sharePath = collection?.metadata?.sharePath
-  const createdAt = collection?.metadata?.createdAt
-  const sources = collection?.metadata?.sources
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Share link to your collection</DialogTitle>
+          <DialogTitle>Share a link with a friend</DialogTitle>
           <DialogDescription>
             Anyone with the URL will be able to view this shared collection.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-1 rounded-md border p-4 text-sm">
-          <div className="font-medium">{collection?.name}</div>
+          <div className="font-medium">{name}</div>
           <div className="text-muted-foreground">
-            {formatDate(createdAt || '')} · {sources?.length} collections
+            {formatDate(createdAt || '')} · {numSources} collections
           </div>
         </div>
         <DialogFooter className="items-center">
@@ -62,9 +62,12 @@ export const DialogShareCollection = (props: I_Props) => {
             disabled={isSharePending}
             onClick={() => {
               startShareTransition(async () => {
-                if (!collection) return
-
-                // @TODO Implement a share feature for memories
+                if (!sharePath) {
+                  // @TODO Implement a share feature for memories
+                  notifications().notAvailable()
+                  // toast.error('No share path provided.')
+                  return
+                }
 
                 // if (sharePath) {
                 //   await new Promise(resolve => setTimeout(resolve, 500))
@@ -72,7 +75,7 @@ export const DialogShareCollection = (props: I_Props) => {
                 //   return
                 // }
 
-                const result = await action(collection)
+                const result = await action()
 
                 if (result && 'error' in result) {
                   toast.error(`${result.error}`)
@@ -80,6 +83,7 @@ export const DialogShareCollection = (props: I_Props) => {
                 }
 
                 // copyShareLink({ data: result, setDialogOpen })
+                return
               })
             }}
           >

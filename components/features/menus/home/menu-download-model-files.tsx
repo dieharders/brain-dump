@@ -45,21 +45,22 @@ export const DownloadModelMenu = (props: I_Props) => {
   } = props
   const selectedModelConfig = data[id || '']
   const numQuants = useMemo(() => {
-    const model = hfModelsInfo.find(i => i.id === selectedModelConfig?.repoId)
+    const model = hfModelsInfo.find?.(i => i.id === selectedModelConfig?.repoId)
     const quants = model?.siblings?.filter((s: any) => s.lfs)
     return quants?.length
   }, [hfModelsInfo, selectedModelConfig])
-  const model = hfModelsInfo.find(i => i.id === selectedModelConfig?.repoId)
+  const model = hfModelsInfo.find?.(i => i.id === selectedModelConfig?.repoId)
   const quants = model?.siblings?.filter((s: any) => s?.lfs)
   const [selected, setSelected] = useState<string>(quants?.[0]?.rfilename)
   const noBreakStyle = 'text-ellipsis whitespace-nowrap text-nowrap'
 
   const renderQuants = useCallback(() => {
-    const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: string, name: string, fileSize: string, repo_id: string }) => {
+    const QuantContainer = ({ fileName, name, fileSize, repo_id }: { fileName: any, name: string, fileSize: string, repo_id: string }) => {
       const [isDownloading, setIsDownloading] = useState(false)
       const installInfo = installedModelsInfo.find(i => i.repoId === repo_id)
       const [isCached, setIsCached] = useState(installInfo?.savePath?.[fileName])
       const quantItems = quants?.map((i: any) => ({ name: i.rfilename, value: i.rfilename }))
+      const sizeGB = fileSize === 'NaN' ? '0' : fileSize
 
       return (
         <div className={cn("flex h-full flex-col justify-between gap-4 border-t border-dashed border-t-muted-foreground bg-background p-4", noBreakStyle)}>
@@ -68,18 +69,20 @@ export const DownloadModelMenu = (props: I_Props) => {
             <Select id="select_model_file" name={fileName} value={fileName} placeholder="Select a file" onChange={setSelected} items={quantItems} className="w-full bg-accent" />
           </div>
           {/* Use-Case Description */}
-          <p className="w-full items-center self-center whitespace-normal text-muted-foreground">{qDescr[name] || ''}</p>
+          <p className="w-full items-center self-center whitespace-normal text-muted-foreground">
+            {name === '1' || name === 'NaN' ? 'No information is available for this file.' : name ? qDescr?.[name] : 'Please select a file to download.'}
+          </p>
           {/* Footer and download button */}
           <div className="flex w-full flex-col justify-end gap-2 sm:flex-row">
             {/* File Size */}
-            <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{fileSize}GB</div>
+            <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{sizeGB}GB</div>
             {/* Quant name */}
             {name && name.length > 1 && <div className="flex items-center justify-center rounded-md bg-accent/50 p-2 text-center text-primary">{name}</div>}
             {!isCached ? (
               // Download Model Button
               <Button
                 variant="outline"
-                disabled={isDownloading}
+                disabled={isDownloading || !fileName}
                 onClick={async () => {
                   setIsDownloading(true)
                   await downloadModel({ filename: fileName || '', repo_id })
@@ -96,7 +99,7 @@ export const DownloadModelMenu = (props: I_Props) => {
               // Delete Model Button
               <Button
                 variant="outline"
-                disabled={isDownloading}
+                disabled={isDownloading || !fileName}
                 onClick={async () => {
                   setIsDownloading(true)
                   await deleteModel({ filename: fileName || '', repoId: repo_id })

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { IconSpinner } from '@/components/ui/icons'
-import { I_Collection, I_Knowledge_State as I_State, T_Memory_Type } from '@/lib/homebrew'
+import { I_Collection, I_Knowledge_State, T_Memory_Type } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
 import { Root, Indicator } from '@radix-ui/react-checkbox'
 import { CheckIcon } from '@radix-ui/react-icons'
@@ -16,6 +16,7 @@ import { CollectionCard } from '@/components/sidebar-item-brain'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconBrain, IconDocument } from '@/components/ui/icons'
 import { DEFAULT_TYPE } from '@/components/features/menus/charm/hook-charm-knowledge'
+import { useGlobalContext } from '@/contexts'
 
 interface I_Props {
   fetchListAction: () => Promise<I_Collection[]>
@@ -25,17 +26,16 @@ interface I_Props {
   setSelected: Dispatch<SetStateAction<string[]>>
   disableForm: boolean
   setDisableForm: Dispatch<SetStateAction<boolean>>
-  collections: I_Collection[]
-  setCollections: Dispatch<SetStateAction<I_Collection[]>>
 }
 
-export const defaultState: I_State = {
+export const defaultState: I_Knowledge_State = {
   type: DEFAULT_TYPE,
-  index: []
+  index: [],
 }
 
 export const KnowledgeTab = (props: I_Props) => {
-  const { fetchListAction, type, setType, disableForm, setDisableForm, collections, setCollections, setSelected, selected } = props
+  const { collections, setCollections } = useGlobalContext()
+  const { fetchListAction, type, setType, disableForm, setDisableForm, setSelected, selected } = props
   const toggleGroupClass = "flex flex-row gap-2 rounded p-2"
   const renderDefaultMsg = <div className="font-semibold">No collections added yet.</div>
 
@@ -43,7 +43,7 @@ export const KnowledgeTab = (props: I_Props) => {
     const itemName = item.name
     const [isActive, setIsActive] = useState(false)
     const selectedItem = selected.find(name => name === itemName)
-    const isInList = typeof selectedItem === 'string'
+    const isInList = typeof selectedItem !== 'undefined'
 
     const onChange = useCallback(() => {
       if (!isInList) {
@@ -89,7 +89,7 @@ export const KnowledgeTab = (props: I_Props) => {
   const CollectionsList = () => {
     // Scrollable List Container (fixed height)
     return <div className="scrollbar flex max-h-[32rem] w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2 pr-4">
-      {collections.map((item, i) => <CollectionItem key={item.id} item={item} index={i} />)}
+      {collections?.map((item, i) => <CollectionItem key={item.id} item={item} index={i} />)}
     </div>
   }
 

@@ -15,12 +15,14 @@ import { useSettings } from '@/components/features/settings/hooks'
 import { Highlight, InfoLink } from '@/components/ui/info'
 import appSettings from '@/lib/localStorage'
 import { useSearchParams } from 'next/navigation'
+import { useGlobalContext } from '@/contexts'
 
 export const ConnectServerPage = () => {
   const searchParams = useSearchParams()
   const { provider: selectedProvider } = useSettings()
   const router = useRouter()
   const { theme } = useTheme()
+  const { setServices } = useGlobalContext()
   const icon = theme === 'dark' ? '🍺' : '☕'
   const { connect: connectToHomebrew, getServices } = useHomebrew()
   const containerStyle = cn('bg-neutral-transparent relative w-full items-center justify-between rounded-lg border border-neutral-600 p-4')
@@ -67,6 +69,7 @@ export const ConnectServerPage = () => {
       // Get all possible server endpoints after successfull connection
       const res = await getServices()
       if (res) {
+        setServices(res)
         // Record successful connection
         appSettings.setHostConnectionFlag(true)
         router.push('home')

@@ -9,7 +9,7 @@
     {
       "id": "eval_input",
       "name": "Evaluate",
-      "text": "We have provided context information below. \n---------------------\n{context_str}\n---------------------\nGiven this information, think through step by step and evauluate reasoning before replying to the following: {query_str}\n",
+      "text": "We have provided context information below. \n---------------------\n{context_str}\n---------------------\nGiven this information, think through step by step and evaluate reasoning before replying to the following: {query_str}\n",
       "type": "QUESTION_ANSWER"
     }
   ],

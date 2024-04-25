@@ -5,9 +5,10 @@ import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
-import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { I_LoadedModelRes, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import toast from 'react-hot-toast'
+import { useGlobalContext } from '@/contexts'
 // import { type Metadata } from 'next'
 // import { notFound, redirect } from 'next/navigation'
 // import { auth } from '@/auth'
@@ -38,11 +39,11 @@ export interface I_PageProps {
 export default function BotPage(props: any) {
   const pathname = usePathname()
   const { getServices } = useHomebrew()
+  const { services, setServices } = useGlobalContext()
   const { searchParams } = props
   const name = searchParams.id
   const routeId = pathname.split('/')[1] // base url
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
-  const [services, setServices] = useState<I_ServiceApis | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchChatBotSettings, loadModel: loadChatBot } = useChatPage({ services })
@@ -75,11 +76,11 @@ export default function BotPage(props: any) {
 
   useEffect(() => {
     const action = async () => {
-      const services = await getServices()
-      setServices(services)
+      const s = await getServices()
+      s && setServices(s)
     }
     if (!services) action()
-  }, [getServices, services])
+  }, [getServices, services, setServices])
 
   // Fetch settings
   useEffect(() => {
@@ -109,7 +110,6 @@ export default function BotPage(props: any) {
       id={name}
       routeId={routeId}
       initialMessages={initialMessages}
-      services={services}
       isLoading={isLoading}
       settings={settings}
     />

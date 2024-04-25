@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
+import { useGlobalContext } from '@/contexts'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
-import { I_LoadedModelRes, I_ServiceApis, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
+import { I_LoadedModelRes, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -31,7 +32,7 @@ export default function PlaygroundPage() {
   const session_id = ROUTE_PLAYGROUND
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
-  const [services, setServices] = useState<I_ServiceApis | null>(null)
+  const { services, setServices } = useGlobalContext()
   const [isLoading, setIsLoading] = useState(true)
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
   const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
@@ -51,10 +52,10 @@ export default function PlaygroundPage() {
   useEffect(() => {
     const action = async () => {
       const res = await getServices()
-      setServices(res)
+      res && setServices(res)
     }
     if (!services) action()
-  }, [getServices, services])
+  }, [getServices, services, setServices])
 
   // Fetch settings
   useEffect(() => {
@@ -84,7 +85,6 @@ export default function PlaygroundPage() {
         id={session_id}
         routeId={routeId}
         initialMessages={initialMessages}
-        services={services}
         isLoading={isLoading}
         setSettings={setSettings}
         settings={settings}

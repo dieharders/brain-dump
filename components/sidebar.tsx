@@ -1,7 +1,6 @@
 'use client'
 
-import * as React from 'react'
-
+import { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -10,21 +9,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { IconChat, IconBrain } from '@/components/ui/icons'
 
 export interface SidebarProps {
-  children?: React.ReactNode
+  children?: ReactNode
   title?: string
-  icon?: string
+  icon?: any
 }
 
 export function Sidebar({ children, title, icon }: SidebarProps) {
-  const Icon = icon === 'chat' || !icon ? IconChat : IconBrain
+  const Icon = icon
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" className="mx-1 h-9 w-9 p-0">
-          <Icon className="h-6 w-6" />
+          {icon && <Icon className="h-6 w-6" />}
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>

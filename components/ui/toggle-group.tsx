@@ -1,19 +1,21 @@
 import React from 'react'
+import { cn } from '@/lib/utils'
 import { Root, Item } from '@radix-ui/react-toggle-group'
 import { DEFAULT_CONVERSATION_MODE } from '@/lib/homebrew'
 
 interface I_Props {
   children: React.ReactNode
+  className?: string
   label: string
   defaultValue?: string
   value: string
   onChange: (val: string) => void
 }
 
-const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = DEFAULT_CONVERSATION_MODE, value, onChange }: I_Props) => {
+const ToggleGroup = ({ children, label = 'Toggle Group', defaultValue = DEFAULT_CONVERSATION_MODE, value, onChange, className }: I_Props) => {
   return (
     <Root
-      className="border-1 flex w-fit flex-row flex-wrap gap-2 rounded-sm border-solid border-black bg-muted p-2"
+      className={cn("border-1 flex w-fit flex-row flex-wrap gap-2 rounded-sm border-solid border-black bg-muted p-2", className)}
       type="single" // assign unique "name" prop to each <input> if you wish to use type="multiple"
       defaultValue={defaultValue}
       aria-label={label}

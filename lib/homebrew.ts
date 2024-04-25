@@ -55,11 +55,6 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
 
-type T_APIRequests = {
-  services: I_ServiceApis
-  configs: T_APIConfigOptions
-}
-
 interface I_Endpoint {
   name: string
   urlPath: string
@@ -113,40 +108,48 @@ export type T_GenericAPIRequest<ReqPayload, DataResType> = (
 ) => Promise<I_GenericAPIResponse<DataResType> | null>
 
 // These are the sources (documents) kept track by a collection
-export interface I_DocSource {
-  id: string // Globally unique id
-  name: string // Source id
-  filePath: string // Update sources paths (where original uploaded files are stored)
+export interface I_Source {
+  id: string
+  name: string
+  checksum: string
   urlPath: string
+  filePath: string
+  fileType: string
+  fileName: string
+  fileSize: number
+  modifiedLast: string
+  createdAt: string
   description: string
   tags: string
-  createdAt: string
-  checksum: string
+  order: number
+  chunkIds: Array<string>
 }
 
 export interface I_Document {
   ids: string
   documents: string
   embeddings: number[]
-  metadata: I_DocSource
+  metadata: I_Source
+}
+
+export interface I_DocumentChunk {
+  text: string
+  id: string
+  metadata: I_Source
 }
 
 export interface I_Collection {
   id: string
   name: string
   metadata: {
-    sources: string[]
     description: string
     tags: string
+    icon: string
+    sources: Array<I_Source>
     createdAt?: string
     sharePath?: string
     favorites?: number
   }
-}
-
-export interface I_GetCollectionData {
-  collection: I_Collection
-  numItems: number
 }
 
 export type T_ModelConfig = {
@@ -242,7 +245,7 @@ export type T_Memory_Type = 'training' | 'augmented_retrieval'
 
 export interface I_Knowledge_State {
   type: T_Memory_Type
-  index: string[]
+  index: string[] // collection names
 }
 
 export interface I_RAG_Strat_State {
@@ -325,21 +328,27 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getSystemPrompts: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    configs: {
+      ragResponseModes: Array<string>
+    }
   }
   /**
    * Use to add/create/update/delete embeddings from database
    */
   memory: {
     addDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    getDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    getChunks: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     updateDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    deleteDocuments: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    deleteSources: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getAllCollections: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     addCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    getCollection: T_GenericAPIRequest<T_GenericReqPayload, I_GetCollectionData>
+    getCollection: T_GenericAPIRequest<T_GenericReqPayload, I_Collection>
     deleteCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     fileExplore: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     wipe: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    configs: {
+      chunkingStrategies: Array<string>
+    }
   }
   /**
    * Use to persist data
@@ -458,7 +467,9 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   response.forEach(api => {
     const origin = `${createDomainName()}`
     const apiName = api.name
-    const endpoints: { [key: string]: (args: any) => Promise<Response | null> } = {}
+    const endpoints: { [key: string]: (args: any) => Promise<Response | null> } & {
+      configs?: T_APIConfigOptions
+    } = {}
     let res: Response
 
     // Parse endpoint urls
@@ -518,13 +529,15 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
           // Return raw response from llama-cpp-python server text inference
           return res
         } catch (err) {
-          console.log(`[homebrew] Endpoint ${endpoint.name} error:`, err)
+          console.log(`[homebrew] Endpoint "${endpoint.name}":`, err)
           return { success: false, message: err }
         }
       }
 
       // Add request function for this endpoint
       endpoints[endpoint.name] = request
+      // Set api configs
+      endpoints.configs = api.configs || {}
     })
     // Set api callbacks
     serviceApis[apiName] = endpoints
@@ -565,34 +578,10 @@ export const getAPIConfig = async () => {
  * Hook for Homebrew api that handles state and connections.
  */
 export const useHomebrew = () => {
-  // Return options for all endpoints
-  // @TODO Merge into getServices
-  const getAPIConfigs = useCallback(async () => {
-    // Store in session storage
-    // const configs = appSettings.getApiConfigs()
-    // if (configs) return configs
-
-    const res = await getAPIConfig()
-    if (res) {
-      // Store all config options for endpoints
-      let configOptions: T_APIConfigOptions = {}
-      res?.forEach(i => {
-        if (i.configs) configOptions = { ...configOptions, ...i.configs }
-      })
-      appSettings.setApiConfigs(configOptions)
-      return configOptions
-    }
-
-    return {}
-  }, [])
-
   /**
    * Get all api configs for services.
    */
   const getServices = useCallback(async () => {
-    const configs = appSettings.getServices()
-    if (configs.length > 0) return createServices(configs)
-
     const res = await getAPIConfig()
     // Store all config options for endpoints
     let configOptions: T_APIConfigOptions = {}
@@ -601,8 +590,6 @@ export const useHomebrew = () => {
     })
     // Return readily usable request funcs
     const serviceApis = createServices(res)
-    // const result = { configs: configOptions, services: serviceApis }
-    appSettings.setServices(res)
     return serviceApis
   }, [])
 
@@ -619,5 +606,8 @@ export const useHomebrew = () => {
     return result
   }, [getServices])
 
-  return { connect, getServices, getAPIConfigs }
+  return {
+    connect,
+    getServices,
+  }
 }

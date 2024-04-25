@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { useHomebrew } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 
 export const ModelReadout = () => {
-  const { getServices } = useHomebrew()
+  const { services } = useGlobalContext()
   const [title, setTitle] = useState('???')
   // @TODO Get these values from somewhere
   const gpu = '0'
@@ -17,7 +17,6 @@ export const ModelReadout = () => {
 
   useEffect(() => {
     const action = async () => {
-      const services = await getServices()
       const currentModel = await services?.textInference.model()
       const currentModelId = currentModel?.data?.modelId || ''
       const configs = await services?.textInference.getModelConfigs()
@@ -26,7 +25,7 @@ export const ModelReadout = () => {
       name && setTitle(name)
     }
     if (shouldRender) action()
-  }, [getServices, shouldRender])
+  }, [services?.textInference, shouldRender])
 
   return (
     shouldRender

@@ -60,6 +60,7 @@ export const CharmMenu = (props: I_Props) => {
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
   const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
+  const { fetchCollections } = useMemoryActions()
 
   const {
     fetchData,
@@ -88,8 +89,6 @@ export const CharmMenu = (props: I_Props) => {
     )
   }
 
-  const { fetchCollections } = useMemoryActions(services)
-
   const saveModelSettings = useCallback((args: I_ModelSettings) => {
     const action = async () => {
       if (args) {
@@ -103,12 +102,12 @@ export const CharmMenu = (props: I_Props) => {
     return action()
   }, [services?.storage, setState])
 
-  const saveKnowledgeSettings = useCallback((settings: I_Knowledge_State) => {
+  const saveKnowledgeSettings = useCallback((settings: { knowledge: I_Knowledge_State }) => {
     const action = async () => {
       // Save menu forms to a json file
       await services?.storage.savePlaygroundSettings({ body: settings })
       // Save state
-      setKnowledgeType(settings.type)
+      settings?.knowledge?.type && setKnowledgeType(settings.knowledge.type)
       return
     }
     return action()

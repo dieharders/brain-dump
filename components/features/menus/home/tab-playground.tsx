@@ -60,7 +60,6 @@ export const Playground = (props: I_Props) => {
   }).flatMap(x => x).filter(val => !!val)
   const installedFiles = [{ name: 'Available files', isLabel: true }, ...installedFilesList]
 
-
   const connectTextServiceAction = useCallback(async () => {
     const action = async () => {
       try {

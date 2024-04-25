@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { I_ModelConfigs, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
 import { ApplicationModesMenu } from '@/components/features/menus/home/menu-application-modes'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
@@ -12,7 +13,7 @@ const HomeMenuPage = () => {
   // Wrapper for styling the app background
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const [isConnecting, setIsConnecting] = useState(false)
-  const [services, setServices] = useState<I_ServiceApis | null>(null)
+  const { services, setServices } = useGlobalContext()
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { getServices } = useHomebrew()
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
@@ -37,7 +38,7 @@ const HomeMenuPage = () => {
       if (res) setServices(res)
     }
     if (setting) action()
-  }, [getServices])
+  }, [getServices, setServices])
 
   // Render
 

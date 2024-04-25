@@ -1,7 +1,7 @@
-# 🍺 Obrew Studio
+# 🍺 Obrew Studio - WebUI
 
-A developer tool for building custom Ai agents for use in your applications.
-A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).
+An Ai engineer's tool for building custom Ai agents and workflows for use in your own applications or everyday life.
+Fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).
 
 <!-- <a href="https://chat.vercel.ai/">
   <img alt="Next.js 13 and app template Router-ready AI chatbot." src="https://chat.vercel.ai/opengraph-image.png">
@@ -9,24 +9,28 @@ A fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbo
 </a> -->
 
 <p align="left">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#run-locally"><strong>Run locally</strong></a> ·
-  <a href="#deploy"><strong>Deploy</strong></a> ·
-  <a href="#env-vars"><strong>Env vars</strong></a>
+  <a href="#features-roadmap"><strong>Features</strong></a> ·
+  <a href="#model-providers"><strong>Providers</strong></a> ·
+  <a href="#how-to-run"><strong>How to Run</strong></a> ·
+  <a href="#release-versions"><strong>Release Versioning</strong></a> ·
+  <!-- <a href="#env-vars"><strong>Env vars</strong></a> -->
 </p>
 <br/>
 
-## Features
+## Features Roadmap
 
 - ✅ Run open source models locally for free
 - ✅ Streaming chat UI
-- ✅ Chat with your documents
+- ✅ Chat with your documents (RAG)
 - ✅ Build custom bots from a mix of LLM's, software configs and prompt configs
+- ✅ CPU & GPU support
+- ✅ Windows OS build
+- ❌ MacOS & Linux builds
 - ❌ Build assistants that have access to tools
-- ❌ Orchestrate multiple assistants together in a team
-- ❌ Save chat history and share chat logs with other users
+- ❌ Orchestrate multiple assistants in a team
+- ❌ Save chat history and share chat logs with community
+- ❌ Share document embeddings with community
+- ❌ Share model configs with community
 
 ## Model Providers
 
@@ -35,14 +39,20 @@ This is a local model first project. We have future plans to support cloud infer
 - ✅ [Local](https://github.com/dieharders/ai-text-server)
 - ❌ [OpenAI](https://openai.com/chatgpt)
 - ❌ [Google Gemini](https://gemini.google.com)
+- ❌ [Anthropic](https://www.anthropic.com)
+- ❌ [Mistral AI](https://mistral.ai)
+- ❌ [Groq](https://groq.com)
 
-## Run locally
+## How to Run
+
+### Run locally
 
 ```bash
+pnpm i
 pnpm dev
 ```
 
-## Deploy
+### Deploy
 
 To production:
 
@@ -56,7 +66,7 @@ To preview:
 vercel deploy
 ```
 
-## Create a release version
+## Release versions
 
 ### Prerelease
 
@@ -74,16 +84,10 @@ Increase the minor version by 1 (x.1.x to x.2.x)
 
 Increase the major version by 1 (1.x.x to 2.x.x)
 
-## Creating a KV Database Instance (for chat history, session)
-
-Follow the steps outlined in the [quick start guide](https://vercel.com/docs/storage/vercel-kv/quickstart#create-a-kv-database) provided by Vercel. This guide will assist you in creating and configuring your KV database instance on Vercel, enabling your application to interact with it.
-
-Remember to update your environment variables (`KV_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`) in the `.env` file with the appropriate credentials provided during the KV database setup.
-
-## Env vars
+<!-- ## Env vars
 
 You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) for this, but a `.env` file is all that is necessary.
 
 1. Install Vercel CLI: `pnpm i -g vercel`
 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+3. Download your environment variables: `vercel env pull` -->
