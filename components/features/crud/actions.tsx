@@ -157,11 +157,11 @@ export const useMemoryActions = () => {
     }
   }
 
-  const deleteDocument = async (collectionName: string | undefined, document: I_Source) => {
+  const deleteSource = async (collectionName: string | undefined, document: I_Source) => {
     try {
       if (!collectionName) throw new Error('No collection name provided.')
 
-      const res = await services?.memory.deleteDocuments({
+      const res = await services?.memory.deleteSources({
         body: {
           collection_id: collectionName,
           document_ids: [document.id],
@@ -215,7 +215,7 @@ export const useMemoryActions = () => {
     shareMemory,
     copyId,
     updateDocument,
-    deleteDocument,
+    deleteSource,
     deleteAllCollections,
     deleteCollection,
     addDocument,

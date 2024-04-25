@@ -23,7 +23,7 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
   const { getServices } = useHomebrew()
   const { fetchDocumentChunks } = useMemoryActions()
   const { setChunks, selectedDocumentId, setSelectedDocumentId, documents, setDocuments, services, setServices, collections, setCollections, selectedCollectionName } = useGlobalContext()
-  const { addDocument, fetchDocuments, fetchCollection } = useMemoryActions()
+  const { addDocument, fetchDocuments, fetchCollections } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [doOnce, setDoOnce] = useState(false)
 
@@ -58,20 +58,20 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
 
     const fetchAction = useCallback(async () => {
       // Need to re-fetch all collections before getting documents
-      const collRes = await fetchCollection(collectionName)
-      collRes && setCollections((prev: I_Collection[]) => [...prev, collRes])
+      const collRes = await fetchCollections()
+      collRes && setCollections(collRes)
       // Update documents data
-      const res = await fetchDocuments(collectionName, collRes)
-      res.length > 0 && setDocuments(res)
+      const res = await fetchDocuments(collectionName)
+      res?.length > 0 && setDocuments(res)
       return
     }, [])
 
     // Fetch data when this panel is opened
     useEffect(() => {
       const action = async () => {
+        setDoOnce(true)
         // Prevent infinite fetches
         await fetchAction()
-        setDoOnce(true)
       }
       if (!doOnce && (!documents || documents.length === 0)) action()
     }, [fetchAction])

@@ -21,7 +21,6 @@ import { CodeBlock } from '@/components/ui/codeblock'
 
 export default function KnowledgeBasePage() {
   const {
-    services,
     setServices,
     documents,
     setDocuments,
@@ -30,14 +29,13 @@ export default function KnowledgeBasePage() {
     setCollections,
     chunks,
     selectedCollectionName,
-    setSelectedCollectionName,
     setSelectedDocumentId,
   } = useGlobalContext()
   const search = useSearchParams()
   const id = search.get('collectionName') || selectedCollectionName
   const router = useRouter()
   const { getServices } = useHomebrew()
-  const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteDocument, updateDocument } = useMemoryActions()
+  const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteSource, updateDocument } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
   // Data
   const collection = collections?.find((c: I_Collection) => c.name === id)
@@ -150,7 +148,7 @@ export default function KnowledgeBasePage() {
                 className="w-fit p-5 text-lg"
                 variant="destructive"
                 action={async () => {
-                  await deleteDocument(collectionName, document)
+                  await deleteSource(collectionName, document)
                   // Reset data
                   setCurrentChunkItem(null)
                   setSelectedChunk('')
@@ -262,19 +260,21 @@ export default function KnowledgeBasePage() {
   // Fetch data when mounted
   useEffect(() => {
     const action = async () => {
-      if (!services) {
-        const ss = await getServices()
-        ss && setServices(ss)
-      }
-      const data = await fetchCollections()
-      if (data) {
-        id && setSelectedCollectionName(id) // Set initial selected collection
-        setCollections(data)
-        setMounted(true)
-      }
+      setMounted(true)
+      const ss = await getServices()
+      ss && setServices(ss)
     }
     if (!mounted) action()
-  }, [fetchCollections, getServices, id, mounted, services, setCollections, setSelectedCollectionName, setServices])
+  }, [getServices, mounted, setServices])
+
+  // Fetch data when mounted
+  useEffect(() => {
+    const action = async () => {
+      const data = await fetchCollections()
+      if (data) setCollections(data)
+    }
+    action()
+  }, [fetchCollections, setCollections])
 
   // Update displayed chunk when selected chunk is changed
   useEffect(() => {
@@ -295,5 +295,5 @@ export default function KnowledgeBasePage() {
     }
   }, [setDocuments])
 
-  return id ? collectionPage : collectionNotFound
+  return (id && collections.length) ? collectionPage : collectionNotFound
 }

@@ -25,12 +25,9 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
     data && setCollections(data)
   }, [fetchCollections, setCollections])
 
-  // Fetch data when opend
+  // Fetch data when opened
   useEffect(() => {
-    const action = async () => {
-      updateListAction()
-    }
-    action()
+    updateListAction()
   }, [updateListAction])
 
   return (
@@ -43,9 +40,9 @@ export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
       {/* Collections */}
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
         {/* Pop-Up Menus */}
-        <DialogCreateCollection action={addCollection} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
+        <DialogCreateCollection action={addCollection} onSuccess={updateListAction} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
         {/* List of data */}
-        {collections?.length ? (
+        {collections?.length > 0 ? (
           <div className="space-y-4">
             {collections?.map(
               collection => (
