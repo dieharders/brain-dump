@@ -1,21 +1,8 @@
 # 🍺 Obrew Studio - WebUI
 
 An Ai engineer's tool for building custom Ai agents and workflows for use in your own applications or everyday life.
-Fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot).
 
-<!-- <a href="https://chat.vercel.ai/">
-  <img alt="Next.js 13 and app template Router-ready AI chatbot." src="https://chat.vercel.ai/opengraph-image.png">
-  <h1 align="center">Next.js AI Chatbot</h1>
-</a> -->
-
-<p align="left">
-  <a href="#features-roadmap"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Providers</strong></a> ·
-  <a href="#how-to-run"><strong>How to Run</strong></a> ·
-  <a href="#release-versions"><strong>Release Versioning</strong></a> ·
-  <!-- <a href="#env-vars"><strong>Env vars</strong></a> -->
-</p>
-<br/>
+<!-- https://github.com/vercel-labs/ai-chatbot -->
 
 ## Features Roadmap
 
@@ -26,7 +13,7 @@ Fork of Vercel's Ai chatbot [example](https://github.com/vercel-labs/ai-chatbot)
 - ✅ CPU & GPU support
 - ✅ Windows OS build
 - ❌ MacOS & Linux builds
-- ❌ Build assistants that have access to tools
+- ❌ Build assistants with access to tools
 - ❌ Orchestrate multiple assistants in a team
 - ❌ Save chat history and share chat logs with community
 - ❌ Share document embeddings with community
@@ -45,14 +32,12 @@ This is a local model first project. We have future plans to support cloud infer
 
 ## How to Run
 
-### Run locally
-
 ```bash
 pnpm i
 pnpm dev
 ```
 
-### Deploy
+## How to Deploy
 
 To production:
 
@@ -66,7 +51,7 @@ To preview:
 vercel deploy
 ```
 
-## Release versions
+<!-- ## Release versioning
 
 ### Prerelease
 
@@ -82,12 +67,4 @@ Increase the minor version by 1 (x.1.x to x.2.x)
 
 ### Major
 
-Increase the major version by 1 (1.x.x to 2.x.x)
-
-<!-- ## Env vars
-
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) for this, but a `.env` file is all that is necessary.
-
-1. Install Vercel CLI: `pnpm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull` -->
+Increase the major version by 1 (1.x.x to 2.x.x) -->
