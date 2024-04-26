@@ -40,7 +40,7 @@ const Description = ({ className, children }: { className?: string, children: Re
 
 const Item = ({ title, onAction, Icon, children, className }: { children?: ReactNode, title?: string, onAction?: () => void, Icon: any, className?: string }) => {
   return (
-    <div className={`flex h-[12rem] w-[12rem] flex-col items-center justify-center gap-2 rounded-md bg-accent p-4 ${className}`}>
+    <div className={`relative flex h-[12rem] w-[12rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-md bg-accent p-4 ${className}`}>
       <div
         onClick={onAction}
         className={cn(
@@ -113,13 +113,58 @@ export const ApplicationModesMenu = (props: I_Props) => {
     return
   }, [services?.textInference, setInstalledList, setModelConfigs])
 
-  const saveBotConfig = useCallback((settings: I_Knowledge_State) => {
-    toast.success('New bot created!')
+  const createChatBot = useCallback(async (botId: string) => {
+    const queryParams = `?id=${botId}`
+    const pathname = `/${ROUTE_CHATBOT}${queryParams}`
+    onSelect()
+    if (loadChatBot) {
+      setIsConnecting(true)
+      setHasTextServiceConnected(true)
+
+      const action = async () => {
+        // Eject first
+        await services?.textInference?.unload()
+        // Load model
+        const res = await loadChatBot(botId)
+        return res
+      }
+
+      await notifications().loadModel(action())
+
+      setIsConnecting(false)
+      router.push(pathname)
+    }
+  }, [loadChatBot, onSelect, router, services?.textInference, setHasTextServiceConnected, setIsConnecting])
+
+  const deleteBotConfig = useCallback(async (name: string) => {
+    const action = async () => {
+      const res = await services?.storage.deleteBotSettings({ queryParams: { name } })
+      const data = res?.data
+      if (!res?.success) {
+        toast.error(`${res?.message}`)
+        return false
+      }
+      // Update this menu's list of items
+      data && setBots(data)
+      // Success
+      return true
+    }
+    return action()
+  }, [services?.storage])
+
+  const saveBotConfig = useCallback((settings: { knowledge: I_Knowledge_State }) => {
     const action = async () => {
       // Save menu forms to a json file
       const res = await services?.storage.saveBotSettings({ body: settings })
+      if (!res?.success) {
+        toast.error(`${res?.message}`)
+        return false
+      }
       // Update this menu's list of items
       res?.data && setBots(res.data)
+      // Success
+      toast.success(`${res?.message}`)
+      return true
     }
     action()
   }, [services?.storage])
@@ -207,29 +252,19 @@ export const ApplicationModesMenu = (props: I_Props) => {
         {...bots.map(bot => {
           const botId = bot.model.botName
           const title = botId[0].toUpperCase() + botId.slice(1)
-          const queryParams = `?id=${botId}`
-          const pathname = `/${ROUTE_CHATBOT}${queryParams}`
           return (
-            <Item key={botId} title={title} Icon={() => <div className="text-4xl">🤖</div>} onAction={async () => {
-              onSelect()
-              if (loadChatBot) {
-                setIsConnecting(true)
-                setHasTextServiceConnected(true)
-
-                const action = async () => {
-                  // Eject first
-                  await services?.textInference?.unload()
-                  // Load model
-                  const res = await loadChatBot(botId)
-                  return res
-                }
-
-                await notifications().loadModel(action())
-
-                setIsConnecting(false)
-                router.push(pathname)
-              }
-            }} />
+            <Item
+              key={botId}
+              title={title}
+              Icon={() => <div className="text-4xl">🤖</div>}
+              onAction={() => createChatBot(botId)}
+            >
+              <ClearData
+                variant="secondary"
+                action={() => deleteBotConfig(botId)}
+                Icon={Cross1Icon}
+              />
+            </Item>
           )
         }
         )}
@@ -312,10 +347,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
             title={c?.name}
             Icon={c?.metadata?.icon ? () => <div className="text-4xl">{c?.metadata?.icon}</div> : ClipboardIcon}
             onAction={() => goToKnowledgePage(c?.name)}
-            className="relative overflow-hidden"
           >
             <ClearData
-              className="absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
               variant="secondary"
               action={async () => {
                 const res = await deleteCollection(c.name)
