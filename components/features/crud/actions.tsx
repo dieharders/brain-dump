@@ -128,40 +128,15 @@ export const useMemoryActions = () => {
     return res
   }, [services?.memory])
 
-  const updateDocument = async (collectionName: string | undefined, document: I_Source, metadata?: any) => {
-    try {
-      if (!collectionName) throw new Error('No collection name provided.')
-
-      const chunkSize = null // @TODO should come from a edit menu
-      const chunkOverlap = null // @TODO should come from a edit menu
-      const chunkStrategy = null // @TODO should come from a edit menu
-      const payload = {
-        body: {
-          collectionName,
-          documentId: document.id,
-          documentName: document.name,
-          metadata: metadata, // optional, if we want to upload new ones from a form
-          urlPath: document.urlPath, // optional, load from disk for now, maybe provide a toggle for disk/url
-          filePath: document.filePath,
-          chunkSize: chunkSize,
-          chunkOverlap: chunkOverlap,
-          chunkStrategy: chunkStrategy,
-        }
-      }
-      const res = await services?.memory.updateDocument(payload)
-      if (!res?.success) toast.error(`Error ${res?.message}`)
-      return null
-    } catch (err) {
-      toast.error(`${err}`)
-      return null
-    }
-  }
+  const updateDocument: T_GenericAPIRequest<any, T_GenericDataRes> = useCallback(async (payload) => {
+    return services?.memory.updateDocument(payload) || null
+  }, [services?.memory])
 
   const deleteSource = async (collectionName: string | undefined, document: I_Source) => {
     try {
       if (!collectionName) throw new Error('No collection name provided.')
 
-      const res = await services?.memory.deleteSources({
+      const res = await services?.memory.deleteDocuments({
         body: {
           collection_id: collectionName,
           document_ids: [document.id],

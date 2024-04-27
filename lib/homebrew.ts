@@ -339,7 +339,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     addDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getChunks: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     updateDocument: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    deleteSources: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
+    deleteDocuments: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getAllCollections: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     addCollection: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getCollection: T_GenericAPIRequest<T_GenericReqPayload, I_Collection>

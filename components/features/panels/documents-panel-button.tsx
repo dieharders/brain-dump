@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 // import { SidebarFooter } from '@/components/sidebar-footer'
 // import { ClearData } from '@/components/features/crud/dialog-clear-data'
-import { I_Collection, useHomebrew } from '@/lib/homebrew'
+import { useHomebrew } from '@/lib/homebrew'
 import { CardDocument } from '@/components/features/panels/card-document'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
@@ -38,7 +38,7 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
         numChunks={numChunks}
         onClick={async () => {
           if (docId === selectedDocumentId) return
-          setSelectedDocumentId(docId)
+          docId && setSelectedDocumentId(docId)
           const res = await fetchDocumentChunks({ collectionId: selectedCollectionName, documentId: docId })
           res && setChunks(res)
         }} />
@@ -79,7 +79,12 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
     return (
       <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
         {/* Action Menus */}
-        <DialogAddDocument action={addDocument} dialogOpen={createDialogOpen} setDialogOpen={setCreateDialogOpen} collection={currentCollection} />
+        <DialogAddDocument
+          action={addDocument}
+          dialogOpen={createDialogOpen}
+          setDialogOpen={setCreateDialogOpen}
+          collection={currentCollection}
+        />
         {/* "Add New" and "Refresh" buttons */}
         <div className="flex items-center justify-center gap-4 px-4">
           <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>

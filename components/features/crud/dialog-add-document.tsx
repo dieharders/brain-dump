@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
 import { Root, Item, Indicator } from '@radix-ui/react-radio-group'
-import { T_GenericDataRes, T_GenericAPIRequest, I_Collection } from '@/lib/homebrew'
+import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, I_Source } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,32 +22,36 @@ import { cn } from '@/lib/utils'
 import { T_DocPayload } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
 
-type T_SourceFile = 'urlFile' | 'localFile' | 'inputText'
+type T_SourceFile = 'urlFile' | 'clientFile' | 'inputText' | 'serverFilePath'
 
 interface I_Props {
   collection: I_Collection | null,
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
-  action: T_GenericAPIRequest<T_DocPayload, T_GenericDataRes>
+  action: T_GenericAPIRequest<T_DocPayload, T_GenericDataRes>,
+  document?: I_Source,
 }
 
 // A menu to upload files and add metadata for a new document
 export const DialogAddDocument = (props: I_Props) => {
+  const { action, collection, document, dialogOpen, setDialogOpen } = props
   const { services } = useGlobalContext()
   const options = services?.memory.configs
+  // Styles
   const fieldContainer = "grid gap-4 rounded-md border p-4"
   const radioGroupItemStyle = "mr-4 h-7 w-8 rounded-full border border-muted bg-background hover:border-primary/50 hover:bg-accent focus:border-primary/25 focus:bg-muted/50"
   const radioGroupIndicatorStyle = "flex h-full w-full items-center justify-center text-xl after:h-[1rem] after:w-[1rem] after:rounded-full after:bg-primary/50 after:content-['']"
   const labelStyle = "w-full"
   const inputContainer = "flex flex-row items-center"
-  const { action, collection, dialogOpen, setDialogOpen } = props
+  // State
   const defaultFileSource = 'urlFile'
   const [fileSource, setFileSource] = useState<T_SourceFile>(defaultFileSource)
-  const [nameValue, setNameValue] = useState('')
-  const [descrValue, setDescrValue] = useState('')
-  const [tagsValue, setTagsValue] = useState('')
+  const [nameValue, setNameValue] = useState(document?.name ?? '')
+  const [descrValue, setDescrValue] = useState(document?.description ?? '')
+  const [tagsValue, setTagsValue] = useState(document?.tags ?? '')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [urlValue, setUrlValue] = useState('')
+  const [serverPathValue, setServerPathValue] = useState(document?.filePath ?? '')
   const [rawTextValue, setRawTextValue] = useState('')
   const [disableForm, setDisableForm] = useState(false)
   const [chunkSize, setChunkSize] = useState<number | string>('')
@@ -95,9 +99,9 @@ export const DialogAddDocument = (props: I_Props) => {
     )
   }
 
-  // Field - File upload from disk
-  const renderLocalFileUpload = ({ className }: { className: string }) => {
-    const disabled = fileSource !== 'localFile'
+  // Field - File upload from client disk
+  const renderClientFileUpload = ({ className }: { className: string }) => {
+    const disabled = fileSource !== 'clientFile'
     const disabledStyleOne = disabled ? 'text-primary/40' : 'text-primary/90'
     const disabledStyleTwo = disabled ? 'text-primary/20' : 'text-primary/60'
     const hoverStyle = disabled ? '' : 'hover:bg-muted/70 hover:border-primary/40'
@@ -108,16 +112,16 @@ export const DialogAddDocument = (props: I_Props) => {
     return (
       <div className={className}>
         <DialogTitle className="text-sm">Select a file from storage</DialogTitle>
-        <label htmlFor="localFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
+        <label htmlFor="clientFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
           <Input
             className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
             disabled={disabled}
             type="file"
-            name="localFile"
+            name="clientFile"
             onChange={handleFileSelected}
           />
           <div className="absolute flex w-full flex-col items-center justify-center overflow-hidden pb-6 pt-5">
-            <svg className={cn('mb-4 h-8 w-8', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+            <svg className={cn('mb-4 h-14 w-14', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
             </svg>
             <p className={cn('mb-2 text-sm', disabledStyleOne, transitionStyle)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
@@ -169,11 +173,11 @@ export const DialogAddDocument = (props: I_Props) => {
         </label>
       </div>
       <div className={inputContainer}>
-        <Item className={radioGroupItemStyle} value="localFile" id="r2">
+        <Item className={radioGroupItemStyle} value="clientFile" id="r2">
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r2">
-          {renderLocalFileUpload({ className: fieldContainer })}
+          {renderClientFileUpload({ className: fieldContainer })}
         </label>
       </div>
       <div className={inputContainer}>
@@ -254,29 +258,52 @@ export const DialogAddDocument = (props: I_Props) => {
   // Send form to backend
   const onSubmit = async () => {
     try {
+      // Verify file paths
+      let filePathPayload = {}
+      let urlFilePayload = {}
+      let rawTextPayload = {}
+      switch (fileSource) {
+        case 'serverFilePath':
+          if (serverPathValue) filePathPayload = { filePath: serverPathValue }
+          else throw new Error('Please provide a local path.')
+          break
+        case 'urlFile':
+          if (urlValue) urlFilePayload = { urlPath: urlValue }
+          else throw new Error('Please provide a url path.')
+          break
+        case 'inputText':
+          if (rawTextValue) rawTextPayload = { textInput: rawTextValue }
+          else throw new Error('Please provide text.')
+          break
+        default:
+          break
+      }
       // Send form input values (everything except file) as url query params
       const parsedTags = tagsValue // @TODO Parse the value to be a space-seperated string of words. Remove any special chars, commas.
       const formInputs = {
         collectionName: collection?.name,
+        ...(document?.id && { documentId: document?.id }), // include only if updating doc
         documentName: nameValue,
-        ...(fileSource === 'urlFile' && { urlPath: urlValue }),
-        ...(fileSource === 'inputText' && { textInput: rawTextValue }),
+        ...filePathPayload,
+        ...urlFilePayload,
+        ...rawTextPayload,
         description: descrValue,
         tags: parsedTags,
         ...(chunkSize && { chunkSize: parseInt(chunkSize as string) }),
         ...(chunkOverlap && { chunkOverlap: parseInt(chunkOverlap as string) }),
         chunkingStrategy,
       }
-      // Create a form with our selected file attached
+      // Create a form with our selected file attached if one was chosen
       const formData = new FormData()
-      const isLocalFileSet = fileSource === 'localFile'
-
+      const isLocalFileSet = fileSource === 'clientFile'
       if (selectedFile && isLocalFileSet) formData.append('file', selectedFile, selectedFile.name)
-      // Send request (Add new document)
-      const result = await action({
+      // Create the payload for the endpoint
+      const payload = {
         queryParams: formInputs,
         ...(isLocalFileSet && { formData }),
-      })
+      }
+      // Send request (Add new document)
+      const result = await action(payload)
       // Verify
       if (result?.success) {
         toast.success(`File upload successful: ${result.message}`)
@@ -301,7 +328,6 @@ export const DialogAddDocument = (props: I_Props) => {
         setSelectedFile(null)
         setUrlValue('')
         setRawTextValue('')
-        setNameValue('')
       }
     }
   }, [dialogOpen])

@@ -19,7 +19,7 @@ An Ai engineer's tool for building custom Ai agents and workflows for use in you
 - ❌ Share document embeddings with community
 - ❌ Share model configs with community
 
-## Model Providers
+## Supported Model Providers
 
 This is a local model first project. We have future plans to support cloud inference providers as a config option.
 
@@ -31,6 +31,8 @@ This is a local model first project. We have future plans to support cloud infer
 - ❌ [Groq](https://groq.com)
 
 ## How to Run
+
+This will start a local development server with hot-reloading.
 
 ```bash
 pnpm i
@@ -52,10 +54,6 @@ vercel deploy
 ```
 
 <!-- ## Release versioning
-
-### Prerelease
-
-Increase the patch version by 1 (x.x.1 to x.x.2)
 
 ### Patch
 
