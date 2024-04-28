@@ -295,7 +295,7 @@ export default function KnowledgeBasePage() {
   useEffect(() => {
     const item = chunks?.find(ch => ch.id === selectedChunk)
     item && setCurrentChunkItem(item)
-  }, [chunks, selectedChunk, selectedDocumentId])
+  }, [chunks, selectedChunk])
 
   // Reset chunk displayed when document changed
   useEffect(() => {
