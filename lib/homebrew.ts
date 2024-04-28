@@ -107,6 +107,14 @@ export type T_GenericAPIRequest<ReqPayload, DataResType> = (
   props?: I_GenericAPIRequestParams<ReqPayload>,
 ) => Promise<I_GenericAPIResponse<DataResType> | null>
 
+export interface I_ChunkMetadata {
+  _node_type: string
+  _node_content: any
+  sourceId: string
+  ref_doc_id: string
+  order: number
+}
+
 // These are the sources (documents) kept track by a collection
 export interface I_Source {
   id: string
@@ -121,21 +129,13 @@ export interface I_Source {
   createdAt: string
   description: string
   tags: string
-  order: number
   chunkIds: Array<string>
-}
-
-export interface I_Document {
-  ids: string
-  documents: string
-  embeddings: number[]
-  metadata: I_Source
 }
 
 export interface I_DocumentChunk {
   text: string
   id: string
-  metadata: I_Source
+  metadata: I_ChunkMetadata
 }
 
 export interface I_Collection {

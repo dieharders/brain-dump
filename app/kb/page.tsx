@@ -186,8 +186,8 @@ export default function KnowledgeBasePage() {
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
           {/* Document Text/Chunks */}
-          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-4 overflow-hidden px-1">
-            <h1 className={subHeadingStyle}>View document content</h1>
+          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden px-1">
+            <h1 className={cn(subHeadingStyle, "text-xl underline")}>View document content</h1>
             {/* Toggle Group */}
             <ToggleGroup
               label="Text Mode"
@@ -237,12 +237,12 @@ export default function KnowledgeBasePage() {
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(id)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
         </div>
-        <div className="flex w-fit max-w-[40rem] flex-col items-start justify-start gap-2 rounded-lg bg-muted p-8">
+        <div className="flex w-fit flex-col items-start justify-start gap-2 rounded-lg bg-muted p-8 sm:w-[40rem]">
           {/* Title */}
           <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
           {/* Description */}
           <p className={descriptionStyle}>
-            {collection?.metadata?.description || "Add a detailed description of the contents..."}
+            {collection?.metadata?.description || "Add a detailed description of the contents of this collection..."}
           </p>
           {/* Info */}
           <div className={subHeadingStyle}>Info</div>
@@ -258,7 +258,7 @@ export default function KnowledgeBasePage() {
             {
               collectionTags?.length > 0 ?
                 <RandomUnderlinedText className="text-muted-foreground" text={collectionTags} /> :
-                <p className={descriptionStyle}>Add hashtags to link similar memories...</p>
+                <p className={descriptionStyle}>Add hashtags to categorize collections...</p>
             }
           </div>
         </div>

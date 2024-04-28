@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { I_Document } from "@/lib/homebrew"
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { IconDocument } from '@/components/ui/icons'
@@ -13,13 +12,14 @@ import {
 } from '@/components/ui/icons'
 
 interface I_Props {
-  document: I_Document
+  document: any
   index: number
-  fileExploreAction: (document: I_Document) => Promise<void>
-  deleteAction: (document: I_Document, index: number) => Promise<void>
-  updateAction: (document: I_Document) => Promise<void>
+  fileExploreAction: (document: any) => Promise<void>
+  deleteAction: (document: any, index: number) => Promise<void>
+  updateAction: (document: any) => Promise<void>
 }
 
+// Currently not in use
 const DocumentCard = ({ document, index, fileExploreAction, updateAction, deleteAction }: I_Props) => {
   const [isActive, setIsActive] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)

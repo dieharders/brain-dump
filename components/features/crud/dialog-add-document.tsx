@@ -114,7 +114,7 @@ export const DialogAddDocument = (props: I_Props) => {
       <div className={className}>
         <DialogTitle className="text-sm">Select a file on disk</DialogTitle>
         {!disabled &&
-          <label htmlFor="clientFile" className={cn('pointer-events-none relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
+          <label htmlFor="clientFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
             <Input
               className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
               disabled={disabled}
@@ -126,7 +126,7 @@ export const DialogAddDocument = (props: I_Props) => {
               <svg className={cn('mb-4 h-14 w-14', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
               </svg>
-              <p className={cn('mb-2 text-sm', disabledStyleOne, transitionStyle)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
+              <p className={cn('mb-2 text-sm font-semibold', disabledStyleOne, transitionStyle)}>Click to upload or drag and drop</p>
               <p className={cn('text-xs', disabledStyleTwo, transitionStyle)}>text, image, audio, video (MAX 10mb)</p>
               <p
                 className={cn('text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold', disabledStyleOne, transitionStyle, marginStyle)}>
@@ -185,7 +185,7 @@ export const DialogAddDocument = (props: I_Props) => {
   // Tab - File source fields
   const fileMenu = (
     <Root
-      className="flex w-full flex-col gap-6 overflow-hidden"
+      className="flex w-full flex-col gap-6 overflow-hidden pt-6"
       defaultValue={fileSource}
       aria-label="Upload file source"
       onValueChange={(val: T_SourceFile) => setFileSource(val)}
@@ -228,7 +228,7 @@ export const DialogAddDocument = (props: I_Props) => {
   // Tab - Metadata fields
   const metadataMenu = (
     <div className="grid w-full gap-4 overflow-hidden rounded-md border p-4">
-      <DialogTitle className="text-sm">Enter metadata to describe file</DialogTitle>
+      <DialogTitle className="text-sm">Enter metadata to describe the file</DialogTitle>
       {/* Document Name */}
       <Input
         name="name"
@@ -296,6 +296,7 @@ export const DialogAddDocument = (props: I_Props) => {
       let filePathPayload = {}
       let urlFilePayload = {}
       let rawTextPayload = {}
+      let fileUploadPayload = {}
       switch (fileSource) {
         case 'serverFilePath':
           if (serverPathValue) filePathPayload = { filePath: serverPathValue }
@@ -308,6 +309,14 @@ export const DialogAddDocument = (props: I_Props) => {
         case 'inputText':
           if (rawTextValue) rawTextPayload = { textInput: rawTextValue }
           else throw new Error('Please provide text.')
+          break
+        // Create a form with our selected file attached if one was chosen
+        case 'clientFile':
+          if (selectedFile) {
+            const formData = new FormData()
+            formData.append('file', selectedFile, selectedFile.name)
+            fileUploadPayload = { formData: fileUploadPayload }
+          }
           break
         default:
           break
@@ -327,16 +336,12 @@ export const DialogAddDocument = (props: I_Props) => {
         ...(chunkOverlap && { chunkOverlap: parseInt(chunkOverlap as string) }),
         chunkingStrategy,
       }
-      // Create a form with our selected file attached if one was chosen
-      const formData = new FormData()
-      const isLocalFileSet = fileSource === 'clientFile'
-      if (selectedFile && isLocalFileSet) formData.append('file', selectedFile, selectedFile.name)
       // Create the payload for the endpoint
       const payload = {
         queryParams: formInputs,
-        ...(isLocalFileSet && { formData }),
+        ...fileUploadPayload,
       }
-      // Send request (Add new document)
+      // Send request
       const result = await action(payload)
       // Verify
       if (result?.success) {
@@ -370,7 +375,7 @@ export const DialogAddDocument = (props: I_Props) => {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Embed a file into memory</DialogTitle>
+          <DialogTitle>{document?.name ? `Update memory "${document?.name || '??'}"` : 'Embed a file into memory'}</DialogTitle>
           <DialogDescription>
             Provide a file you want the AI to memorize (text, image, audio, video). Give it a short description and tags to help the Ai understand it better.
           </DialogDescription>
