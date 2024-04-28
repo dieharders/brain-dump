@@ -18,6 +18,7 @@ import { DialogShareCollection } from '@/components/features/crud/dialog-share-c
 import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { MemoizedReactMarkdown } from '@/components/markdown'
 import { CodeBlock } from '@/components/ui/codeblock'
+import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
 
 export default function KnowledgeBasePage() {
   const {
@@ -29,10 +30,11 @@ export default function KnowledgeBasePage() {
     setCollections,
     chunks,
     selectedCollectionName,
+    setSelectedCollectionName,
     setSelectedDocumentId,
   } = useGlobalContext()
   const search = useSearchParams()
-  const id = search.get('collectionName') || selectedCollectionName
+  const id = search.get('collectionName') || selectedCollectionName || ''
   const router = useRouter()
   const { getServices } = useHomebrew()
   const { fetchCollections, copyId, fileExploreAction, shareMemory, deleteSource, updateDocument } = useMemoryActions()
@@ -61,6 +63,7 @@ export default function KnowledgeBasePage() {
   const [currentChunkItem, setCurrentChunkItem] = useState<I_DocumentChunk | null>(null)
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
   // Styles
   const toggleStyle = cn("flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl")
   const headingStyle = cn("text-2xl font-bold")
@@ -136,12 +139,19 @@ export default function KnowledgeBasePage() {
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden lg:flex-row">
           {/* Document info */}
           <div className="flex h-fit w-full flex-1 flex-col items-center justify-start gap-8">
+            {/* Action Menus */}
+            <DialogAddDocument
+              action={updateDocument}
+              dialogOpen={createDialogOpen}
+              setDialogOpen={setCreateDialogOpen}
+              collection={collection || null}
+              document={document}
+            />
             {/* Actions */}
             <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
             <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => updateDocument(collectionName, document)}>Update</Button>
+              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setCreateDialogOpen(true)}>Edit</Button>
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
               <ClearData
@@ -176,8 +186,8 @@ export default function KnowledgeBasePage() {
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
           {/* Document Text/Chunks */}
-          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-4 overflow-hidden px-1">
-            <h1 className={subHeadingStyle}>View document content</h1>
+          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden px-1">
+            <h1 className={cn(subHeadingStyle, "text-xl underline")}>View document content</h1>
             {/* Toggle Group */}
             <ToggleGroup
               label="Text Mode"
@@ -227,12 +237,12 @@ export default function KnowledgeBasePage() {
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(id)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
         </div>
-        <div className="flex w-fit max-w-[40rem] flex-col items-start justify-start gap-2 rounded-lg bg-muted p-8">
+        <div className="flex w-fit flex-col items-start justify-start gap-2 rounded-lg bg-muted p-8 sm:w-[40rem]">
           {/* Title */}
           <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
           {/* Description */}
           <p className={descriptionStyle}>
-            {collection?.metadata?.description || "Add a detailed description of the contents..."}
+            {collection?.metadata?.description || "Add a detailed description of the contents of this collection..."}
           </p>
           {/* Info */}
           <div className={subHeadingStyle}>Info</div>
@@ -248,7 +258,7 @@ export default function KnowledgeBasePage() {
             {
               collectionTags?.length > 0 ?
                 <RandomUnderlinedText className="text-muted-foreground" text={collectionTags} /> :
-                <p className={descriptionStyle}>Add hashtags to link similar memories...</p>
+                <p className={descriptionStyle}>Add hashtags to categorize collections...</p>
             }
           </div>
         </div>
@@ -256,6 +266,11 @@ export default function KnowledgeBasePage() {
       <Separator />
       {documentPage}
     </div>
+
+  // Set selected collection on mount
+  useEffect(() => {
+    setSelectedCollectionName(id)
+  }, [id, setSelectedCollectionName])
 
   // Fetch data when mounted
   useEffect(() => {
@@ -280,7 +295,7 @@ export default function KnowledgeBasePage() {
   useEffect(() => {
     const item = chunks?.find(ch => ch.id === selectedChunk)
     item && setCurrentChunkItem(item)
-  }, [chunks, selectedChunk, selectedDocumentId])
+  }, [chunks, selectedChunk])
 
   // Reset chunk displayed when document changed
   useEffect(() => {

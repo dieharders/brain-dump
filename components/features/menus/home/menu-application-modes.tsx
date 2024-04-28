@@ -69,6 +69,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const [bots, setBots] = useState<I_Text_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
+  const deleteButtonStyle = "absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
   // Styling
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
@@ -260,6 +261,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
               onAction={() => createChatBot(botId)}
             >
               <ClearData
+                className={deleteButtonStyle}
                 variant="secondary"
                 action={() => deleteBotConfig(botId)}
                 Icon={Cross1Icon}
@@ -349,6 +351,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
             onAction={() => goToKnowledgePage(c?.name)}
           >
             <ClearData
+              className={deleteButtonStyle}
               variant="secondary"
               action={async () => {
                 const res = await deleteCollection(c.name)

@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
 import toast from 'react-hot-toast'
-import { cn } from '@/lib/utils'
 
 interface ClearDataProps {
   Icon?: any
@@ -29,12 +28,11 @@ export function ClearData(props: ClearDataProps) {
   const { action, actionTitle, Icon, variant, className } = props
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const style = "absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger className="w-full" asChild>
-        <Button variant={variant || "ghost"} disabled={isPending} className={cn(style, className)}>
+        <Button variant={variant || "ghost"} disabled={isPending} className={className}>
           {isPending && <IconSpinner className="mr-2" />}
           {Icon && <Icon />}
           {actionTitle || ''}
