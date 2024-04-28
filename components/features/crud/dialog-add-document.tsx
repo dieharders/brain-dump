@@ -185,7 +185,7 @@ export const DialogAddDocument = (props: I_Props) => {
   // Tab - File source fields
   const fileMenu = (
     <Root
-      className="flex w-full flex-col gap-6 overflow-hidden pt-6"
+      className="flex w-full flex-col gap-6 overflow-hidden"
       defaultValue={fileSource}
       aria-label="Upload file source"
       onValueChange={(val: T_SourceFile) => setFileSource(val)}
@@ -315,7 +315,7 @@ export const DialogAddDocument = (props: I_Props) => {
           if (selectedFile) {
             const formData = new FormData()
             formData.append('file', selectedFile, selectedFile.name)
-            fileUploadPayload = { formData: fileUploadPayload }
+            fileUploadPayload = { formData }
           }
           break
         default:
