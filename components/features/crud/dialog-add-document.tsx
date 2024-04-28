@@ -38,7 +38,7 @@ export const DialogAddDocument = (props: I_Props) => {
   const { services } = useGlobalContext()
   const options = services?.memory.configs
   // Styles
-  const fieldContainer = "grid gap-4 rounded-md border p-4"
+  const fieldContainer = "grid gap-4 rounded-md border p-4 hover:border-primary/50 hover:bg-accent/50"
   const radioGroupItemStyle = "mr-4 h-7 w-8 rounded-full border border-muted bg-background hover:border-primary/50 hover:bg-accent focus:border-primary/25 focus:bg-muted/50"
   const radioGroupIndicatorStyle = "flex h-full w-full items-center justify-center text-xl after:h-[1rem] after:w-[1rem] after:rounded-full after:bg-primary/50 after:content-['']"
   const labelStyle = "w-full"
@@ -51,7 +51,7 @@ export const DialogAddDocument = (props: I_Props) => {
   const [tagsValue, setTagsValue] = useState(document?.tags ?? '')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [urlValue, setUrlValue] = useState('')
-  const [serverPathValue, setServerPathValue] = useState(document?.filePath ?? '')
+  const [serverPathValue, setServerPathValue] = useState('')
   const [rawTextValue, setRawTextValue] = useState('')
   const [disableForm, setDisableForm] = useState(false)
   const [chunkSize, setChunkSize] = useState<number | string>('')
@@ -85,16 +85,17 @@ export const DialogAddDocument = (props: I_Props) => {
 
     return (
       <div className={className}>
-        <label htmlFor="urlFile">
+        <label htmlFor="urlFile" className="pointer-events-none">
           <DialogTitle className="text-sm">Enter a URL</DialogTitle>
         </label>
-        <Input
-          name="urlFile"
-          value={urlValue}
-          placeholder="https://example.com/file.txt"
-          onChange={e => setUrlValue(e.target.value)}
-          disabled={disabled}
-        />
+        {!disabled &&
+          <Input
+            name="urlFile"
+            value={urlValue}
+            placeholder="https://example.com/file.txt"
+            onChange={e => setUrlValue(e.target.value)}
+            disabled={disabled}
+          />}
       </div>
     )
   }
@@ -111,27 +112,28 @@ export const DialogAddDocument = (props: I_Props) => {
 
     return (
       <div className={className}>
-        <DialogTitle className="text-sm">Select a file from storage</DialogTitle>
-        <label htmlFor="clientFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
-          <Input
-            className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
-            disabled={disabled}
-            type="file"
-            name="clientFile"
-            onChange={handleFileSelected}
-          />
-          <div className="absolute flex w-full flex-col items-center justify-center overflow-hidden pb-6 pt-5">
-            <svg className={cn('mb-4 h-14 w-14', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-            </svg>
-            <p className={cn('mb-2 text-sm', disabledStyleOne, transitionStyle)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
-            <p className={cn('text-xs', disabledStyleTwo, transitionStyle)}>text, image, audio, video (MAX 10mb)</p>
-            <p
-              className={cn('text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold', disabledStyleOne, transitionStyle, marginStyle)}>
-              {selectedFile ? filename : ''}
-            </p>
-          </div>
-        </label>
+        <DialogTitle className="text-sm">Select a file on disk</DialogTitle>
+        {!disabled &&
+          <label htmlFor="clientFile" className={cn('pointer-events-none relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary/20 bg-muted/50', hoverStyle, transitionStyle)}>
+            <Input
+              className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
+              disabled={disabled}
+              type="file"
+              name="clientFile"
+              onChange={handleFileSelected}
+            />
+            <div className="absolute flex w-full flex-col items-center justify-center overflow-hidden pb-6 pt-5">
+              <svg className={cn('mb-4 h-14 w-14', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+              </svg>
+              <p className={cn('mb-2 text-sm', disabledStyleOne, transitionStyle)}><span className="font-semibold">Click to upload</span> or drag and drop</p>
+              <p className={cn('text-xs', disabledStyleTwo, transitionStyle)}>text, image, audio, video (MAX 10mb)</p>
+              <p
+                className={cn('text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold', disabledStyleOne, transitionStyle, marginStyle)}>
+                {selectedFile ? filename : ''}
+              </p>
+            </div>
+          </label>}
       </div>
     )
   }
@@ -143,15 +145,39 @@ export const DialogAddDocument = (props: I_Props) => {
 
     return (
       <div className={className}>
-        <label htmlFor="inputText"><DialogTitle className="text-sm">Copy/Paste raw text</DialogTitle></label>
-        <textarea
-          name="inputText"
-          disabled={disabled}
-          className={cn('scrollbar h-64 w-full resize-none rounded border-2 bg-muted/70 p-2 outline-none focus:border-primary/50', hoverStyle)}
-          value={rawTextValue}
-          placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
-          onChange={e => setRawTextValue(e.target.value)}
-        />
+        <label htmlFor="inputText" className="pointer-events-none">
+          <DialogTitle className="text-sm">Paste raw text</DialogTitle>
+        </label>
+        {!disabled &&
+          <textarea
+            name="inputText"
+            disabled={disabled}
+            className={cn('scrollbar h-64 w-full resize-none rounded border-2 bg-muted/70 p-2 outline-none focus:border-primary/50', hoverStyle)}
+            value={rawTextValue}
+            placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
+            onChange={e => setRawTextValue(e.target.value)}
+          />}
+      </div>
+    )
+  }
+
+  // Field - Input path to file on server
+  const renderServerFileInput = ({ className }: { className: string }) => {
+    const disabled = fileSource !== 'serverFilePath'
+
+    return (
+      <div className={className}>
+        <label htmlFor="serverFilePath" className="pointer-events-none">
+          <DialogTitle className="text-sm">Enter a file path on server</DialogTitle>
+        </label>
+        {!disabled &&
+          <Input
+            name="serverFilePath"
+            value={serverPathValue}
+            placeholder={document?.filePath || 'C:\\MyDocuments'}
+            onChange={e => setServerPathValue(e.target.value)}
+            disabled={disabled}
+          />}
       </div>
     )
   }
@@ -186,6 +212,14 @@ export const DialogAddDocument = (props: I_Props) => {
         </Item>
         <label className={labelStyle} htmlFor="r3">
           {renderRawTextInput({ className: fieldContainer })}
+        </label>
+      </div>
+      <div className={inputContainer}>
+        <Item className={radioGroupItemStyle} value="serverFilePath" id="r4">
+          <Indicator className={radioGroupIndicatorStyle} />
+        </Item>
+        <label className={labelStyle} htmlFor="r4">
+          {renderServerFileInput({ className: fieldContainer })}
         </label>
       </div>
     </Root>
@@ -343,7 +377,7 @@ export const DialogAddDocument = (props: I_Props) => {
         </DialogHeader>
 
         <form className="w-full" method="POST" encType="multipart/form-data">
-          <Tabs label="Application Modes" tabs={tabs} />
+          <Tabs label="Embed Document" tabs={tabs} />
         </form>
 
         <Separator className="my-4" />
