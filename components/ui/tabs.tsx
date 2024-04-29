@@ -30,7 +30,7 @@ export const Tabs = ({ className = '', label = 'Tabs Menu', tabs = [], onChange 
       }}
     >
       {/* Tabs */}
-      <List className="my-4 flex shrink-0 rounded-none" aria-label={label}>
+      <List className="mb-8 mt-4 flex shrink-0 rounded-none" aria-label={label}>
         {tabs.map(i => {
           const itemKey = (i?.key && i.key.length > 0 && i.key) || i.label
 
