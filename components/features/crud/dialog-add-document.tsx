@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,179 @@ import { useGlobalContext } from '@/contexts'
 
 type T_SourceFile = 'urlFile' | 'clientFile' | 'inputText' | 'serverFilePath'
 
+interface I_InputArgs {
+  items: Array<any>
+  disabled: boolean
+  value: string
+  setValue: Dispatch<SetStateAction<string>>
+  parsingMethod: string | undefined
+  setParsingMethod: Dispatch<SetStateAction<string | undefined>>
+  className: string
+}
+
+interface I_ClientFileArgs extends I_InputArgs {
+  setValue: Dispatch<SetStateAction<any>>
+  value: any
+}
+
+// Styles
+const inputFieldsContainer = "flex flex-col gap-3 text-sm"
+
+// Input Field - File upload from network
+const RenderUrlFileInput = ({ items, disabled, value, setValue, parsingMethod, setParsingMethod, className }: I_InputArgs) => {
+  return (
+    <div className={className}>
+      <label htmlFor="urlFile" className="pointer-events-none">
+        <DialogTitle className="text-sm">Enter a URL</DialogTitle>
+      </label>
+      {!disabled &&
+        <div className={inputFieldsContainer}>
+          <Input
+            name="urlFile"
+            value={value}
+            className="bg-background"
+            placeholder="https://example.com"
+            onChange={e => setValue(e.target.value)}
+            disabled={disabled}
+          />
+          <div className="w-full">
+            <Select
+              id="url_parsing_select"
+              placeholder="Choose Parsing Method"
+              name="Parsing Methods"
+              value={parsingMethod || undefined}
+              items={items}
+              onChange={setParsingMethod}
+            />
+          </div>
+        </div>
+      }
+    </div>
+  )
+}
+
+// Field - File upload from client disk
+const RenderClientFileUpload = ({ items, disabled, value: selectedFile, setValue: handleFileSelected, parsingMethod, setParsingMethod, className }: I_ClientFileArgs) => {
+  const disabledStyleOne = disabled ? 'text-primary/40' : 'text-primary/90'
+  const disabledStyleTwo = disabled ? 'text-primary/20' : 'text-primary/60'
+  const hoverStyle = disabled ? '' : 'hover:bg-muted'
+  const filename = `File: ${selectedFile?.name}`
+  const transitionStyle = 'transition-all ease-in duration-100'
+  const marginStyle = selectedFile ? 'mt-4' : ''
+
+  return (
+    <div className={className}>
+      <DialogTitle className="text-sm">Select a file on disk</DialogTitle>
+      {!disabled &&
+        <div className="flex flex-col gap-3 px-8 text-sm">
+          {/* File Picker */}
+          <div className="rounded-lg border-2 border-dashed border-primary/40 p-2">
+            <label htmlFor="clientFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg bg-muted/50', hoverStyle, transitionStyle)}>
+              <Input
+                className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
+                disabled={disabled}
+                type="file"
+                name="clientFile"
+                onChange={handleFileSelected}
+              />
+              <div className="absolute flex w-full flex-col items-center justify-center overflow-hidden pb-6 pt-5">
+                <svg className={cn('mb-4 h-14 w-14', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                </svg>
+                <p className={cn('mb-2 text-sm font-semibold', disabledStyleOne, transitionStyle)}>Click to upload or drag and drop</p>
+                <p className={cn('text-xs', disabledStyleTwo, transitionStyle)}>text, image, audio, video (MAX 10mb)</p>
+                <p
+                  className={cn('text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold', disabledStyleOne, transitionStyle, marginStyle)}>
+                  {selectedFile ? filename : ''}
+                </p>
+              </div>
+            </label>
+          </div>
+          {/* File Parser Selector */}
+          <div className="w-full">
+            <Select
+              id="client_file_parsing_select"
+              placeholder="Choose Parsing Method"
+              name="Parsing Methods"
+              value={parsingMethod || undefined}
+              items={items}
+              onChange={setParsingMethod}
+            />
+          </div>
+        </div>
+      }
+    </div>
+  )
+}
+
+// Field - File upload from text input
+const RenderRawTextInput = ({ items, disabled, value, setValue, parsingMethod, setParsingMethod, className }: I_InputArgs) => {
+  const hoverStyle = disabled ? 'text-primary/50 border-primary/10 placeholder:text-primary/20' : 'text-primary border-primary/20'
+
+  return (
+    <div className={className}>
+      <label htmlFor="inputText" className="pointer-events-none">
+        <DialogTitle className="text-sm">Paste raw text</DialogTitle>
+      </label>
+      {!disabled &&
+        <div className={inputFieldsContainer}>
+          <textarea
+            name="inputText"
+            disabled={disabled}
+            className={cn('scrollbar h-64 w-full resize-none rounded border-2 bg-muted/70 p-2 outline-none focus:border-primary/50', hoverStyle)}
+            value={value}
+            placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
+            onChange={e => setValue(e.target.value)}
+          />
+          <div className="w-full">
+            <Select
+              id="raw_text_parsing_select"
+              placeholder="Choose Parsing Method"
+              name="Parsing Methods"
+              value={parsingMethod || undefined}
+              items={items}
+              onChange={setParsingMethod}
+            />
+          </div>
+        </div>
+      }
+    </div>
+  )
+}
+
+// Field - Input path to file on server
+const RenderServerFileInput = ({ items, disabled, value, setValue, parsingMethod, setParsingMethod, className }: I_InputArgs) => {
+  return (
+    <div className={className}>
+      <label htmlFor="serverFilePath" className="pointer-events-none">
+        <DialogTitle className="text-sm">Enter a file path on server</DialogTitle>
+      </label>
+      {!disabled &&
+        <div className={inputFieldsContainer}>
+          <Input
+            name="serverFilePath"
+            value={value}
+            className="bg-background"
+            placeholder="C:\\MyDocuments"
+            onChange={e => setValue(e.target.value)}
+            disabled={disabled}
+          />
+          <div className="w-full">
+            <Select
+              id="server_file_parsing_select"
+              placeholder="Choose Parsing Method"
+              name="Parsing Methods"
+              value={parsingMethod || undefined}
+              items={items}
+              onChange={setParsingMethod}
+            />
+          </div>
+        </div>
+      }
+    </div>
+  )
+}
+
 interface I_Props {
   collection: I_Collection | null,
   dialogOpen: boolean,
@@ -32,7 +205,9 @@ interface I_Props {
   document?: I_Source,
 }
 
-// A menu to upload files and add metadata for a new document
+/**
+ * A menu to upload files and add metadata for a new document
+ */
 export const DialogAddDocument = (props: I_Props) => {
   const { action, collection, document, dialogOpen, setDialogOpen } = props
   const { services } = useGlobalContext()
@@ -43,7 +218,6 @@ export const DialogAddDocument = (props: I_Props) => {
   const radioGroupIndicatorStyle = "flex h-full w-full items-center justify-center text-xl after:h-[1rem] after:w-[1rem] after:rounded-full after:bg-primary/50 after:content-['']"
   const labelStyle = "w-full"
   const inputContainer = "flex flex-row items-center"
-  const inputFieldsContainer = "flex flex-col gap-3 text-sm"
   // State
   const defaultFileSource = 'urlFile'
   const [fileSource, setFileSource] = useState<T_SourceFile>(defaultFileSource)
@@ -74,6 +248,7 @@ export const DialogAddDocument = (props: I_Props) => {
     { value: 'llama_parse', name: 'Llama Parse' },
   ]
   const fileParsingItems = [{ name: 'Parsing Methods', isLabel: true }, ...fileParsingMethods]
+
   // Load available strats from endpoint
   const strategies = options?.chunkingStrategies
   const chunkingStrategies = strategies?.map(strat => {
@@ -96,167 +271,6 @@ export const DialogAddDocument = (props: I_Props) => {
     file && setSelectedFile(file)
   }
 
-  // Input Field - File upload from network
-  const RenderUrlFileInput = ({ className }: { className: string }) => {
-    const disabled = fileSource !== 'urlFile'
-
-    return (
-      <div className={className}>
-        <label htmlFor="urlFile" className="pointer-events-none">
-          <DialogTitle className="text-sm">Enter a URL</DialogTitle>
-        </label>
-        {!disabled &&
-          <div className={inputFieldsContainer}>
-            <Input
-              name="urlFile"
-              value={urlValue}
-              className="bg-background"
-              placeholder="https://example.com"
-              onChange={e => setUrlValue(e.target.value)}
-              disabled={disabled}
-            />
-            <div className="w-full">
-              <Select
-                id="url_parsing_select"
-                placeholder="Choose Parsing Method"
-                name="Parsing Methods"
-                value={urlParsingMethod || undefined}
-                items={urlParsingItems}
-                onChange={setUrlParsingMethod}
-              />
-            </div>
-          </div>
-        }
-      </div>
-    )
-  }
-
-  // Field - File upload from client disk
-  const RenderClientFileUpload = ({ className }: { className: string }) => {
-    const disabled = fileSource !== 'clientFile'
-    const disabledStyleOne = disabled ? 'text-primary/40' : 'text-primary/90'
-    const disabledStyleTwo = disabled ? 'text-primary/20' : 'text-primary/60'
-    const hoverStyle = disabled ? '' : 'hover:bg-muted'
-    const filename = `File: ${selectedFile?.name}`
-    const transitionStyle = 'transition-all ease-in duration-100'
-    const marginStyle = selectedFile ? 'mt-4' : ''
-
-    return (
-      <div className={className}>
-        <DialogTitle className="text-sm">Select a file on disk</DialogTitle>
-        {!disabled &&
-          <div className="flex flex-col gap-3 px-8 text-sm">
-            {/* File Picker */}
-            <div className="rounded-lg border-2 border-dashed border-primary/40 p-2">
-              <label htmlFor="clientFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg bg-muted/50', hoverStyle, transitionStyle)}>
-                <Input
-                  className="z-10 block h-full w-full cursor-pointer border-0 bg-transparent text-center text-transparent file:text-transparent"
-                  disabled={disabled}
-                  type="file"
-                  name="clientFile"
-                  onChange={handleFileSelected}
-                />
-                <div className="absolute flex w-full flex-col items-center justify-center overflow-hidden pb-6 pt-5">
-                  <svg className={cn('mb-4 h-14 w-14', disabledStyleOne, transitionStyle)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                  </svg>
-                  <p className={cn('mb-2 text-sm font-semibold', disabledStyleOne, transitionStyle)}>Click to upload or drag and drop</p>
-                  <p className={cn('text-xs', disabledStyleTwo, transitionStyle)}>text, image, audio, video (MAX 10mb)</p>
-                  <p
-                    className={cn('text-md w-full overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold', disabledStyleOne, transitionStyle, marginStyle)}>
-                    {selectedFile ? filename : ''}
-                  </p>
-                </div>
-              </label>
-            </div>
-            {/* File Parser Selector */}
-            <div className="w-full">
-              <Select
-                id="client_file_parsing_select"
-                placeholder="Choose Parsing Method"
-                name="Parsing Methods"
-                value={clientFileParsingMethod || undefined}
-                items={fileParsingItems}
-                onChange={setClientFileParsingMethod}
-              />
-            </div>
-          </div>
-        }
-      </div>
-    )
-  }
-
-  // Field - File upload from text input
-  const RenderRawTextInput = ({ className }: { className: string }) => {
-    const disabled = fileSource !== 'inputText'
-    const hoverStyle = disabled ? 'text-primary/50 border-primary/10 placeholder:text-primary/20' : 'text-primary border-primary/20'
-
-    return (
-      <div className={className}>
-        <label htmlFor="inputText" className="pointer-events-none">
-          <DialogTitle className="text-sm">Paste raw text</DialogTitle>
-        </label>
-        {!disabled &&
-          <div className={inputFieldsContainer}>
-            <textarea
-              name="inputText"
-              disabled={disabled}
-              className={cn('scrollbar h-64 w-full resize-none rounded border-2 bg-muted/70 p-2 outline-none focus:border-primary/50', hoverStyle)}
-              value={rawTextValue}
-              placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
-              onChange={e => setRawTextValue(e.target.value)}
-            />
-            <div className="w-full">
-              <Select
-                id="raw_text_parsing_select"
-                placeholder="Choose Parsing Method"
-                name="Parsing Methods"
-                value={rawTextParsingMethod || undefined}
-                items={fileParsingItems}
-                onChange={setRawTextParsingMethod}
-              />
-            </div>
-          </div>
-        }
-      </div>
-    )
-  }
-
-  // Field - Input path to file on server
-  const RenderServerFileInput = ({ className }: { className: string }) => {
-    const disabled = fileSource !== 'serverFilePath'
-
-    return (
-      <div className={className}>
-        <label htmlFor="serverFilePath" className="pointer-events-none">
-          <DialogTitle className="text-sm">Enter a file path on server</DialogTitle>
-        </label>
-        {!disabled &&
-          <div className={inputFieldsContainer}>
-            <Input
-              name="serverFilePath"
-              value={serverPathValue}
-              className="bg-background"
-              placeholder={document?.filePath || 'C:\\MyDocuments'}
-              onChange={e => setServerPathValue(e.target.value)}
-              disabled={disabled}
-            />
-            <div className="w-full">
-              <Select
-                id="server_file_parsing_select"
-                placeholder="Choose Parsing Method"
-                name="Parsing Methods"
-                value={serverFileParsingMethod || undefined}
-                items={fileParsingItems}
-                onChange={setServerFileParsingMethod}
-              />
-            </div>
-          </div>
-        }
-      </div>
-    )
-  }
-
   // Tab - File source fields
   const fileMenu = (
     <Root
@@ -270,7 +284,15 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r1">
-          <RenderUrlFileInput className={fieldContainer} />
+          <RenderUrlFileInput
+            className={fieldContainer}
+            disabled={fileSource !== 'urlFile'}
+            items={urlParsingItems}
+            value={urlValue}
+            setValue={setUrlValue}
+            parsingMethod={urlParsingMethod}
+            setParsingMethod={setUrlParsingMethod}
+          />
         </label>
       </div>
       <div className={inputContainer}>
@@ -278,7 +300,15 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r2">
-          <RenderClientFileUpload className={fieldContainer} />
+          <RenderClientFileUpload
+            disabled={fileSource !== 'clientFile'}
+            items={fileParsingItems}
+            value={selectedFile}
+            setValue={handleFileSelected}
+            parsingMethod={clientFileParsingMethod}
+            setParsingMethod={setClientFileParsingMethod}
+            className={fieldContainer}
+          />
         </label>
       </div>
       <div className={inputContainer}>
@@ -286,7 +316,15 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r3">
-          <RenderRawTextInput className={fieldContainer} />
+          <RenderRawTextInput
+            value={rawTextValue}
+            setValue={setRawTextValue}
+            parsingMethod={rawTextParsingMethod}
+            setParsingMethod={setRawTextParsingMethod}
+            items={fileParsingItems}
+            disabled={fileSource !== 'inputText'}
+            className={fieldContainer}
+          />
         </label>
       </div>
       <div className={inputContainer}>
@@ -294,7 +332,15 @@ export const DialogAddDocument = (props: I_Props) => {
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
         <label className={labelStyle} htmlFor="r4">
-          <RenderServerFileInput className={fieldContainer} />
+          <RenderServerFileInput
+            items={fileParsingItems}
+            value={serverPathValue}
+            setValue={setServerPathValue}
+            parsingMethod={serverFileParsingMethod}
+            setParsingMethod={setServerFileParsingMethod}
+            disabled={fileSource !== 'serverFilePath'}
+            className={fieldContainer}
+          />
         </label>
       </div>
     </Root>
