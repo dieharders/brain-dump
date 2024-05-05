@@ -14,6 +14,7 @@ import { Root, Item, Indicator } from '@radix-ui/react-radio-group'
 import { T_GenericDataRes, T_GenericAPIRequest, I_Collection, I_Source } from '@/lib/homebrew'
 import { IconSpinner } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
 import { Tabs } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
@@ -40,7 +41,28 @@ interface I_ClientFileArgs extends I_InputArgs {
 }
 
 // Styles
-const inputFieldsContainer = "flex flex-col gap-3 text-sm"
+const inputFieldsContainerStyle = "flex flex-col gap-3 text-sm"
+const infoContainerStyle = "flex w-full flex-row items-stretch gap-2"
+
+const FileParserInfo = () => {
+  return (
+    <div className="flex flex-row gap-2">
+      <Info label="file_parser_info" className="h-full min-w-[2.5rem]">
+        <span><Highlight>Default</Highlight> uses a basic method for each file.<br /><a href="https://cloud.llamaindex.ai/parse" className="underline"><Highlight>Llama-Parse</Highlight></a> is a third-party service (only available for pdf files).</span>
+      </Info>
+    </div>
+  )
+}
+
+const UrlParserInfo = () => {
+  return (
+    <div className="flex flex-row gap-2">
+      <Info label="url_parser_info" className="h-full min-w-[2.5rem]">
+        <span><Highlight>Default</Highlight> uses a basic method that reads files and websites.<br />The <Highlight>Reader API</Highlight> is a third-party service that provides enhanced results (for websites only).</span>
+      </Info>
+    </div>
+  )
+}
 
 // Input Field - File upload from network
 const RenderUrlFileInput = ({ items, disabled, value, setValue, parsingMethod, setParsingMethod, className }: I_InputArgs) => {
@@ -50,7 +72,7 @@ const RenderUrlFileInput = ({ items, disabled, value, setValue, parsingMethod, s
         <DialogTitle className="text-sm">Enter a URL</DialogTitle>
       </label>
       {!disabled &&
-        <div className={inputFieldsContainer}>
+        <div className={inputFieldsContainerStyle}>
           <Input
             name="urlFile"
             value={value}
@@ -59,15 +81,17 @@ const RenderUrlFileInput = ({ items, disabled, value, setValue, parsingMethod, s
             onChange={e => setValue(e.target.value)}
             disabled={disabled}
           />
-          <div className="w-full">
+          <div className={infoContainerStyle}>
             <Select
               id="url_parsing_select"
+              className="grow"
               placeholder="Choose Parsing Method"
               name="Parsing Methods"
               value={parsingMethod || undefined}
               items={items}
               onChange={setParsingMethod}
             />
+            <UrlParserInfo />
           </div>
         </div>
       }
@@ -113,7 +137,7 @@ const RenderClientFileUpload = ({ items, disabled, value: selectedFile, setValue
             </label>
           </div>
           {/* File Parser Selector */}
-          <div className="w-full">
+          <div className={infoContainerStyle}>
             <Select
               id="client_file_parsing_select"
               placeholder="Choose Parsing Method"
@@ -122,6 +146,7 @@ const RenderClientFileUpload = ({ items, disabled, value: selectedFile, setValue
               items={items}
               onChange={setParsingMethod}
             />
+            <FileParserInfo />
           </div>
         </div>
       }
@@ -139,7 +164,7 @@ const RenderRawTextInput = ({ items, disabled, value, setValue, parsingMethod, s
         <DialogTitle className="text-sm">Paste raw text</DialogTitle>
       </label>
       {!disabled &&
-        <div className={inputFieldsContainer}>
+        <div className={inputFieldsContainerStyle}>
           <textarea
             name="inputText"
             disabled={disabled}
@@ -148,7 +173,7 @@ const RenderRawTextInput = ({ items, disabled, value, setValue, parsingMethod, s
             placeholder={`# A file heading\nSome text here describing stuff...\n\n## Another heading\nA paragraph explaining things in more detail\n\n### Yet another heading\nMore details here...`}
             onChange={e => setValue(e.target.value)}
           />
-          <div className="w-full">
+          <div className={infoContainerStyle}>
             <Select
               id="raw_text_parsing_select"
               placeholder="Choose Parsing Method"
@@ -157,6 +182,7 @@ const RenderRawTextInput = ({ items, disabled, value, setValue, parsingMethod, s
               items={items}
               onChange={setParsingMethod}
             />
+            <FileParserInfo />
           </div>
         </div>
       }
@@ -172,7 +198,7 @@ const RenderServerFileInput = ({ items, disabled, value, setValue, parsingMethod
         <DialogTitle className="text-sm">Enter a file path on server</DialogTitle>
       </label>
       {!disabled &&
-        <div className={inputFieldsContainer}>
+        <div className={inputFieldsContainerStyle}>
           <Input
             name="serverFilePath"
             value={value}
@@ -181,7 +207,7 @@ const RenderServerFileInput = ({ items, disabled, value, setValue, parsingMethod
             onChange={e => setValue(e.target.value)}
             disabled={disabled}
           />
-          <div className="w-full">
+          <div className={infoContainerStyle}>
             <Select
               id="server_file_parsing_select"
               placeholder="Choose Parsing Method"
@@ -190,6 +216,7 @@ const RenderServerFileInput = ({ items, disabled, value, setValue, parsingMethod
               items={items}
               onChange={setParsingMethod}
             />
+            <FileParserInfo />
           </div>
         </div>
       }
@@ -245,7 +272,7 @@ export const DialogAddDocument = (props: I_Props) => {
   const urlParsingItems = [{ name: 'Parsing Methods', isLabel: true }, ...urlParsingMethods]
   const fileParsingMethods = [
     { value: 'default', name: 'Default' },
-    { value: 'llama_parse', name: 'Llama Parse' },
+    { value: 'llama_parse', name: 'Llama-Parse' },
   ]
   const fileParsingItems = [{ name: 'Parsing Methods', isLabel: true }, ...fileParsingMethods]
 
