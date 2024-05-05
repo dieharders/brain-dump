@@ -58,6 +58,11 @@ export const DialogAddDocument = (props: I_Props) => {
   const [chunkSize, setChunkSize] = useState<number | string>('')
   const [chunkOverlap, setChunkOverlap] = useState<number | string>('')
   const [chunkingStrategy, setChunkingStrategy] = useState<string | undefined>()
+  const [urlParsingMethod, setUrlParsingMethod] = useState<string | undefined>()
+  const [clientFileParsingMethod, setClientFileParsingMethod] = useState<string | undefined>()
+  const [rawTextParsingMethod, setRawTextParsingMethod] = useState<string | undefined>()
+  const [serverFileParsingMethod, setServerFileParsingMethod] = useState<string | undefined>()
+
   // Parsing methods
   const urlParsingMethods = [
     { value: 'default', name: 'Default' },
@@ -94,7 +99,6 @@ export const DialogAddDocument = (props: I_Props) => {
   // Input Field - File upload from network
   const RenderUrlFileInput = ({ className }: { className: string }) => {
     const disabled = fileSource !== 'urlFile'
-    const [urlParsingMethod, setUrlParsingMethod] = useState<string | undefined>()
 
     return (
       <div className={className}>
@@ -136,7 +140,6 @@ export const DialogAddDocument = (props: I_Props) => {
     const filename = `File: ${selectedFile?.name}`
     const transitionStyle = 'transition-all ease-in duration-100'
     const marginStyle = selectedFile ? 'mt-4' : ''
-    const [fileParsingMethod, setFileParsingMethod] = useState<string | undefined>()
 
     return (
       <div className={className}>
@@ -172,9 +175,9 @@ export const DialogAddDocument = (props: I_Props) => {
                 id="client_file_parsing_select"
                 placeholder="Choose Parsing Method"
                 name="Parsing Methods"
-                value={fileParsingMethod || undefined}
+                value={clientFileParsingMethod || undefined}
                 items={fileParsingItems}
-                onChange={setFileParsingMethod}
+                onChange={setClientFileParsingMethod}
               />
             </div>
           </div>
@@ -187,7 +190,6 @@ export const DialogAddDocument = (props: I_Props) => {
   const RenderRawTextInput = ({ className }: { className: string }) => {
     const disabled = fileSource !== 'inputText'
     const hoverStyle = disabled ? 'text-primary/50 border-primary/10 placeholder:text-primary/20' : 'text-primary border-primary/20'
-    const [fileParsingMethod, setFileParsingMethod] = useState<string | undefined>()
 
     return (
       <div className={className}>
@@ -209,9 +211,9 @@ export const DialogAddDocument = (props: I_Props) => {
                 id="raw_text_parsing_select"
                 placeholder="Choose Parsing Method"
                 name="Parsing Methods"
-                value={fileParsingMethod || undefined}
+                value={rawTextParsingMethod || undefined}
                 items={fileParsingItems}
-                onChange={setFileParsingMethod}
+                onChange={setRawTextParsingMethod}
               />
             </div>
           </div>
@@ -223,7 +225,6 @@ export const DialogAddDocument = (props: I_Props) => {
   // Field - Input path to file on server
   const RenderServerFileInput = ({ className }: { className: string }) => {
     const disabled = fileSource !== 'serverFilePath'
-    const [fileParsingMethod, setFileParsingMethod] = useState<string | undefined>()
 
     return (
       <div className={className}>
@@ -245,9 +246,9 @@ export const DialogAddDocument = (props: I_Props) => {
                 id="server_file_parsing_select"
                 placeholder="Choose Parsing Method"
                 name="Parsing Methods"
-                value={fileParsingMethod || undefined}
+                value={serverFileParsingMethod || undefined}
                 items={fileParsingItems}
-                onChange={setFileParsingMethod}
+                onChange={setServerFileParsingMethod}
               />
             </div>
           </div>
@@ -371,17 +372,21 @@ export const DialogAddDocument = (props: I_Props) => {
       let urlFilePayload = {}
       let rawTextPayload = {}
       let fileUploadPayload = {}
+      let parsingMethod = {}
       switch (fileSource) {
         case 'serverFilePath':
           if (serverPathValue) filePathPayload = { filePath: serverPathValue }
+          if (serverFileParsingMethod) parsingMethod = { parsingMethod: serverFileParsingMethod }
           else throw new Error('Please provide a local path.')
           break
         case 'urlFile':
           if (urlValue) urlFilePayload = { urlPath: urlValue }
+          if (urlParsingMethod) parsingMethod = { parsingMethod: urlParsingMethod }
           else throw new Error('Please provide a url path.')
           break
         case 'inputText':
           if (rawTextValue) rawTextPayload = { textInput: rawTextValue }
+          if (rawTextParsingMethod) parsingMethod = { parsingMethod: rawTextParsingMethod }
           else throw new Error('Please provide text.')
           break
         // Create a form with our selected file attached if one was chosen
@@ -391,6 +396,7 @@ export const DialogAddDocument = (props: I_Props) => {
             formData.append('file', selectedFile, selectedFile.name)
             fileUploadPayload = { formData }
           }
+          if (clientFileParsingMethod) parsingMethod = { parsingMethod: clientFileParsingMethod }
           break
         default:
           break
@@ -409,6 +415,7 @@ export const DialogAddDocument = (props: I_Props) => {
         ...(chunkSize && { chunkSize: parseInt(chunkSize as string) }),
         ...(chunkOverlap && { chunkOverlap: parseInt(chunkOverlap as string) }),
         chunkingStrategy,
+        ...parsingMethod,
       }
       // Create the payload for the endpoint
       const payload = {
