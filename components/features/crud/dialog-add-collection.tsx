@@ -85,6 +85,7 @@ export const DialogCreateCollection = (props: IProps) => {
         <DialogFooter className="items-center">
           <Button
             disabled={disableForm}
+            className="w-full"
             variant="ghost"
             onClick={() => {
               setDialogOpen(false)
@@ -95,6 +96,7 @@ export const DialogCreateCollection = (props: IProps) => {
           </Button>
           <Button
             disabled={disableForm}
+            className="w-full"
             onClick={async () => {
               setDisableForm(true)
               const success = await onSubmit()

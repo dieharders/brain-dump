@@ -109,7 +109,7 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
   }, [getServices, services, setServices])
 
   return (
-    <Sidebar title="Documents" icon={FileIcon}>
+    <Sidebar title="Documents" icon={FileIcon} className="w-[22rem]">
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         <DocumentsList>{documentCards}</DocumentsList>

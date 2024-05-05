@@ -9,14 +9,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { cn } from '@/lib/utils'
 
 export interface SidebarProps {
   children?: ReactNode
   title?: string
   icon?: any
+  className?: string
 }
 
-export function Sidebar({ children, title, icon }: SidebarProps) {
+export function Sidebar({ children, title, icon, className }: SidebarProps) {
   const Icon = icon
   return (
     <Sheet>
@@ -26,7 +28,7 @@ export function Sidebar({ children, title, icon }: SidebarProps) {
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="inset-y-0 flex h-auto w-[300px] flex-col p-0">
+      <SheetContent className={cn("inset-y-0 flex h-auto w-[18rem] flex-col p-0", className)}>
         <SheetHeader className="p-4">
           <SheetTitle className="text-sm">{title || 'Title'}</SheetTitle>
         </SheetHeader>
