@@ -25,8 +25,8 @@ export const CardDocument = (props: I_Props) => {
   const name = document?.name || 'No title'
   const createdAt = document?.createdAt || '?'
   const documentType = document?.fileType || '?'
-  const toolTipStyle = cn("min-w-0 focus:bg-muted focus:ring-1 focus:ring-ring")
-  const labelStyle = cn("max-w-12 w-full truncate")
+  const toolTipStyle = cn("min-w-4 focus:bg-muted focus:ring-1 focus:ring-ring")
+  const labelStyle = cn("max-w-14 w-full truncate")
 
   return (
     <div
