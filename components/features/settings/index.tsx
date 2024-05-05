@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   Dialog,
@@ -21,88 +21,37 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useSettings } from '@/components/features/settings/hooks'
 
+const openaiDescription = (
+  <div>
+    If you have not obtained your OpenAI API key, you can do so by{' '}
+    <a href="https://platform.openai.com/signup/" className="underline">
+      signing up
+    </a>{' '}
+    on the OpenAI website. The token will be saved to your browser&apos;s
+    local storage under the name{' '}
+    <code className="font-mono">openai-token</code>.
+  </div>
+)
+
 export function Settings() {
   const {
     provider,
     setProvider,
     aiToken,
     setAIToken,
-    chatDBToken,
-    setChatDBToken,
-    documentDBToken,
-    setDocumentDBToken,
-    model,
-    setModel,
     clearData,
   } = useSettings()
   // AI Model input
   const [modelDialog, setModelDialog] = useState(false)
   const [aiTokenInput, setAITokenInput] = useState(aiToken ?? '')
-  const renderOpenAIOptions = useCallback(
-    () => (
-      <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => setModel('gpt3.5')}>
-          GPT-3.5-turbo
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('gpt4')}>GPT-4</DropdownMenuItem>
-      </DropdownMenuContent>
-    ),
-    [setModel],
-  )
-  const renderHuggingfaceOptions = useCallback(
-    () => (
-      <DropdownMenuContent>
-        <DropdownMenuItem
-          onClick={() => setModel('OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5')}
-        >
-          OpenAssistant
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('gpt2')}>GPT-2</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('facebook/blenderbot-1B-distill')}>
-          BlenderBot
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('tiiuae/falcon-7b-instruct')}>
-          Falcon-7b
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('openlm-research/open_llama_3b_v2')}>
-          Open-Llama-3b-v2
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setModel('meta-llama/Llama-2-70b-chat-hf')}>
-          Llama-2-70b-chat-hf (local)
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setModel('TheBloke/vicuna-13B-1.1-GPTQ-4bit-128g')}
-        >
-          Vicuna (local)
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    ),
-    [setModel],
-  )
-  const renderModeloptions = useCallback(() => {
-    switch (provider) {
-      case 'openai':
-        return renderOpenAIOptions()
-      case 'huggingface':
-        return renderHuggingfaceOptions()
-      default:
-        return null
-    }
-  }, [provider, renderHuggingfaceOptions, renderOpenAIOptions])
-  // Chat backend input
-  const [chatDBDialog, setChatDBDialog] = useState(false)
-  const [chatDBInput, setChatDBInput] = useState(chatDBToken ?? '')
-  // Uploads backend input
-  const [documentDBDialog, setDocumentDBDialog] = useState(false)
-  const [documentDBInput, setDocumentDBInput] = useState(documentDBToken ?? '')
 
   return (
     <div className="mx-auto flex w-96 flex-col justify-center gap-16 p-4">
       <div className="flex flex-col gap-8">
         <h1 className="text-center text-3xl font-bold">Configuration</h1>
         <h2 className="text-md text-center text-muted-foreground">
-          Enter your credentials here. This is only needed if you intend to manage your
-          infrastructure yourself.
+          Enter api credentials here.
+          {/* {openaiDescription} */}
         </h2>
       </div>
       {/* Model Config */}
@@ -137,32 +86,18 @@ export function Settings() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <DropdownMenu>
-          <DropdownMenuLabel className="text-muted-foreground">
-            Choose LLM model
-          </DropdownMenuLabel>
-          <DropdownMenuTrigger asChild>
-            <Button>{model}</Button>
-          </DropdownMenuTrigger>
-          {renderModeloptions()}
-        </DropdownMenu>
+        {/* Model api key menu */}
         <Dialog open={modelDialog} onOpenChange={setModelDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Enter your API key</DialogTitle>
+              <DialogTitle>Enter key</DialogTitle>
               <DialogDescription>
-                If you have not obtained your OpenAI API key, you can do so by{' '}
-                <a href="https://platform.openai.com/signup/" className="underline">
-                  signing up
-                </a>{' '}
-                on the OpenAI website. The token will be saved to your browser&apos;s
-                local storage under the name{' '}
-                <code className="font-mono">openai-token</code>.
+                Enter your api key for the chosen service.
               </DialogDescription>
             </DialogHeader>
             <Input
               value={aiTokenInput}
-              placeholder="OpenAI API key"
+              placeholder="xxx-xxx-xxx"
               onChange={e => setAITokenInput(e.target.value)}
             />
             <DialogFooter className="items-center">
@@ -172,15 +107,16 @@ export function Settings() {
                   setModelDialog(false)
                 }}
               >
-                Save Token
+                Save
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
         <Button onClick={() => setModelDialog(true)}>Enter API Key</Button>
       </div>
+
       {/* Backend Config */}
-      <div className="flex flex-col gap-4">
+      {/* <div className="flex flex-col gap-4">
         <p className="text-center">Database</p>
         <hr className="h-4 border-neutral-500"></hr>
         <Button onClick={() => setChatDBDialog(true)}>Configure Chat</Button>
@@ -249,7 +185,8 @@ export function Settings() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </div> */}
+
       {/* Data Removal */}
       <div className="flex flex-col gap-4">
         <p className="text-center">Privacy</p>
