@@ -30,7 +30,7 @@ export const ModelCard = ({ expandable = true, onClick = (_props: { id: string, 
       <Button
         variant="outline"
         size="lg"
-        className={cn("flex h-full w-full flex-col items-start gap-2 overflow-hidden border-gray-600 bg-muted p-4 text-left text-primary hover:border-indigo-600 hover:bg-indigo-200 dark:hover:bg-indigo-600", className)}
+        className={cn("h-100 flex w-full flex-col items-start gap-2 overflow-hidden border-gray-600 bg-muted p-4 text-left text-primary hover:border-indigo-600 hover:bg-indigo-200 dark:hover:bg-indigo-600", className)}
         onClick={() => {
           // Expand down to show description, and load the quantization menu
           expandable && setIsOpen(prev => !prev)

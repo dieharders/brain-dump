@@ -548,6 +548,7 @@ export const DialogAddDocument = (props: I_Props) => {
         <DialogFooter className="items-center">
           <Button
             disabled={disableForm}
+            className="w-full"
             variant="ghost"
             onClick={() => {
               setDialogOpen(false)
@@ -557,6 +558,7 @@ export const DialogAddDocument = (props: I_Props) => {
             Cancel
           </Button>
           <Button
+            className="w-full"
             disabled={disableForm}
             onClick={async () => {
               setDisableForm(true)
