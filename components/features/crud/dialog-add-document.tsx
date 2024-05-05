@@ -41,13 +41,14 @@ interface I_ClientFileArgs extends I_InputArgs {
 }
 
 // Styles
-const inputFieldsContainerStyle = "flex flex-col gap-3 text-sm"
-const infoContainerStyle = "flex w-full flex-row items-stretch gap-2"
+const inputFieldsContainerStyle = cn("flex w-full flex-col gap-3 text-sm")
+const infoContainerStyle = cn("flex w-full flex-row items-stretch justify-center gap-1")
+const selectStyle = cn("w-4 flex-1")
 
 const FileParserInfo = () => {
   return (
     <div className="flex flex-row gap-2">
-      <Info label="file_parser_info" className="h-full min-w-[2.5rem]">
+      <Info label="file_parser_info" className="h-full w-8 p-1">
         <span><Highlight>Default</Highlight> uses a basic method for each file.<br /><a href="https://cloud.llamaindex.ai/parse" className="underline"><Highlight>Llama-Parse</Highlight></a> is a third-party service (only available for pdf files).</span>
       </Info>
     </div>
@@ -57,7 +58,7 @@ const FileParserInfo = () => {
 const UrlParserInfo = () => {
   return (
     <div className="flex flex-row gap-2">
-      <Info label="url_parser_info" className="h-full min-w-[2.5rem]">
+      <Info label="url_parser_info" className="h-full w-8 p-1">
         <span><Highlight>Default</Highlight> uses a basic method that reads files and websites.<br />The <Highlight>Reader API</Highlight> is a third-party service that provides enhanced results (for websites only).</span>
       </Info>
     </div>
@@ -84,7 +85,7 @@ const RenderUrlFileInput = ({ items, disabled, value, setValue, parsingMethod, s
           <div className={infoContainerStyle}>
             <Select
               id="url_parsing_select"
-              className="grow"
+              className={selectStyle}
               placeholder="Choose Parsing Method"
               name="Parsing Methods"
               value={parsingMethod || undefined}
@@ -112,7 +113,7 @@ const RenderClientFileUpload = ({ items, disabled, value: selectedFile, setValue
     <div className={className}>
       <DialogTitle className="text-sm">Select a file on disk</DialogTitle>
       {!disabled &&
-        <div className="flex flex-col gap-3 px-8 text-sm">
+        <div className="flex flex-col gap-3 p-2 text-center text-sm">
           {/* File Picker */}
           <div className="rounded-lg border-2 border-dashed border-primary/40 p-2">
             <label htmlFor="clientFile" className={cn('relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg bg-muted/50', hoverStyle, transitionStyle)}>
@@ -140,6 +141,7 @@ const RenderClientFileUpload = ({ items, disabled, value: selectedFile, setValue
           <div className={infoContainerStyle}>
             <Select
               id="client_file_parsing_select"
+              className={selectStyle}
               placeholder="Choose Parsing Method"
               name="Parsing Methods"
               value={parsingMethod || undefined}
@@ -176,6 +178,7 @@ const RenderRawTextInput = ({ items, disabled, value, setValue, parsingMethod, s
           <div className={infoContainerStyle}>
             <Select
               id="raw_text_parsing_select"
+              className={selectStyle}
               placeholder="Choose Parsing Method"
               name="Parsing Methods"
               value={parsingMethod || undefined}
@@ -210,6 +213,7 @@ const RenderServerFileInput = ({ items, disabled, value, setValue, parsingMethod
           <div className={infoContainerStyle}>
             <Select
               id="server_file_parsing_select"
+              className={selectStyle}
               placeholder="Choose Parsing Method"
               name="Parsing Methods"
               value={parsingMethod || undefined}

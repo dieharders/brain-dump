@@ -29,7 +29,7 @@ export const Info = ({ label = 'Info', children, className }: I_Props) => {
       title={label}
       className={cn("flex h-6 w-6 cursor-default flex-col items-center justify-center self-center rounded-sm bg-muted/60 p-1 text-neutral-500 shadow-none hover:bg-muted", className)}
     >
-      <InfoCircledIcon className="h-auto w-auto" />
+      <InfoCircledIcon className="h-full w-full" />
     </Button>
   )
 
