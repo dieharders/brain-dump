@@ -22,7 +22,7 @@ import {
 import { useSettings } from '@/components/features/settings/hooks'
 
 const openaiDescription = (
-  <div>
+  <>
     If you have not obtained your OpenAI API key, you can do so by{' '}
     <a href="https://platform.openai.com/signup/" className="underline">
       signing up
@@ -30,10 +30,10 @@ const openaiDescription = (
     on the OpenAI website. The token will be saved to your browser&apos;s
     local storage under the name{' '}
     <code className="font-mono">openai-token</code>.
-  </div>
+  </>
 )
 
-export function Settings() {
+export const Settings = () => {
   const {
     provider,
     setProvider,
@@ -199,7 +199,7 @@ export function Settings() {
         </Button>
       </div>
       {/* Exit button */}
-      <Link href="home" prefetch={false} rel="noopener noreferrer" className="self-end px-2">
+      <Link href="/" prefetch={false} rel="noopener noreferrer" className="self-end px-2">
         <Button>Done</Button>
       </Link>
     </div>

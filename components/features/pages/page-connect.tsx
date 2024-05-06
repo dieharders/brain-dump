@@ -4,14 +4,13 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import { cn, constructMainBgStyle } from "@/lib/utils"
 import { useRouter } from 'next/navigation'
-import { ModelID } from '@/components/features/settings/types'
 import { defaultDomain, defaultPort, useHomebrew } from '@/lib/homebrew'
 import { useTheme } from 'next-themes'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { useSettings } from '@/components/features/settings/hooks'
+// import { useSettings } from '@/components/features/settings/hooks'
 import { Highlight, InfoLink } from '@/components/ui/info'
 import appSettings from '@/lib/localStorage'
 import { useSearchParams } from 'next/navigation'
@@ -19,7 +18,7 @@ import { useGlobalContext } from '@/contexts'
 
 export const ConnectServerPage = () => {
   const searchParams = useSearchParams()
-  const { provider: selectedProvider } = useSettings()
+  // const { provider: selectedProvider } = useSettings()
   const router = useRouter()
   const { theme } = useTheme()
   const { setServices } = useGlobalContext()
@@ -41,26 +40,20 @@ export const ConnectServerPage = () => {
   const connect = useCallback(async () => {
     setIsConnecting(true)
 
-    // Attempt to verify the local provider and text inference service exists.
-    if (selectedProvider === ModelID.Local) {
-      // Record connection options
-      appSettings.setHostConnection({ domain: domainValue, port: portValue })
+    // Record connection options
+    appSettings.setHostConnection({ domain: domainValue, port: portValue })
 
-      const res = await connectToHomebrew()
+    const res = await connectToHomebrew()
 
-      // Record the attempt
-      setIsConnecting(false)
-
-      // Success
-      if (res?.success) return true
-
-      // Fail
-      return false
-    }
-
+    // Record the attempt
     setIsConnecting(false)
+
+    // Success
+    if (res?.success) return true
+
+    // Fail
     return false
-  }, [connectToHomebrew, domainValue, portValue, selectedProvider])
+  }, [connectToHomebrew, domainValue, portValue])
 
   const connectAction = async () => {
     const success = await connect()
