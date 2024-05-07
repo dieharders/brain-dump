@@ -49,7 +49,7 @@ const FileParserInfo = () => {
   return (
     <div className="flex flex-row gap-2">
       <Info label="file_parser_info" className="h-full w-8 p-1">
-        <span><Highlight>Default</Highlight> uses a basic method for each file.<br /><a href="https://cloud.llamaindex.ai/parse" className="underline"><Highlight>Llama-Parse</Highlight></a> is a third-party service (only available for pdf files).</span>
+        <span><Highlight>Default</Highlight> uses a basic method for each file.<br /><a href="https://cloud.llamaindex.ai/parse" className="underline"><Highlight>Llama-Parse</Highlight></a> is a third-party service only available for pdf files. Do not send sensitive data.</span>
       </Info>
     </div>
   )
