@@ -10,7 +10,7 @@ export default async function SignInPage({
   // params,
   searchParams,
 }: {
-  params: any,
+  // params: any,
   searchParams: any,
 }) {
   const session = await auth()
