@@ -10,6 +10,7 @@ import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
 import { I_Text_Settings } from '@/lib/homebrew'
+import { Blobs } from "@/components/features/backgrounds/blobs"
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -43,6 +44,7 @@ export const LocalChat = (props: IProps) => {
 
   return (
     <div className={wrapperStyle}>
+      <Blobs />
       <div className={cn('w-full pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
