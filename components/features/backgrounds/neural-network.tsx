@@ -1,6 +1,7 @@
+'use client'
+
 import { useEffect, useRef } from "react"
-// import _ from 'lodash'
-const _: any = {} // temp, remove for above
+import _ from "lodash"
 
 const createCanvas = () => {
   /**
@@ -85,8 +86,6 @@ const createCanvas = () => {
     this.initDraw()
   }
   App.evolve = function () {
-    // const time1 = performance.now()
-
     this.stepCount++
 
     // Increment all grid ages
@@ -99,15 +98,6 @@ const createCanvas = () => {
     }
     App.move()
     App.draw()
-
-    // const time2 = performance.now()
-
-    // Update UI
-    // document.getElementsByClassName('dead')[0].textContent = this.deathCount
-    // document.getElementsByClassName('alive')[0].textContent = this.particles.length
-    // document.getElementsByClassName('fps')[0].textContent = Math.floor(1000 / (time2 - time1))
-    // document.getElementsByClassName('drawn')[0].textContent = this.drawnInLastFrame
-
   }
   App.birth = function () {
     const gridSpotIndex = Math.floor(Math.random() * this.gridMaxIndex),
@@ -169,13 +159,13 @@ const createCanvas = () => {
             return e.field + chaos * Math.random()
           })
 
-          const potentialNewGridSpot = maxFieldSpot
-          if (potentialNewGridSpot.busyAge == 0 || potentialNewGridSpot.busyAge > 15) {// Allow wall fading
+          const potentialNewGridSpot: any = maxFieldSpot
+          if (potentialNewGridSpot?.busyAge == 0 || potentialNewGridSpot?.busyAge > 15) {// Allow wall fading
             //if (potentialNewGridSpot.busyAge == 0) {// Spots busy forever
             // Ok it's free let's go there
             p.ageSinceStuck = 0// Not stuck anymore yay
             p.attractor.oldIndex = index
-            p.attractor.gridSpotIndex = potentialNewGridSpot.spotIndex
+            p.attractor.gridSpotIndex = potentialNewGridSpot?.spotIndex
             gridSpot = potentialNewGridSpot
             gridSpot.busyAge = 1
           } else p.ageSinceStuck++
@@ -230,7 +220,8 @@ const createCanvas = () => {
 
     this.ctx.beginPath()
     this.ctx.rect(0, 0, this.width, this.height)
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+    this.ctx.fillStyle = 'rgba(26, 26, 26, 0.1)'
+    // this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
     //this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
     this.ctx.fill()
     this.ctx.closePath()
@@ -297,40 +288,6 @@ const createCanvas = () => {
     return { x: xx, y: yy }
   }
 
-  /**
-   * Some old util I use at times
-   *
-   * @param {Number} Xstart X value of the segment starting point
-   * @param {Number} Ystart Y value of the segment starting point
-   * @param {Number} Xtarget X value of the segment target point
-   * @param {Number} Ytarget Y value of the segment target point
-   * @param {Boolean} realOrWeb true if Real (Y towards top), false if Web (Y towards bottom)
-   * @returns {Number} Angle between 0 and 2PI
-   */
-  const segmentAngleRad = (Xstart: number, Ystart: number, Xtarget: number, Ytarget: number, realOrWeb: boolean): number => {
-    let result = 0 // Will range between 0 and 2PI
-    if (Xstart == Xtarget) {
-      if (Ystart == Ytarget) {
-        result = 0
-      } else if (Ystart < Ytarget) {
-        result = Math.PI / 2
-      } else if (Ystart > Ytarget) {
-        result = 3 * Math.PI / 2
-      }
-    } else if (Xstart < Xtarget) {
-      result = Math.atan((Ytarget - Ystart) / (Xtarget - Xstart))
-    } else if (Xstart > Xtarget) {
-      result = Math.PI + Math.atan((Ytarget - Ystart) / (Xtarget - Xstart))
-    }
-
-    result = (result + 2 * Math.PI) % (2 * Math.PI)
-
-    if (!realOrWeb) {
-      result = 2 * Math.PI - result
-    }
-
-    return result
-  }
   return App
 }
 
@@ -340,8 +297,8 @@ export const NeuralNetwork = () => {
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const ctx = useRef<CanvasRenderingContext2D | null>(null)
   // Set the width and height of the canvas
-  const w = canvas?.current?.width || document.body.offsetWidth || 1000
-  const h = canvas?.current?.height || document.body.offsetHeight || 1000
+  const w = canvas?.current?.width || document.body.offsetWidth
+  const h = canvas?.current?.height || document.body.offsetHeight
 
   useEffect(() => {
     if (canvas.current) ctx.current = canvas.current?.getContext('2d')
@@ -359,15 +316,11 @@ export const NeuralNetwork = () => {
   }, [])
 
   return (
-    // Container
-    <div className="absolute m-0 h-full w-full overflow-hidden border-0">
-      {/* Canvas */}
-      <canvas
-        ref={canvas}
-        className="h-full w-full origin-[0%_0%] bg-white bg-gradient-to-r from-cyan-500 to-blue-500"
-        width={w}
-        height={h}
-      />
-    </div>
+    <canvas
+      ref={canvas}
+      className="h-full w-full origin-[0%_0%]"
+      width={w}
+      height={h}
+    />
   )
 }
