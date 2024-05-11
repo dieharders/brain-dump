@@ -59,7 +59,7 @@ export const Blobs = ({ className }: { className?: string }) => {
   const spans = useMemo(() => setSpans(), [])
 
   return (
-    <div className={cn("fixed inset-0 m-0 h-screen w-screen overflow-hidden border-0 opacity-50", className)}>
+    <div className={cn("h-100 inset-0 m-0 w-screen overflow-hidden border-0 opacity-50", className)}>
       {...spans}
     </div>
   )
