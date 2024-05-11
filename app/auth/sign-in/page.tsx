@@ -58,7 +58,7 @@ export default async function SignInPage({
           <div className="h-full w-full backdrop-blur-sm"></div>
         </div>
         {/* Words */}
-        <div className="light:text-black h-100 dark:white relative px-8 text-5xl font-extrabold">
+        <div className="light:text-black h-100 relative px-8 text-5xl font-extrabold dark:text-fuchsia-400">
           <p>Give me ideas for {' '}</p>
           <p className="text-4xl font-normal">a fun afternoon in San Francisco...without zombies</p>
         </div>

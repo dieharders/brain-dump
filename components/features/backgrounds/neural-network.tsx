@@ -1,9 +1,14 @@
 'use client'
 
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import _ from "lodash"
+import { cn } from "@/lib/utils"
 
-const createCanvas = () => {
+// Set the width and height of the canvas
+const width = window.screen.width
+const height = window.screen.height
+
+const createCanvas = (el: HTMLElement) => {
   /**
    * @author Alex Andrix <alex@alexandrix.com>
    * @since 2018-12-02
@@ -19,13 +24,25 @@ const createCanvas = () => {
     initDraw: {},
     draw: {},
     dataXYtoCanvasXY: {},
+    clear: {},
+  }
+  App.clear = function () {
+    el.removeChild(this.canvas)
   }
   App.setup = function () {
     const canvas = document.createElement('canvas')
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    canvas.width = width
+    canvas.height = height
+    // Center the canvas
+    canvas.style["position"] = "absolute"
+    canvas.style["left"] = "0px"
+    canvas.style["top"] = "0px"
+    canvas.style["width"] = `${width}px`
+    canvas.style["height"] = `${height}px`
     this.canvas = canvas
-    document.getElementsByTagName('body')[0].appendChild(canvas)
+
+    // Attach here
+    el.appendChild(canvas)
     this.ctx = this.canvas.getContext('2d')
     this.width = this.canvas.width
     this.height = this.canvas.height
@@ -292,35 +309,31 @@ const createCanvas = () => {
 }
 
 export const NeuralNetwork = () => {
-  const App = useRef(createCanvas())
-  // Get the canvas node and the drawing context
-  const canvas = useRef<HTMLCanvasElement | null>(null)
-  const ctx = useRef<CanvasRenderingContext2D | null>(null)
-  // Set the width and height of the canvas
-  const w = canvas?.current?.width || document.body.offsetWidth
-  const h = canvas?.current?.height || document.body.offsetHeight
-
   useEffect(() => {
-    if (canvas.current) ctx.current = canvas.current?.getContext('2d')
-  }, [])
-
-  useEffect(() => {
-    App.current.setup()
-    App.current.draw()
-
-    const frame = function () {
-      App.current.evolve()
-      requestAnimationFrame(frame)
+    let App: any
+    const el = document.getElementById('cv')
+    if (el) {
+      // Create
+      App = createCanvas(el)
+      // Render
+      App.setup()
+      App.draw()
+      const frame = function () {
+        App.evolve()
+        requestAnimationFrame(frame)
+      }
+      frame()
     }
-    frame()
+    // Cleanup
+    return () => {
+      App && App.clear(el)
+    }
   }, [])
 
   return (
-    <canvas
-      ref={canvas}
-      className="h-full w-full origin-[0%_0%]"
-      width={w}
-      height={h}
-    />
+    <div
+      id="cv"
+      className={cn("absolute h-full w-full mix-blend-screen")}
+    ></div>
   )
 }
