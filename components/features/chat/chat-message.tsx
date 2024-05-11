@@ -13,7 +13,7 @@ export interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
-  const bgStyle = message.role === 'user' ? 'bg-accent/70' : 'bg-background/70'
+  const bgStyle = message.role === 'user' ? 'bg-accent/80' : 'bg-background/80'
 
   return (
     <div

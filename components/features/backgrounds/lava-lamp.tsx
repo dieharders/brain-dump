@@ -1,5 +1,7 @@
+'use client'
+
 import { cn } from "@/lib/utils"
-import './blobs.css'
+import './lava-lamp.css'
 import { useMemo } from "react"
 
 const colors = ['#abdcff', '#0396ff', '#8e7ceb', '#e97aab']
@@ -16,7 +18,7 @@ const getRandomColor = (colors: string[]) => {
 }
 
 // https://codepen.io/Mamboleoo/pen/BxMQYQ
-export const Blobs = ({ className }: { className?: string }) => {
+export const LavaLamp = ({ className }: { className?: string }) => {
   const setSpans = () => {
     const spans = []
     for (let i = 0; i < particleNum; i++) {

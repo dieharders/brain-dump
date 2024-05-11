@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useRef } from "react"
 // import _ from 'lodash'
 const _: any = {} // temp, remove for above
