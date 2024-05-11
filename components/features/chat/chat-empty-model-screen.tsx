@@ -26,7 +26,7 @@ export const EmptyModelScreen = ({ id, loadModel }: I_Props) => {
 
   return (
     <div className="mx-auto mt-8 max-w-2xl px-4">
-      <div className="rounded-lg border bg-background p-8">
+      <div className="rounded-lg border bg-background/80 p-8">
         <h1 className="mb-2 text-lg font-semibold">
           No Ai model detected
         </h1>
