@@ -1,8 +1,8 @@
 'use client'
 
+import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 import './lava-lamp.css'
-import { useMemo } from "react"
 
 const colors = ['#abdcff', '#0396ff', '#8e7ceb', '#e97aab']
 const particleNum = 20
