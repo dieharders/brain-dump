@@ -16,7 +16,7 @@ const getRandomColor = (colors: string[]) => {
 }
 
 // https://codepen.io/Mamboleoo/pen/BxMQYQ
-export const Blobs = () => {
+export const Blobs = ({ className }: { className?: string }) => {
   const setSpans = () => {
     const spans = []
     for (let i = 0; i < particleNum; i++) {
@@ -59,7 +59,7 @@ export const Blobs = () => {
   const spans = useMemo(() => setSpans(), [])
 
   return (
-    <div className="absolute inset-0 m-0 h-screen w-screen overflow-hidden border-0 opacity-50">
+    <div className={cn("fixed inset-0 m-0 h-screen w-screen overflow-hidden border-0 opacity-50", className)}>
       {...spans}
     </div>
   )

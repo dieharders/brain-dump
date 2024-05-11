@@ -45,7 +45,10 @@ export function formatDate(input: string | number | Date): string {
 
 export const constructMainBgStyle = (currentTheme: string | undefined) => {
   const bgColor = `${currentTheme === 'light' ? 'bg-neutral-200' : 'bg-neutral-900'}`
-  const wrapperStyle = `flex w-full flex-1 flex-col items-center self-stretch ${bgColor}`
+  const wrapperStyle = cn(
+    'w-100 relative flex flex-1 flex-col items-center self-stretch overflow-hidden',
+    bgColor,
+  )
   return wrapperStyle
 }
 
