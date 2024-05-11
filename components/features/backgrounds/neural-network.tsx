@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
-import _ from 'lodash'
+// import _ from 'lodash'
+const _: any = {} // temp, remove for above
 
 const createCanvas = () => {
   /**
@@ -49,9 +50,9 @@ const createCanvas = () => {
     for (let xx = -500; xx < 500; xx += this.gridSize) {
       for (let yy = -500; yy < 500; yy += this.gridSize) {
         // Radial field, triangular function of r with max around r0
-        const r = Math.sqrt(xx * xx + yy * yy),
-          r0 = 100,
-          field
+        const r = Math.sqrt(xx * xx + yy * yy)
+        const r0 = 100
+        let field
 
         if (r < r0) field = 255 / r0 * r
         else if (r > r0) field = 255 - Math.min(255, (r - r0) / 2)
@@ -84,7 +85,7 @@ const createCanvas = () => {
     this.initDraw()
   }
   App.evolve = function () {
-    const time1 = performance.now()
+    // const time1 = performance.now()
 
     this.stepCount++
 
@@ -99,7 +100,7 @@ const createCanvas = () => {
     App.move()
     App.draw()
 
-    const time2 = performance.now()
+    // const time2 = performance.now()
 
     // Update UI
     // document.getElementsByClassName('dead')[0].textContent = this.deathCount
@@ -109,8 +110,6 @@ const createCanvas = () => {
 
   }
   App.birth = function () {
-    let x = 0
-    let y = 0
     const gridSpotIndex = Math.floor(Math.random() * this.gridMaxIndex),
       gridSpot = this.grid[gridSpotIndex],
       x = gridSpot.x, y = gridSpot.y
