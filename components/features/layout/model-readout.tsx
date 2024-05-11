@@ -30,9 +30,9 @@ export const ModelReadout = () => {
   return (
     shouldRender
       ?
-      <div className="w-fill flex flex-1 items-center justify-center gap-4 overflow-hidden whitespace-nowrap rounded-md border-2 border-primary/10 bg-muted p-2 duration-100 ease-out hover:border-primary/20 hover:bg-primary/20">
+      <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap rounded-md border-2 border-primary/10 bg-muted p-2 duration-100 ease-out hover:border-primary/20 hover:bg-primary/20">
         {/* <div className="text-sm text-muted-foreground">GPU: {gpu}% | CPU: {cpu}%</div> */}
-        <div className="m-auto w-fit text-muted-foreground">Model: {title}</div>
+        <div className="m-auto w-fit px-8 text-muted-foreground">Model: {title}</div>
       </div>
       :
       null
