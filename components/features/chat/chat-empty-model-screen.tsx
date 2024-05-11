@@ -15,7 +15,7 @@ export const EmptyModelScreen = ({ id, loadModel }: I_Props) => {
       onClick: () => loadModel?.(id),
     },
     {
-      heading: 'Go to main menu and choose a model',
+      heading: 'Go to main menu',
       onClick: () => router.replace('home'),
     },
     {
