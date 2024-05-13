@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useRouter } from "next/navigation"
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
@@ -9,9 +9,8 @@ import { Select } from '@/components/ui/select'
 import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
-import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ROUTE_PLAYGROUND } from "@/app/constants"
-import { notifications } from "@/lib/notifications"
+import { useGlobalContext } from "@/contexts"
 
 interface I_Props {
   installedList: T_InstalledTextModel[]
@@ -25,9 +24,9 @@ interface I_Props {
 }
 
 export const Playground = (props: I_Props) => {
+  const { setPlaygroundSettings } = useGlobalContext()
   const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
   const router = useRouter()
-  const { loadModel: loadPlaygroundModel } = useChatPage({ services })
   const [selectedModelFile, setSelectedModelFile] = useState<string | undefined>('')
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
   const {
@@ -43,7 +42,7 @@ export const Playground = (props: I_Props) => {
       performance: statePerformance,
       model: { id: selectedModelId, filename: selectedModelFile },
     }
-    return services?.storage.savePlaygroundSettings({ body: settings })
+    setPlaygroundSettings(prev => ({ ...prev, ...settings }))
   }
 
   const installedModelsItems = installedList?.map(item => {
@@ -59,37 +58,6 @@ export const Playground = (props: I_Props) => {
     return savePaths.map(([filename, _path]) => ({ value: filename, name: filename }))
   }).flatMap(x => x).filter(val => !!val)
   const installedFiles = [{ name: 'Available files', isLabel: true }, ...installedFilesList]
-
-  const connectTextServiceAction = useCallback(async () => {
-    const action = async () => {
-      try {
-        // Eject first
-        await services?.textInference?.unload?.()
-        // Pass any settings data we find, We could instead pass init args from a user input, using saved settings for now.
-        const settingsResponse = await services?.storage.getPlaygroundSettings()
-        if (!settingsResponse?.success) {
-          toast.error(`${settingsResponse?.message}`)
-        }
-
-        const response = await loadPlaygroundModel?.()
-        const success = response?.success
-        const err = response?.message
-
-        if (success) return response
-
-        toast.error(err || 'Failed to connect to Ai.')
-        return response
-      } catch (error) {
-        toast.error(`${error}`)
-        return
-      }
-    }
-
-    setIsConnecting(true)
-    const result = await action()
-    setIsConnecting(false)
-    return result
-  }, [loadPlaygroundModel, services?.storage, services?.textInference, setIsConnecting])
 
   return (
     <>
@@ -146,14 +114,7 @@ export const Playground = (props: I_Props) => {
                 onClick={async () => {
                   setIsConnecting(true)
                   setHasTextServiceConnected(true)
-
-                  const action = async () => {
-                    const res = await connectTextServiceAction()
-                    await saveSettings()
-                    return res
-                  }
-                  await notifications().loadModel(action())
-
+                  await saveSettings()
                   setIsConnecting(false)
                   router.push(ROUTE_PLAYGROUND)
                 }}

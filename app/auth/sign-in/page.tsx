@@ -41,8 +41,6 @@ export default async function SignInPage({
   //   )
   // }
 
-
-
   // Splash page
   return (
     <div className="flex flex-1 flex-row items-stretch justify-items-stretch self-stretch justify-self-stretch">

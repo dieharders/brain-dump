@@ -1,7 +1,9 @@
 import { useCallback } from 'react'
 import { I_ServiceApis, ModelID } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
 
 export const useChatPage = ({ services }: { services: I_ServiceApis | null }) => {
+  const { playgroundSettings } = useGlobalContext()
   const fetchPlaygroundSettings = useCallback(async () => {
     // Load the model from settings on page mount
     const res = await services?.storage.getPlaygroundSettings()
@@ -22,10 +24,8 @@ export const useChatPage = ({ services }: { services: I_ServiceApis | null }) =>
 
   const loadModel = useCallback(
     async (botName?: string) => {
-      // Load the model from the bot settings on page mount.
-      const settings = botName
-        ? await fetchChatBotSettings(botName)
-        : await fetchPlaygroundSettings()
+      // Load the model from the bot settings on page mount
+      const settings = botName ? await fetchChatBotSettings(botName) : playgroundSettings
 
       // Make payload
       const selectedModelId = settings?.model?.id
@@ -52,7 +52,7 @@ export const useChatPage = ({ services }: { services: I_ServiceApis | null }) =>
       // Finished
       return res
     },
-    [fetchChatBotSettings, fetchPlaygroundSettings, services?.textInference],
+    [fetchChatBotSettings, playgroundSettings, services?.textInference],
   )
 
   return {

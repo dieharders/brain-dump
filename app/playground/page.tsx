@@ -5,41 +5,22 @@ import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { useGlobalContext } from '@/contexts'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
-import { I_LoadedModelRes, I_Text_Settings, useHomebrew } from "@/lib/homebrew"
-import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
-import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
-import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
-import { defaultState as defaultSystemState } from '@/components/features/menus/tabs/tab-system'
-import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
-import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
-import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
+import { I_LoadedModelRes, useHomebrew } from "@/lib/homebrew"
 import { LocalChat } from "@/components/features/chat/interface-local-chat"
 import { EmptyModelScreen } from "@/components/features/chat/chat-empty-model-screen"
 import { ROUTE_PLAYGROUND } from "@/app/constants"
-import toast from "react-hot-toast"
-
-const defaultState = {
-  attention: defaultAttentionState,
-  performance: defaultPerformanceState,
-  system: defaultSystemState,
-  model: defaultModelState,
-  prompt: defaultPromptState,
-  knowledge: defaultKnowledgeState,
-  response: defaultResponse,
-}
+import { notifications } from "@/lib/notifications"
 
 export default function PlaygroundPage() {
   const session_id = ROUTE_PLAYGROUND
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
-  const { services, setServices } = useGlobalContext()
+  const { services, setServices, playgroundSettings, setPlaygroundSettings } = useGlobalContext()
   const [isLoading, setIsLoading] = useState(true)
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
-  const [settings, setSettings] = useState<I_Text_Settings>(defaultState)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
-  const { fetchPlaygroundSettings: fetchSettings, loadModel: loadPlaygroundModel } = useChatPage({ services })
-  const [hasFetched, setHasFetched] = useState(false)
+  const { loadModel } = useChatPage({ services })
 
   const getModel = useCallback(async () => {
     // Ask server if a model has been loaded and store state of result
@@ -49,6 +30,34 @@ export default function PlaygroundPage() {
     return
   }, [services?.textInference])
 
+  const loadModelAction = useCallback(async () => {
+    const action = async () => {
+      try {
+        // Eject first
+        await services?.textInference?.unload?.()
+        // Load
+        const response = await loadModel?.()
+        const success = response?.success
+        const err = response?.message
+        // Success
+        if (success) return response
+        // Fail
+        throw new Error(err || 'Failed to connect to Ai.')
+      } catch (error) {
+        return error
+      }
+    }
+    const result = await action()
+    return result
+  }, [loadModel, services?.textInference])
+
+  const loadPlaygroundModel = useCallback(async () => {
+    setIsLoading(true)
+    await notifications().loadModel(loadModelAction())
+    await getModel()
+    setIsLoading(false)
+  }, [loadModelAction, getModel])
+
   useEffect(() => {
     const action = async () => {
       const res = await getServices()
@@ -57,25 +66,10 @@ export default function PlaygroundPage() {
     if (!services) action()
   }, [getServices, services, setServices])
 
-  // Fetch settings
+  // Load model on mount
   useEffect(() => {
-    const action = async () => {
-      if (hasFetched || !fetchSettings) return
-
-      setIsLoading(true)
-      toast.loading('Fetching data...', { id: 'fetch-data' })
-
-      const res = await fetchSettings()
-      res && setSettings(res)
-
-      if (!currentModel) await getModel()
-
-      setIsLoading(false)
-      setHasFetched(true)
-      toast.dismiss('fetch-data')
-    }
-    action()
-  }, [currentModel, fetchSettings, getModel, hasFetched])
+    loadPlaygroundModel()
+  }, [loadPlaygroundModel])
 
   if (isLoading)
     return (<div className="h-full w-full flex-1 bg-neutral-900"></div>)
@@ -86,16 +80,11 @@ export default function PlaygroundPage() {
         routeId={routeId}
         initialMessages={initialMessages}
         isLoading={isLoading}
-        setSettings={setSettings}
-        settings={settings}
+        setSettings={setPlaygroundSettings}
+        settings={playgroundSettings}
       />
     )
   return (
-    <EmptyModelScreen id={session_id} loadModel={async () => {
-      setIsLoading(true)
-      loadPlaygroundModel && await loadPlaygroundModel()
-      await getModel()
-      setIsLoading(false)
-    }} />
+    <EmptyModelScreen id={session_id} loadModel={loadPlaygroundModel} />
   )
 }
