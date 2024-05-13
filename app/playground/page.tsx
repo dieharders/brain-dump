@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { useGlobalContext } from '@/contexts'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
-import { I_LoadedModelRes, useHomebrew } from "@/lib/homebrew"
+import { useHomebrew } from "@/lib/homebrew"
 import { LocalChat } from "@/components/features/chat/interface-local-chat"
 import { EmptyModelScreen } from "@/components/features/chat/chat-empty-model-screen"
 import { ROUTE_PLAYGROUND } from "@/app/constants"
@@ -15,10 +15,9 @@ export default function PlaygroundPage() {
   const session_id = ROUTE_PLAYGROUND
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
-  const { services, setServices, playgroundSettings, setPlaygroundSettings } = useGlobalContext()
+  const { services, currentModel, setCurrentModel, setServices, playgroundSettings, setPlaygroundSettings } = useGlobalContext()
   const [isLoading, setIsLoading] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
-  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
   const { loadModel } = useChatPage({ services })
@@ -29,7 +28,7 @@ export default function PlaygroundPage() {
     const success = modelRes?.success
     success && setCurrentModel(modelRes.data)
     return
-  }, [services?.textInference])
+  }, [services?.textInference, setCurrentModel])
 
   const loadModelAction = useCallback(async () => {
     const err = 'Failed to connect to Ai.'

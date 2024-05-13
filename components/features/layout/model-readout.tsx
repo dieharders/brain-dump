@@ -6,7 +6,7 @@ import { useGlobalContext } from '@/contexts'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 
 export const ModelReadout = () => {
-  const { services } = useGlobalContext()
+  const { services, currentModel } = useGlobalContext()
   const [title, setTitle] = useState('???')
   // @TODO Get these values from somewhere
   const gpu = '0'
@@ -17,15 +17,14 @@ export const ModelReadout = () => {
 
   useEffect(() => {
     const action = async () => {
-      const currentModel = await services?.textInference.model()
-      const currentModelId = currentModel?.data?.modelId || ''
+      const currentModelId = currentModel?.modelId || ''
       const configs = await services?.textInference.getModelConfigs()
       const model = configs?.data?.[currentModelId]
       const name = model?.name
       name && setTitle(name)
     }
-    if (shouldRender) action()
-  }, [services?.textInference, shouldRender])
+    if (shouldRender && currentModel) action()
+  }, [currentModel, services?.textInference, shouldRender])
 
   return (
     shouldRender

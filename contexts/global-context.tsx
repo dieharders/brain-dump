@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { I_Collection, I_DocumentChunk, I_ServiceApis, I_Source, I_Text_Settings } from '@/lib/homebrew'
+import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ServiceApis, I_Source, I_Text_Settings } from '@/lib/homebrew'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -26,6 +26,8 @@ interface IGlobalContextProps {
   setChunks: (chunks: T_Chunks_Map) => void
   playgroundSettings: I_Text_Settings
   setPlaygroundSettings: Dispatch<SetStateAction<I_Text_Settings>>
+  currentModel: I_LoadedModelRes | null
+  setCurrentModel: Dispatch<SetStateAction<I_LoadedModelRes | null>>
 }
 
 // Defaults
@@ -55,6 +57,8 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setChunks: () => { },
   playgroundSettings: defaultPlaygroundSettings,
   setPlaygroundSettings: () => { },
+  currentModel: null,
+  setCurrentModel: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -64,7 +68,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [chunks, setChunks] = useState<T_Chunks_Map>([])
   const [documents, setDocuments] = useState<Array<I_Source>>([])
   const [collections, setCollections] = useState<Array<I_Collection>>([])
-  const [playgroundSettings, setPlaygroundSettings] = useState(defaultPlaygroundSettings)
+  const [playgroundSettings, setPlaygroundSettings] = useState<I_Text_Settings>(defaultPlaygroundSettings)
+  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>(null)
 
   return (
     <GlobalContext.Provider
@@ -84,6 +89,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setChunks,
         playgroundSettings,
         setPlaygroundSettings,
+        currentModel,
+        setCurrentModel,
       }}
     >
       {children}
