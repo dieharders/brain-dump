@@ -16,7 +16,8 @@ export default function PlaygroundPage() {
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
   const { services, setServices, playgroundSettings, setPlaygroundSettings } = useGlobalContext()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasLoaded, setHasLoaded] = useState(false)
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
   const { getServices } = useHomebrew()
@@ -31,6 +32,7 @@ export default function PlaygroundPage() {
   }, [services?.textInference])
 
   const loadModelAction = useCallback(async () => {
+    const err = 'Failed to connect to Ai.'
     const action = async () => {
       try {
         // Eject first
@@ -42,9 +44,9 @@ export default function PlaygroundPage() {
         // Success
         if (success) return response
         // Fail
-        throw new Error(err || 'Failed to connect to Ai.')
+        throw err
       } catch (error) {
-        return error
+        throw err || error
       }
     }
     const result = await action()
@@ -68,8 +70,11 @@ export default function PlaygroundPage() {
 
   // Load model on mount
   useEffect(() => {
-    loadPlaygroundModel()
-  }, [loadPlaygroundModel])
+    if (!isLoading && !hasLoaded) {
+      loadPlaygroundModel()
+      setHasLoaded(true)
+    }
+  }, [hasLoaded, isLoading, loadPlaygroundModel])
 
   if (isLoading)
     return (<div className="h-full w-full flex-1 bg-neutral-900"></div>)
