@@ -15,7 +15,7 @@ interface I_Props {
   isRAGEnabled: boolean
 }
 
-export const defaultState = {
+export const defaultState: I_State = {
   promptTemplate: defaultPromptState,
   ragTemplate: defaultRagTemplateState,
   ragMode: defaultRagModes,

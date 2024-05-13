@@ -17,7 +17,7 @@ interface I_Props {
   systemPrompts: T_SystemPrompts
 }
 
-export const defaultState = {
+export const defaultState: I_State = {
   systemMessage: undefined,
   systemMessageName: undefined,
 }
