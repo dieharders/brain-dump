@@ -37,6 +37,7 @@ export const LavaLamp = ({ className }: { className?: string }) => {
 
       spans.push(
         <span
+          key={i}
           className={spanStyle}
           style={{
             'backfaceVisibility': 'hidden',
