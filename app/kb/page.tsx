@@ -16,7 +16,7 @@ import ToggleGroup from '@/components/ui/toggle-group'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
 import { ClearData } from '@/components/features/crud/dialog-clear-data'
-import { MemoizedReactMarkdown } from '@/components/markdown'
+import { MemoizedReactMarkdown } from '@/components/ui/markdown'
 import { CodeBlock } from '@/components/ui/codeblock'
 import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
 

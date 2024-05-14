@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { formatDate } from '@/lib/utils'
 import { getSharedChat } from '@/app/actions'
 import { ChatList } from '@/components/features/chat/chat-list'
-import { FooterText } from '@/components/footer'
+import { FooterText } from '@/components/features/layout/footer'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'

@@ -19,7 +19,7 @@ export interface SidebarProps {
   onClick?: () => void
 }
 
-export function Sidebar({ children, title, icon, className, onClick }: SidebarProps) {
+export function Panel({ children, title, icon, className, onClick }: SidebarProps) {
   const Icon = icon
   return (
     <Sheet>

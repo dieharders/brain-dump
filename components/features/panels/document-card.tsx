@@ -17,7 +17,7 @@ interface I_Props {
 /**
  * A card container for document
  */
-export const CardDocument = (props: I_Props) => {
+export const DocumentCard = (props: I_Props) => {
   const { document, numChunks, onClick, isSelected, isActive: isHighlighted } = props
   const [isActive, setIsActive] = useState(false)
   const numTags = document?.tags ? document?.tags?.split(' ').length : 0

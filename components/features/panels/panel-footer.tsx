@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 
-export function SidebarFooter({
+export function PanelFooter({
   children,
   className,
   ...props

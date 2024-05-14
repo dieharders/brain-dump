@@ -2,13 +2,13 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { Session } from 'next-auth/types'
-import { Sidebar } from '@/components/sidebar'
+import { Panel } from '@/components/features/panels/panel'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
-// import { SidebarFooter } from '@/components/sidebar-footer'
+// import { PanelFooter } from '@/components/panel-footer'
 // import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { useHomebrew } from '@/lib/homebrew'
-import { CardDocument } from '@/components/features/panels/card-document'
+import { DocumentCard } from '@/components/features/panels/document-card'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
 import { FileIcon } from '@radix-ui/react-icons'
@@ -34,7 +34,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
         const numChunks = document?.chunkIds?.length || 0
 
         return (
-          <CardDocument
+          <DocumentCard
             key={docId}
             document={document}
             numChunks={numChunks}
@@ -61,7 +61,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
   }, [getServices, services, setServices])
 
   return (
-    <Sidebar title="Documents" icon={FileIcon} className="w-[22rem]" onClick={fetchAction}>
+    <Panel title="Documents" icon={FileIcon} className="w-[22rem]" onClick={fetchAction}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
@@ -87,9 +87,9 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
 
       </Suspense>
       {/* Align footer to bottom of panel */}
-      {/* <SidebarFooter className="mt-auto py-8">
+      {/* <PanelFooter className="mt-auto py-8">
         <ClearData action={deleteAllDocuments} actionTitle="Delete all documents" />
-      </SidebarFooter> */}
-    </Sidebar>
+      </PanelFooter> */}
+    </Panel>
   )
 }

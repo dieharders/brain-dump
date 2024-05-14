@@ -5,7 +5,7 @@ import { ChatPrompt } from '@/components/features/chat/chat-prompt'
 import { ButtonScrollToBottom } from '@/components/features/chat/button-scroll-to-bottom'
 import { CharmMenu, T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
-import { FooterText } from '@/components/footer'
+import { FooterText } from '@/components/features/layout/footer'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
