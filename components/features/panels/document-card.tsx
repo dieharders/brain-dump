@@ -58,7 +58,6 @@ export const DocumentCard = (props: I_Props) => {
 
       {/* Description */}
       <div className="my-2 flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
-        {/* Card name */}
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
           {description}
         </span>
@@ -73,7 +72,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              🍪: {numChunks}
+              🍪:{numChunks}
             </div>
           </TooltipTrigger>
           <TooltipContent>Chunks: {numChunks}</TooltipContent>
@@ -86,7 +85,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <div className="inline-block" >💾<div className="inline-block">:{' '}{documentType}</div></div>
+              💾:{documentType}
             </div>
           </TooltipTrigger>
           <TooltipContent>Document type: {documentType}</TooltipContent>
@@ -99,7 +98,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              🔖: {numTags}
+              🔖:{numTags}
             </div>
           </TooltipTrigger>
           <TooltipContent>Tag count: {numTags}</TooltipContent>
@@ -112,7 +111,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className="max-w-[4rem] truncate">
-              📆: {createdAt}
+              📆:{createdAt}
             </div>
           </TooltipTrigger>
           <TooltipContent>Created: {createdAt}</TooltipContent>
