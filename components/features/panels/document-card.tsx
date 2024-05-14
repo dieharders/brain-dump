@@ -32,7 +32,7 @@ export const DocumentCard = (props: I_Props) => {
     <div
       className={cn(
         buttonVariants({ variant: 'outline' }),
-        'hover-bg-accent relative h-fit w-full select-none flex-col space-y-4 py-4 text-left',
+        'hover-bg-accent relative min-h-[8rem] select-none flex-col space-y-4 overflow-hidden py-4 text-left sm:w-[24rem]',
         (isActive || isHighlighted) && 'bg-accent',
         isSelected && 'bg-accent',
         onClick && 'cursor-pointer',

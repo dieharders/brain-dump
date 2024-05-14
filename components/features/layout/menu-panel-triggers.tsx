@@ -48,14 +48,14 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   }, [getServices, services, setServices])
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Home page shortcut */}
       {showHomeShortcut &&
         <Tooltip delayDuration={450}>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              className="mx-1 h-9 w-9 p-0"
+              className="m-0 h-10 w-10 p-2"
               onClick={() => router.replace('home')}
             >
               <IconArrowElbow className="h-6 w-6" />
@@ -72,7 +72,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              className="mx-1 h-9 w-9 p-0"
+              className="m-0 h-10 w-10 p-2"
               onClick={() => {
                 router.replace('/')
               }}

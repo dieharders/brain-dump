@@ -33,7 +33,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
     <div
       className={cn(
         buttonVariants({ variant: 'outline' }),
-        'hover-bg-accent relative h-fit w-full select-none flex-col space-y-4 py-4 text-left',
+        'hover-bg-accent relative h-fit min-h-[9rem] w-full select-none flex-col space-y-4 py-4 text-left sm:w-[18rem]',
         (isActive || isHighlighted) && 'bg-accent',
         isSelected && 'bg-accent',
         onClick && 'cursor-pointer',
