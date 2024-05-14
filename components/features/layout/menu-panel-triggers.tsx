@@ -113,7 +113,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
               <DocumentsButton
                 session={session}
                 collectionName={selectedCollectionName}
-              // fetchAction={fetchDocumentsAction}
+                fetchAction={fetchDocumentsAction}
               />
               <span className="sr-only">List of knowledge base documents</span>
             </div>
