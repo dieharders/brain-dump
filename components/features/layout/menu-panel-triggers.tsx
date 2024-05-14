@@ -30,8 +30,6 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const showHostConnPage = header_url === 'home'
 
   const fetchDocumentsAction = useCallback(async () => {
-    console.log('@@ fetchDocumentsAction')
-
     // Need to re-fetch all collections before getting documents
     const collRes = await fetchCollections()
     collRes && setCollections(collRes)
