@@ -8,7 +8,7 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_Knowledge_State, I_ModelConfigs, I_ServiceApis, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_Knowledge_State, I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
@@ -19,14 +19,11 @@ import { notifications } from '@/lib/notifications'
 import { useGlobalContext } from '@/contexts'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { ClearData } from '@/components/features/crud/dialog-clear-data'
+import { useActions } from './actions'
 
 interface I_Props {
   onSubmit: () => void
   services: I_ServiceApis | null
-  modelConfigs: I_ModelConfigs
-  setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs | undefined>>
-  installedList: T_InstalledTextModel[]
-  setInstalledList: Dispatch<SetStateAction<T_InstalledTextModel[]>>
   isConnecting: boolean
   setIsConnecting: Dispatch<SetStateAction<boolean>>
   setHasTextServiceConnected: Dispatch<SetStateAction<boolean>>
@@ -57,12 +54,12 @@ const Item = ({ title, onAction, Icon, children, className }: { children?: React
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
-  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services, modelConfigs, setModelConfigs, installedList, setInstalledList } = props
+  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services } = props
   const { notAvailable: notAvailableNotification } = notifications()
   const { loadModel: loadChatBot } = useChatPage({ services })
   // State
   const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
-  const { collections, setCollections } = useGlobalContext()
+  const { collections, setCollections, installedList, modelConfigs } = useGlobalContext()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
@@ -74,6 +71,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
   // Methods
+  const { fetchInstalledModelsAndConfigs } = useActions()
   const modelExploreAction = useCallback(async () => {
     await services?.textInference?.modelExplore()
     return
@@ -101,18 +99,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     // show bot creation menu
     setOpenBotCreationMenu(true)
   }
-
-  const fetchInstalledModelsAndConfigs = useCallback(async () => {
-    // Get all currently installed models
-    services?.textInference?.installed?.().then(listResponse =>
-      listResponse?.data && setInstalledList(listResponse.data)
-    )
-    // Get all model configs
-    services?.textInference?.getModelConfigs?.().then(cfgs =>
-      cfgs?.data && setModelConfigs(cfgs.data)
-    )
-    return
-  }, [services?.textInference, setInstalledList, setModelConfigs])
 
   const createChatBot = useCallback(async (botId: string) => {
     const queryParams = `?id=${botId}`
@@ -201,7 +187,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       // do stuff here when tab is selected ...
       switch (val) {
         case 'models':
-          services && fetchInstalledModelsAndConfigs()
+          fetchInstalledModelsAndConfigs(services)
           break
         case 'playground':
           // fetch installed models?
@@ -251,7 +237,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
         {/* Presets and User generated bots */}
         {...bots.map(bot => {
-          const botId = bot.model.botName
+          const botId = bot.model?.botName
+          if (!botId) return null
           const title = botId[0].toUpperCase() + botId.slice(1)
           return (
             <Item
@@ -409,19 +396,21 @@ export const ApplicationModesMenu = (props: I_Props) => {
     {
       label: 'models',
       icon: "👨‍💻",
-      content: (<ModelExplorerMenu
-        data={modelConfigs}
-        installedModelsInfo={installedList}
-        Header={Header}
-        Title={Title}
-        Description={Description}
-        onOpenDirAction={modelExploreAction}
-        fetchModelInfo={fetchModelInfo}
-        downloadModel={downloadModel}
-        deleteModel={deleteModel}
-        hfModelsInfo={hfModelsInfo}
-        setHFModelsInfo={setHFModelsInfo}
-      />)
+      content: (
+        <ModelExplorerMenu
+          data={modelConfigs}
+          installedModelsInfo={installedList}
+          Header={Header}
+          Title={Title}
+          Description={Description}
+          onOpenDirAction={modelExploreAction}
+          fetchModelInfo={fetchModelInfo}
+          downloadModel={downloadModel}
+          deleteModel={deleteModel}
+          hfModelsInfo={hfModelsInfo}
+          setHFModelsInfo={setHFModelsInfo}
+        />
+      )
     },
     { label: 'playground', icon: "🌎", content: playgroundMenu },
     { label: 'bots', icon: "🤖", content: botsMenu },

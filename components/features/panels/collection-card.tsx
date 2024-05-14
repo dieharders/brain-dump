@@ -73,7 +73,6 @@ export const CollectionCard = (props: SidebarItemProps) => {
 
       {/* Description */}
       <div className="my-2 flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
-        {/* Card name */}
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
           {collection.metadata?.description || 'No description.'}
         </span>

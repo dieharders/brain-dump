@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { I_ModelConfigs, T_InstalledTextModel, useHomebrew } from '@/lib/homebrew'
+import { useHomebrew } from '@/lib/homebrew'
 import { useGlobalContext } from '@/contexts'
 import { ApplicationModesMenu } from '@/components/features/menus/home/menu-application-modes'
 import { useTheme } from 'next-themes'
@@ -16,8 +16,6 @@ const HomeMenuPage = () => {
   const { services, setServices } = useGlobalContext()
   const [hasTextServiceConnected, setHasTextServiceConnected] = useState(false)
   const { getServices } = useHomebrew()
-  const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
-  const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>()
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
@@ -56,10 +54,6 @@ const HomeMenuPage = () => {
         setHasTextServiceConnected={setHasTextServiceConnected}
         isConnecting={isConnecting}
         setIsConnecting={setIsConnecting}
-        modelConfigs={modelConfigs || {}}
-        setModelConfigs={setModelConfigs}
-        installedList={installedList}
-        setInstalledList={setInstalledList}
         onSubmit={() => { /* exec logic when a list item is clicked */ }}
         services={services}
       />
