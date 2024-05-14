@@ -7,6 +7,8 @@ import { IconDownload, IconClose } from '@/components/ui/icons'
 import { calcFileSize, cn } from '@/lib/utils'
 import { T_ModelConfig } from '@/lib/homebrew'
 import { Select } from '@/components/ui/select'
+import { useActions } from './actions'
+import { useGlobalContext } from '@/contexts'
 
 const qDescr: { [key: string]: string } = {
   Q2_K: 'smallest, significant quality loss - not recommended for most purposes',
@@ -43,6 +45,8 @@ export const DownloadModelMenu = (props: I_Props) => {
     deleteModel,
     modelsList,
   } = props
+  const { services } = useGlobalContext()
+  const { fetchInstalledModelsAndConfigs } = useActions()
   const selectedModelConfig = data[id || '']
   const numQuants = useMemo(() => {
     const model = hfModelsInfo.find?.(i => i.id === selectedModelConfig?.repoId)
@@ -88,6 +92,8 @@ export const DownloadModelMenu = (props: I_Props) => {
                   await downloadModel({ filename: fileName || '', repo_id })
                   setIsDownloading(false)
                   setIsCached(true)
+                  // Update installed models list
+                  fetchInstalledModelsAndConfigs(services)
                   return
                 }}
                 className="flex h-fit flex-1 flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"

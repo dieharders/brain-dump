@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ServiceApis, I_Source, I_Text_Settings } from '@/lib/homebrew'
+import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -28,6 +28,10 @@ interface IGlobalContextProps {
   setPlaygroundSettings: Dispatch<SetStateAction<I_Text_Settings>>
   currentModel: I_LoadedModelRes | null
   setCurrentModel: Dispatch<SetStateAction<I_LoadedModelRes | null>>
+  installedList: T_InstalledTextModel[],
+  setInstalledList: Dispatch<SetStateAction<T_InstalledTextModel[]>>
+  modelConfigs: I_ModelConfigs
+  setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs>>
 }
 
 // Defaults
@@ -59,6 +63,10 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setPlaygroundSettings: () => { },
   currentModel: null,
   setCurrentModel: () => { },
+  installedList: [],
+  setInstalledList: () => { },
+  modelConfigs: {},
+  setModelConfigs: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -70,6 +78,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [collections, setCollections] = useState<Array<I_Collection>>([])
   const [playgroundSettings, setPlaygroundSettings] = useState<I_Text_Settings>(defaultPlaygroundSettings)
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>(null)
+  const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
+  const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>({})
 
   return (
     <GlobalContext.Provider
@@ -91,6 +101,10 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setPlaygroundSettings,
         currentModel,
         setCurrentModel,
+        installedList,
+        setInstalledList,
+        modelConfigs,
+        setModelConfigs,
       }}
     >
       {children}
