@@ -32,7 +32,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn('overflow-hidden font-sans antialiased', fontSans.variable, fontMono.variable)}>
+      <body className={cn('font-sans antialiased', fontSans.variable, fontMono.variable)}>
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
