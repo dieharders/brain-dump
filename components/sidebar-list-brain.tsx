@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { CollectionCard } from '@/components/sidebar-item-brain'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { Button } from '@/components/ui/button'
@@ -12,35 +12,26 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 
 export interface SidebarBrainListProps {
   userId?: string
+  fetchAction?: () => void
 }
 
-export const SidebarBrainList = ({ userId }: SidebarBrainListProps) => {
+export const SidebarBrainList = ({ userId, fetchAction }: SidebarBrainListProps) => {
   const router = useRouter()
-  const { collections, setCollections, setSelectedDocumentId, setDocuments, setSelectedCollectionName } = useGlobalContext()
+  const { collections, setSelectedDocumentId, setDocuments, setSelectedCollectionName } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
-  const { fetchCollections, addCollection } = useMemoryActions()
-
-  const updateListAction = useCallback(async () => {
-    const data = await fetchCollections()
-    data && setCollections(data)
-  }, [fetchCollections, setCollections])
-
-  // Fetch data when opened
-  useEffect(() => {
-    updateListAction()
-  }, [updateListAction])
+  const { addCollection } = useMemoryActions()
 
   return (
     <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
       {/* "Add New" and "Refresh" buttons */}
       <div className="flex items-center justify-center gap-4 px-4">
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
-        <RefreshButton action={updateListAction} />
+        <RefreshButton action={fetchAction} />
       </div>
       {/* Collections */}
       <div className="scrollbar overflow-x-hidden pl-4 pr-2">
         {/* Pop-Up Menus */}
-        <DialogCreateCollection action={addCollection} onSuccess={updateListAction} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
+        <DialogCreateCollection action={addCollection} onSuccess={fetchAction} dialogOpen={createCollectionDialogOpen} setDialogOpen={setCreateCollectionDialogOpen} />
         {/* List of data */}
         {collections?.length > 0 ? (
           <div className="space-y-4">
