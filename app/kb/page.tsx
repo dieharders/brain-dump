@@ -68,13 +68,13 @@ export default function KnowledgeBasePage() {
   const toggleStyle = cn("flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl")
   const headingStyle = cn("text-2xl font-bold")
   const subHeadingStyle = cn("text-lg font-semibold")
-  const descriptionStyle = cn("text-md text-muted-foreground")
+  const descriptionStyle = cn("text-md break-all text-muted-foreground")
   const tagStyle = cn("flex flex-row flex-wrap items-center justify-start gap-2")
 
   // Render markdown string
   const mkdn = (text: string | undefined) => {
     return <MemoizedReactMarkdown
-      className={cn("prose min-h-[16rem] w-full break-words rounded-md bg-muted p-4 dark:prose-invert prose-p:leading-relaxed prose-pre:p-0", descriptionStyle)}
+      className={cn("prose min-h-[16rem] w-full rounded-md p-4 dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 sm:bg-muted", descriptionStyle, "break-words")}
       remarkPlugins={[remarkGfm, remarkMath]}
       components={{
         p({ children }) {
@@ -169,7 +169,8 @@ export default function KnowledgeBasePage() {
                 actionTitle="Delete"
               />
             </div>
-            <div className="flex w-fit min-w-[24rem] max-w-[36rem] flex-1 flex-col items-start justify-start gap-3 rounded-lg bg-muted p-8">
+            {/* Form */}
+            <div className="flex w-full flex-1 flex-col items-start justify-start gap-3 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
               <h1 className={subHeadingStyle}>Description</h1>
               <p className={descriptionStyle}>{description || 'No description.'}</p>
               <div className={subHeadingStyle}>Info</div>
@@ -186,8 +187,8 @@ export default function KnowledgeBasePage() {
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
           {/* Document Text/Chunks */}
-          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden px-1">
-            <h1 className={cn(subHeadingStyle, "text-xl underline")}>View document content</h1>
+          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden">
+            <h1 className={cn(subHeadingStyle, "text-center text-xl underline")}>View document content</h1>
             {/* Toggle Group */}
             <ToggleGroup
               label="Text Mode"
@@ -216,9 +217,9 @@ export default function KnowledgeBasePage() {
   )
 
   const collectionPage =
-    <div className="flex h-full w-full flex-1 flex-col items-center justify-start gap-8 p-8">
+    <div className="flex h-full w-full flex-1 flex-col items-center justify-start gap-8 py-8 sm:p-8">
       {/* Collection info */}
-      <div className="flex w-fit flex-col items-start justify-start gap-2">
+      <div className="flex w-full flex-col items-start justify-start gap-2 sm:w-fit">
         {/* Pop-up Action Menus */}
         <DialogShareCollection
           action={shareMemory}
@@ -237,7 +238,8 @@ export default function KnowledgeBasePage() {
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(id)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
         </div>
-        <div className="flex w-fit flex-col items-start justify-start gap-2 rounded-lg bg-muted p-8 sm:w-[40rem]">
+        {/* Form */}
+        <div className="flex w-full flex-col items-start justify-start gap-2 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
           {/* Title */}
           <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
           {/* Description */}

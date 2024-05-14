@@ -16,14 +16,20 @@ export interface SidebarProps {
   title?: string
   icon?: any
   className?: string
+  onClick?: () => void
 }
 
-export function Sidebar({ children, title, icon, className }: SidebarProps) {
+export function Sidebar({ children, title, icon, className, onClick }: SidebarProps) {
   const Icon = icon
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="mx-1 h-9 w-9 p-0">
+        <Button
+          variant="ghost"
+          className="mx-1 h-9 w-9 p-0"
+          onClick={() => {
+            onClick && onClick()
+          }}>
           {icon && <Icon className="h-6 w-6" />}
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
