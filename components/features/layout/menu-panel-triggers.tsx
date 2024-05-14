@@ -103,12 +103,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
       {/* Documents - Open Pane Button */}
       {showKB &&
         <Tooltip delayDuration={450}>
-          <TooltipTrigger asChild
-            onClick={(_e) => {
-              // On list menu open
-              fetchDocumentsAction()
-            }}
-          >
+          <TooltipTrigger asChild>
             <div>
               <DocumentsButton
                 session={session}

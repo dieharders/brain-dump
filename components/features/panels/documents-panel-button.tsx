@@ -61,7 +61,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
   }, [getServices, services, setServices])
 
   return (
-    <Sidebar title="Documents" icon={FileIcon} className="w-[22rem]">
+    <Sidebar title="Documents" icon={FileIcon} className="w-[22rem]" onClick={fetchAction}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
         <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
