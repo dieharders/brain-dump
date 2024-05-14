@@ -1,6 +1,6 @@
 import { auth } from '@/auth'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { UserMenu } from '@/components/user-menu'
+import { ThemeToggle } from '@/components/core/theme-toggle'
+import { UserMenu } from '@/components/features/menus/user-menu'
 import { MenuPanelTriggers } from '@/components/features/layout/menu-panel-triggers'
 import { ModelReadout } from '@/components/features/layout/model-readout'
 import { BrandText } from '@/components/features/layout/brand-text'

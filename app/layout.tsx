@@ -3,8 +3,8 @@ import { Toaster } from 'react-hot-toast'
 import '@/app/globals.css'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
-import { TailwindIndicator } from '@/components/tailwind-indicator'
-import { Providers } from '@/components/providers'
+import { TailwindIndicator } from '@/components/core/tailwind-indicator'
+import { Providers } from '@/components/core/providers'
 import { Header } from '@/components/features/layout/header'
 
 export const metadata: Metadata = {

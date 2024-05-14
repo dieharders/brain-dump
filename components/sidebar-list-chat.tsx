@@ -27,7 +27,7 @@ const getExampleChatsAction = async (userId: string): Promise<Chat[]> => {
 }
 
 export async function SidebarChatList({ userId }: SidebarChatListProps) {
-  const chats = await getExampleChatsAction(userId || 'rob') // await getChats(userId)
+  const chats = await getExampleChatsAction(userId || '') // await getChats(userId)
 
   return (
     <div className="flex-1 overflow-auto">
