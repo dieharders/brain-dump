@@ -24,7 +24,9 @@ export function Sidebar({ children, title, icon, className, onClick }: SidebarPr
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="mx-1 h-9 w-9 p-0"
+        <Button
+          variant="ghost"
+          className="mx-1 h-9 w-9 p-0"
           onClick={() => {
             onClick && onClick()
           }}>
