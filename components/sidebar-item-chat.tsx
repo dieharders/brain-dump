@@ -27,7 +27,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         prefetch={false}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'relative flex h-8 w-full flex-1 overflow-hidden pl-8 pr-2 text-left',
+          'relative flex h-8 w-full min-w-[18rem] flex-1 overflow-hidden pl-8 pr-2 text-left',
           isActive && 'bg-accent',
         )}
       >

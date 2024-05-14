@@ -30,9 +30,9 @@ export async function SidebarChatList({ userId }: SidebarChatListProps) {
   const chats = await getExampleChatsAction(userId || '') // await getChats(userId)
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="scrollbar flex flex-1 flex-col gap-8 overflow-auto">
       {/* Add new data */}
-      <div className="flex items-center justify-center">
+      <div className="flex w-full items-center justify-center px-4">
         <NewItem
           actionTitle="+ Add New Chat"
           actionDescription="This will start a new chat session."
@@ -40,7 +40,7 @@ export async function SidebarChatList({ userId }: SidebarChatListProps) {
       </div>
       {/* List of data */}
       {chats?.length ? (
-        <div className="mt-4 space-y-2 px-2">
+        <div className="space-y-2 px-2">
           {chats.map(
             chat =>
               chat && (
