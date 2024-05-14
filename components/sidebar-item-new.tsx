@@ -32,7 +32,7 @@ export function NewItem(props: I_Props) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" disabled={isPending}>
+        <Button variant="ghost" disabled={isPending} className="w-full">
           {isPending && <IconSpinner className="mr-2" />}
           {actionTitle || '+ Add New'}
         </Button>

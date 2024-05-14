@@ -22,9 +22,9 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
   const { addCollection } = useMemoryActions()
 
   return (
-    <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
+    <div className="mt-4 flex w-full flex-col space-y-8 overflow-y-auto">
       {/* "Add New" and "Refresh" buttons */}
-      <div className="flex items-center justify-center gap-4 px-4">
+      <div className="flex items-center justify-center gap-4 whitespace-nowrap px-4">
         <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
         <RefreshButton action={fetchAction} />
       </div>

@@ -26,7 +26,7 @@ export function Panel({ children, title, icon, className, onClick }: SidebarProp
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="mx-1 h-9 w-9 p-0"
+          className="m-0 h-10 w-10 p-2"
           onClick={() => {
             onClick && onClick()
           }}>
@@ -34,7 +34,7 @@ export function Panel({ children, title, icon, className, onClick }: SidebarProp
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className={cn("inset-y-0 flex h-auto w-[18rem] flex-col p-0", className)}>
+      <SheetContent className={cn("inset-y-0 flex h-auto w-full flex-col p-0 sm:w-fit", className)}>
         <SheetHeader className="p-4">
           <SheetTitle className="text-sm">{title || 'Title'}</SheetTitle>
         </SheetHeader>

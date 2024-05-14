@@ -61,10 +61,10 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
   }, [getServices, services, setServices])
 
   return (
-    <Panel title="Documents" icon={FileIcon} className="w-[22rem]" onClick={fetchAction}>
+    <Panel title="Documents" icon={FileIcon} onClick={fetchAction}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
-        <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
+        <div className="mt-4 flex w-full flex-col space-y-8 overflow-y-auto">
           {/* Action Menus */}
           <DialogAddDocument
             action={addDocument}
@@ -73,13 +73,13 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
             collection={currentCollection}
           />
           {/* "Add New" and "Refresh" buttons */}
-          <div className="flex items-center justify-center gap-4 px-4">
+          <div className="flex items-center justify-center gap-4 whitespace-nowrap px-4">
             <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
             <RefreshButton action={fetchAction} />
           </div>
           {/* List of documents */}
           <div className="scrollbar overflow-x-hidden pl-4 pr-2">
-            <div className="space-y-4">
+            <div className="flex flex-col space-y-4">
               {documentCards}
             </div>
           </div>
