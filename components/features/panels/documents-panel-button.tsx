@@ -25,7 +25,6 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
   const { setChunks, selectedDocumentId, setSelectedDocumentId, documents, setDocuments, services, setServices, collections, setCollections, selectedCollectionName } = useGlobalContext()
   const { addDocument, fetchDocuments, fetchCollections } = useMemoryActions()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [doOnce, setDoOnce] = useState(false)
 
   const items = useMemo(() => documents?.map?.(
     document => {
@@ -65,16 +64,6 @@ export const DocumentsButton = ({ session, collectionName }: I_Props) => {
       res?.length > 0 && setDocuments(res)
       return
     }, [])
-
-    // Fetch data when this panel is opened
-    useEffect(() => {
-      const action = async () => {
-        setDoOnce(true)
-        // Prevent infinite fetches
-        await fetchAction()
-      }
-      if (!doOnce && (!documents || documents.length === 0)) action()
-    }, [fetchAction])
 
     return (
       <div className="mt-4 flex flex-col space-y-8 overflow-y-auto">
