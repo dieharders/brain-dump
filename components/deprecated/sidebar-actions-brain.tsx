@@ -19,7 +19,6 @@ interface I_Props {
   copyCollectionId: () => void
 }
 
-// deprecated
 export const CollectionActions = (props: I_Props) => {
   const { setAddDocumentDialogOpen, setExploreDialogOpen, setShareDialogOpen, setDeleteDialogOpen, setSelectedCollection, copyCollectionId } = props
 
