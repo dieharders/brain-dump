@@ -7,6 +7,7 @@ import { CharmMenu, T_CharmId } from '@/components/features/menus/charm/menu-cha
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/features/layout/footer'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
+import { nanoid } from '@/lib/utils'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
 
@@ -104,7 +105,7 @@ export const ChatPage = ({
             onSubmit={async value => {
               // Send prompt
               await append({
-                id,
+                id: nanoid(),
                 content: value,
                 role: 'user',
               })
