@@ -47,7 +47,7 @@ export default function BotPage(props: any) {
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchChatBotSettings, loadModel: loadChatBot } = useChatPage({ services })
-  const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>()
+  const { currentModel, setCurrentModel } = useGlobalContext()
   const [hasFetched, setHasFetched] = useState(false)
 
   // const session = await auth()
@@ -72,7 +72,7 @@ export default function BotPage(props: any) {
     const success = modelRes?.success
     success && setCurrentModel(modelRes.data)
     return
-  }, [services?.textInference])
+  }, [services?.textInference, setCurrentModel])
 
   useEffect(() => {
     const action = async () => {

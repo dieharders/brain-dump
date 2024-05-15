@@ -23,7 +23,7 @@ export const ModelReadout = () => {
       const name = model?.name
       name && setTitle(name)
     }
-    if (shouldRender && currentModel) action()
+    if (shouldRender) action()
   }, [currentModel, services?.textInference, shouldRender])
 
   return (
