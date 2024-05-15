@@ -44,6 +44,7 @@ export const LocalChat = (props: IProps) => {
 
   return (
     <div className={wrapperStyle}>
+      {/* Render a background */}
       <LavaLamp />
       <div className={cn('relative w-full pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (

@@ -87,6 +87,13 @@ export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
 
+// A non-streaming response
+export interface I_NonStreamCompletionResponse {
+  metadata: { [key: string]: { order: number; sourceId: string } }
+  response: string
+  source_nodes: Array<any>
+}
+
 export interface I_GenericAPIResponse<DataResType> {
   success: boolean
   message: string
@@ -292,7 +299,7 @@ interface I_BaseServiceApis {
 
 type T_TextInferenceAPIRequest = (props: {
   body: I_InferenceGenerateOptions
-}) => (Response & I_GenericAPIResponse<any>) | null
+}) => (Response & I_NonStreamCompletionResponse & I_GenericAPIResponse<any>) | null
 
 interface I_DeleteTextModelReqPayload {
   repoId: string

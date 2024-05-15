@@ -1,12 +1,10 @@
-'use client'
-
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
 import { useGlobalContext } from '@/contexts'
-import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Text_Settings } from '@/lib/homebrew'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_NonStreamCompletionResponse, I_Text_Settings } from '@/lib/homebrew'
 
 interface IProps {
   initialMessages: Message[] | undefined
@@ -28,7 +26,7 @@ export const useLocalInference = (props: IProps) => {
   const abortRef = useRef(false)
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
-  const getCompletion = async (
+  const getCompletion = useCallback(async (
     options: I_InferenceGenerateOptions,
   ) => {
     try {
@@ -37,7 +35,14 @@ export const useLocalInference = (props: IProps) => {
       toast.error(`Prompt completion error: ${error}`)
       return
     }
-  }
+  }, [services?.textInference])
+
+  const onNonStreamResult = useCallback((result: I_NonStreamCompletionResponse) => {
+    setResponseText(result.response)
+    console.log('[Chat] non-stream finished!')
+    setIsLoading(false)
+    return
+  }, [])
 
   const onStreamResult = async (result: string) => {
     try {
@@ -95,7 +100,7 @@ export const useLocalInference = (props: IProps) => {
     }
   }, [])
 
-  const append = async (prompt: Message | CreateMessage) => {
+  const append = useCallback(async (prompt: Message | CreateMessage) => {
     if (!prompt) return
 
     setResponseId(nanoid())
@@ -136,6 +141,14 @@ export const useLocalInference = (props: IProps) => {
       }
       const response = await getCompletion(options)
       console.log('[Chat] Prompt response', response)
+
+      // Check success if not streamed
+      if (typeof response?.response === 'string') {
+        onNonStreamResult(response)
+        return
+      }
+
+      // Check success if streamed
       if (typeof response?.success === 'boolean')
         if (!response?.success) throw new Error('Response failed.')
       if (!response) throw new Error('No response.')
@@ -164,8 +177,7 @@ export const useLocalInference = (props: IProps) => {
       toast.error(`Prompt request error: \n ${err}`)
       return null
     }
-  }
-
+  }, [getCompletion, onNonStreamResult, processSseStream, services?.textInference, settings])
 
   // Update messages state with results
   useEffect(() => {
