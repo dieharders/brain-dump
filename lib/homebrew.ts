@@ -475,7 +475,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
-      // Create a re-usable fetch function
+      // Create a curried fetch function
       const request = async (args: I_GenericAPIRequestParams<T_GenericReqPayload>) => {
         try {
           const contentType = { 'Content-Type': 'application/json' }
@@ -501,6 +501,9 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
           // Check no response
           if (!res) throw new Error(`No response for endpoint ${endpoint.name}.`)
+
+          // Check bad request
+          if (!res?.ok) throw new Error(`Something went wrong. ${res?.statusText}`)
 
           // Check json response
           const responseType = res.headers.get('content-type')
