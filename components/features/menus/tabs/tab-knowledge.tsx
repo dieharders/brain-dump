@@ -58,14 +58,14 @@ export const KnowledgeTab = (props: I_Props) => {
     }, [isInList, itemName])
 
     return (
-      <span key={item.id} className="flex flex-row items-center space-x-8">
+      <span key={item.id} className="justify-left flex w-full flex-row items-center space-x-8">
         <Root
           id={`c${index}`}
           checked={isInList}
           onCheckedChange={onChange}
           onMouseEnter={() => setIsActive(true)}
           onMouseLeave={() => setIsActive(false)}
-          className="flex h-6 w-6 items-center justify-center rounded border border-gray-800 bg-background hover:shadow-[0_0_0.5rem_0.1rem_rgba(10,10,10,0.5)] dark:hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
+          className="h-6 w-6 flex-none items-center justify-center rounded border border-gray-800 bg-background hover:shadow-[0_0_0.5rem_0.1rem_rgba(10,10,10,0.5)] dark:hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
         >
           <Indicator>
             <CheckIcon className="h-4 w-4" />
@@ -80,6 +80,7 @@ export const KnowledgeTab = (props: I_Props) => {
             isSelected={isInList}
             collection={item}
             onClick={onChange}
+            className="w-full sm:w-full"
           />
         </label>
       </span>
@@ -88,7 +89,7 @@ export const KnowledgeTab = (props: I_Props) => {
 
   const CollectionsList = () => {
     // Scrollable List Container (fixed height)
-    return <div className="scrollbar flex max-h-[32rem] w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2 pr-4">
+    return <div className="scrollbar flex max-h-[32rem] w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2">
       {collections?.map((item, i) => <CollectionItem key={item.id} item={item} index={i} />)}
     </div>
   }

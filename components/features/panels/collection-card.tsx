@@ -13,13 +13,14 @@ interface SidebarItemProps {
   isSelected?: boolean
   onClick?: () => void
   children?: React.ReactNode
+  className: string
 }
 
 /**
  * A card container for collection of documents
  */
 export const CollectionCard = (props: SidebarItemProps) => {
-  const { collection, onClick, isSelected, isActive: isHighlighted, children } = props
+  const { collection, onClick, isSelected, isActive: isHighlighted, className, children } = props
   const [isActive, setIsActive] = useState(false)
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags ? collection?.metadata?.tags?.split(' ').length : 0
@@ -27,13 +28,14 @@ export const CollectionCard = (props: SidebarItemProps) => {
   const createdAt = collection?.metadata?.createdAt || '?'
   const icon = collection?.metadata?.icon || ''
   const toolTipStyle = cn("min-w-0 focus:bg-muted focus:ring-1 focus:ring-ring")
-  const labelStyle = cn("max-w-12 w-full truncate")
+  const labelStyle = cn("overflow-hidden truncate text-left")
 
   return (
     <div
       className={cn(
         buttonVariants({ variant: 'outline' }),
         'hover-bg-accent relative h-fit min-h-[9rem] w-full select-none flex-col space-y-4 py-4 text-left sm:w-[18rem]',
+        className,
         (isActive || isHighlighted) && 'bg-accent',
         isSelected && 'bg-accent',
         onClick && 'cursor-pointer',
@@ -79,13 +81,13 @@ export const CollectionCard = (props: SidebarItemProps) => {
       </div>
 
       {/* Stats */}
-      <div className="flex h-fit w-full justify-between space-x-4 text-gray-400">
+      <div className="flex h-fit w-full justify-between justify-items-stretch space-x-2 overflow-hidden break-all text-gray-400">
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
             className={toolTipStyle}
           >
-            <div className={labelStyle}>
+            <div className={cn(labelStyle, "sm:min-w-[3rem]")}>
               📂: {numSources}
             </div>
           </TooltipTrigger>
@@ -98,7 +100,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             tabIndex={-1}
             className={toolTipStyle}
           >
-            <div className={labelStyle}>
+            <div className={cn(labelStyle, "sm:min-w-[3rem]")}>
               ⭐: {numFavorites}
             </div>
           </TooltipTrigger>
@@ -111,7 +113,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             tabIndex={-1}
             className={toolTipStyle}
           >
-            <div className={labelStyle}>
+            <div className={cn(labelStyle, "sm:min-w-[3rem]")}>
               🔖: {numTags}
             </div>
           </TooltipTrigger>
@@ -124,7 +126,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             tabIndex={-1}
             className={toolTipStyle}
           >
-            <div className="max-w-[4rem] truncate">
+            <div className={labelStyle}>
               📆: {createdAt}
             </div>
           </TooltipTrigger>
