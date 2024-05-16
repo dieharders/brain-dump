@@ -14,7 +14,7 @@ type TAppend = (message: Message | CreateMessage) => Promise<string | null | und
 export interface I_Props
   extends Pick<
     UseChatHelpers,
-    'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
+    'isLoading' | 'reload' | 'messages' | 'stop'
   > {
   id?: string
   routeId?: string
@@ -31,13 +31,12 @@ export const ChatPage = ({
   stop,
   append,
   reload,
-  input,
-  setInput,
   messages,
   theme,
   settings,
   setSettings, // Used by parent to save settings to disk
 }: I_Props) => {
+  const [input, setInput] = useState('') // @TODO put this in global context
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)

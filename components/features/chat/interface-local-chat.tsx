@@ -25,7 +25,7 @@ export const LocalChat = (props: IProps) => {
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const { id, routeId, initialMessages, isLoading: isModelLoading, className, settings, setSettings = () => { } } = props
-  const { append, messages, reload, stop, input, setInput, isLoading: isChatLoading } =
+  const { append, messages, reload, stop, isLoading: isChatLoading } =
     useLocalInference({
       initialMessages,
       settings,
@@ -46,6 +46,7 @@ export const LocalChat = (props: IProps) => {
     <div className={wrapperStyle}>
       {/* Render a background */}
       <LavaLamp />
+      {/* Messages list */}
       <div className={cn('relative w-full pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
@@ -53,9 +54,10 @@ export const LocalChat = (props: IProps) => {
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
-          <EmptyScreen setInput={setInput} />
+          <EmptyScreen />
         )}
       </div>
+      {/* Prompt menu */}
       <ChatPage
         id={id}
         routeId={routeId}
@@ -64,8 +66,6 @@ export const LocalChat = (props: IProps) => {
         append={append}
         reload={reload}
         messages={messages}
-        input={input}
-        setInput={setInput}
         theme={theme}
         settings={settings}
         setSettings={setSettings}

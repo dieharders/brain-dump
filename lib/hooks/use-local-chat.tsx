@@ -19,7 +19,6 @@ export const useLocalInference = (props: IProps) => {
   const { services } = useGlobalContext()
   const { processSseStream } = useChatHelpers()
   const [isLoading, setIsLoading] = useState(false)
-  const [input, setInput] = useState('')
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
   const messages = useRef<Message[]>(initialMessages || [])
@@ -102,7 +101,6 @@ export const useLocalInference = (props: IProps) => {
 
   const append = useCallback(async (prompt: Message | CreateMessage) => {
     if (!prompt) return
-
     setResponseId(nanoid())
     // Create new message for user's prompt
     const newUserMsg: Message = {
@@ -208,7 +206,5 @@ export const useLocalInference = (props: IProps) => {
     reload,
     stop,
     isLoading,
-    input,
-    setInput,
   }
 }

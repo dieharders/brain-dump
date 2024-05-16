@@ -1,5 +1,3 @@
-import { UseChatHelpers } from 'ai/react'
-
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
 
@@ -22,7 +20,10 @@ const exampleMessages = [
   }
 ]
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+export const EmptyScreen = () => {
+  // @TODO Implement this from GlobalContext
+  const setInput = (val: string) => { }
+
   return (
     <div className="mx-auto max-w-2xl px-4">
       <div className="rounded-lg border bg-background/80 p-8">
