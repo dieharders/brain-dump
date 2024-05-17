@@ -143,7 +143,7 @@ export const useLocalInference = (props: IProps) => {
       console.log('[Chat] Prompt response', response)
 
       // Check success if streamed
-      if (response?.body?.getReader) {
+      if (response?.body?.getReader && response.ok) {
         // Process the stream into text tokens
         await processSseStream(
           response,
@@ -178,6 +178,7 @@ export const useLocalInference = (props: IProps) => {
       }
 
       if (!response) throw new Error('No response.')
+      throw new Error('Something went wrong.')
 
     } catch (err) {
       setIsLoading(false)
@@ -187,7 +188,6 @@ export const useLocalInference = (props: IProps) => {
   }, [getCompletion, messages, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
 
   // Update messages state with response results
-  // @TODO Verify this doesnt cause to much re-render when streaming the response
   useEffect(() => {
     if (index.current === -1 && responseId) {
       if (!responseText) {
