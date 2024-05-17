@@ -16,6 +16,7 @@ import { I_Knowledge_State, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
+import { useGlobalContext } from '@/contexts'
 
 export interface I_Charm {
   id: T_CharmId
@@ -37,11 +38,11 @@ export interface I_Props {
   charmsList: T_CharmId[] // What charms to render
   activeCharms: T_CharmId[]
   toggleActiveCharm: (id: T_CharmId) => void
-  setState?: Dispatch<SetStateAction<I_ModelSettings>>
 }
 
 export const CharmMenu = (props: I_Props) => {
-  const { open, charmsList, activeCharms, toggleActiveCharm, setState } = props
+  const { open, charmsList, activeCharms, toggleActiveCharm } = props
+  const { setPlaygroundSettings } = useGlobalContext()
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
@@ -92,26 +93,24 @@ export const CharmMenu = (props: I_Props) => {
   const saveModelSettings = useCallback((args: I_ModelSettings) => {
     const action = async () => {
       if (args) {
-        // Save to settings file
-        await services?.storage.savePlaygroundSettings({ body: args })
         // Save state
-        setState && setState(args)
+        setPlaygroundSettings(prev => ({ ...prev, ...args }))
       }
       return
     }
     return action()
-  }, [services?.storage, setState])
+  }, [setPlaygroundSettings])
 
   const saveKnowledgeSettings = useCallback((settings: { knowledge: I_Knowledge_State }) => {
     const action = async () => {
-      // Save menu forms to a json file
-      await services?.storage.savePlaygroundSettings({ body: settings })
+      // Save menu forms
+      setPlaygroundSettings(prev => ({ ...prev, knowledge: settings.knowledge }))
       // Save state
       settings?.knowledge?.type && setKnowledgeType(settings.knowledge.type)
       return
     }
     return action()
-  }, [services?.storage])
+  }, [setPlaygroundSettings])
 
   // Get services
   useEffect(() => {

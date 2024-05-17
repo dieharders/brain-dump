@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { ChatPrompt } from '@/components/features/chat/chat-prompt'
@@ -7,36 +7,32 @@ import { CharmMenu, T_CharmId } from '@/components/features/menus/charm/menu-cha
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/features/layout/footer'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
+import { useGlobalContext } from '@/contexts'
+import { nanoid } from '@/lib/utils'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
 
 export interface I_Props
   extends Pick<
     UseChatHelpers,
-    'isLoading' | 'reload' | 'messages' | 'stop' | 'input' | 'setInput'
+    'isLoading' | 'reload' | 'messages' | 'stop'
   > {
   id?: string
   routeId?: string
   theme: string | undefined
   append: TAppend
-  settings?: any,
-  setSettings?: Dispatch<SetStateAction<any>>,
 }
 
 export const ChatPage = ({
   id,
   routeId,
-  isLoading,
   stop,
   append,
   reload,
-  input,
-  setInput,
   messages,
   theme,
-  settings,
-  setSettings, // Used by parent to save settings to disk
 }: I_Props) => {
+  const { isAiThinking } = useGlobalContext()
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
@@ -59,7 +55,7 @@ export const ChatPage = ({
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-14 items-center justify-center">
-          {isLoading ? (
+          {isAiThinking ? (
             <Button variant="outline" onClick={() => stop()} className="bg-background">
               <IconStop className="mr-2" />
               Stop generating
@@ -82,7 +78,6 @@ export const ChatPage = ({
           <CharmMenu
             open={charmMenuOpen}
             charmsList={charmsList}
-            setState={setSettings}
             activeCharms={activeCharms}
             toggleActiveCharm={(selectedCharmId: T_CharmId) => {
               const index = activeCharms.indexOf(selectedCharmId)
@@ -104,14 +99,11 @@ export const ChatPage = ({
             onSubmit={async value => {
               // Send prompt
               await append({
-                id,
+                id: nanoid(),
                 content: value,
                 role: 'user',
               })
             }}
-            input={input}
-            setInput={setInput}
-            isLoading={isLoading}
           />
           <FooterText className="hidden sm:block" />
         </div>

@@ -15,7 +15,7 @@ export default function PlaygroundPage() {
   const session_id = ROUTE_PLAYGROUND
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
-  const { services, currentModel, setCurrentModel, setServices, playgroundSettings, setPlaygroundSettings } = useGlobalContext()
+  const { services, currentModel, setCurrentModel, setServices, playgroundSettings } = useGlobalContext()
   const [isLoading, setIsLoading] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
   const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
@@ -84,7 +84,6 @@ export default function PlaygroundPage() {
         routeId={routeId}
         initialMessages={initialMessages}
         isLoading={isLoading}
-        setSettings={setPlaygroundSettings}
         settings={playgroundSettings}
       />
     )

@@ -1,7 +1,6 @@
-import { UseChatHelpers } from 'ai/react'
-
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
+import { useGlobalContext } from '@/contexts'
 
 const exampleMessages = [
   {
@@ -22,7 +21,9 @@ const exampleMessages = [
   }
 ]
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+export const EmptyScreen = () => {
+  const { setPromptInput } = useGlobalContext()
+
   return (
     <div className="mx-auto max-w-2xl px-4">
       <div className="rounded-lg border bg-background/80 p-8">
@@ -38,7 +39,7 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
               key={index}
               variant="link"
               className="h-auto p-0 text-base"
-              onClick={() => setInput(message.message)}
+              onClick={() => setPromptInput(message.message)}
             >
               <IconArrowRight className="mr-2 text-muted-foreground" />
               {message.heading}

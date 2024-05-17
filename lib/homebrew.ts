@@ -87,6 +87,32 @@ export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
 
+// A non-streaming response
+export interface I_NonStreamChatbotResponse {
+  metadata: { [key: string]: { order: number; sourceId: string } }
+  response: string
+  source_nodes: Array<any>
+}
+
+export interface I_NonStreamPlayground {
+  additional_kwargs: any
+  raw: {
+    choices: Array<any>
+    created: number
+    id: string
+    model: string
+    object: string
+    usage: {
+      completion_tokens: number
+      prompt_tokens: number
+      total_tokens: number
+    }
+  }
+  delta: number | null
+  logprobs: any
+  text: string
+}
+
 export interface I_GenericAPIResponse<DataResType> {
   success: boolean
   message: string
@@ -292,7 +318,12 @@ interface I_BaseServiceApis {
 
 type T_TextInferenceAPIRequest = (props: {
   body: I_InferenceGenerateOptions
-}) => (Response & I_GenericAPIResponse<any>) | null
+}) =>
+  | (Response &
+      I_NonStreamPlayground &
+      I_NonStreamChatbotResponse &
+      I_GenericAPIResponse<any>)
+  | null
 
 interface I_DeleteTextModelReqPayload {
   repoId: string
@@ -475,7 +506,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
     // Parse endpoint urls
     api.endpoints.forEach(endpoint => {
-      // Create a re-usable fetch function
+      // Create a curried fetch function
       const request = async (args: I_GenericAPIRequestParams<T_GenericReqPayload>) => {
         try {
           const contentType = { 'Content-Type': 'application/json' }
@@ -501,6 +532,9 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
           // Check no response
           if (!res) throw new Error(`No response for endpoint ${endpoint.name}.`)
+
+          // Check bad request
+          if (!res?.ok) throw new Error(`Something went wrong. ${res?.statusText}`)
 
           // Check json response
           const responseType = res.headers.get('content-type')

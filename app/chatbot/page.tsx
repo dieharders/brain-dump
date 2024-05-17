@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { type Message } from 'ai/react'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
-import { I_LoadedModelRes, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import toast from 'react-hot-toast'
 import { useGlobalContext } from '@/contexts'
@@ -114,11 +114,13 @@ export default function BotPage(props: any) {
       settings={settings}
     />
     :
-    <EmptyModelScreen id={name} loadModel={async (id) => {
-      setIsLoading(true)
-      loadChatBot && await loadChatBot(id)
-      await getModel()
-      setIsLoading(false)
-    }} />
+    <EmptyModelScreen
+      id={name}
+      loadModel={async (id) => {
+        setIsLoading(true)
+        loadChatBot && await loadChatBot(id)
+        await getModel()
+        setIsLoading(false)
+      }} />
   )
 }
