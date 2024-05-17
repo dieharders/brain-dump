@@ -25,14 +25,14 @@ export const DocumentCard = (props: I_Props) => {
   const name = document?.name || 'No title'
   const createdAt = document?.createdAt || '?'
   const documentType = document?.fileType || '?'
-  const toolTipStyle = cn("min-w-4 focus:bg-muted focus:ring-1 focus:ring-ring")
-  const labelStyle = cn("max-w-14 w-full truncate")
+  const toolTipStyle = cn("w-full overflow-hidden")
+  const labelStyle = cn("justify-left flex")
 
   return (
     <div
       className={cn(
         buttonVariants({ variant: 'outline' }),
-        'hover-bg-accent relative min-h-[8rem] select-none flex-col space-y-4 overflow-hidden py-4 text-left sm:w-[24rem]',
+        'hover-bg-accent relative min-h-[8rem] select-none flex-col space-y-4 overflow-hidden break-all py-4 text-left sm:w-[20rem]',
         (isActive || isHighlighted) && 'bg-accent',
         isSelected && 'bg-accent',
         onClick && 'cursor-pointer',
@@ -64,7 +64,7 @@ export const DocumentCard = (props: I_Props) => {
       </div>
 
       {/* Stats */}
-      <div className="flex h-fit w-full justify-between space-x-4 text-gray-400">
+      <div className="flex h-fit w-full justify-between space-x-2 overflow-hidden text-gray-400">
         {/* Parts of the document */}
         <Tooltip delayDuration={350}>
           <TooltipTrigger
@@ -72,7 +72,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              🍪:{numChunks}
+              <p className="truncate">🍪:{numChunks}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Chunks: {numChunks}</TooltipContent>
@@ -85,7 +85,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              💾:{documentType}
+              <p className="truncate">💾:{documentType}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Document type: {documentType}</TooltipContent>
@@ -98,7 +98,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              🔖:{numTags}
+              <p className="truncate">🔖:{numTags}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Tag count: {numTags}</TooltipContent>
@@ -110,8 +110,8 @@ export const DocumentCard = (props: I_Props) => {
             tabIndex={-1}
             className={toolTipStyle}
           >
-            <div className="max-w-[4rem] truncate">
-              📆:{createdAt}
+            <div className={labelStyle}>
+              <p className="truncate">📆:{createdAt}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Created: {createdAt}</TooltipContent>
