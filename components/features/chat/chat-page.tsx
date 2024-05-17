@@ -7,6 +7,7 @@ import { CharmMenu, T_CharmId } from '@/components/features/menus/charm/menu-cha
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/features/layout/footer'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
+import { useGlobalContext } from '@/contexts'
 import { nanoid } from '@/lib/utils'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
@@ -20,23 +21,21 @@ export interface I_Props
   routeId?: string
   theme: string | undefined
   append: TAppend
-  settings?: any,
   setSettings?: Dispatch<SetStateAction<any>>,
 }
 
 export const ChatPage = ({
   id,
   routeId,
-  isLoading,
   stop,
   append,
   reload,
   messages,
   theme,
-  settings,
-  setSettings, // Used by parent to save settings to disk
+  setSettings,
 }: I_Props) => {
-  const [input, setInput] = useState('') // @TODO put this in global context
+  const [input, setInput] = useState('')
+  const { isAiThinking } = useGlobalContext()
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
@@ -59,7 +58,7 @@ export const ChatPage = ({
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-14 items-center justify-center">
-          {isLoading ? (
+          {isAiThinking ? (
             <Button variant="outline" onClick={() => stop()} className="bg-background">
               <IconStop className="mr-2" />
               Stop generating
@@ -111,7 +110,6 @@ export const ChatPage = ({
             }}
             input={input}
             setInput={setInput}
-            isLoading={isLoading}
           />
           <FooterText className="hidden sm:block" />
         </div>

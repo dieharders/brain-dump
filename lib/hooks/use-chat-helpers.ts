@@ -4,7 +4,7 @@ const SSE_COMMENT_PREFIX = ':'
 
 const processSseStream = async (
   fetchStream: Response,
-  stopSequences: string[] = ['[DONE]'],
+  stopSequences: string[] = ['[DONE]'], // @TODO Check if this should have default
   {
     onData,
     onFinish,

@@ -88,10 +88,29 @@ export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
 
 // A non-streaming response
-export interface I_NonStreamCompletionResponse {
+export interface I_NonStreamChatbotResponse {
   metadata: { [key: string]: { order: number; sourceId: string } }
   response: string
   source_nodes: Array<any>
+}
+
+export interface I_NonStreamPlayground {
+  additional_kwargs: any
+  raw: {
+    choices: Array<any>
+    created: number
+    id: string
+    model: string
+    object: string
+    usage: {
+      completion_tokens: number
+      prompt_tokens: number
+      total_tokens: number
+    }
+  }
+  delta: number | null
+  logprobs: any
+  text: string
 }
 
 export interface I_GenericAPIResponse<DataResType> {
@@ -299,7 +318,12 @@ interface I_BaseServiceApis {
 
 type T_TextInferenceAPIRequest = (props: {
   body: I_InferenceGenerateOptions
-}) => (Response & I_NonStreamCompletionResponse & I_GenericAPIResponse<any>) | null
+}) =>
+  | (Response &
+      I_NonStreamPlayground &
+      I_NonStreamChatbotResponse &
+      I_GenericAPIResponse<any>)
+  | null
 
 interface I_DeleteTextModelReqPayload {
   repoId: string

@@ -11,26 +11,28 @@ import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
 import { I_Text_Settings } from '@/lib/homebrew'
 import { LavaLamp } from "@/components/features/backgrounds/lava-lamp"
+import { useGlobalContext } from '@/contexts'
 
 interface IProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   routeId?: string
   isLoading?: boolean
-  settings?: I_Text_Settings
+  settings: I_Text_Settings
   setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
 }
 
 export const LocalChat = (props: IProps) => {
+  const { id, routeId, initialMessages, isLoading: isModelLoading, settings, setSettings, className } = props
+  const { isAiThinking } = useGlobalContext()
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
-  const { id, routeId, initialMessages, isLoading: isModelLoading, className, settings, setSettings = () => { } } = props
-  const { append, messages, reload, stop, isLoading: isChatLoading } =
+  const { append, messages, reload, stop } =
     useLocalInference({
       initialMessages,
       settings,
     })
-  const isLoading = isModelLoading || isChatLoading
+  const isLoading = isModelLoading || isAiThinking
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
@@ -67,7 +69,6 @@ export const LocalChat = (props: IProps) => {
         reload={reload}
         messages={messages}
         theme={theme}
-        settings={settings}
         setSettings={setSettings}
       />
     </div>

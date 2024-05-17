@@ -37,7 +37,7 @@ export interface I_Props {
   charmsList: T_CharmId[] // What charms to render
   activeCharms: T_CharmId[]
   toggleActiveCharm: (id: T_CharmId) => void
-  setState?: Dispatch<SetStateAction<I_ModelSettings>>
+  setState?: Dispatch<SetStateAction<any>>
 }
 
 export const CharmMenu = (props: I_Props) => {

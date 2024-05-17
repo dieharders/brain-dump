@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { type Message, type CreateMessage } from 'ai/react'
 import { useGlobalContext } from '@/contexts'
-import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_NonStreamCompletionResponse, I_Text_Settings } from '@/lib/homebrew'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Text_Settings } from '@/lib/homebrew'
 
 interface IProps {
   initialMessages: Message[] | undefined
@@ -16,13 +16,13 @@ export const useLocalInference = (props: IProps) => {
     initialMessages = [],
     settings,
   } = props
-  const { services } = useGlobalContext()
+  const { services, setIsAiThinking: setIsLoading } = useGlobalContext()
   const { processSseStream } = useChatHelpers()
-  const [isLoading, setIsLoading] = useState(false)
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
-  const messages = useRef<Message[]>(initialMessages || [])
+  const [messages, setMessages] = useState<Message[]>(initialMessages || [])
   const abortRef = useRef(false)
+  const index = useRef(messages?.findIndex(msg => msg?.id === responseId))
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = useCallback(async (
@@ -36,14 +36,14 @@ export const useLocalInference = (props: IProps) => {
     }
   }, [services?.textInference])
 
-  const onNonStreamResult = useCallback((result: I_NonStreamCompletionResponse) => {
-    setResponseText(result.response)
+  const onNonStreamResult = useCallback((result: string) => {
+    setResponseText(result)
     console.log('[Chat] non-stream finished!')
     setIsLoading(false)
     return
-  }, [])
+  }, [setIsLoading])
 
-  const onStreamResult = async (result: string) => {
+  const onStreamResult = useCallback(async (result: string) => {
     try {
       // This is how the llama-cpp-python-server sends back data...
       // const parsedResult = JSON.parse(result)
@@ -62,7 +62,7 @@ export const useLocalInference = (props: IProps) => {
       console.log('[Chat] onStreamResult err:', typeof result, ' | ', err)
       return
     }
-  }
+  }, [])
 
   const onStreamEvent = (eventName: string) => {
     // @TODO Render these states on screen
@@ -81,7 +81,7 @@ export const useLocalInference = (props: IProps) => {
     // Reset state
     setIsLoading(false)
     abortRef.current = true
-  }, [])
+  }, [setIsLoading])
 
   const reload = useCallback(async () => {
     try {
@@ -97,7 +97,7 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(false)
       return null
     }
-  }, [])
+  }, [setIsLoading])
 
   const append = useCallback(async (prompt: Message | CreateMessage) => {
     if (!prompt) return
@@ -108,7 +108,7 @@ export const useLocalInference = (props: IProps) => {
       role: prompt.role || 'user',
       content: prompt.content, // always assign prompt content w/o template
     }
-    messages.current = [...messages.current, newUserMsg]
+    setMessages([...messages, newUserMsg])
 
     try {
       // Reset state
@@ -140,71 +140,83 @@ export const useLocalInference = (props: IProps) => {
       const response = await getCompletion(options)
       console.log('[Chat] Prompt response', response)
 
-      // Check success if not streamed
-      if (typeof response?.response === 'string') {
-        onNonStreamResult(response)
-        return
+      // Check success if streamed
+      if (response?.body?.getReader) {
+        // Process the stream into text tokens
+        await processSseStream(
+          response,
+          settings?.response?.stop,
+          {
+            onData: (res: string) => onStreamResult(res),
+            onFinish: async () => {
+              console.log('[Chat] stream finished!')
+              setIsLoading(false)
+            },
+            onEvent: async str => {
+              onStreamEvent(str)
+            },
+            onComment: async str => {
+              console.log('[Chat] onComment', str)
+            },
+          },
+          abortRef,
+        )
       }
 
-      // Check success if streamed
-      if (typeof response?.success === 'boolean')
-        if (!response?.success) throw new Error('Response failed.')
+      // Check success if not streamed (chatbot)
+      if (typeof response?.response === 'string') {
+        onNonStreamResult(response?.response)
+        return response?.response
+      }
+
+      // Check success if not streamed (playground)
+      if (typeof response?.text === 'string') {
+        onNonStreamResult(response?.text)
+        return response?.text
+      }
+
       if (!response) throw new Error('No response.')
 
-      // Process the stream into text tokens
-      await processSseStream(
-        response,
-        settings?.response?.stop,
-        {
-          onData: (res: string) => onStreamResult(res),
-          onFinish: async () => {
-            console.log('[Chat] stream finished!')
-            setIsLoading(false)
-          },
-          onEvent: async str => {
-            onStreamEvent(str)
-          },
-          onComment: async str => {
-            console.log('[Chat] onComment', str)
-          },
-        },
-        abortRef,
-      )
     } catch (err) {
       setIsLoading(false)
       toast.error(`Prompt request error: \n ${err}`)
       return null
     }
-  }, [getCompletion, onNonStreamResult, processSseStream, services?.textInference, settings])
+  }, [getCompletion, messages, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
 
-  // Update messages state with results
+  // Update messages state with response results
+  // @TODO Verify this doesnt cause to much re-render when streaming the response
   useEffect(() => {
-    // add new message
-    const index = messages.current?.findIndex(msg => {
-      return msg?.id === responseId
-    })
-    if (index === -1 && responseId) {
-      const msg: Message = {
-        id: responseId,
-        role: 'assistant',
-        content: responseText,
+    if (index.current === -1 && responseId) {
+      if (!responseText) {
+        // Add new message
+        const msg: Message = {
+          id: responseId,
+          role: 'assistant',
+          content: responseText,
+        }
+        setMessages(prev => [...prev, msg])
+      } else {
+        // Update messages
+        setMessages(prev => {
+          const newMsgs = [...prev]
+          const i = newMsgs?.findIndex(m => m?.id === responseId)
+          const msg = newMsgs?.[i]
+          if (msg) {
+            msg.content = responseText
+            return newMsgs
+          }
+          return prev
+        })
       }
-      messages.current = [...messages.current, msg]
     }
-    // update messages
-    const newMessages = [...messages.current]
-    const res = newMessages?.[index]
-    if (res) {
-      res.content = responseText
-      messages.current = newMessages
-    }
+
   }, [responseId, responseText])
 
   return {
-    messages: messages.current,
+    messages,
     append,
     reload,
     stop,
-    isLoading,
   }
 }

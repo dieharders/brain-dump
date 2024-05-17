@@ -32,6 +32,8 @@ interface IGlobalContextProps {
   setInstalledList: Dispatch<SetStateAction<T_InstalledTextModel[]>>
   modelConfigs: I_ModelConfigs
   setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs>>
+  isAiThinking: boolean,
+  setIsAiThinking: Dispatch<SetStateAction<boolean>>
 }
 
 // Defaults
@@ -67,6 +69,8 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setInstalledList: () => { },
   modelConfigs: {},
   setModelConfigs: () => { },
+  isAiThinking: false,
+  setIsAiThinking: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -80,6 +84,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [currentModel, setCurrentModel] = useState<I_LoadedModelRes | null>(null)
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>({})
+  const [isAiThinking, setIsAiThinking] = useState(false)
 
   return (
     <GlobalContext.Provider
@@ -105,6 +110,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setInstalledList,
         modelConfigs,
         setModelConfigs,
+        isAiThinking,
+        setIsAiThinking,
       }}
     >
       {children}
