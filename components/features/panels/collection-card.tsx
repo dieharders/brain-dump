@@ -34,7 +34,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
     <div
       className={cn(
         buttonVariants({ variant: 'outline' }),
-        'hover-bg-accent relative flex h-fit min-h-[9rem] w-full select-none flex-col space-y-4 py-4 text-left sm:w-[20rem]',
+        'hover-bg-accent relative flex h-fit min-h-[9rem] w-full select-none flex-col space-y-4 overflow-hidden py-4 text-left sm:w-[20rem]',
         className,
         (isActive || isHighlighted) && 'bg-accent',
         isSelected && 'bg-accent',
@@ -74,14 +74,15 @@ export const CollectionCard = (props: SidebarItemProps) => {
       </div>
 
       {/* Description */}
-      <div className="my-2 flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
+      <div className="flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
           {collection.metadata?.description || 'No description.'}
         </span>
       </div>
 
       {/* Stats */}
-      <div className="flex h-fit w-full justify-between justify-items-stretch space-x-2 overflow-hidden break-all text-gray-400">
+      {/* @TODO This does not collapse when overflowing */}
+      <div className="flex h-fit w-full flex-row justify-between justify-items-stretch space-x-2 overflow-hidden text-gray-400">
         <Tooltip delayDuration={350}>
           <TooltipTrigger
             tabIndex={-1}
