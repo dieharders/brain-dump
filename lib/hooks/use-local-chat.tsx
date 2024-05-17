@@ -142,8 +142,13 @@ export const useLocalInference = (props: IProps) => {
       const response = await getCompletion(options)
       console.log('[Chat] Prompt response', response)
 
+      // Check failure
+      if (!response) throw new Error('No response.')
+      if (typeof response.ok === 'boolean' && !response.ok) throw new Error(response.statusText)
+      if (typeof response.success === 'boolean' && !response.success) throw new Error(response.message)
+
       // Check success if streamed
-      if (response?.body?.getReader && response.ok) {
+      if (response?.body?.getReader && response?.ok) {
         // Process the stream into text tokens
         await processSseStream(
           response,
@@ -176,9 +181,6 @@ export const useLocalInference = (props: IProps) => {
         onNonStreamResult(response?.text)
         return response?.text
       }
-
-      if (!response) throw new Error('No response.')
-      throw new Error('Something went wrong.')
 
     } catch (err) {
       setIsLoading(false)
