@@ -24,8 +24,8 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
   return (
     <div className="mt-4 flex w-full flex-col space-y-8 overflow-y-auto">
       {/* "Add New" and "Refresh" buttons */}
-      <div className="flex items-center justify-center gap-4 whitespace-nowrap px-4">
-        <Button className="flex-1 text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
+      <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap px-4">
+        <Button className="flex-1 truncate text-center" onClick={() => setCreateCollectionDialogOpen(true)} >+ New Collection</Button>
         <RefreshButton action={fetchAction} />
       </div>
       {/* Collections */}

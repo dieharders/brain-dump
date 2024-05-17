@@ -73,8 +73,8 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
             collection={currentCollection}
           />
           {/* "Add New" and "Refresh" buttons */}
-          <div className="flex items-center justify-center gap-4 whitespace-nowrap px-4">
-            <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
+          <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap px-4">
+            <Button className="flex-1 truncate text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
             <RefreshButton action={fetchAction} />
           </div>
           {/* List of documents */}

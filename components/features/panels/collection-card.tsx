@@ -13,7 +13,7 @@ interface SidebarItemProps {
   isSelected?: boolean
   onClick?: () => void
   children?: React.ReactNode
-  className: string
+  className?: string
 }
 
 /**
