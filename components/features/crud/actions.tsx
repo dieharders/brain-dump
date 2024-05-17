@@ -79,10 +79,8 @@ export const useMemoryActions = () => {
   /**
    * Fetch all collections from index
    */
-  const fetchCollections: () => Promise<Array<any>> = useCallback(async () => {
+  const fetchCollections = useCallback(async (): Promise<Array<I_Collection>> => {
     try {
-      if (!services) return
-
       const response = await services?.memory.getAllCollections()
 
       if (!response?.success) throw new Error('Failed to fetch collections')
@@ -132,7 +130,7 @@ export const useMemoryActions = () => {
     return services?.memory.updateDocument(payload) || null
   }, [services?.memory])
 
-  const deleteSource = async (collectionName: string | undefined, document: I_Source) => {
+  const deleteSource = useCallback(async (collectionName: string | undefined, document: I_Source) => {
     try {
       if (!collectionName) throw new Error('No collection name provided.')
 
@@ -151,12 +149,12 @@ export const useMemoryActions = () => {
       toast.error(`${err}`)
       return false
     }
-  }
+  }, [services?.memory])
 
   /**
    * Wipe entire vector database
    */
-  const deleteAllCollections = async () => {
+  const deleteAllCollections = useCallback(async () => {
     try {
       const result = await services?.memory.wipe()
       if (!result?.success) throw new Error(result?.message)
@@ -166,7 +164,7 @@ export const useMemoryActions = () => {
       toast.error(`${err}`)
       return false
     }
-  }
+  }, [services?.memory])
 
   const shareMemory = async () => {
     const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
@@ -180,10 +178,10 @@ export const useMemoryActions = () => {
     toast.success('Copied item id to clipboard!')
   }
 
-  const fileExploreAction = async (document: I_Source) => {
+  const fileExploreAction = useCallback(async (document: I_Source) => {
     await services?.memory.fileExplore({ queryParams: { filePath: document.filePath } })
     return
-  }
+  }, [services?.memory])
 
   return {
     fileExploreAction,
