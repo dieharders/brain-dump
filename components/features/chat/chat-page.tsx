@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { ChatPrompt } from '@/components/features/chat/chat-prompt'
@@ -32,7 +32,6 @@ export const ChatPage = ({
   messages,
   theme,
 }: I_Props) => {
-  const [input, setInput] = useState('')
   const { isAiThinking } = useGlobalContext()
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
@@ -105,8 +104,6 @@ export const ChatPage = ({
                 role: 'user',
               })
             }}
-            input={input}
-            setInput={setInput}
           />
           <FooterText className="hidden sm:block" />
         </div>

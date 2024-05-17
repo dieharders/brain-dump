@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
+import { useGlobalContext } from '@/contexts'
 
 const exampleMessages = [
   {
@@ -21,8 +22,7 @@ const exampleMessages = [
 ]
 
 export const EmptyScreen = () => {
-  // @TODO Implement this from GlobalContext
-  const setInput = (val: string) => { }
+  const { setPromptInput } = useGlobalContext()
 
   return (
     <div className="mx-auto max-w-2xl px-4">
@@ -39,7 +39,7 @@ export const EmptyScreen = () => {
               key={index}
               variant="link"
               className="h-auto p-0 text-base"
-              onClick={() => setInput(message.message)}
+              onClick={() => setPromptInput(message.message)}
             >
               <IconArrowRight className="mr-2 text-muted-foreground" />
               {message.heading}

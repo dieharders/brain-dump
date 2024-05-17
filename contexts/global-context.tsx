@@ -34,6 +34,8 @@ interface IGlobalContextProps {
   setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs>>
   isAiThinking: boolean,
   setIsAiThinking: Dispatch<SetStateAction<boolean>>
+  promptInput: string
+  setPromptInput: Dispatch<SetStateAction<string>>
 }
 
 // Defaults
@@ -71,6 +73,8 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setModelConfigs: () => { },
   isAiThinking: false,
   setIsAiThinking: () => { },
+  promptInput: '',
+  setPromptInput: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -85,6 +89,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>({})
   const [isAiThinking, setIsAiThinking] = useState(false)
+  const [promptInput, setPromptInput] = useState('')
 
   return (
     <GlobalContext.Provider
@@ -112,6 +117,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setModelConfigs,
         isAiThinking,
         setIsAiThinking,
+        promptInput,
+        setPromptInput,
       }}
     >
       {children}
