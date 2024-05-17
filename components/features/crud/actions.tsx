@@ -81,14 +81,16 @@ export const useMemoryActions = () => {
    */
   const fetchCollections = useCallback(async (): Promise<Array<I_Collection>> => {
     try {
+      if (!services) return []
       const response = await services?.memory.getAllCollections()
 
-      if (!response?.success) throw new Error('Failed to fetch collections')
+      if (!response) throw new Error('Failed to fetch collections. No response.')
+      if (typeof response?.success === 'boolean' && !response?.success) throw new Error('Failed to fetch collections from knowledge graph.')
 
-      const data = response.data
+      const data = response?.data
       return data
     } catch (error) {
-      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
+      toast.error(`${error}`)
       return []
     }
   }, [services])
