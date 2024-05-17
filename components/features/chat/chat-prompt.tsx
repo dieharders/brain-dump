@@ -55,6 +55,7 @@ export const ChatPrompt = ({ onSubmit, onCharmClick, charmMenuIsOpen }: I_Props)
           placeholder="Send a message."
           spellCheck={false}
           className="scrollbar min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          disabled={isAiThinking}
         />
         {/* Submit button */}
         <div className="absolute right-4 top-4">
