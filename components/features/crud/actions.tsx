@@ -6,7 +6,7 @@ import { I_Collection, I_DocumentChunk, I_GenericAPIResponse, I_Source, T_Generi
 export type T_DocPayload = { [key: string]: any } | FormData
 
 export const useMemoryActions = () => {
-  const { services, collections } = useGlobalContext()
+  const { services } = useGlobalContext()
 
   /**
    * Fetch the specified collection and all its' source ids
@@ -59,21 +59,6 @@ export const useMemoryActions = () => {
       }
     },
     [services],
-  )
-
-  /**
-   * Fetch all documents for the specified collection.
-   * Get from a provided collection or backend.
-   */
-  const fetchDocuments = useCallback(
-    async (collectionName: string | null, coll?: I_Collection | null) => {
-      if (!collectionName || collections.length === 0) return []
-      const collection = coll || collections?.find(c => c.name === collectionName)
-      const sources = collection?.metadata?.sources
-      if (!sources || sources.length === 0) return []
-      return sources
-    },
-    [collections],
   )
 
   /**
@@ -196,7 +181,6 @@ export const useMemoryActions = () => {
     addDocument,
     addCollection,
     fetchDocumentChunks,
-    fetchDocuments,
     fetchCollections,
     fetchCollection,
   }
