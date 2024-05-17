@@ -19,11 +19,10 @@ interface IProps extends React.ComponentProps<'div'> {
   routeId?: string
   isLoading?: boolean
   settings: I_Text_Settings
-  setSettings?: Dispatch<SetStateAction<I_Text_Settings>>
 }
 
 export const LocalChat = (props: IProps) => {
-  const { id, routeId, initialMessages, isLoading: isModelLoading, settings, setSettings, className } = props
+  const { id, routeId, initialMessages, isLoading: isModelLoading, settings, className } = props
   const { isAiThinking } = useGlobalContext()
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
@@ -69,7 +68,6 @@ export const LocalChat = (props: IProps) => {
         reload={reload}
         messages={messages}
         theme={theme}
-        setSettings={setSettings}
       />
     </div>
   )

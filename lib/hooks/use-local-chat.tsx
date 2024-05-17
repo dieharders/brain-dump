@@ -101,6 +101,8 @@ export const useLocalInference = (props: IProps) => {
 
   const append = useCallback(async (prompt: Message | CreateMessage) => {
     if (!prompt) return
+
+    // Create an id for the assistant's response
     setResponseId(nanoid())
     // Create new message for user's prompt
     const newUserMsg: Message = {

@@ -21,7 +21,6 @@ export interface I_Props
   routeId?: string
   theme: string | undefined
   append: TAppend
-  setSettings?: Dispatch<SetStateAction<any>>,
 }
 
 export const ChatPage = ({
@@ -32,7 +31,6 @@ export const ChatPage = ({
   reload,
   messages,
   theme,
-  setSettings,
 }: I_Props) => {
   const [input, setInput] = useState('')
   const { isAiThinking } = useGlobalContext()
@@ -81,7 +79,6 @@ export const ChatPage = ({
           <CharmMenu
             open={charmMenuOpen}
             charmsList={charmsList}
-            setState={setSettings}
             activeCharms={activeCharms}
             toggleActiveCharm={(selectedCharmId: T_CharmId) => {
               const index = activeCharms.indexOf(selectedCharmId)
