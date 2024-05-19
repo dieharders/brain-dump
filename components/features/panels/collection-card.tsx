@@ -81,7 +81,6 @@ export const CollectionCard = (props: SidebarItemProps) => {
       </div>
 
       {/* Stats */}
-      {/* @TODO This does not collapse when overflowing */}
       <div className="flex h-fit w-full flex-row justify-between justify-items-stretch space-x-2 overflow-hidden text-gray-400">
         <Tooltip delayDuration={350}>
           <TooltipTrigger
