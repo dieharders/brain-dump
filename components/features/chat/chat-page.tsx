@@ -94,7 +94,7 @@ export const ChatPage = ({
             }}
           />
           {/* Prompt */}
-          <RainbowBorderCone disabled={false}>
+          <RainbowBorderCone disabled={!isAiThinking}>
             <ChatPrompt
               onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
               charmMenuIsOpen={charmMenuOpen}
