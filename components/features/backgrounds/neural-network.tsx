@@ -5,8 +5,8 @@ import _ from "lodash"
 import { cn } from "@/lib/utils"
 
 // Set the width and height of the canvas
-const width = window.screen.width
-const height = window.screen.height
+const width = window?.screen?.width
+const height = window?.screen?.height
 
 const createCanvas = (el: HTMLElement) => {
   /**

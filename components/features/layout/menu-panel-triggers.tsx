@@ -17,7 +17,7 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const { getServices } = useHomebrew()
   const { services, setServices, setCollections, setDocuments } = useGlobalContext()
-  const { fetchDocuments, fetchCollections } = useMemoryActions()
+  const { fetchCollections } = useMemoryActions()
   const pathname = usePathname()
   const search = useSearchParams()
   const router = useRouter()
@@ -34,10 +34,11 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
     const collRes = await fetchCollections()
     collRes && setCollections(collRes)
     // Update documents data
-    const res = await fetchDocuments(selectedCollectionName)
-    res?.length > 0 && setDocuments(res)
+    const collection = collRes?.find(c => c.name === selectedCollectionName)
+    const sources = collection?.metadata?.sources
+    if (sources && sources.length > 0) setDocuments(sources)
     return
-  }, [fetchCollections, fetchDocuments, selectedCollectionName, setCollections, setDocuments])
+  }, [fetchCollections, selectedCollectionName, setCollections, setDocuments])
 
   useEffect(() => {
     const action = async () => {

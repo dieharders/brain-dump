@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { Session } from 'next-auth/types'
 import { Panel } from '@/components/features/panels/panel'
 import { Button } from '@/components/ui/button'
@@ -27,30 +27,30 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const currentCollection = collections?.find(c => c.name === collectionName) || null
 
-  const documentCards = documents?.length ?
-    documents?.map?.(
-      document => {
-        const docId = document?.id
-        const numChunks = document?.chunkIds?.length || 0
+  const emptyDocuments = (
+    <div className="p-8 text-center">
+      <p className="text-sm text-muted-foreground">No Documents Found</p>
+    </div>
+  )
 
-        return (
-          <DocumentCard
-            key={docId}
-            document={document}
-            numChunks={numChunks}
-            onClick={async () => {
-              if (docId === selectedDocumentId) return
-              docId && setSelectedDocumentId(docId)
-              const res = await fetchDocumentChunks({ collectionId: selectedCollectionName, documentId: docId })
-              res && setChunks(res)
-            }} />
-        )
-      })
-    : (
-      <div className="p-8 text-center">
-        <p className="text-sm text-muted-foreground">No Documents Found</p>
-      </div>
-    )
+  const getDocuments = useCallback(() => documents?.map?.(
+    document => {
+      const docId = document?.id
+      const numChunks = document?.chunkIds?.length || 0
+
+      return (
+        <DocumentCard
+          key={docId}
+          document={document}
+          numChunks={numChunks}
+          onClick={async () => {
+            if (docId === selectedDocumentId) return
+            docId && setSelectedDocumentId(docId)
+            const res = await fetchDocumentChunks({ collectionId: selectedCollectionName, documentId: docId })
+            res && setChunks(res)
+          }} />
+      )
+    }), [documents, fetchDocumentChunks, selectedCollectionName, selectedDocumentId, setChunks, setSelectedDocumentId])
 
   useEffect(() => {
     const action = async () => {
@@ -64,7 +64,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
     <Panel title="Documents" icon={FileIcon} onClick={fetchAction}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         {/* @TODO Pass the user id of the vector database */}
-        <div className="mt-4 flex w-full flex-col space-y-8 overflow-y-auto">
+        <div className="my-4 flex w-full flex-col space-y-8 overflow-y-auto">
           {/* Action Menus */}
           <DialogAddDocument
             action={addDocument}
@@ -73,14 +73,14 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
             collection={currentCollection}
           />
           {/* "Add New" and "Refresh" buttons */}
-          <div className="flex items-center justify-center gap-4 whitespace-nowrap px-4">
-            <Button className="flex-1 text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
+          <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap px-4 py-2">
+            <Button className="flex-1 truncate text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
             <RefreshButton action={fetchAction} />
           </div>
           {/* List of documents */}
           <div className="scrollbar overflow-x-hidden pl-4 pr-2">
             <div className="flex flex-col space-y-4">
-              {documentCards}
+              {documents?.length ? getDocuments() : emptyDocuments}
             </div>
           </div>
         </div>

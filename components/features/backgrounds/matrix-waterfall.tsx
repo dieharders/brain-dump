@@ -9,8 +9,8 @@ export const MatrixWaterfall = ({ className }: { className?: string }) => {
   const ctx = useRef<CanvasRenderingContext2D | null>(null)
 
   // Set the width and height of the canvas
-  const w = window.screen.width
-  const h = window.screen.height
+  const w = window?.screen?.width
+  const h = window?.screen?.height
 
   // Draw a black rectangle of width and height same as that of the canvas
   if (ctx.current?.fillStyle) ctx.current.fillStyle = '#000'

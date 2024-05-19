@@ -65,14 +65,16 @@ export const KnowledgeTab = (props: I_Props) => {
           onCheckedChange={onChange}
           onMouseEnter={() => setIsActive(true)}
           onMouseLeave={() => setIsActive(false)}
-          className="h-6 w-6 flex-none items-center justify-center rounded border border-gray-800 bg-background hover:shadow-[0_0_0.5rem_0.1rem_rgba(10,10,10,0.5)] dark:hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
+          className="flex items-center justify-center rounded border border-gray-800 bg-background hover:shadow-[0_0_0.5rem_0.1rem_rgba(10,10,10,0.5)] dark:hover:shadow-[0_0_0.5rem_0.1rem_rgba(99,102,241,0.9)]"
         >
-          <Indicator>
-            <CheckIcon className="h-4 w-4" />
-          </Indicator>
+          <div className="flex h-6 w-6 items-center justify-center">
+            <Indicator >
+              <CheckIcon className="h-4 w-4" />
+            </Indicator>
+          </div>
         </Root>
         <label
-          className="w-full flex-1"
+          className="w-full flex-1 overflow-hidden"
           htmlFor={`c${index}`}
         >
           <CollectionCard
@@ -143,7 +145,7 @@ export const KnowledgeTab = (props: I_Props) => {
   }, [fetchListAction, setCollections])
 
   return (
-    <div className="px-1">
+    <div className="overflow-hidden px-1">
       <DialogHeader className="my-8">
         <DialogTitle>Pick a Knowledge Source</DialogTitle>
         <DialogDescription className="mb-4">
@@ -152,25 +154,24 @@ export const KnowledgeTab = (props: I_Props) => {
       </DialogHeader>
 
       {/* Mode Picker */}
-      <div className="w-full">
-        <ToggleGroup
-          label="Knowledge Mode"
-          value={type}
-          onChange={val => {
-            // Record mode state
-            setType(val as T_Memory_Type)
-          }}
-        >
-          <div id="training" className={toggleGroupClass}>
-            <IconDocument className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Training</span>
-          </div>
-          <div id="augmented_retrieval" className={toggleGroupClass}>
-            <IconBrain className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Augmented Retrieval</span>
-          </div>
-        </ToggleGroup>
-      </div>
+      <ToggleGroup
+        className="w-full"
+        label="Knowledge Mode"
+        value={type}
+        onChange={val => {
+          // Record mode state
+          setType(val as T_Memory_Type)
+        }}
+      >
+        <div id="training" className={toggleGroupClass}>
+          <IconDocument className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+          <span className="flex-1 self-center text-ellipsis">Training</span>
+        </div>
+        <div id="augmented_retrieval" className={toggleGroupClass}>
+          <IconBrain className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+          <span className="flex-1 self-center text-ellipsis">Augmented Retrieval</span>
+        </div>
+      </ToggleGroup>
 
       {/* Content */}
       {type !== DEFAULT_TYPE ? <Content /> : <p className="mt-4 text-muted-foreground">Use the knowledge gained during training. This LLM was trained on all the data on the internet (probably).</p>}
