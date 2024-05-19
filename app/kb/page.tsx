@@ -299,11 +299,13 @@ export default function KnowledgeBasePage() {
     item && setCurrentChunkItem(item)
   }, [chunks, selectedChunk])
 
-  // Reset chunk displayed when document changed
+  // Reset displayed chunk if document changes
   useEffect(() => {
-    setCurrentChunkItem(null)
-    setSelectedChunk('')
-  }, [document])
+    if (!chunks?.find(ch => ch.id === selectedChunk)) {
+      setCurrentChunkItem(null)
+      setSelectedChunk('')
+    }
+  }, [chunks, selectedChunk])
 
   // Reset data on page exit
   useEffect(() => {

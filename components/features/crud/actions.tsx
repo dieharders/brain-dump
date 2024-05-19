@@ -6,7 +6,7 @@ import { I_Collection, I_DocumentChunk, I_GenericAPIResponse, I_Source, T_Generi
 export type T_DocPayload = { [key: string]: any } | FormData
 
 export const useMemoryActions = () => {
-  const { services, collections } = useGlobalContext()
+  const { services } = useGlobalContext()
 
   /**
    * Fetch the specified collection and all its' source ids
@@ -62,35 +62,20 @@ export const useMemoryActions = () => {
   )
 
   /**
-   * Fetch all documents for the specified collection.
-   * Get from a provided collection or backend.
-   */
-  const fetchDocuments = useCallback(
-    async (collectionName: string | null, coll?: I_Collection | null) => {
-      if (!collectionName || collections.length === 0) return []
-      const collection = coll || collections?.find(c => c.name === collectionName)
-      const sources = collection?.metadata?.sources
-      if (!sources || sources.length === 0) return []
-      return sources
-    },
-    [collections],
-  )
-
-  /**
    * Fetch all collections from index
    */
-  const fetchCollections: () => Promise<Array<any>> = useCallback(async () => {
+  const fetchCollections = useCallback(async (): Promise<Array<I_Collection>> => {
     try {
-      if (!services) return
-
+      if (!services) return []
       const response = await services?.memory.getAllCollections()
 
-      if (!response?.success) throw new Error('Failed to fetch collections')
+      if (!response) throw new Error('Failed to fetch collections. No response.')
+      if (typeof response?.success === 'boolean' && !response?.success) throw new Error('Failed to fetch collections from knowledge graph.')
 
-      const data = response.data
+      const data = response?.data
       return data
     } catch (error) {
-      toast.error(`Failed to fetch collections from knowledge graph: ${error}`)
+      toast.error(`${error}`)
       return []
     }
   }, [services])
@@ -132,7 +117,7 @@ export const useMemoryActions = () => {
     return services?.memory.updateDocument(payload) || null
   }, [services?.memory])
 
-  const deleteSource = async (collectionName: string | undefined, document: I_Source) => {
+  const deleteSource = useCallback(async (collectionName: string | undefined, document: I_Source) => {
     try {
       if (!collectionName) throw new Error('No collection name provided.')
 
@@ -151,12 +136,12 @@ export const useMemoryActions = () => {
       toast.error(`${err}`)
       return false
     }
-  }
+  }, [services?.memory])
 
   /**
    * Wipe entire vector database
    */
-  const deleteAllCollections = async () => {
+  const deleteAllCollections = useCallback(async () => {
     try {
       const result = await services?.memory.wipe()
       if (!result?.success) throw new Error(result?.message)
@@ -166,7 +151,7 @@ export const useMemoryActions = () => {
       toast.error(`${err}`)
       return false
     }
-  }
+  }, [services?.memory])
 
   const shareMemory = async () => {
     const msg = 'Please consider becoming a Premium sponsor to use social features, thank you!'
@@ -180,10 +165,10 @@ export const useMemoryActions = () => {
     toast.success('Copied item id to clipboard!')
   }
 
-  const fileExploreAction = async (document: I_Source) => {
+  const fileExploreAction = useCallback(async (document: I_Source) => {
     await services?.memory.fileExplore({ queryParams: { filePath: document.filePath } })
     return
-  }
+  }, [services?.memory])
 
   return {
     fileExploreAction,
@@ -196,7 +181,6 @@ export const useMemoryActions = () => {
     addDocument,
     addCollection,
     fetchDocumentChunks,
-    fetchDocuments,
     fetchCollections,
     fetchCollection,
   }

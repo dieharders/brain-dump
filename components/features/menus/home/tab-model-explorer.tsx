@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback, useMemo } from 'react'
-import { ModelCard } from '@/components/features/cards/card-model'
+import { ModelCard } from '@/components/features/menus/home/card-model-explorer'
 import { IconPlus, IconDownload } from '@/components/ui/icons'
 import { T_ModelConfig } from '@/lib/homebrew'
 import { notifications } from '@/lib/notifications'
