@@ -41,6 +41,7 @@ export const notifications = () => {
         <div className="flex gap-2">
           <p>
             <b>Could not load model.</b>
+            <br></br>
             <span className="overflow-hidden">{err}</span>
           </p>
           <Button
