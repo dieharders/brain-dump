@@ -74,7 +74,7 @@ export const KnowledgeTab = (props: I_Props) => {
           </div>
         </Root>
         <label
-          className="w-full flex-1"
+          className="w-full flex-1 overflow-hidden"
           htmlFor={`c${index}`}
         >
           <CollectionCard
@@ -145,7 +145,7 @@ export const KnowledgeTab = (props: I_Props) => {
   }, [fetchListAction, setCollections])
 
   return (
-    <div className="px-1">
+    <div className="overflow-hidden px-1">
       <DialogHeader className="my-8">
         <DialogTitle>Pick a Knowledge Source</DialogTitle>
         <DialogDescription className="mb-4">
@@ -154,25 +154,24 @@ export const KnowledgeTab = (props: I_Props) => {
       </DialogHeader>
 
       {/* Mode Picker */}
-      <div className="w-full">
-        <ToggleGroup
-          label="Knowledge Mode"
-          value={type}
-          onChange={val => {
-            // Record mode state
-            setType(val as T_Memory_Type)
-          }}
-        >
-          <div id="training" className={toggleGroupClass}>
-            <IconDocument className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Training</span>
-          </div>
-          <div id="augmented_retrieval" className={toggleGroupClass}>
-            <IconBrain className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Augmented Retrieval</span>
-          </div>
-        </ToggleGroup>
-      </div>
+      <ToggleGroup
+        className="w-full"
+        label="Knowledge Mode"
+        value={type}
+        onChange={val => {
+          // Record mode state
+          setType(val as T_Memory_Type)
+        }}
+      >
+        <div id="training" className={toggleGroupClass}>
+          <IconDocument className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+          <span className="flex-1 self-center text-ellipsis">Training</span>
+        </div>
+        <div id="augmented_retrieval" className={toggleGroupClass}>
+          <IconBrain className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+          <span className="flex-1 self-center text-ellipsis">Augmented Retrieval</span>
+        </div>
+      </ToggleGroup>
 
       {/* Content */}
       {type !== DEFAULT_TYPE ? <Content /> : <p className="mt-4 text-muted-foreground">Use the knowledge gained during training. This LLM was trained on all the data on the internet (probably).</p>}
