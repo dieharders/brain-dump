@@ -69,7 +69,6 @@ export const ModelExplorerMenu = ({
             expandable={false}
             onClick={() => {
               // @TODO Open a menu to add a custom model config
-              // ...
               notAvailableNotification()
             }}
           />

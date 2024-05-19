@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 export const notifications = () => {
-  const dismissStyle = cn("rounded-md border p-4")
+  const dismissStyle = cn("self-center rounded-md border p-4")
 
   const notAvailable = () =>
     toast('Pardon our dust.\nThis feature is not yet available.', { icon: '🧹💨' })
@@ -37,7 +37,20 @@ export const notifications = () => {
               toast.dismiss('loading-model')
             }}>Dismiss</Button>
         </div>,
-      error: (err: any) => <b>Could not load model. {err}</b>,
+      error: (err: any) => (
+        <div className="flex gap-2">
+          <p>
+            <b>Could not load model.</b>
+            <span className="overflow-hidden">{err}</span>
+          </p>
+          <Button
+            variant="default"
+            className={dismissStyle}
+            onClick={() => {
+              navigator.clipboard.writeText(`${err}`)
+            }}>Copy</Button>
+        </div>
+      )
     },
       {
         id: 'loading-model',

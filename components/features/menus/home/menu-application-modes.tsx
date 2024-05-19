@@ -167,8 +167,12 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const downloadModel = useCallback(
     async ({ repo_id, filename }: { repo_id: string, filename: string }) => {
-      await services?.textInference?.download?.({ body: { repo_id, filename } })
-      return
+      try {
+        await services?.textInference?.download?.({ body: { repo_id, filename } })
+        return
+      } catch (err) {
+        toast.error(`${err}`)
+      }
     },
     [services?.textInference],
   )
