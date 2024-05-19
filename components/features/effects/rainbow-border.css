@@ -9,3 +9,12 @@
     background-position: 0% 50%;
   }
 }
+
+@keyframes rot {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

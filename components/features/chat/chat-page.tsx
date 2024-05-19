@@ -8,7 +8,7 @@ import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/features/layout/footer'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 import { useGlobalContext } from '@/contexts'
-import { RainbowBorder } from '@/components/features/effects/rainbow-border'
+import { RainbowBorderCone } from '@/components/features/effects/rainbow-border'
 import { nanoid } from '@/lib/utils'
 
 type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
@@ -94,7 +94,7 @@ export const ChatPage = ({
             }}
           />
           {/* Prompt */}
-          <RainbowBorder disabled={!isAiThinking}>
+          <RainbowBorderCone disabled={false}>
             <ChatPrompt
               onCharmClick={() => setCharmMenuOpen(!charmMenuOpen)}
               charmMenuIsOpen={charmMenuOpen}
@@ -107,7 +107,7 @@ export const ChatPage = ({
                 })
               }}
             />
-          </RainbowBorder>
+          </RainbowBorderCone>
           {/* Footer */}
           <FooterText className="hidden sm:block" />
         </div>
