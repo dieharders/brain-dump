@@ -51,7 +51,7 @@ export const LocalChat = (props: IProps) => {
       <div className={cn('relative w-full pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
-            <ChatList messages={messages} />
+            <ChatList messages={messages} theme={theme} />
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
