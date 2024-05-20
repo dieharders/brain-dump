@@ -66,3 +66,8 @@ Increase the minor version by 1 (x.1.x to x.2.x)
 ### Major
 
 Increase the major version by 1 (1.x.x to 2.x.x) -->
+
+<!-- ## Tagging
+
+- Create a commit with the package.json version increased.
+- From Github, click "Releases" then create and select your tagged commit for release. -->
