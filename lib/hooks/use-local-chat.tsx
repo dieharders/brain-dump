@@ -83,22 +83,6 @@ export const useLocalInference = (props: IProps) => {
     abortRef.current = true
   }, [setIsLoading])
 
-  const reload = useCallback(async () => {
-    try {
-      // Reset state
-      setIsLoading(true)
-      setResponseText('')
-      abortRef.current = false
-      // @TODO Delete prev assistant response
-      const res = await Promise.resolve('') // @TODO implement, re-call append() with new prompt
-      setIsLoading(false)
-      return res
-    } catch (error) {
-      setIsLoading(false)
-      return null
-    }
-  }, [setIsLoading])
-
   const append = useCallback(async (prompt: Message | CreateMessage) => {
     if (!prompt) return
 
@@ -110,7 +94,7 @@ export const useLocalInference = (props: IProps) => {
       role: prompt.role || 'user',
       content: prompt.content, // always assign prompt content w/o template
     }
-    setMessages([...messages, newUserMsg])
+    setMessages(prev => [...prev, newUserMsg])
 
     try {
       // Reset state
@@ -187,9 +171,39 @@ export const useLocalInference = (props: IProps) => {
       toast.error(`Prompt request error: \n ${err}`)
       return null
     }
-  }, [getCompletion, messages, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
+  }, [getCompletion, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
 
-  // Update messages state with response results
+  const reload = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      // Reset state
+      setResponseText('')
+      abortRef.current = false
+      // Get last user prompt
+      const userMessages = messages.filter(m => m.role === 'user')
+      const text = userMessages?.[userMessages.length - 1].content
+      // Delete prev assistant and user responses
+      setMessages(prev => {
+        const len = prev.length - 1
+        if (len <= 0) return prev
+        return prev.slice(0, -2)
+      })
+      // Resend with previous user prompt
+      const res = await append({
+        id: nanoid(),
+        content: text,
+        role: 'user',
+      })
+      setIsLoading(false)
+      // Return result
+      return res
+    } catch (error) {
+      setIsLoading(false)
+      return null
+    }
+  }, [append, messages, setIsLoading])
+
+  // Update messages with assistant's response
   useEffect(() => {
     if (index.current === -1 && responseId) {
       if (!responseText) {

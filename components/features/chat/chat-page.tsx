@@ -65,7 +65,7 @@ export const ChatPage = ({
             messages?.length > 0 && (
               <Button
                 variant="outline"
-                onClick={() => reload()}
+                onClick={reload}
                 className="bg-background"
               >
                 <IconRefresh className="mr-2" />
