@@ -10,7 +10,7 @@ import { InferenceLoadingSpinner } from '@/components/features/effects/matrice-l
 
 export interface ChatMessageProps {
   message: Message
-  theme: string | undefined
+  theme?: string | undefined
 }
 
 export const ChatMessage = ({ message, theme, ...props }: ChatMessageProps) => {

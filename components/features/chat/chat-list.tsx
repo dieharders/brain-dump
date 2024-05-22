@@ -4,10 +4,10 @@ import { ChatMessage } from '@/components/features/chat/chat-message'
 
 export interface ChatList {
   messages: Message[]
-  theme: string | undefined
+  theme?: string | undefined
 }
 
-export const ChatList = ({ messages, theme }: ChatList) => {
+export const ChatList = ({ messages, theme = 'light' }: ChatList) => {
   return (
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, _index) => (
