@@ -40,6 +40,25 @@ export interface I_LLM_Options {
   call?: I_LLM_Call_Options
 }
 
+export interface I_Message {
+  id: string
+  content: string
+  role: 'system' | 'user' | 'assistant'
+  createdAt?: string
+  order: number
+  modelId?: string // for assistant msg
+  username?: string // for user msg
+}
+
+export interface I_Thread {
+  id: string
+  createdAt: string
+  title: string
+  summary: string
+  numMessages: number
+  messages: Array<I_Message>
+}
+
 export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
   ragResponseModes?: Array<string>
@@ -86,6 +105,19 @@ export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
 
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
+
+type T_SaveChatThreadAPIRequest = (props: {
+  body: {
+    threadId: string
+    thread: I_Thread
+  }
+}) => Promise<I_GenericAPIResponse<T_GenericDataRes>>
+
+type T_GetChatThreadAPIRequest = (props: {
+  body: {
+    threadId: string
+  }
+}) => Promise<I_GenericAPIResponse<I_Thread>>
 
 // A non-streaming response
 export interface I_NonStreamChatbotResponse {
@@ -390,6 +422,8 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     deleteBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     saveBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
+    saveChatThread: T_SaveChatThreadAPIRequest
+    getChatThread: T_GetChatThreadAPIRequest
   }
 }
 

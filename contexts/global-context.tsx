@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, I_Thread, T_InstalledTextModel } from '@/lib/homebrew'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -32,10 +32,14 @@ interface IGlobalContextProps {
   setInstalledList: Dispatch<SetStateAction<T_InstalledTextModel[]>>
   modelConfigs: I_ModelConfigs
   setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs>>
-  isAiThinking: boolean,
+  isAiThinking: boolean
   setIsAiThinking: Dispatch<SetStateAction<boolean>>
   promptInput: string
   setPromptInput: Dispatch<SetStateAction<string>>
+  threads: Array<I_Thread>
+  setThreads: Dispatch<SetStateAction<Array<I_Thread>>>
+  currentThreadId: string
+  setCurrentThreadId: Dispatch<SetStateAction<string>>
 }
 
 // Defaults
@@ -75,6 +79,10 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setIsAiThinking: () => { },
   promptInput: '',
   setPromptInput: () => { },
+  threads: [],
+  setThreads: () => { },
+  currentThreadId: '',
+  setCurrentThreadId: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -90,6 +98,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>({})
   const [isAiThinking, setIsAiThinking] = useState(false)
   const [promptInput, setPromptInput] = useState('')
+  const [threads, setThreads] = useState<Array<I_Thread>>([])
+  const [currentThreadId, setCurrentThreadId] = useState('')
 
   return (
     <GlobalContext.Provider
@@ -119,6 +129,10 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setIsAiThinking,
         promptInput,
         setPromptInput,
+        threads,
+        setThreads,
+        currentThreadId,
+        setCurrentThreadId,
       }}
     >
       {children}

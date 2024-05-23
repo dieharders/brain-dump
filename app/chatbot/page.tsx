@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { type Message } from 'ai/react'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
-import { I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { I_Message, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import toast from 'react-hot-toast'
 import { useGlobalContext } from '@/contexts'
@@ -43,7 +42,7 @@ export default function BotPage(props: any) {
   const { searchParams } = props
   const name = searchParams.id
   const routeId = pathname.split('/')[1] // base url
-  const initialMessages: Message[] = [] // @TODO Implement fetch func for chats and pass in
+  const initialMessages: I_Message[] = [] // @TODO Implement fetch func for chats and pass in. Pass these in instead? Dont need, we have globalcontext for thread
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchChatBotSettings, loadModel: loadChatBot } = useChatPage({ services })
@@ -107,7 +106,6 @@ export default function BotPage(props: any) {
 
   return (currentModel?.modelId ?
     <LocalChat
-      id={name}
       routeId={routeId}
       initialMessages={initialMessages}
       isLoading={isLoading}

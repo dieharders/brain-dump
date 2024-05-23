@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
 import { ChatList } from '@/components/features/chat/chat-list'
@@ -9,24 +8,23 @@ import { ChatPage } from '@/components/features/chat/chat-page'
 import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
-import { I_Text_Settings } from '@/lib/homebrew'
+import { I_Message, I_Text_Settings } from '@/lib/homebrew'
 import { LavaLamp } from "@/components/features/backgrounds/lava-lamp"
 import { useGlobalContext } from '@/contexts'
 
 interface IProps extends React.ComponentProps<'div'> {
-  initialMessages?: Message[]
-  id?: string
+  initialMessages?: I_Message[]
   routeId?: string
   isLoading?: boolean
   settings: I_Text_Settings
 }
 
 export const LocalChat = (props: IProps) => {
-  const { id, routeId, initialMessages, isLoading: isModelLoading, settings, className } = props
+  const { routeId, initialMessages, isLoading: isModelLoading, settings, className } = props
   const { isAiThinking } = useGlobalContext()
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
-  const { append, messages, reload, stop } =
+  const { append, messages, reload, stop, saveThread } =
     useLocalInference({
       initialMessages,
       settings,
@@ -60,7 +58,6 @@ export const LocalChat = (props: IProps) => {
       </div>
       {/* Prompt menu */}
       <ChatPage
-        id={id}
         routeId={routeId}
         isLoading={isLoading}
         stop={stop}
@@ -68,6 +65,7 @@ export const LocalChat = (props: IProps) => {
         reload={reload}
         messages={messages}
         theme={theme}
+        saveThread={saveThread}
       />
     </div>
   )

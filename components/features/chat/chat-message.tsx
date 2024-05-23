@@ -1,4 +1,3 @@
-import { Message } from 'ai'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import { cn } from '@/lib/utils'
@@ -7,9 +6,10 @@ import { MemoizedReactMarkdown } from '@/components/ui/markdown'
 import { IconOpenAI, IconUser } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/features/chat/chat-message-actions'
 import { InferenceLoadingSpinner } from '@/components/features/effects/matrice-loader'
+import { I_Message } from '@/lib/homebrew'
 
 export interface ChatMessageProps {
-  message: Message
+  message: I_Message
   theme?: string | undefined
 }
 

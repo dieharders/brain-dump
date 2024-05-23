@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { nanoid } from '@/lib/utils'
+import { formatDate, nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
-import { type Message, type CreateMessage } from 'ai/react'
 import { useGlobalContext } from '@/contexts'
-import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Text_Settings } from '@/lib/homebrew'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Message, I_Text_Settings } from '@/lib/homebrew'
 
 interface IProps {
-  initialMessages: Message[] | undefined
+  initialMessages: I_Message[] | undefined
   settings?: I_Text_Settings
 }
 
@@ -16,13 +15,14 @@ export const useLocalInference = (props: IProps) => {
     initialMessages = [],
     settings,
   } = props
-  const { services, setIsAiThinking: setIsLoading } = useGlobalContext()
+  const { services, setIsAiThinking: setIsLoading, currentThreadId, setCurrentThreadId, threads, currentModel } = useGlobalContext() // @TODO maybe keep currentThreadId and threads in this hook ?
   const { processSseStream } = useChatHelpers()
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
-  const [messages, setMessages] = useState<Message[]>(initialMessages || [])
+  const messages = useRef<I_Message[]>(initialMessages || [])
   const abortRef = useRef(false)
-  const index = useRef(messages?.findIndex(msg => msg?.id === responseId))
+  const index = useRef(messages.current?.findIndex(msg => msg?.id === responseId))
+  const currThread = useRef(threads.find(v => v.id === currentThreadId))
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = useCallback(async (
@@ -65,7 +65,7 @@ export const useLocalInference = (props: IProps) => {
   }, [])
 
   const onStreamEvent = (eventName: string) => {
-    // @TODO Render these states on screen
+    // @TODO Render these states on screen, display in the prompt since it is disabled
     switch (eventName) {
       case 'FEEDING_PROMPT':
         break
@@ -83,18 +83,22 @@ export const useLocalInference = (props: IProps) => {
     abortRef.current = true
   }, [setIsLoading])
 
-  const append = useCallback(async (prompt: Message | CreateMessage) => {
+  const append = useCallback(async (prompt: I_Message) => {
     if (!prompt) return
 
     // Create an id for the assistant's response
     setResponseId(nanoid())
     // Create new message for user's prompt
-    const newUserMsg: Message = {
-      id: prompt.id || nanoid(),
-      role: prompt.role || 'user',
+    const newUserMsg: I_Message = {
+      id: prompt.id,
+      role: prompt.role,
       content: prompt.content, // always assign prompt content w/o template
+      createdAt: prompt.createdAt,
+      order: prompt.order,
+      ...(prompt.role === 'user' && { username: prompt?.username || '' }),
+      ...(prompt.role === 'assistant' && { modelId: prompt?.modelId || '' }),
     }
-    setMessages(prev => [...prev, newUserMsg])
+    messages.current = [...messages.current, newUserMsg]
 
     try {
       // Reset state
@@ -165,13 +169,12 @@ export const useLocalInference = (props: IProps) => {
         onNonStreamResult(response?.text)
         return response?.text
       }
-
     } catch (err) {
       setIsLoading(false)
       toast.error(`Prompt request error: \n ${err}`)
       return null
     }
-  }, [getCompletion, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
+  }, [getCompletion, onNonStreamResult, onStreamResult, processSseStream, services, setIsLoading, settings])
 
   const reload = useCallback(async () => {
     try {
@@ -180,19 +183,19 @@ export const useLocalInference = (props: IProps) => {
       setResponseText('')
       abortRef.current = false
       // Get last user prompt
-      const userMessages = messages.filter(m => m.role === 'user')
+      const userMessages = messages.current.filter(m => m.role === 'user')
       const text = userMessages?.[userMessages.length - 1].content
       // Delete prev assistant and user responses
-      setMessages(prev => {
-        const len = prev.length - 1
-        if (len <= 0) return prev
-        return prev.slice(0, -2)
-      })
+      const len = messages.current.length - 1
+      if (len > 0) messages.current = messages.current.slice(0, -2)
       // Resend with previous user prompt
       const res = await append({
         id: nanoid(),
         content: text,
         role: 'user',
+        createdAt: formatDate(new Date()),
+        order: messages.current?.length,
+        username: '', // @TODO acct username
       })
       setIsLoading(false)
       // Return result
@@ -201,40 +204,79 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(false)
       return null
     }
-  }, [append, messages, setIsLoading])
+  }, [append, setIsLoading])
+
+  const saveThread = useCallback(async () => {
+    if (messages.current?.length === 2 && !currThread.current) {
+      // Create new thread
+      const newThreadId = nanoid()
+      setCurrentThreadId(newThreadId)
+      services?.storage.saveChatThread({
+        body: {
+          threadId: newThreadId,
+          thread: {
+            id: newThreadId,
+            createdAt: formatDate(new Date()),
+            title: messages.current?.[0].content.slice(0, 36) || '',
+            summary: '',
+            numMessages: messages.current?.length || 0,
+            messages: messages.current,
+          },
+        }
+      })
+    } else if (messages.current?.length >= 4 && currThread.current) {
+      // Save new messages to disk
+      services?.storage.saveChatThread({
+        body: {
+          threadId: currThread.current.id,
+          thread: {
+            ...currThread.current,
+            messages: messages.current,
+            numMessages: messages.current?.length || 0,
+          },
+        }
+      })
+    }
+  }, [services?.storage, setCurrentThreadId])
 
   // Update messages with assistant's response
   useEffect(() => {
     if (index.current === -1 && responseId) {
       if (!responseText) {
         // Add new message
-        const msg: Message = {
+        const msg: I_Message = {
           id: responseId,
           role: 'assistant',
           content: responseText,
+          createdAt: formatDate(new Date()),
+          modelId: currentModel?.modelId || '',
+          order: messages.current?.length,
         }
-        setMessages(prev => [...prev, msg])
+        messages.current = [...messages.current, msg]
       } else {
         // Update messages
-        setMessages(prev => {
-          const newMsgs = [...prev]
-          const i = newMsgs?.findIndex(m => m?.id === responseId)
-          const msg = newMsgs?.[i]
-          if (msg) {
-            msg.content = responseText
-            return newMsgs
-          }
-          return prev
-        })
+        const newMsgs = [...messages.current]
+        const msg = newMsgs?.find(m => m?.id === responseId)
+        if (msg) {
+          msg.content = responseText
+          messages.current = newMsgs
+        }
       }
     }
+  }, [currentModel, responseId, responseText])
 
-  }, [responseId, responseText])
+  // Reset state
+  useEffect(() => {
+    return () => {
+      setCurrentThreadId('')
+    }
+  }, [setCurrentThreadId])
 
   return {
-    messages,
+    messages: messages.current,
     append,
     reload,
     stop,
+    saveThread,
   }
 }

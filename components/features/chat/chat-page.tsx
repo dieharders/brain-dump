@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CreateMessage, Message, type UseChatHelpers } from 'ai/react'
+import { type UseChatHelpers } from 'ai/react'
 import { Button } from '@/components/ui/button'
 import { ChatPrompt } from '@/components/features/chat/chat-prompt'
 import { ButtonScrollToBottom } from '@/components/features/chat/button-scroll-to-bottom'
@@ -9,29 +9,31 @@ import { FooterText } from '@/components/features/layout/footer'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 import { useGlobalContext } from '@/contexts'
 import { RainbowBorderCone } from '@/components/features/effects/rainbow-border'
-import { nanoid } from '@/lib/utils'
+import { formatDate, nanoid } from '@/lib/utils'
+import { I_Message } from '@/lib/homebrew'
 
-type TAppend = (message: Message | CreateMessage) => Promise<string | null | undefined>
+type TAppend = (message: I_Message) => Promise<string | null | undefined>
 
 export interface I_Props
   extends Pick<
     UseChatHelpers,
-    'isLoading' | 'reload' | 'messages' | 'stop'
+    'isLoading' | 'reload' | 'stop'
   > {
-  id?: string
   routeId?: string
   theme: string | undefined
   append: TAppend
+  messages: I_Message[]
+  saveThread: () => Promise<void>
 }
 
 export const ChatPage = ({
-  id,
   routeId,
   stop,
   append,
   reload,
   messages,
   theme,
+  saveThread,
 }: I_Props) => {
   const { isAiThinking } = useGlobalContext()
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
@@ -104,7 +106,11 @@ export const ChatPage = ({
                   id: nanoid(),
                   content: value,
                   role: 'user',
+                  createdAt: formatDate(new Date()),
+                  order: messages?.length,
+                  username: '', // @TODO
                 })
+                saveThread()
               }}
             />
           </RainbowBorderCone>

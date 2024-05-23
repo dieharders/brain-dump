@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils'
 import './rainbow-border.css'
 
 const gradientRot = {
-  'aspect-ratio': '1 / 1',
-  'clip-path': 'border-box',
+  'aspectRatio': '1 / 1',
+  'clipPath': 'border-box',
   'background': 'conic-gradient(from 60deg, #14ffe9, #ffeb3b, #ff00e0, #14ffe9)',
   'animation': 'rot 2s linear infinite',
 }

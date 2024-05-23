@@ -1,9 +1,9 @@
-import { type Message } from 'ai'
 import { ChatMessage } from '@/components/features/chat/chat-message'
+import { I_Message } from '@/lib/homebrew'
 // import { Separator } from '@/components/ui/separator'
 
 export interface ChatList {
-  messages: Message[]
+  messages: I_Message[]
   theme?: string | undefined
 }
 
