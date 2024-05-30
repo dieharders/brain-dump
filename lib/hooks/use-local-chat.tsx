@@ -3,26 +3,21 @@ import { formatDate, nanoid } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { useGlobalContext } from '@/contexts'
-import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Message, I_Text_Settings } from '@/lib/homebrew'
+import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Message, I_Text_Settings, I_Thread } from '@/lib/homebrew'
 
 interface IProps {
-  initialMessages: I_Message[] | undefined
   settings?: I_Text_Settings
 }
 
 export const useLocalInference = (props: IProps) => {
-  const {
-    initialMessages = [],
-    settings,
-  } = props
-  const { services, setIsAiThinking: setIsLoading, currentThreadId, setCurrentThreadId, threads, currentModel } = useGlobalContext() // @TODO maybe keep currentThreadId and threads in this hook ?
+  const { settings } = props
+  const { services, isAiThinking: isLoading, setIsAiThinking: setIsLoading, currentThreadId, threads, setThreads, currentModel, session } = useGlobalContext()
   const { processSseStream } = useChatHelpers()
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
-  const messages = useRef<I_Message[]>(initialMessages || [])
   const abortRef = useRef(false)
-  const index = useRef(messages.current?.findIndex(msg => msg?.id === responseId))
-  const currThread = useRef(threads.find(v => v.id === currentThreadId))
+  const currThread = threads.find(v => v.id === currentThreadId.current)
+  const currChatIndex = currThread?.messages?.findIndex(msg => msg?.id === responseId) || -1
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   const getCompletion = useCallback(async (
@@ -39,9 +34,7 @@ export const useLocalInference = (props: IProps) => {
   const onNonStreamResult = useCallback((result: string) => {
     setResponseText(result)
     console.log('[Chat] non-stream finished!')
-    setIsLoading(false)
-    return
-  }, [setIsLoading])
+  }, [])
 
   const onStreamResult = useCallback(async (result: string) => {
     try {
@@ -77,11 +70,52 @@ export const useLocalInference = (props: IProps) => {
     console.log(`[Chat] onStreamEvent ${eventName}`)
   }
 
+  const saveThread = useCallback(async (prevThreads: I_Thread[]) => {
+    const prevThread = prevThreads.find(t => t.id === currentThreadId.current)
+    const prevMessages = prevThread?.messages
+    if (!prevMessages) return
+    if (prevMessages?.length === 2) {
+      // Save new thread
+      services?.storage.saveChatThread({
+        body: {
+          threadId: currentThreadId.current,
+          thread: {
+            id: currentThreadId.current,
+            createdAt: formatDate(new Date()),
+            title: prevMessages?.[0].content.slice(0, 36) || '',
+            summary: '',
+            numMessages: prevMessages?.length || 0,
+            messages: prevMessages,
+            userId: session?.user.id || '',
+            // sharePath: `/thread?id=${newThreadId}`, // this is added later when user allows sharing
+          },
+        }
+      })
+    } else if (prevMessages?.length >= 4) {
+      // Save new messages to disk
+      services?.storage.saveChatThread({
+        body: {
+          threadId: prevThread?.id,
+          thread: {
+            ...prevThread,
+            messages: prevMessages,
+            numMessages: prevMessages?.length || 0,
+          },
+        }
+      })
+    }
+  }, [currentThreadId, services?.storage, session?.user.id])
+
   const stop = useCallback(() => {
+    // Save response
+    setThreads(prev => {
+      saveThread(prev)
+      return prev
+    })
     // Reset state
     setIsLoading(false)
     abortRef.current = true
-  }, [setIsLoading])
+  }, [saveThread, setIsLoading, setThreads])
 
   const append = useCallback(async (prompt: I_Message) => {
     if (!prompt) return
@@ -94,11 +128,29 @@ export const useLocalInference = (props: IProps) => {
       role: prompt.role,
       content: prompt.content, // always assign prompt content w/o template
       createdAt: prompt.createdAt,
-      order: prompt.order,
       ...(prompt.role === 'user' && { username: prompt?.username || '' }),
       ...(prompt.role === 'assistant' && { modelId: prompt?.modelId || '' }),
     }
-    messages.current = [...messages.current, newUserMsg]
+    // Create new thread for message or update existing one
+    setThreads(prev => {
+      // Create new thread if no thread is selected
+      if (!currentThreadId.current) {
+        const newThreadId = nanoid()
+        const newThread = {
+          id: newThreadId,
+          messages: [newUserMsg],
+        } as I_Thread
+        currentThreadId.current = newThreadId
+        return [newThread]
+      }
+
+      // Otherwise, Update existing thread
+      const existing = prev.map(t => {
+        if (t.id === currentThreadId.current) t.messages.push(newUserMsg)
+        return t
+      })
+      return existing
+    })
 
     try {
       // Reset state
@@ -145,7 +197,6 @@ export const useLocalInference = (props: IProps) => {
             onData: (res: string) => onStreamResult(res),
             onFinish: async () => {
               console.log('[Chat] stream finished!')
-              setIsLoading(false)
             },
             onEvent: async str => {
               onStreamEvent(str)
@@ -161,20 +212,25 @@ export const useLocalInference = (props: IProps) => {
       // Check success if not streamed (chatbot)
       if (typeof response?.response === 'string') {
         onNonStreamResult(response?.response)
-        return response?.response
       }
 
       // Check success if not streamed (playground)
       if (typeof response?.text === 'string') {
         onNonStreamResult(response?.text)
-        return response?.text
       }
+      // Save results
+      setThreads(prev => {
+        saveThread(prev)
+        return prev
+      })
+      // Finish
+      setIsLoading(false)
+      return
     } catch (err) {
       setIsLoading(false)
       toast.error(`Prompt request error: \n ${err}`)
-      return null
     }
-  }, [getCompletion, onNonStreamResult, onStreamResult, processSseStream, services, setIsLoading, settings])
+  }, [saveThread, setThreads, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
 
   const reload = useCallback(async () => {
     try {
@@ -183,100 +239,83 @@ export const useLocalInference = (props: IProps) => {
       setResponseText('')
       abortRef.current = false
       // Get last user prompt
-      const userMessages = messages.current.filter(m => m.role === 'user')
+      const userMessages = currThread?.messages.filter(m => m.role === 'user')
       const text = userMessages?.[userMessages.length - 1].content
+      if (!text) return
       // Delete prev assistant and user responses
-      const len = messages.current.length - 1
-      if (len > 0) messages.current = messages.current.slice(0, -2)
+      setThreads(prevThreads => {
+        return prevThreads.map(prevThread => {
+          if (prevThread.id === currentThreadId.current) {
+            // remove last msg
+            const newMessages = prevThread.messages.slice(0, -2)
+            prevThread.messages = newMessages
+          }
+          return prevThread
+        })
+      })
+
       // Resend with previous user prompt
-      const res = await append({
+      await append({
         id: nanoid(),
         content: text,
         role: 'user',
         createdAt: formatDate(new Date()),
-        order: messages.current?.length,
-        username: '', // @TODO acct username
+        username: '', // @TODO session username
       })
-      setIsLoading(false)
-      // Return result
-      return res
     } catch (error) {
       setIsLoading(false)
-      return null
     }
-  }, [append, setIsLoading])
-
-  const saveThread = useCallback(async () => {
-    if (messages.current?.length === 2 && !currThread.current) {
-      // Create new thread
-      const newThreadId = nanoid()
-      setCurrentThreadId(newThreadId)
-      services?.storage.saveChatThread({
-        body: {
-          threadId: newThreadId,
-          thread: {
-            id: newThreadId,
-            createdAt: formatDate(new Date()),
-            title: messages.current?.[0].content.slice(0, 36) || '',
-            summary: '',
-            numMessages: messages.current?.length || 0,
-            messages: messages.current,
-          },
-        }
-      })
-    } else if (messages.current?.length >= 4 && currThread.current) {
-      // Save new messages to disk
-      services?.storage.saveChatThread({
-        body: {
-          threadId: currThread.current.id,
-          thread: {
-            ...currThread.current,
-            messages: messages.current,
-            numMessages: messages.current?.length || 0,
-          },
-        }
-      })
-    }
-  }, [services?.storage, setCurrentThreadId])
+    return null
+  }, [setIsLoading, currThread?.messages, append, setThreads, currentThreadId])
 
   // Update messages with assistant's response
   useEffect(() => {
-    if (index.current === -1 && responseId) {
+    if (!isLoading) return
+    if (currChatIndex === -1 && responseId) {
       if (!responseText) {
-        // Add new message
-        const msg: I_Message = {
-          id: responseId,
-          role: 'assistant',
-          content: responseText,
-          createdAt: formatDate(new Date()),
-          modelId: currentModel?.modelId || '',
-          order: messages.current?.length,
-        }
-        messages.current = [...messages.current, msg]
-      } else {
-        // Update messages
-        const newMsgs = [...messages.current]
-        const msg = newMsgs?.find(m => m?.id === responseId)
-        if (msg) {
-          msg.content = responseText
-          messages.current = newMsgs
-        }
+        // Add new assistant message
+        setThreads(prev => {
+          const msg: I_Message = {
+            id: responseId,
+            role: 'assistant',
+            content: responseText,
+            createdAt: formatDate(new Date()),
+            modelId: currentModel?.modelId || '',
+          }
+          return prev.map(thr => {
+            if (thr.id === currentThreadId.current) thr.messages.push(msg)
+            return thr
+          })
+        })
       }
+    } else if (responseId && responseText) {
+      // Update assistant message
+      setThreads(prevThreads => {
+        return prevThreads.map(thr => {
+          if (thr.id === currentThreadId.current) {
+            const newMsgs = thr.messages.map(m => {
+              if (m?.id === responseId) m.content = responseText
+              return m
+            })
+            thr.messages = newMsgs
+          }
+          return thr
+        })
+      })
     }
-  }, [currentModel, responseId, responseText])
+  }, [currChatIndex, currentModel?.modelId, currentThreadId, isLoading, responseId, responseText, setThreads])
 
   // Reset state
   useEffect(() => {
     return () => {
-      setCurrentThreadId('')
+      currentThreadId.current = ''
+      setIsLoading(false)
     }
-  }, [setCurrentThreadId])
+  }, [currentThreadId, setIsLoading])
 
   return {
-    messages: messages.current,
     append,
     reload,
     stop,
-    saveThread,
   }
 }

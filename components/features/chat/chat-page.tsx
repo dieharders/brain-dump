@@ -12,7 +12,7 @@ import { RainbowBorderCone } from '@/components/features/effects/rainbow-border'
 import { formatDate, nanoid } from '@/lib/utils'
 import { I_Message } from '@/lib/homebrew'
 
-type TAppend = (message: I_Message) => Promise<string | null | undefined>
+type TAppend = (message: I_Message) => Promise<void>
 
 export interface I_Props
   extends Pick<
@@ -23,7 +23,6 @@ export interface I_Props
   theme: string | undefined
   append: TAppend
   messages: I_Message[]
-  saveThread: () => Promise<void>
 }
 
 export const ChatPage = ({
@@ -33,7 +32,6 @@ export const ChatPage = ({
   reload,
   messages,
   theme,
-  saveThread,
 }: I_Props) => {
   const { isAiThinking } = useGlobalContext()
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
@@ -107,10 +105,8 @@ export const ChatPage = ({
                   content: value,
                   role: 'user',
                   createdAt: formatDate(new Date()),
-                  order: messages?.length,
-                  username: '', // @TODO
+                  username: '', // @TODO from sessions.user.name
                 })
-                saveThread()
               }}
             />
           </RainbowBorderCone>

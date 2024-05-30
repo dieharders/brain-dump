@@ -15,10 +15,11 @@ import {
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
 import toast from 'react-hot-toast'
+import { I_GenericAPIResponse } from '@/lib/homebrew'
 
 interface ClearDataProps {
   Icon?: any
-  action: () => Promise<boolean>
+  action: () => Promise<I_GenericAPIResponse<any> | undefined>
   actionTitle?: string
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost"
   className?: string

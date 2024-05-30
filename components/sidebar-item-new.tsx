@@ -5,7 +5,7 @@ import { ServerActionResult } from '@/lib/types'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { IconSpinner } from '@/components/ui/icons'
-import Link from 'next/link'
+// import Link from 'next/link'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,10 +62,14 @@ export function NewItem(props: I_Props) {
               })
             }}
           >
-            <Link href="/" prefetch={false}>
+            {/* <Link href="/" prefetch={false}>
               {isPending && <IconSpinner className="mr-2 animate-spin" />}
               Add
-            </Link>
+            </Link> */}
+            <div className=''>
+              {isPending && <IconSpinner className="mr-2 animate-spin" />}
+              Add
+            </div>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

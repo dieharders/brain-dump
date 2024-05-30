@@ -9,11 +9,12 @@ import { InferenceLoadingSpinner } from '@/components/features/effects/matrice-l
 import { I_Message } from '@/lib/homebrew'
 
 export interface ChatMessageProps {
+  isLoading: boolean
   message: I_Message
   theme?: string | undefined
 }
 
-export const ChatMessage = ({ message, theme, ...props }: ChatMessageProps) => {
+export const ChatMessage = ({ isLoading, message, theme, ...props }: ChatMessageProps) => {
   const bgStyle = message.role === 'user' ? 'bg-accent/80' : 'bg-background/80'
 
   return (
@@ -77,7 +78,7 @@ export const ChatMessage = ({ message, theme, ...props }: ChatMessageProps) => {
             >
               {message.content}
             </MemoizedReactMarkdown> :
-            <InferenceLoadingSpinner theme={theme} />
+            isLoading ? <InferenceLoadingSpinner theme={theme} /> : <div>...</div>
         }
         <ChatMessageActions message={message} />
       </div>

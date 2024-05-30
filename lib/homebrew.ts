@@ -45,18 +45,19 @@ export interface I_Message {
   content: string
   role: 'system' | 'user' | 'assistant'
   createdAt?: string
-  order: number
   modelId?: string // for assistant msg
   username?: string // for user msg
 }
 
 export interface I_Thread {
   id: string
+  userId: string
   createdAt: string
   title: string
   summary: string
   numMessages: number
   messages: Array<I_Message>
+  sharePath?: string
 }
 
 export type T_APIConfigOptions = {
@@ -114,10 +115,16 @@ type T_SaveChatThreadAPIRequest = (props: {
 }) => Promise<I_GenericAPIResponse<T_GenericDataRes>>
 
 type T_GetChatThreadAPIRequest = (props: {
-  body: {
-    threadId: string
+  queryParams: {
+    threadId?: string | null
   }
-}) => Promise<I_GenericAPIResponse<I_Thread>>
+}) => Promise<I_GenericAPIResponse<I_Thread[]>>
+
+type T_DeleteChatThreadAPIRequest = (props: {
+  queryParams: {
+    threadId?: string | null
+  }
+}) => Promise<I_GenericAPIResponse<I_Thread[]>>
 
 // A non-streaming response
 export interface I_NonStreamChatbotResponse {
@@ -424,6 +431,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     saveBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     saveChatThread: T_SaveChatThreadAPIRequest
     getChatThread: T_GetChatThreadAPIRequest
+    deleteChatThread: T_DeleteChatThreadAPIRequest
   }
 }
 
@@ -587,14 +595,13 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             // Check failure from homebrew api
             if (typeof result?.success === 'boolean' && !result?.success)
               throw new Error(
-                `${endpoint.name} An unexpected error occurred: ${
+                `An unexpected error occurred for [${endpoint.name}] endpoint: ${
                   result?.message ?? result?.detail
                 }`,
               )
             // Success
             return result
           }
-
           // Return raw response from llama-cpp-python server text inference
           return res
         } catch (err) {

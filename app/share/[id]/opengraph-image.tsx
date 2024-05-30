@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 // import { ImageResponse } from 'next/server'
 
-import { getSharedChat } from '@/app/actions'
+import { getSharedChat } from '@/app/server-actions'
 
 export const runtime = 'edge'
 

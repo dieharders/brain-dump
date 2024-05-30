@@ -2,9 +2,10 @@
 import { notFound } from 'next/navigation'
 
 import { formatDate } from '@/lib/utils'
-import { getSharedChat } from '@/app/actions'
+import { getSharedChat } from '@/app/server-actions'
 import { ChatList } from '@/components/features/chat/chat-list'
 import { FooterText } from '@/components/features/layout/footer'
+import { I_Message } from '@/lib/homebrew'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -43,7 +44,7 @@ export default async function SharePage({ params }: SharePageProps) {
             </div>
           </div>
         </div>
-        <ChatList messages={chat.messages} />
+        <ChatList messages={chat.messages as I_Message[]} />
       </div>
       <FooterText className="py-8" />
     </>

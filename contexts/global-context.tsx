@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { createContext, Dispatch, MutableRefObject, ReactNode, SetStateAction, useRef, useState } from 'react'
 import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, I_Thread, T_InstalledTextModel } from '@/lib/homebrew'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
@@ -7,6 +7,7 @@ import { defaultState as defaultSystemState } from '@/components/features/menus/
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
 import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
+import { Session } from 'next-auth'
 
 export type T_Chunks_Map = Array<I_DocumentChunk>
 
@@ -34,12 +35,11 @@ interface IGlobalContextProps {
   setModelConfigs: Dispatch<SetStateAction<I_ModelConfigs>>
   isAiThinking: boolean
   setIsAiThinking: Dispatch<SetStateAction<boolean>>
-  promptInput: string
-  setPromptInput: Dispatch<SetStateAction<string>>
   threads: Array<I_Thread>
   setThreads: Dispatch<SetStateAction<Array<I_Thread>>>
-  currentThreadId: string
-  setCurrentThreadId: Dispatch<SetStateAction<string>>
+  currentThreadId: MutableRefObject<string>
+  session: Session | null
+  setSession: Dispatch<SetStateAction<Session | null>>
 }
 
 // Defaults
@@ -53,7 +53,7 @@ const defaultPlaygroundSettings = {
   response: defaultResponse,
 }
 
-export const GlobalContext = React.createContext<IGlobalContextProps>({
+export const GlobalContext = createContext<IGlobalContextProps>({
   services: {} as I_ServiceApis,
   setServices: () => { },
   // downloads: {}, // Used for tracking in progress downloads
@@ -77,12 +77,11 @@ export const GlobalContext = React.createContext<IGlobalContextProps>({
   setModelConfigs: () => { },
   isAiThinking: false,
   setIsAiThinking: () => { },
-  promptInput: '',
-  setPromptInput: () => { },
   threads: [],
   setThreads: () => { },
-  currentThreadId: '',
-  setCurrentThreadId: () => { },
+  currentThreadId: { current: '' },
+  session: null,
+  setSession: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -97,9 +96,9 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [installedList, setInstalledList] = useState<T_InstalledTextModel[]>([])
   const [modelConfigs, setModelConfigs] = useState<I_ModelConfigs>({})
   const [isAiThinking, setIsAiThinking] = useState(false)
-  const [promptInput, setPromptInput] = useState('')
   const [threads, setThreads] = useState<Array<I_Thread>>([])
-  const [currentThreadId, setCurrentThreadId] = useState('')
+  const currentThreadId = useRef('')
+  const [session, setSession] = useState<Session | null>(null)
 
   return (
     <GlobalContext.Provider
@@ -127,12 +126,11 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setModelConfigs,
         isAiThinking,
         setIsAiThinking,
-        promptInput,
-        setPromptInput,
         threads,
         setThreads,
         currentThreadId,
-        setCurrentThreadId,
+        session,
+        setSession,
       }}
     >
       {children}

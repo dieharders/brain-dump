@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { IconArrowElbow } from '@/components/ui/icons'
 import { CharmMenuButton } from '@/components/features/chat/button-charm-menu-trigger'
-import { useGlobalContext } from '@/contexts'
+import { useChatContext, useGlobalContext } from '@/contexts'
 
 interface I_Props {
   onSubmit: (value: string) => Promise<void>
@@ -16,7 +16,8 @@ interface I_Props {
 export const ChatPrompt = ({ onSubmit, onCharmClick, charmMenuIsOpen }: I_Props) => {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const { isAiThinking, promptInput, setPromptInput } = useGlobalContext()
+  const { isAiThinking } = useGlobalContext()
+  const { promptInput, setPromptInput } = useChatContext()
 
   useEffect(() => {
     if (inputRef.current) {

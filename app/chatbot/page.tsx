@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { LocalChat } from '@/components/features/chat/interface-local-chat'
-import { I_Message, I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { I_Text_Settings, useHomebrew } from '@/lib/homebrew'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import toast from 'react-hot-toast'
 import { useGlobalContext } from '@/contexts'
@@ -35,6 +35,7 @@ export interface I_PageProps {
 //   }
 // }
 
+// @TODO Change this to async component and move all state to lower component so we can access server side props
 export default function BotPage(props: any) {
   const pathname = usePathname()
   const { getServices } = useHomebrew()
@@ -42,20 +43,20 @@ export default function BotPage(props: any) {
   const { searchParams } = props
   const name = searchParams.id
   const routeId = pathname.split('/')[1] // base url
-  const initialMessages: I_Message[] = [] // @TODO Implement fetch func for chats and pass in. Pass these in instead? Dont need, we have globalcontext for thread
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<I_Text_Settings>({} as I_Text_Settings)
   const { fetchChatBotSettings, loadModel: loadChatBot } = useChatPage({ services })
   const { currentModel, setCurrentModel } = useGlobalContext()
   const [hasFetched, setHasFetched] = useState(false)
 
+  // @TODO assign `session` to globalContext for others to use
   // const session = await auth()
 
   // if (!session?.user) {
   //   redirect(`/sign-in?next=/chat/${name}`)
   // }
 
-  // const chat = await getChat(name, session.user.id)
+  // const chat = await getThread(name, session.user.id)
 
   // if (!chat) {
   //   notFound()
@@ -107,7 +108,6 @@ export default function BotPage(props: any) {
   return (currentModel?.modelId ?
     <LocalChat
       routeId={routeId}
-      initialMessages={initialMessages}
       isLoading={isLoading}
       settings={settings}
     />

@@ -1,6 +1,6 @@
 import { ChatMessage } from '@/components/features/chat/chat-message'
+import { useGlobalContext } from '@/contexts'
 import { I_Message } from '@/lib/homebrew'
-// import { Separator } from '@/components/ui/separator'
 
 export interface ChatList {
   messages: I_Message[]
@@ -8,14 +8,16 @@ export interface ChatList {
 }
 
 export const ChatList = ({ messages, theme = 'light' }: ChatList) => {
+  const { isAiThinking } = useGlobalContext()
   return (
     <div className="relative mx-auto max-w-2xl px-4">
-      {messages.map((message, _index) => (
+      {messages.map((message, index) => (
         <div key={message.id}>
-          <ChatMessage message={message} theme={theme} />
-          {/* {index < messages.length - 1 && (
-            <Separator className="my-4 md:my-8" />
-          )} */}
+          <ChatMessage
+            isLoading={isAiThinking && index === messages?.length - 1}
+            message={message}
+            theme={theme}
+          />
         </div>
       ))}
     </div>
