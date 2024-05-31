@@ -424,8 +424,6 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to persist data
    */
   storage: {
-    getPlaygroundSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings>
-    savePlaygroundSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings>
     getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     deleteBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     saveBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>

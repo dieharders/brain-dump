@@ -12,11 +12,10 @@ An Ai engineer's tool for building custom Ai agents and workflows for use in you
 - ✅ Build custom bots from a mix of LLM's, software configs and prompt configs
 - ✅ CPU & GPU support
 - ✅ Windows OS build
+- ✅ Save chat history
 - ❌ MacOS & Linux builds
 - ❌ Build assistants with access to tools
 - ❌ Orchestrate multiple assistants in a team
-- ❌ Save chat history and share chat logs with community
-- ❌ Share document embeddings with community
 - ❌ Share model configs with community
 
 ## Supported Model Providers
