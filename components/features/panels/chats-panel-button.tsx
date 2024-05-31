@@ -12,9 +12,25 @@ import { useGlobalContext } from '@/contexts'
 
 export const ChatsButton = ({ session }: { session: Session }) => {
   // State
-  const { setThreads } = useGlobalContext()
+  const { setThreads, currentThreadId } = useGlobalContext()
   // Actions
   const { getAllThreads, clearChats } = useThreads()
+  // Methods
+  const clearAllData = async () => {
+    const res = await clearChats()
+    if (res) {
+      const refreshedRes = await getAllThreads()
+      if (refreshedRes?.success) {
+        // reset current id
+        currentThreadId.current = ''
+        // update threads list
+        refreshedRes && setThreads(refreshedRes.data)
+        return refreshedRes?.success || false
+      }
+      return false
+    }
+    return false
+  }
 
   return (
     <Panel
@@ -29,7 +45,7 @@ export const ChatsButton = ({ session }: { session: Session }) => {
         <SidebarChatList userId={session?.user?.id} />
       </Suspense>
       <PanelFooter>
-        <ClearData action={clearChats} actionTitle="Clear history" />
+        <ClearData action={clearAllData} actionTitle="Clear history" />
       </PanelFooter>
     </Panel>
   )

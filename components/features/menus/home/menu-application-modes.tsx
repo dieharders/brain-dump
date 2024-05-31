@@ -21,7 +21,7 @@ import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { useActions } from './actions'
 
 interface I_Props {
-  onSubmit: () => void
+  onSubmit: () => void // exec some logic when list item is clicked
   services: I_ServiceApis | null
   isConnecting: boolean
   setIsConnecting: Dispatch<SetStateAction<boolean>>
@@ -78,7 +78,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const goToKnowledgePage = (name: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionName=${name}`)
 
   const goToChatBotPage = (botId: string) => {
-    onSubmit() // changes page layout while waiting to load Ai
+    onSubmit()
     const queryParams = `?id=${botId}`
     const pathname = `/${ROUTE_CHATBOT}${queryParams}`
     setHasTextServiceConnected(true)

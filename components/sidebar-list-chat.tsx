@@ -12,7 +12,7 @@ export interface SidebarChatListProps {
 
 export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
   const { threads, currentThreadId, setThreads } = useGlobalContext()
-  const { removeChat } = useThreads()
+  const { removeChat, getAllThreads } = useThreads()
 
   return (
     <div className="scrollbar flex w-[20rem] flex-1 flex-col gap-8 overflow-auto">
@@ -22,8 +22,8 @@ export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
           actionTitle="+ Add New Chat"
           actionDescription="This will start a new chat session."
           action={async () => {
-            setThreads(prev => [...prev]) // force re-render
             currentThreadId.current = ''
+            setThreads(prev => [...prev]) // force re-render
           }}
         ></NewItem>
       </div>
@@ -35,7 +35,21 @@ export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
               <SidebarItem key={thread?.id} chat={thread}>
                 <SidebarActions
                   chat={thread}
-                  removeChat={removeChat}
+                  removeChat={async (id) => {
+                    const res = await removeChat(id)
+                    if (res) {
+                      const refreshedRes = await getAllThreads()
+                      if (refreshedRes?.success) {
+                        // reset current id
+                        currentThreadId.current = ''
+                        // update threads list
+                        refreshedRes && setThreads(refreshedRes.data)
+                        return refreshedRes
+                      }
+                      return refreshedRes
+                    }
+                    return res
+                  }}
                 />
               </SidebarItem>
           )}
