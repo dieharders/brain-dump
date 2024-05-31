@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
 import { ChatList } from '@/components/features/chat/chat-list'
-import { ChatPage } from '@/components/features/chat/chat-page'
+import { ChatPromptMenu } from '@/components/features/chat/chat-prompt-menu'
 import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { useLocalInference } from '@/lib/hooks/use-local-chat'
@@ -20,8 +20,7 @@ interface I_Props extends React.ComponentProps<'div'> {
   session: any
 }
 
-// @TODO Rename file to (ChatPageLocal) chat-page-local.tsx
-export const LocalChat = (props: I_Props) => {
+export const ChatPageLocal = (props: I_Props) => {
   const { routeId, isLoading: isModelLoading, settings, session, className } = props
   const { isAiThinking, threads, currentThreadId } = useGlobalContext()
   const { theme } = useTheme()
@@ -57,7 +56,7 @@ export const LocalChat = (props: I_Props) => {
           )}
         </div>
         {/* Prompt menu */}
-        <ChatPage
+        <ChatPromptMenu
           routeId={routeId}
           isLoading={isLoading}
           stop={stop}

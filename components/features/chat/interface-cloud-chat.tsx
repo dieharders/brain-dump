@@ -5,7 +5,7 @@ import { useChat, type Message } from 'ai/react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/features/chat/chat-list'
-import { ChatPage } from '@/components/features/chat/chat-page'
+import { ChatPromptMenu } from '@/components/features/chat/chat-prompt-menu'
 import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
@@ -53,7 +53,7 @@ export function CloudChat({ id, initialMessages, modelId, className }: IProps) {
           <EmptyScreen setInput={setInput} />
         )}
       </div>
-      <ChatPage
+      <ChatPromptMenu
         id={id}
         isLoading={isLoading}
         stop={stop}

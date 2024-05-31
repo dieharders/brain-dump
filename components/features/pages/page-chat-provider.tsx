@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { ROUTE_PLAYGROUND } from "@/app/constants"
 import { I_Text_Settings, useHomebrew } from "@/lib/homebrew"
 import { useGlobalContext } from "@/contexts"
-import { LocalChat } from '@/components/features/chat/interface-local-chat'
+import { ChatPageLocal } from '@/components/features/chat/chat-page-local'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import { loadTextModel } from "@/components/features/pages/client-actions-ai"
 
@@ -20,7 +20,7 @@ const PlaygroundPage = ({ isLoading, session, services, action, settings, fetchS
 
   return (
     currentModel?.modelId ?
-      <LocalChat
+      <ChatPageLocal
         routeId={ROUTE_PLAYGROUND}
         isLoading={isLoading}
         settings={settings}
@@ -44,7 +44,7 @@ const BotPage = ({ isLoading, services, session, action, settings, routeId, name
 
   return (
     currentModel?.modelId ?
-      <LocalChat
+      <ChatPageLocal
         routeId={routeId}
         isLoading={isLoading}
         settings={settings}

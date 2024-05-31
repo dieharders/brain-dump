@@ -27,8 +27,7 @@ export interface I_Props
   messages: I_Message[]
 }
 
-// @TODO Rename to (ChatPrompt) chat-prompt-menu.tsx
-export const ChatPage = ({
+export const ChatPromptMenu = ({
   routeId,
   stop,
   append,
