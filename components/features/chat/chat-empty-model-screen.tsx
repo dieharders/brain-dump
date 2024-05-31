@@ -4,15 +4,15 @@ import { useRouter } from "next/navigation"
 
 interface I_Props {
   id: string
-  loadModel: (() => Promise<void>) | ((id: string) => Promise<void>) | undefined
+  loadModel: (() => Promise<any>) | undefined
 }
 
-export const EmptyModelScreen = ({ id, loadModel }: I_Props) => {
+export const EmptyModelScreen = ({ loadModel }: I_Props) => {
   const router = useRouter()
   const messages = [
     {
       heading: 'Reload model',
-      onClick: () => loadModel?.(id),
+      onClick: () => loadModel?.(),
     },
     {
       heading: 'Go to main menu',

@@ -15,11 +15,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
 import toast from 'react-hot-toast'
-import { I_GenericAPIResponse } from '@/lib/homebrew'
 
 interface ClearDataProps {
   Icon?: any
-  action: () => Promise<I_GenericAPIResponse<any> | undefined>
+  action: () => Promise<boolean>
   actionTitle?: string
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost"
   className?: string
@@ -54,10 +53,11 @@ export function ClearData(props: ClearDataProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                await action()
+                const success = await action()
                 setOpen(false)
                 // router.push('/')
-                toast.success(`Item deleted`)
+                if (success) toast.success(`Item deleted!`)
+                else toast.error(`Failed to delete item.`)
                 return
               })
             }}

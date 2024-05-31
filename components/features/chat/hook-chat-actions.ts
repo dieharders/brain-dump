@@ -11,7 +11,10 @@ export const useThreads = () => {
   const getAllThreads = async () => services?.storage.getChatThread({ queryParams: {} })
   const removeChat = async (id: string) =>
     services?.storage.deleteChatThread({ queryParams: { threadId: id } })
-  const clearChats = async () => services?.storage.deleteChatThread({ queryParams: {} })
+  const clearChats = async () => {
+    const res = await services?.storage.deleteChatThread({ queryParams: {} })
+    return res?.success || false
+  }
   const getSharedChat = async () => {}
   const shareChat = async (_thread: I_Thread) => true
   const newThread = async () => {}

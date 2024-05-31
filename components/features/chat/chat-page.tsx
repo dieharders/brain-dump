@@ -11,6 +11,7 @@ import { useGlobalContext } from '@/contexts'
 import { RainbowBorderCone } from '@/components/features/effects/rainbow-border'
 import { formatDate, nanoid } from '@/lib/utils'
 import { I_Message } from '@/lib/homebrew'
+import { Session } from 'next-auth/types'
 
 type TAppend = (message: I_Message) => Promise<void>
 
@@ -22,6 +23,7 @@ export interface I_Props
   routeId?: string
   theme: string | undefined
   append: TAppend
+  session: Session
   messages: I_Message[]
 }
 
@@ -31,6 +33,7 @@ export const ChatPage = ({
   append,
   reload,
   messages,
+  session,
   theme,
 }: I_Props) => {
   const { isAiThinking } = useGlobalContext()
@@ -105,7 +108,7 @@ export const ChatPage = ({
                   content: value,
                   role: 'user',
                   createdAt: formatDate(new Date()),
-                  username: '', // @TODO from sessions.user.name
+                  username: session.user.name || '',
                 })
               }}
             />

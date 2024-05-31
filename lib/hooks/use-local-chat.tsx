@@ -4,14 +4,28 @@ import { toast } from 'react-hot-toast'
 import { useChatHelpers } from '@/lib/hooks/use-chat-helpers'
 import { useGlobalContext } from '@/contexts'
 import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Message, I_Text_Settings, I_Thread } from '@/lib/homebrew'
+import { Session } from 'next-auth/types'
+
+interface I_Session extends Session {
+  user: {
+    id: string
+    email: string
+    exp: number
+    iat: number
+    jti: string
+    name: string
+    sub: string
+  }
+}
 
 interface IProps {
-  settings?: I_Text_Settings
+  settings?: I_Text_Settings | null
+  session: I_Session
 }
 
 export const useLocalInference = (props: IProps) => {
-  const { settings } = props
-  const { services, isAiThinking: isLoading, setIsAiThinking: setIsLoading, currentThreadId, threads, setThreads, currentModel, session } = useGlobalContext()
+  const { settings, session } = props
+  const { services, isAiThinking: isLoading, setIsAiThinking: setIsLoading, currentThreadId, threads, setThreads, currentModel } = useGlobalContext()
   const { processSseStream } = useChatHelpers()
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
@@ -86,7 +100,7 @@ export const useLocalInference = (props: IProps) => {
             summary: '',
             numMessages: prevMessages?.length || 0,
             messages: prevMessages,
-            userId: session?.user.id || '',
+            userId: session?.user.id || session.user.sub || '', // ids come as "sub" when using jwtoken
             // sharePath: `/thread?id=${newThreadId}`, // this is added later when user allows sharing
           },
         }
@@ -104,7 +118,7 @@ export const useLocalInference = (props: IProps) => {
         }
       })
     }
-  }, [currentThreadId, services?.storage, session?.user.id])
+  }, [currentThreadId, services?.storage, session?.user.id, session.user?.sub])
 
   const stop = useCallback(() => {
     // Save response
@@ -260,13 +274,13 @@ export const useLocalInference = (props: IProps) => {
         content: text,
         role: 'user',
         createdAt: formatDate(new Date()),
-        username: '', // @TODO session username
+        username: session?.user.name || '',
       })
     } catch (error) {
       setIsLoading(false)
     }
     return null
-  }, [setIsLoading, currThread?.messages, append, setThreads, currentThreadId])
+  }, [setIsLoading, currThread?.messages, setThreads, append, session?.user.name, currentThreadId])
 
   // Update messages with assistant's response
   useEffect(() => {

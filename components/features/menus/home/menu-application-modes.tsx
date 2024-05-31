@@ -346,7 +346,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
               variant="secondary"
               action={async () => {
                 const res = await deleteCollection(c.name)
-                if (res) {
+                if (res?.success) {
                   await updateKBCollections()
                   return true
                 }

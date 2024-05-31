@@ -13,19 +13,20 @@ import { LavaLamp } from "@/components/features/backgrounds/lava-lamp"
 import { useGlobalContext } from '@/contexts'
 import { ChatContextProvider } from '@/contexts/chat-context'
 
-interface IProps extends React.ComponentProps<'div'> {
+interface I_Props extends React.ComponentProps<'div'> {
   routeId?: string
   isLoading?: boolean
-  settings: I_Text_Settings
+  settings: I_Text_Settings | undefined
+  session: any
 }
 
 // @TODO Rename file to chat-menu-local
-export const LocalChat = (props: IProps) => {
-  const { routeId, isLoading: isModelLoading, settings, className } = props
+export const LocalChat = (props: I_Props) => {
+  const { routeId, isLoading: isModelLoading, settings, session, className } = props
   const { isAiThinking, threads, currentThreadId } = useGlobalContext()
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
-  const { append, reload, stop } = useLocalInference({ settings })
+  const { append, reload, stop } = useLocalInference({ settings, session })
   const isLoading = isModelLoading || isAiThinking
   const [hasMounted, setHasMounted] = useState(false)
   const messages = threads.find(t => t.id === currentThreadId.current)?.messages || []
@@ -63,6 +64,7 @@ export const LocalChat = (props: IProps) => {
           append={append}
           reload={reload}
           messages={messages}
+          session={session}
           theme={theme}
         />
       </ChatContextProvider>

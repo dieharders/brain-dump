@@ -7,7 +7,7 @@ import { Panel } from '@/components/features/panels/panel'
 import { PanelFooter } from '@/components/features/panels/panel-footer'
 import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { IconChat } from '@/components/ui/icons'
-import { useThreads } from '@/app/client-actions'
+import { useThreads } from '@/components/features/chat/hook-chat-actions'
 import { useGlobalContext } from '@/contexts'
 
 export const ChatsButton = ({ session }: { session: Session }) => {

@@ -22,7 +22,17 @@ export const {
   auth,
   CSRF_experimental, // will be removed in future
 } = NextAuth({
-  providers: [Anonymous, GitHub, Google],
+  providers: [
+    Anonymous,
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+    }),
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+  ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, profile }) {
@@ -37,7 +47,10 @@ export const {
     },
     async signIn({ profile, user, account, credentials }) {
       // @TODO Configure this to check provider accounts
-      const isUserAllowed = account?.provider === ANON
+      const isUserAllowed =
+        account?.provider === ANON ||
+        account?.provider === 'github' ||
+        account?.provider === 'google'
       return isUserAllowed
 
       // Or you can return a URL to redirect to:
@@ -46,6 +59,13 @@ export const {
     async redirect({ url, baseUrl }) {
       // Where to go after successful sign-in (email, credentials only)
       return baseUrl
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.sub || ''
+      }
+      // session.type = ANON
+      return session
     },
   },
   pages: {

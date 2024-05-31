@@ -7,7 +7,6 @@ import { defaultState as defaultSystemState } from '@/components/features/menus/
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
 import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
-import { Session } from 'next-auth'
 
 export type T_Chunks_Map = Array<I_DocumentChunk>
 
@@ -38,8 +37,6 @@ interface IGlobalContextProps {
   threads: Array<I_Thread>
   setThreads: Dispatch<SetStateAction<Array<I_Thread>>>
   currentThreadId: MutableRefObject<string>
-  session: Session | null
-  setSession: Dispatch<SetStateAction<Session | null>>
 }
 
 // Defaults
@@ -80,8 +77,6 @@ export const GlobalContext = createContext<IGlobalContextProps>({
   threads: [],
   setThreads: () => { },
   currentThreadId: { current: '' },
-  session: null,
-  setSession: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -98,7 +93,6 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [isAiThinking, setIsAiThinking] = useState(false)
   const [threads, setThreads] = useState<Array<I_Thread>>([])
   const currentThreadId = useRef('')
-  const [session, setSession] = useState<Session | null>(null)
 
   return (
     <GlobalContext.Provider
@@ -129,8 +123,6 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         threads,
         setThreads,
         currentThreadId,
-        session,
-        setSession,
       }}
     >
       {children}

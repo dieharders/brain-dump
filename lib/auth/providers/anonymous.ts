@@ -20,6 +20,8 @@ const Anon = CredentialsProvider({
     const id = nanoid()
     const name = `${credentials?.username || 'anonymous'}`
     return { id, name, email: `${name}@email.com`, type: ANON }
+    // Return null if the credentials are invalid
+    // return null
   },
 })
 

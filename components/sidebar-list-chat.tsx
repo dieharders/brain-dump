@@ -1,6 +1,6 @@
 'use client'
 
-import { useThreads } from '@/app/client-actions'
+import { useThreads } from '@/components/features/chat/hook-chat-actions'
 import { SidebarActions } from '@/components/sidebar-actions-chat'
 import { NewItem } from '@/components/sidebar-item-new'
 import { SidebarItem } from '@/components/sidebar-item-chat'
