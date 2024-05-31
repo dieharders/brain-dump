@@ -24,11 +24,11 @@ export const notifications = () => {
               toast.dismiss('loading-model')
             }}>Cancel</Button>
         </div>,
-      success: (data: any) =>
+      success: (res: any) =>
         <div className="flex flex-row items-center justify-center">
           <span>
             <b className="pr-2">Model loaded!</b>
-            <br />{data?.message}
+            <br />{res?.message}
           </span>
           <Button
             variant="default"
@@ -42,13 +42,13 @@ export const notifications = () => {
           <p>
             <b>Could not load model.</b>
             <br></br>
-            <span className="overflow-hidden">{err}</span>
+            <span className="overflow-hidden">{err?.message}</span>
           </p>
           <Button
             variant="default"
             className={dismissStyle}
             onClick={() => {
-              navigator.clipboard.writeText(`${err}`)
+              navigator.clipboard.writeText(`${err?.message}`)
             }}>Copy</Button>
         </div>
       )

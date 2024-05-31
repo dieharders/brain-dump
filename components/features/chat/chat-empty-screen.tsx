@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
-import { useGlobalContext } from '@/contexts'
+import { useChatContext } from '@/contexts'
 
 const exampleMessages = [
   {
@@ -22,7 +22,7 @@ const exampleMessages = [
 ]
 
 export const EmptyScreen = () => {
-  const { setPromptInput } = useGlobalContext()
+  const { setPromptInput } = useChatContext()
 
   return (
     <div className="mx-auto max-w-2xl px-4">

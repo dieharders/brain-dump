@@ -21,7 +21,7 @@ interface LoginButtonProps extends ButtonProps {
 export function LoginButton(args: LoginButtonProps) {
   const {
     name,
-    text = 'Login with GitHub',
+    text = 'Login with Provider',
     icon,
     username = '',
     password = '',
@@ -37,7 +37,8 @@ export function LoginButton(args: LoginButtonProps) {
   return (
     <Button
       variant="outline"
-      onClick={async () => {
+      onClick={async (event) => {
+        event.preventDefault()
         setIsLoading(true)
         // next-auth signIn() function doesn't work yet at Edge Runtime due to usage of BroadcastChannel
         const res = await signIn(name, {

@@ -1,4 +1,3 @@
-import { Message } from 'ai'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import { cn } from '@/lib/utils'
@@ -7,13 +6,15 @@ import { MemoizedReactMarkdown } from '@/components/ui/markdown'
 import { IconOpenAI, IconUser } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/features/chat/chat-message-actions'
 import { InferenceLoadingSpinner } from '@/components/features/effects/matrice-loader'
+import { I_Message } from '@/lib/homebrew'
 
 export interface ChatMessageProps {
-  message: Message
+  isLoading: boolean
+  message: I_Message
   theme?: string | undefined
 }
 
-export const ChatMessage = ({ message, theme, ...props }: ChatMessageProps) => {
+export const ChatMessage = ({ isLoading, message, theme, ...props }: ChatMessageProps) => {
   const bgStyle = message.role === 'user' ? 'bg-accent/80' : 'bg-background/80'
 
   return (
@@ -77,7 +78,7 @@ export const ChatMessage = ({ message, theme, ...props }: ChatMessageProps) => {
             >
               {message.content}
             </MemoizedReactMarkdown> :
-            <InferenceLoadingSpinner theme={theme} />
+            isLoading ? <InferenceLoadingSpinner theme={theme} /> : <div>...</div>
         }
         <ChatMessageActions message={message} />
       </div>

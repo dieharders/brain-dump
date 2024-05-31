@@ -1,33 +1,38 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconMessage, IconUsers } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useCallback } from 'react'
+import { useGlobalContext } from '@/contexts'
+import { I_Thread } from '@/lib/homebrew'
 
 interface SidebarItemProps {
-  chat: Chat
+  chat: I_Thread
   children: React.ReactNode
 }
 
-export function SidebarItem({ chat, children }: SidebarItemProps) {
-  const pathname = usePathname()
-  const isActive = pathname === chat.path
+export const SidebarItem = ({ chat, children }: SidebarItemProps) => {
+  const { currentThreadId, setThreads } = useGlobalContext()
+  const isActive = currentThreadId.current === chat.id
+
+  const selectThreadAction = useCallback(async (id: string) => {
+    if (currentThreadId.current === id) return
+    currentThreadId.current = id
+    setThreads(prev => [...prev]) // force re-render
+    return
+  }, [currentThreadId, setThreads])
 
   if (!chat?.id) return null
 
   return (
     <div className="relative">
-      {/* @TODO This may be causing premature fetches of chat data each time we hover over links */}
-      <Link
-        href={chat.path}
-        prefetch={false}
+      <div
+        onMouseDown={() => selectThreadAction(chat?.id)}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'relative flex h-8 w-full min-w-[18rem] flex-1 overflow-hidden pl-8 pr-2 text-left',
+          'relative flex h-8 w-full min-w-[18rem] flex-1 cursor-pointer overflow-hidden pl-8 pr-2 text-left',
           isActive && 'bg-accent',
         )}
       >
@@ -39,7 +44,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         {isActive && <div className="w-fit">{children}</div>}
         {/* Convo type icon */}
         <div className="absolute left-2 top-1 flex h-6 w-6 items-center justify-center">
-          {chat.sharePath ? (
+          {chat?.sharePath ? (
             <Tooltip delayDuration={350}>
               <TooltipTrigger
                 tabIndex={-1}
@@ -53,7 +58,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
             <IconMessage className="mr-2" />
           )}
         </div>
-      </Link>
+      </div>
     </div>
   )
 }

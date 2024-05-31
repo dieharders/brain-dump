@@ -53,10 +53,11 @@ export function ClearData(props: ClearDataProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                await action()
+                const success = await action()
                 setOpen(false)
                 // router.push('/')
-                toast.success(`Item deleted`)
+                if (success) toast.success(`Item deleted!`)
+                else toast.error(`Failed to delete item.`)
                 return
               })
             }}

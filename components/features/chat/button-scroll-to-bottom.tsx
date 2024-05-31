@@ -1,12 +1,12 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { useAtBottom } from '@/lib/hooks/use-at-bottom'
+import { useAtBottom } from '@/components/features/chat/use-at-bottom'
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { IconArrowDown } from '@/components/ui/icons'
 
 export function ButtonScrollToBottom({ className, ...props }: ButtonProps) {
-  const isAtBottom = useAtBottom()
+  const { isAtBottom } = useAtBottom()
 
   return (
     <Button
@@ -17,7 +17,7 @@ export function ButtonScrollToBottom({ className, ...props }: ButtonProps) {
         isAtBottom ? 'opacity-0' : 'opacity-100',
         className
       )}
-      onClick={() =>
+      onMouseDown={() =>
         window.scrollTo({
           top: document.body.offsetHeight,
           behavior: 'smooth'
