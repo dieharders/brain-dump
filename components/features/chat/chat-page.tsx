@@ -27,6 +27,7 @@ export interface I_Props
   messages: I_Message[]
 }
 
+// @TODO Rename to (ChatPrompt) chat-prompt-menu.tsx
 export const ChatPage = ({
   routeId,
   stop,
@@ -36,7 +37,7 @@ export const ChatPage = ({
   session,
   theme,
 }: I_Props) => {
-  const { isAiThinking } = useGlobalContext()
+  const { isAiThinking, currentThreadId } = useGlobalContext()
   const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
@@ -56,7 +57,7 @@ export const ChatPage = ({
     <div
       className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-85% ${colorTo} to-100%`}
     >
-      <ButtonScrollToBottom />
+      {currentThreadId.current && <ButtonScrollToBottom />}
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-14 items-center justify-center">
           {isAiThinking ? (

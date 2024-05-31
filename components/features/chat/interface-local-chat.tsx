@@ -20,7 +20,7 @@ interface I_Props extends React.ComponentProps<'div'> {
   session: any
 }
 
-// @TODO Rename file to chat-menu-local
+// @TODO Rename file to (ChatPageLocal) chat-page-local.tsx
 export const LocalChat = (props: I_Props) => {
   const { routeId, isLoading: isModelLoading, settings, session, className } = props
   const { isAiThinking, threads, currentThreadId } = useGlobalContext()

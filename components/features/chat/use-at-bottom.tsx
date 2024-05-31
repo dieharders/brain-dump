@@ -1,10 +1,15 @@
-import * as React from 'react'
+import { useEffect, useState } from "react"
 
 export function useAtBottom(offset = 0) {
-  const [isAtBottom, setIsAtBottom] = React.useState(false)
+  const [isAtBottom, setIsAtBottom] = useState(true)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
+      // Prevent showing if window height is very small
+      if (document.body.offsetHeight - window.innerHeight <= 1) {
+        setIsAtBottom(true)
+        return
+      }
       setIsAtBottom(
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - offset
@@ -19,5 +24,5 @@ export function useAtBottom(offset = 0) {
     }
   }, [offset])
 
-  return isAtBottom
+  return { isAtBottom }
 }
