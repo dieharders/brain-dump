@@ -9,7 +9,6 @@ import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
 import { I_Knowledge_State, I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
-import { useChatPage } from '@/components/features/chat/hook-chat-page'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { toast } from 'react-hot-toast'
@@ -56,7 +55,6 @@ const Item = ({ title, onAction, Icon, children, className }: { children?: React
 export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services } = props
   const { notAvailable: notAvailableNotification } = notifications()
-  const { loadModel: loadChatBot } = useChatPage({ services })
   // State
   const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
   const { collections, setCollections, installedList, modelConfigs } = useGlobalContext()
@@ -79,16 +77,20 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const goToKnowledgePage = (name: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionName=${name}`)
 
+  const goToChatBotPage = (botId: string) => {
+    onSubmit() // changes page layout while waiting to load Ai
+    const queryParams = `?id=${botId}`
+    const pathname = `/${ROUTE_CHATBOT}${queryParams}`
+    setHasTextServiceConnected(true)
+    router.push(pathname)
+  }
+
   const fetchBots = useCallback(async () => {
     // Save menu forms to a json file
     const res = await services?.storage.getBotSettings()
     // Update this menu's list of items
     res?.success && res?.data && setBots(res.data)
   }, [services?.storage])
-
-  const onSelect = useCallback(() => {
-    onSubmit()
-  }, [onSubmit])
 
   const updateKBCollections = useCallback(async () => {
     const data = await fetchCollections()
@@ -99,29 +101,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     // show bot creation menu
     setOpenBotCreationMenu(true)
   }
-
-  const createChatBot = useCallback(async (botId: string) => {
-    const queryParams = `?id=${botId}`
-    const pathname = `/${ROUTE_CHATBOT}${queryParams}`
-    onSelect()
-    if (loadChatBot) {
-      setIsConnecting(true)
-      setHasTextServiceConnected(true)
-
-      const action = async () => {
-        // Eject first
-        await services?.textInference?.unload()
-        // Load model
-        const res = await loadChatBot(botId)
-        return res
-      }
-
-      await notifications().loadModel(action())
-
-      setIsConnecting(false)
-      router.push(pathname)
-    }
-  }, [loadChatBot, onSelect, router, services?.textInference, setHasTextServiceConnected, setIsConnecting])
 
   const deleteBotConfig = useCallback(async (name: string) => {
     const action = async () => {
@@ -249,7 +228,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
               key={botId}
               title={title}
               Icon={() => <div className="text-4xl">🤖</div>}
-              onAction={() => createChatBot(botId)}
+              onAction={() => goToChatBotPage(botId)}
             >
               <ClearData
                 className={deleteButtonStyle}
