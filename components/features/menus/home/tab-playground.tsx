@@ -25,7 +25,7 @@ interface I_Props {
 
 export const Playground = (props: I_Props) => {
   const { setPlaygroundSettings } = useGlobalContext()
-  const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, services, selectedModelId } = props
+  const { setSelectedModelId, setHasTextServiceConnected, isConnecting, setIsConnecting, installedList, modelConfigs, selectedModelId } = props
   const router = useRouter()
   const [selectedModelFile, setSelectedModelFile] = useState<string | undefined>('')
   const [openResponseCharmDialog, setOpenResponseCharmDialog] = useState(false)
