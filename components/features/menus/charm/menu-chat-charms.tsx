@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   IconBrain,
   IconMicrophone,
@@ -42,7 +42,7 @@ export interface I_Props {
 
 export const CharmMenu = (props: I_Props) => {
   const { open, charmsList, activeCharms, toggleActiveCharm } = props
-  const { setPlaygroundSettings } = useGlobalContext()
+  const { playgroundSettings, setPlaygroundSettings } = useGlobalContext()
   const MAX_HEIGHT = 'h-[8rem]'
   const MIN_HEIGHT = 'h-0'
   const sizeHeight = open ? MAX_HEIGHT : MIN_HEIGHT
@@ -56,7 +56,7 @@ export const CharmMenu = (props: I_Props) => {
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
-  const [knowledgeType, setKnowledgeType] = useState<string>('')
+  const [knowledgeType, setKnowledgeType] = useState<string>(playgroundSettings.knowledge.type || '')
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])

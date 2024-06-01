@@ -11,6 +11,7 @@ import {
 import { defaultState as defaultSystemState } from '@/components/features/menus/tabs/tab-system'
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
+import { useGlobalContext } from '@/contexts'
 
 export const useModelSettingsMenu = ({
   services,
@@ -18,9 +19,16 @@ export const useModelSettingsMenu = ({
   services: I_ServiceApis | null
 }) => {
   // State values
-  const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(defaultPromptState)
-  const [stateSystem, setStateSystem] = useState<I_System_State>(defaultSystemState)
-  const [stateResponse, setStateResponse] = useState<I_Response_State>(defaultResponse)
+  const { playgroundSettings } = useGlobalContext()
+  const [statePrompt, setStatePrompt] = useState<I_Prompt_State>(
+    playgroundSettings.prompt || defaultPromptState,
+  )
+  const [stateSystem, setStateSystem] = useState<I_System_State>(
+    playgroundSettings.system || defaultSystemState,
+  )
+  const [stateResponse, setStateResponse] = useState<I_Response_State>(
+    playgroundSettings.response || defaultResponse,
+  )
 
   // Data values
   const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})
