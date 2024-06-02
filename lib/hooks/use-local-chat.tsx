@@ -6,7 +6,7 @@ import { useGlobalContext } from '@/contexts'
 import { DEFAULT_CONVERSATION_MODE, I_InferenceGenerateOptions, I_Message, I_Text_Settings, I_Thread } from '@/lib/homebrew'
 import { Session } from 'next-auth/types'
 
-interface I_Session extends Session {
+export interface I_Session extends Session {
   user: {
     id: string
     email: string

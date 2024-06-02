@@ -1,3 +1,5 @@
+'use client'
+
 import { ChatMessage } from '@/components/features/chat/chat-message'
 import { useGlobalContext } from '@/contexts'
 import { I_Message } from '@/lib/homebrew'

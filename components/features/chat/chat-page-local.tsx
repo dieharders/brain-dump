@@ -7,7 +7,7 @@ import { ChatList } from '@/components/features/chat/chat-list'
 import { ChatPromptMenu } from '@/components/features/chat/chat-prompt-menu'
 import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
-import { useLocalInference } from '@/lib/hooks/use-local-chat'
+import { I_Session, useLocalInference } from '@/lib/hooks/use-local-chat'
 import { I_Text_Settings } from '@/lib/homebrew'
 import { LavaLamp } from "@/components/features/backgrounds/lava-lamp"
 import { useGlobalContext } from '@/contexts'
@@ -17,7 +17,7 @@ interface I_Props extends React.ComponentProps<'div'> {
   routeId?: string
   isLoading?: boolean
   settings: I_Text_Settings | undefined
-  session: any
+  session: I_Session
 }
 
 export const ChatPageLocal = (props: I_Props) => {

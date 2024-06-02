@@ -41,19 +41,21 @@ export function CloudChat({ id, initialMessages, modelId, className }: IProps) {
     console.log('[cloud] modelId:', modelId)
   }, [modelId])
 
+  // @TODO Uncomment components below and replace with server side components
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length ? (
           <>
-            <ChatList messages={messages} />
+            {/* <ChatList messages={messages} /> */}
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
-          <EmptyScreen setInput={setInput} />
+          null
+          // <EmptyScreen setInput={setInput} />
         )}
       </div>
-      <ChatPromptMenu
+      {/* <ChatPromptMenu
         id={id}
         isLoading={isLoading}
         stop={stop}
@@ -63,7 +65,7 @@ export function CloudChat({ id, initialMessages, modelId, className }: IProps) {
         input={input}
         setInput={setInput}
         theme={theme}
-      />
+      /> */}
     </>
   )
 }
