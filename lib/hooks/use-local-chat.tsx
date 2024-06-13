@@ -89,16 +89,18 @@ export const useLocalInference = (props: IProps) => {
     const threadData = threadsData.find(t => t.id === currentThreadId.current)
     const messagesData = threadData?.messages
     if (!messagesData) return
+    // Save new thread
     if (messagesData?.length === 2) {
-      // Save new thread
       services?.storage.saveChatThread({
         body: {
           threadId: currentThreadId.current,
           thread: threadData,
         }
       })
-    } else if (messagesData?.length >= 4) {
-      // Save new messages to thread
+      return
+    }
+    // Save new messages to thread
+    if (messagesData?.length >= 4) {
       services?.storage.saveChatThread({
         body: {
           threadId: threadData?.id,
@@ -109,6 +111,7 @@ export const useLocalInference = (props: IProps) => {
           },
         }
       })
+      return
     }
   }, [currentThreadId, services?.storage])
 
