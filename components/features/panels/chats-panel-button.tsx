@@ -45,7 +45,17 @@ export const ChatsButton = ({ session }: { session: Session }) => {
         if (res?.success && res.data) {
           if (isAiThinking) {
             setThreads(prev => {
-              return [...prev, ...res.data]
+              const seen = new Set()
+              const array = [...prev, ...res.data]
+              // Prevent dupes
+              return array.filter(item => {
+                if (seen.has(item.id)) {
+                  return false
+                } else {
+                  seen.add(item.id)
+                  return true
+                }
+              })
             })
           } else {
             setThreads(res.data)

@@ -284,6 +284,7 @@ export const useLocalInference = (props: IProps) => {
   // Update messages with assistant's response
   useEffect(() => {
     if (!isLoading && !responseText) return
+    // Update message with response
     if (!isLoading && responseText) {
       setCurrentMessages(prev => prev.map(m => {
         if (m.id === responseId) m.content = responseText
@@ -291,8 +292,8 @@ export const useLocalInference = (props: IProps) => {
       }))
       return
     }
+    // Add new assistant message
     if (currChatIndex === -1 && responseId) {
-      // Add new assistant message
       if (!responseText) {
         const msg: I_Message = {
           id: responseId,
@@ -312,8 +313,9 @@ export const useLocalInference = (props: IProps) => {
         })
       }
       return
-    } else if (responseId && responseText) {
-      // Update assistant message
+    }
+    // Update assistant message
+    if (responseId && responseText) {
       setCurrentMessages(prev => prev.map(m => {
         if (m.id === responseId) m.content = responseText
         return m
