@@ -137,7 +137,7 @@ export const useLocalInference = (props: IProps) => {
       ...(prompt.role === 'user' && { username: prompt?.username || '' }),
       ...(prompt.role === 'assistant' && { modelId: prompt?.modelId || '' }),
     }
-    // Update messages list
+    // Add to/Update messages list
     setCurrentMessages(prev => {
       if (!currentThreadId.current) {
         return [newUserMsg]
@@ -152,7 +152,7 @@ export const useLocalInference = (props: IProps) => {
           id: newThreadId,
           title: newUserMsg.content.slice(0, 36) || '',
           createdAt: formatDate(new Date()),
-          summary: '',
+          summary: '', // @TODO fill in with Ai or let user edit
           numMessages: 1,
           userId: session?.user.id || session.user.sub || '', // ids come as "sub" when using jwtoken
           messages: [newUserMsg],
