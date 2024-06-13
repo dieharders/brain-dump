@@ -84,6 +84,7 @@ export const useLocalInference = (props: IProps) => {
     console.log(`[Chat] onStreamEvent ${eventName}`)
   }
 
+  // Save threads to disk
   const saveThreads = useCallback(async (threadsData: I_Thread[]) => {
     const threadData = threadsData.find(t => t.id === currentThreadId.current)
     const messagesData = threadData?.messages
@@ -93,20 +94,11 @@ export const useLocalInference = (props: IProps) => {
       services?.storage.saveChatThread({
         body: {
           threadId: currentThreadId.current,
-          thread: {
-            id: currentThreadId.current,
-            createdAt: formatDate(new Date()),
-            title: messagesData?.[0].content.slice(0, 36) || '',
-            summary: '',
-            numMessages: messagesData?.length || 0,
-            messages: messagesData,
-            userId: session?.user.id || session.user.sub || '', // ids come as "sub" when using jwtoken
-            // sharePath: `/thread?id=${newThreadId}`, // this is added later when user allows sharing
-          },
+          thread: threadData,
         }
       })
     } else if (messagesData?.length >= 4) {
-      // Save new messages to disk
+      // Save new messages to thread
       services?.storage.saveChatThread({
         body: {
           threadId: threadData?.id,
@@ -118,7 +110,7 @@ export const useLocalInference = (props: IProps) => {
         }
       })
     }
-  }, [currentThreadId, services?.storage, session?.user.id, session.user?.sub])
+  }, [currentThreadId, services?.storage])
 
   const stop = useCallback(() => {
     // Save response
@@ -158,7 +150,13 @@ export const useLocalInference = (props: IProps) => {
         const newThreadId = nanoid()
         const newThread = {
           id: newThreadId,
+          title: newUserMsg.content.slice(0, 36) || '',
+          createdAt: formatDate(new Date()),
+          summary: '',
+          numMessages: 1,
+          userId: session?.user.id || session.user.sub || '', // ids come as "sub" when using jwtoken
           messages: [newUserMsg],
+          // sharePath: `/thread?id=${newThreadId}`, // this is added later when user allows sharing
         } as I_Thread
         currentThreadId.current = newThreadId
         return [newThread]
@@ -251,7 +249,7 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(false)
       toast.error(`Prompt request error: \n ${err}`)
     }
-  }, [saveThreads, setThreads, setCurrentMessages, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings])
+  }, [saveThreads, setThreads, setCurrentMessages, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings, session.user.id, session.user.sub])
 
   const reload = useCallback(async () => {
     try {
@@ -269,17 +267,6 @@ export const useLocalInference = (props: IProps) => {
         const newMessages = prevMessages.slice(0, -2)
         return newMessages
       })
-      // setThreads(prevThreads => {
-      //   return prevThreads.map(prevThread => {
-      //     if (prevThread.id === currentThreadId.current) {
-      //       // remove last msg
-      //       const newMessages = prevThread.messages.slice(0, -2)
-      //       prevThread.messages = newMessages
-      //     }
-      //     return prevThread
-      //   })
-      // })
-
       // Resend with previous user prompt
       await append({
         id: nanoid(),
@@ -292,7 +279,7 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(false)
     }
     return null
-  }, [setIsLoading, currThread?.messages, setThreads, append, session?.user.name, currentThreadId])
+  }, [setIsLoading, currThread?.messages, append, session?.user.name, setCurrentMessages])
 
   // Update messages with assistant's response
   useEffect(() => {
