@@ -11,7 +11,7 @@ export interface SidebarChatListProps {
 }
 
 export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
-  const { threads, currentThreadId, setThreads } = useGlobalContext()
+  const { threads, currentThreadId, setThreads, setCurrentMessages } = useGlobalContext()
   const { removeChat, getAllThreads } = useThreads()
 
   return (
@@ -23,7 +23,7 @@ export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
           actionDescription="This will start a new chat session."
           action={async () => {
             currentThreadId.current = ''
-            setThreads(prev => [...prev]) // force re-render
+            setCurrentMessages([])
           }}
         ></NewItem>
       </div>
@@ -44,6 +44,8 @@ export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
                         currentThreadId.current = ''
                         // update threads list
                         refreshedRes && setThreads(refreshedRes.data)
+                        // update messages
+                        setCurrentMessages([])
                         return refreshedRes
                       }
                       return refreshedRes

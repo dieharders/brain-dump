@@ -14,15 +14,19 @@ interface SidebarItemProps {
 }
 
 export const SidebarItem = ({ chat, children }: SidebarItemProps) => {
-  const { currentThreadId, setThreads } = useGlobalContext()
+  const { currentThreadId, threads, setCurrentMessages, isAiThinking } = useGlobalContext()
   const isActive = currentThreadId.current === chat.id
 
   const selectThreadAction = useCallback(async (id: string) => {
     if (currentThreadId.current === id) return
     currentThreadId.current = id
-    setThreads(prev => [...prev]) // force re-render
+    // Update messages list
+    if (!isAiThinking) {
+      const msgs = threads.find(t => t.id === currentThreadId.current)?.messages
+      msgs && setCurrentMessages(msgs)
+    }
     return
-  }, [currentThreadId, setThreads])
+  }, [currentThreadId, threads, setCurrentMessages, isAiThinking])
 
   if (!chat?.id) return null
 

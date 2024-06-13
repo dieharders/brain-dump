@@ -22,13 +22,12 @@ interface I_Props extends React.ComponentProps<'div'> {
 
 export const ChatPageLocal = (props: I_Props) => {
   const { routeId, isLoading: isModelLoading, settings, session, className } = props
-  const { isAiThinking, threads, currentThreadId } = useGlobalContext()
+  const { isAiThinking, currentMessages } = useGlobalContext()
   const { theme } = useTheme()
   const wrapperStyle = useMemo(() => constructMainBgStyle(theme), [theme])
   const { append, reload, stop } = useLocalInference({ settings, session })
   const isLoading = isModelLoading || isAiThinking
   const [hasMounted, setHasMounted] = useState(false)
-  const messages = threads.find(t => t.id === currentThreadId.current)?.messages || []
 
   useEffect(() => {
     if (hasMounted) return
@@ -46,9 +45,9 @@ export const ChatPageLocal = (props: I_Props) => {
       <ChatContextProvider>
         {/* Messages list */}
         <div className={cn('relative w-full pb-[200px] pt-4 md:pt-10', className)}>
-          {messages.length ? (
+          {currentMessages.length ? (
             <>
-              <ChatList messages={messages} theme={theme} />
+              <ChatList messages={currentMessages} theme={theme} />
               <ChatScrollAnchor trackVisibility={isLoading} />
             </>
           ) : (
@@ -62,7 +61,7 @@ export const ChatPageLocal = (props: I_Props) => {
           stop={stop}
           append={append}
           reload={reload}
-          messages={messages}
+          messages={currentMessages}
           session={session}
           theme={theme}
         />

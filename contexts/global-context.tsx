@@ -1,5 +1,5 @@
 import { createContext, Dispatch, MutableRefObject, ReactNode, SetStateAction, useRef, useState } from 'react'
-import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, I_Thread, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_Message, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, I_Thread, T_InstalledTextModel } from '@/lib/homebrew'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -37,6 +37,8 @@ interface IGlobalContextProps {
   threads: Array<I_Thread>
   setThreads: Dispatch<SetStateAction<Array<I_Thread>>>
   currentThreadId: MutableRefObject<string>
+  currentMessages: Array<I_Message>,
+  setCurrentMessages: Dispatch<SetStateAction<Array<I_Message>>>,
 }
 
 // Defaults
@@ -77,6 +79,8 @@ export const GlobalContext = createContext<IGlobalContextProps>({
   threads: [],
   setThreads: () => { },
   currentThreadId: { current: '' },
+  currentMessages: [],
+  setCurrentMessages: () => { },
 })
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
@@ -93,6 +97,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [isAiThinking, setIsAiThinking] = useState(false)
   const [threads, setThreads] = useState<Array<I_Thread>>([])
   const currentThreadId = useRef('')
+  const [currentMessages, setCurrentMessages] = useState<Array<I_Message>>([])
 
   return (
     <GlobalContext.Provider
@@ -123,6 +128,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         threads,
         setThreads,
         currentThreadId,
+        currentMessages,
+        setCurrentMessages,
       }}
     >
       {children}

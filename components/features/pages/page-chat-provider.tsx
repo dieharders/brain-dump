@@ -10,8 +10,8 @@ import { ChatPageLocal } from '@/components/features/chat/chat-page-local'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import { loadTextModel } from "@/components/features/pages/client-actions-ai"
 
-const PlaygroundPage = ({ isLoading, session, services, action, settings, fetchSettings }: any) => {
-  const { currentModel } = useGlobalContext()
+const PlaygroundPage = ({ isLoading, session, action, settings, fetchSettings }: any) => {
+  const { currentModel, services } = useGlobalContext()
 
   // Load model on mount
   useEffect(() => {
@@ -34,8 +34,8 @@ const PlaygroundPage = ({ isLoading, session, services, action, settings, fetchS
   )
 }
 
-const BotPage = ({ isLoading, services, session, action, settings, routeId, name }: any) => {
-  const { currentModel } = useGlobalContext()
+const BotPage = ({ isLoading, session, action, settings, routeId, name }: any) => {
+  const { currentModel, services } = useGlobalContext()
 
   // Load model on mount
   useEffect(() => {
@@ -69,7 +69,7 @@ export const ChatProvider = (props: I_Props) => {
   const searchParams = useSearchParams()
   const botName = searchParams.get('id') || ''
   const { getServices } = useHomebrew()
-  const { services, setServices, setCurrentModel, playgroundSettings } = useGlobalContext()
+  const { services, setServices, setCurrentModel, playgroundSettings, setCurrentMessages, currentThreadId } = useGlobalContext()
   const [isLoading, setIsLoading] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
   const [settings, setSettings] = useState<I_Text_Settings | undefined>()
@@ -120,8 +120,10 @@ export const ChatProvider = (props: I_Props) => {
       setHasLoaded(false)
       setIsLoading(false)
       setCurrentModel(null)
+      setCurrentMessages([])
+      currentThreadId.current = ''
     }
-  }, [setCurrentModel])
+  }, [setCurrentModel, setCurrentMessages, currentThreadId])
 
   if (isLoading)
     return (<div className="h-full w-full flex-1 bg-neutral-900"></div>)
@@ -131,7 +133,6 @@ export const ChatProvider = (props: I_Props) => {
       isLoading={isLoading}
       settings={playgroundSettings}
       session={session}
-      services={services}
       action={playgroundAction}
       fetchSettings={fetchPlaygroundSettings}
     />
@@ -143,6 +144,5 @@ export const ChatProvider = (props: I_Props) => {
       routeId={routeId}
       settings={settings}
       session={session}
-      services={services}
     />
 }
