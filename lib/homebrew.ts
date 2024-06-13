@@ -434,7 +434,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
 }
 
 export const defaultPort = '8008'
-export const defaultDomain = 'https://localhost'
+export const defaultDomain = 'http://localhost'
 const createDomainName = () => {
   const { port, domain } = appSettings.getHostConnection()
   const PORT = port || defaultPort

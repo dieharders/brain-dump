@@ -139,7 +139,7 @@ export const DownloadModelMenu = (props: I_Props) => {
       name={name}
       repo_id={model?.id}
     />
-  }, [quants, model?.id, installedModelsInfo, selected, downloadModel, deleteModel])
+  }, [quants, model?.id, installedModelsInfo, downloadModel, fetchInstalledModelsAndConfigs, services, deleteModel, selected])
 
   return (
     <div className="order-last flex w-full flex-col justify-items-stretch overflow-hidden rounded-md border border-primary/40 bg-accent">

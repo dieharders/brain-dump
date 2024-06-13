@@ -12,7 +12,7 @@ import { useGlobalContext } from '@/contexts'
 
 export const ChatsButton = ({ session }: { session: Session }) => {
   // State
-  const { setThreads, currentThreadId } = useGlobalContext()
+  const { setThreads, currentThreadId, setCurrentMessages } = useGlobalContext()
   // Actions
   const { getAllThreads, clearChats } = useThreads()
   // Methods
@@ -25,6 +25,8 @@ export const ChatsButton = ({ session }: { session: Session }) => {
         currentThreadId.current = ''
         // update threads list
         refreshedRes && setThreads(refreshedRes.data)
+        // update messages list
+        setCurrentMessages([])
         return refreshedRes?.success || false
       }
       return false
@@ -39,7 +41,11 @@ export const ChatsButton = ({ session }: { session: Session }) => {
       onClick={async () => {
         // Get all chat threads
         const res = await getAllThreads()
-        res?.success && res.data && setThreads(res.data)
+        if (res?.success && res.data) {
+          // Update threads data
+          setThreads(res.data)
+        }
+        console.log('@@ threads panel opened')
       }}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         <SidebarChatList userId={session?.user?.id} />
