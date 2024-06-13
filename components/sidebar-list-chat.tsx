@@ -23,7 +23,6 @@ export const SidebarChatList = ({ userId }: SidebarChatListProps) => {
           actionDescription="This will start a new chat session."
           action={async () => {
             currentThreadId.current = ''
-            setThreads(prev => [...prev]) // force re-render
             setCurrentMessages([])
           }}
         ></NewItem>

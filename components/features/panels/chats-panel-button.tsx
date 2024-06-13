@@ -12,7 +12,7 @@ import { useGlobalContext } from '@/contexts'
 
 export const ChatsButton = ({ session }: { session: Session }) => {
   // State
-  const { setThreads, currentThreadId, setCurrentMessages } = useGlobalContext()
+  const { setThreads, currentThreadId, setCurrentMessages, isAiThinking } = useGlobalContext()
   // Actions
   const { getAllThreads, clearChats } = useThreads()
   // Methods
@@ -41,11 +41,16 @@ export const ChatsButton = ({ session }: { session: Session }) => {
       onClick={async () => {
         // Get all chat threads
         const res = await getAllThreads()
+        // Update threads data
         if (res?.success && res.data) {
-          // Update threads data
-          setThreads(res.data)
+          if (isAiThinking) {
+            setThreads(prev => {
+              return [...prev, ...res.data]
+            })
+          } else {
+            setThreads(res.data)
+          }
         }
-        console.log('@@ threads panel opened')
       }}>
       <Suspense fallback={<div className="flex-1 overflow-auto" />}>
         <SidebarChatList userId={session?.user?.id} />
