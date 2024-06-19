@@ -432,9 +432,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to persist data
    */
   storage: {
-    saveToolsSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
-    getToolsSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
-    deleteToolsSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    saveToolsSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    getToolsSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    deleteToolsSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
     getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     deleteBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     saveBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>

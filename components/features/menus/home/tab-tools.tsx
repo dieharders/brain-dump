@@ -39,7 +39,7 @@ export const ToolCreationMenu = (props: I_Props) => {
         return
       }
       if (!state.path) {
-        toast.error('Please enter the path to the code to execute for this tool.')
+        toast.error('Please enter the path to the code for this tool to execute.')
         return
       }
       // Save settings

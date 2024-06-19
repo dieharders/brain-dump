@@ -100,10 +100,10 @@ export const AddToolTab = (props: I_Props) => {
             {/* Tool path */}
             <div className="w-full">
               <Input
-                name="url"
+                name="path"
                 value={state.path}
                 placeholder="Code path (file::// or https://)"
-                onChange={e => setState(prev => ({ ...prev, url: e.target.value }))}
+                onChange={e => setState(prev => ({ ...prev, path: e.target.value }))}
                 className="text-md"
               />
             </div>

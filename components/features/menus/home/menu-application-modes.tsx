@@ -139,7 +139,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const saveToolConfig = useCallback(async (toolsSettings: I_Submit_Tool_Settings) => {
     // Save menu forms to a json file
-    const res = await services?.storage.saveToolsSettings({ body: toolsSettings })
+    const res = await services?.storage?.saveToolsSettings?.({ body: toolsSettings })
     if (!res?.success) {
       toast.error(`${res?.message}`)
       return
@@ -187,7 +187,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const deleteTool = useCallback(async (id: string) => {
-    const res = await services?.storage.deleteToolsSettings({ body: { id } })
+    const res = await services?.storage?.deleteToolsSettings?.({ body: { id } })
     return res?.success || false
   }, [services?.storage])
 
