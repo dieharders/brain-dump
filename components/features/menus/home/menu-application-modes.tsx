@@ -137,25 +137,34 @@ export const ApplicationModesMenu = (props: I_Props) => {
     action()
   }, [services?.storage])
 
-  const saveToolConfig = useCallback(async (toolsSettings: I_Submit_Tool_Settings) => {
+  const fetchTools = useCallback(async () => {
+    const result = await services?.storage.getToolSettings?.()
+    const data = result?.data
+    data && setTools(data)
+    return result
+  }, [services?.storage])
+
+  const saveTool = useCallback(async (toolsSettings: I_Submit_Tool_Settings) => {
     // Save menu forms to a json file
     const res = await services?.storage?.saveToolSettings?.({ body: toolsSettings })
     if (!res?.success) {
       toast.error(`${res?.message}`)
       return
     }
-    // Update this menu's list of items
-    res?.data && setTools(res.data)
+    // Update list of tools
+    await fetchTools()
     // Success
     toast.success(`${res?.message}`)
     return
   }, [services?.storage])
 
-  const fetchTools = useCallback(async () => {
-    const result = await services?.storage.getToolSettings?.()
-    const data = result?.data
-    data && setTools(data)
-    return result
+  const deleteTool = useCallback(async (id: string) => {
+    const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
+    // Failed
+    if (!res?.success) return false
+    // Success
+    await fetchTools()
+    return true
   }, [services?.storage])
 
   const fetchModelInfo = useCallback(
@@ -187,11 +196,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     },
     [services?.textInference],
   )
-
-  const deleteTool = useCallback(async (id: string) => {
-    const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
-    return res?.success || false
-  }, [services?.storage])
 
   const onTabChange = useCallback(
     (val: string) => {
@@ -287,7 +291,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <ToolCreationMenu
         dialogOpen={openToolCreationMenu}
         setDialogOpen={setOpenToolCreationMenu}
-        onSubmit={saveToolConfig}
+        onSubmit={saveTool}
       />
 
       {/* Title and description */}
