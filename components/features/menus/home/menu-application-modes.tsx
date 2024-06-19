@@ -8,7 +8,8 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_Knowledge_State, I_ServiceApis, I_Text_Settings } from '@/lib/homebrew'
+import { I_Submit_Tool_Settings, ToolCreationMenu } from '@/components/features/menus/home/tab-tools'
+import { I_Knowledge_State, I_Text_Settings, I_Tools_Settings } from '@/lib/homebrew'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { toast } from 'react-hot-toast'
@@ -22,7 +23,6 @@ import { useActions } from './actions'
 
 interface I_Props {
   onSubmit: () => void // exec some logic when list item is clicked
-  services: I_ServiceApis | null
   isConnecting: boolean
   setIsConnecting: Dispatch<SetStateAction<boolean>>
   setHasTextServiceConnected: Dispatch<SetStateAction<boolean>>
@@ -53,15 +53,17 @@ const Item = ({ title, onAction, Icon, children, className }: { children?: React
 }
 
 export const ApplicationModesMenu = (props: I_Props) => {
-  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting, services } = props
+  const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting } = props
   const { notAvailable: notAvailableNotification } = notifications()
   // State
+  const { collections, setCollections, installedList, modelConfigs, services } = useGlobalContext()
   const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
-  const { collections, setCollections, installedList, modelConfigs } = useGlobalContext()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
+  const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tools_Settings }>({ open: false })
   const [bots, setBots] = useState<I_Text_Settings[]>([])
+  const [tools, setTools] = useState<I_Tools_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   const deleteButtonStyle = "absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
@@ -135,6 +137,36 @@ export const ApplicationModesMenu = (props: I_Props) => {
     action()
   }, [services?.storage])
 
+  const fetchTools = useCallback(async () => {
+    const result = await services?.storage.getToolSettings?.()
+    const data = result?.data
+    data && setTools(data)
+    return result
+  }, [services?.storage])
+
+  const saveTool = useCallback(async (toolSettings: I_Submit_Tool_Settings | I_Tools_Settings) => {
+    // Save menu forms to a json file
+    const res = await services?.storage?.saveToolSettings?.({ body: toolSettings })
+    if (!res?.success) {
+      toast.error(`${res?.message}`)
+      return
+    }
+    // Update list of tools
+    await fetchTools()
+    // Success
+    toast.success(`${res?.message}`)
+    return
+  }, [services?.storage])
+
+  const deleteTool = useCallback(async (id: string) => {
+    const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
+    // Failed
+    if (!res?.success) return false
+    // Success
+    await fetchTools()
+    return true
+  }, [services?.storage])
+
   const fetchModelInfo = useCallback(
     async (repoId: string) => {
       const payload = { repoId }
@@ -178,11 +210,11 @@ export const ApplicationModesMenu = (props: I_Props) => {
         case 'bots':
           services && fetchBots()
           break
-        case 'assistants':
-          // services && fetchAssistants()
+        case 'tools':
+          services && fetchTools()
           break
-        case 'teams':
-          // services && fetchTeams()
+        case 'jobs':
+          // services && fetchJobs()
           break
         case 'knowledge':
           // Fetch collections
@@ -193,7 +225,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           break
       }
     },
-    [fetchBots, fetchInstalledModelsAndConfigs, services, updateKBCollections],
+    [fetchBots, fetchInstalledModelsAndConfigs, fetchTools, services, updateKBCollections],
   )
 
   // Menus
@@ -208,9 +240,9 @@ export const ApplicationModesMenu = (props: I_Props) => {
       />
       {/* Title and description */}
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Custom Bots</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Build Custom Bots</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Personalized Ai with unique knowledge and expertise in a specific domain. Build your own with private data or use bots from our curated and community lists.
+          Build unique Ai with knowledge and expertise in a specific domain. Create your own or choose from our curated list.
         </Description>
       </Header>
 
@@ -219,7 +251,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         {/* Create a bot */}
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
         {/* Presets and User generated bots */}
-        {...bots.map(bot => {
+        {bots.map(bot => {
           const botId = bot.model?.botName
           if (!botId) return null
           const title = botId[0].toUpperCase() + botId.slice(1)
@@ -240,55 +272,93 @@ export const ApplicationModesMenu = (props: I_Props) => {
           )
         }
         )}
-        <Item title="Language Expert" Icon={() => <div className="text-4xl">🎓</div>} onAction={createNewBotAction} className={presetBotClass} />
-        <Item title="Coding Chatbot" Icon={() => <div className="text-4xl">💻</div>} onAction={createNewBotAction} className={presetBotClass} />
-        <Item title="Logical Thinker" Icon={() => <div className="text-4xl">🧠</div>} onAction={createNewBotAction} className={presetBotClass} />
-        <Item title="Mathematician" Icon={() => <div className="text-4xl">🔢</div>} onAction={createNewBotAction} className={presetBotClass} />
-        <Item title="Historical Scholar" Icon={() => <div className="text-4xl">📜</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Language Expert" Icon={() => <div className="text-4xl">💬</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Software Developer" Icon={() => <div className="text-4xl">💻</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Stock Analyst" Icon={() => <div className="text-4xl">📈</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Data Analyst" Icon={() => <div className="text-4xl">👨‍💻</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Historical Scholar" Icon={() => <div className="text-4xl">🎓</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Entertainer" Icon={() => <div className="text-4xl">🎤</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Sci-Fi Author" Icon={() => <div className="text-4xl">✍</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Lawyer" Icon={() => <div className="text-4xl">⚖</div>} onAction={createNewBotAction} className={presetBotClass} />
+        <Item title="Bio Researcher" Icon={() => <div className="text-4xl">🦠</div>} onAction={createNewBotAction} className={presetBotClass} />
       </div>
     </div>
   )
 
-  const assistantsMenu = (
+  const toolsMenu = (
+    <div>
+      {/* Menu for tool creation */}
+      <ToolCreationMenu
+        dialogOpen={openToolCreationMenu}
+        setDialogOpen={(isOpen) => setOpenToolCreationMenu({ open: isOpen })}
+        onSubmit={saveTool}
+      />
+
+      {/* Title and description */}
+      <Header>
+        <Title><div className="my-2 text-center text-3xl font-bold">Tools for Ai Agents</div></Title>
+        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+          Augment your Bots with access to external tools. Build your own or choose from our open-source tools available in the cloud.
+        </Description>
+      </Header>
+
+      {/* Content */}
+      <div className={gridContentClass}>
+        <Item title="Add New" Icon={IconPlus} onAction={() => setOpenToolCreationMenu({ open: true })} />
+        {/* User generated tools */}
+        {tools.map(tool => {
+          const toolId = tool.id
+          const toolName = tool.name
+          if (!toolId) return null
+          return (
+            <Item
+              key={toolId}
+              title={toolName}
+              Icon={() => <div className="text-4xl">🔧</div>}
+              onAction={() => {
+                // Open edit menu
+                setOpenToolCreationMenu({ open: true, initialState: tool })
+              }}
+            >
+              <ClearData
+                className={deleteButtonStyle}
+                variant="secondary"
+                action={() => deleteTool(toolId)}
+                Icon={Cross1Icon}
+              />
+            </Item>
+          )
+        }
+        )}
+        {/* Presets */}
+        <Item title="Calculator" Icon={() => <div className="text-4xl">➗</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Web Search" Icon={() => <div className="text-4xl">🌐</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="WIKI API" Icon={() => <div className="text-4xl">🔗</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Web Crawl" Icon={() => <div className="text-4xl">🕸</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="File Manager" Icon={() => <div className="text-4xl">🗃</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Shell Tools" Icon={() => <div className="text-4xl">🖥</div>} onAction={notAvailableNotification} className={presetBotClass} />
+      </div>
+    </div>
+  )
+
+  const jobsMenu = (
     <div>
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Assistants</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Ai Workloads</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Augment your Bots with access to tools and the internet. They can be assigned 1 or more tasks in sequence, and will create a deliverable in the specified format you provide.
+          {`One or more Bots working together under a "Director" to complete a job. The job Director delivers a document in the format you specify.`}
         </Description>
       </Header>
 
       {/* Content */}
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} onAction={notAvailableNotification} />
-        <Item title="Stock Analyst" Icon={() => <div className="text-4xl">📈</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Entertainer" Icon={() => <div className="text-4xl">🎤</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Software Developer" Icon={() => <div className="text-4xl">💻</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Sci-Fi Author" Icon={() => <div className="text-4xl">✍</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Lawyer" Icon={() => <div className="text-4xl">⚖</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Bio Researcher" Icon={() => <div className="text-4xl">🦠</div>} onAction={notAvailableNotification} className={presetBotClass} />
-      </div>
-    </div>
-  )
-
-  const crewsMenu = (
-    <div>
-      <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Team of Assistants</div></Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          {`A group of Bots and Assistants working together under a "Director" towards a goal. Submit criteria for a job and get your results in a format you specify.`}
-        </Description>
-      </Header>
-
-      {/* Content */}
-      <div className={gridContentClass}>
-        <Item title="Add New" Icon={IconPlus} onAction={notAvailableNotification} />
-        <Item title="Publisher" Icon={() => <div className="text-4xl">📰</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Game Studio" Icon={() => <div className="text-4xl">🎮</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Advertising Company" Icon={() => <div className="text-4xl">📢</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Quality Assurance" Icon={() => <div className="text-4xl">🛠️</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Software Team" Icon={() => <div className="text-4xl">👨‍💻</div>} onAction={notAvailableNotification} className={presetBotClass} />
-        <Item title="Research Org" Icon={() => <div className="text-4xl">🔬</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Publish Paper" Icon={() => <div className="text-4xl">📰</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Design Game" Icon={() => <div className="text-4xl">🎮</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Write Ad Campaign" Icon={() => <div className="text-4xl">📢</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Q/A Product" Icon={() => <div className="text-4xl">🔎</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Build App" Icon={() => <div className="text-4xl">👨‍💻</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item title="Research Topic" Icon={() => <div className="text-4xl">🔬</div>} onAction={notAvailableNotification} className={presetBotClass} />
       </div>
     </div>
   )
@@ -298,7 +368,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Knowledge Base</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Upload text, images, video, audio when you require bots to memorize and understand specialized knowledge or private data. We provide you tools to easily access data from several sources.
+          Enhance your Bots with long-term memory and private data. Upload text, images, video, audio into a collection and assign to any Bot.
         </Description>
       </Header>
 
@@ -337,7 +407,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         ))}
         {/* Preset items, @TODO Add values to their config menus */}
         <Item title="Documentation" Icon={ClipboardIcon} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
-        <Item title="Best Practices" Icon={() => <div className="text-4xl">📈</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
+        <Item title="Best Practices" Icon={() => <div className="text-4xl">🚯</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
         <Item title="Code Repo" Icon={() => <div className="text-4xl">📂</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
         <Item title="Contacts" Icon={PersonIcon} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
         <Item title="Notes" Icon={() => <div className="text-4xl">📝</div>} className={presetBotClass} onAction={() => setCreateCollectionDialogOpen(true)} />
@@ -354,7 +424,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           </p>
         </Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          {`Choose an Ai model and fully customize its' config, then drop into a chat session. Explore chat settings and experiment with prompting techniques before setting off to create your own personalized bots.`}
+          Try out any installed Ai model in a temporary chat session. Experiment with settings and prompting techniques in a private and safe environment.
         </Description>
       </Header>
 
@@ -397,8 +467,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
     },
     { label: 'playground', icon: "🌎", content: playgroundMenu },
     { label: 'bots', icon: "🤖", content: botsMenu },
-    { label: 'assistants', icon: "👩‍🔬", content: assistantsMenu },
-    { label: 'teams', icon: "🙌", content: crewsMenu },
+    { label: 'tools', icon: "🛠", content: toolsMenu },
+    { label: 'jobs', icon: "🧰", content: jobsMenu },
     {
       label: 'knowledge',
       icon: "📚",

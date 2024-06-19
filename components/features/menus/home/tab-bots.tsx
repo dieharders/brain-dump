@@ -147,7 +147,7 @@ export const BotCreationMenu = (props: I_Props) => {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className="lg:min-w-[35%]">
         <DialogHeader>
-          <DialogTitle>Create ChatBot</DialogTitle>
+          <DialogTitle>Create Custom Bot</DialogTitle>
         </DialogHeader>
 
         <Tabs

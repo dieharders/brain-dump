@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   IconBrain,
   IconMicrophone,
-  IconPromptTemplate,
+  IconGear,
   IconSynth,
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
@@ -202,7 +202,7 @@ export const CharmMenu = (props: I_Props) => {
           {shouldRender('prompt') &&
             CharmItem({
               className: emptyRingStyle,
-              children: <IconPromptTemplate className={iconStyle} />,
+              children: <IconGear className={iconStyle} />,
               actionText: 'Model Settings - Modify your Ai behavior',
               onClick: async () => {
                 await fetchData()
