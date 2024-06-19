@@ -17,7 +17,7 @@ export interface CollectionListProps {
 
 export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => {
   const router = useRouter()
-  const { collections, setSelectedDocumentId, setDocuments, setSelectedCollectionName } = useGlobalContext()
+  const { collections, setSelectedDocumentId, setDocuments, selectedCollectionName, setSelectedCollectionName } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const { addCollection } = useMemoryActions()
 
@@ -40,6 +40,7 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
                 <CollectionCard
                   key={collection?.id}
                   collection={collection}
+                  isActive={selectedCollectionName === collection?.name}
                   onClick={() => {
                     setSelectedCollectionName(collection?.name)
                     // Reset data when changing collections

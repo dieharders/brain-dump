@@ -43,6 +43,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
           key={docId}
           document={document}
           numChunks={numChunks}
+          isActive={docId === selectedDocumentId}
           onClick={async () => {
             if (docId === selectedDocumentId) return
             docId && setSelectedDocumentId(docId)
