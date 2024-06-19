@@ -139,7 +139,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
   const saveToolConfig = useCallback(async (toolsSettings: I_Submit_Tool_Settings) => {
     // Save menu forms to a json file
-    const res = await services?.storage?.saveToolsSettings?.({ body: toolsSettings })
+    const res = await services?.storage?.saveToolSettings?.({ body: toolsSettings })
     if (!res?.success) {
       toast.error(`${res?.message}`)
       return
@@ -152,8 +152,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
   }, [services?.storage])
 
   const fetchTools = useCallback(async () => {
-    const info = services?.storage.getToolsSettings?.()
-    return info
+    const result = await services?.storage.getToolSettings?.()
+    const data = result?.data
+    data && setTools(data)
+    return result
   }, [services?.storage])
 
   const fetchModelInfo = useCallback(
@@ -187,7 +189,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   )
 
   const deleteTool = useCallback(async (id: string) => {
-    const res = await services?.storage?.deleteToolsSettings?.({ body: { id } })
+    const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
     return res?.success || false
   }, [services?.storage])
 
@@ -304,11 +306,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
           const toolId = tool.id
           const toolName = tool.name
           if (!toolId) return null
-          const title = toolName.toUpperCase()
           return (
             <Item
               key={toolId}
-              title={title}
+              title={toolName}
               Icon={() => <div className="text-4xl">🔧</div>}
               onAction={() => {
                 // @TODO Open an edit menu here
