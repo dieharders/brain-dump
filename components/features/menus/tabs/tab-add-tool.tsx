@@ -9,9 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
-import { I_Tools_Settings } from '@/lib/homebrew'
-
-type I_Submit_Tool_Settings = Omit<I_Tools_Settings, 'id'>
+import { I_Submit_Tool_Settings } from '@/components/features/menus/home/tab-tools'
 
 interface I_Props {
   state: I_Submit_Tool_Settings,
@@ -28,7 +26,7 @@ export const defaultState: I_Submit_Tool_Settings = {
 export const AddToolTab = (props: I_Props) => {
   const { state, setState } = props
 
-  const argtypes = [
+  const argTypes = [
     {
       name: 'string',
       value: 'string'
@@ -52,10 +50,9 @@ export const AddToolTab = (props: I_Props) => {
   ]
 
   const addNewArgumentInput = (ind: number) => {
-    const key = `argument${ind}`
     setState(prev => {
-      const ergs = { ...prev }
-      const newArgs = ergs.args
+      const key = `argument${ind}`
+      const newArgs = [...prev.args]
       const defaultValue = 'string'
       newArgs.push({ [key]: defaultValue })
       return { ...prev, args: newArgs }
@@ -138,7 +135,7 @@ export const AddToolTab = (props: I_Props) => {
                       name="Argument type"
                       value={type || undefined}
                       placeholder="Argument type"
-                      items={argtypes}
+                      items={argTypes}
                       className="text-md"
                       onChange={val => setState(prev => {
                         const newArgs = prev.args

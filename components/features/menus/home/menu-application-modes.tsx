@@ -251,7 +251,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         {/* Create a bot */}
         <Item title="Add New" Icon={IconPlus} onAction={createNewBotAction} />
         {/* Presets and User generated bots */}
-        {...bots.map(bot => {
+        {bots.map(bot => {
           const botId = bot.model?.botName
           if (!botId) return null
           const title = botId[0].toUpperCase() + botId.slice(1)
@@ -306,7 +306,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <div className={gridContentClass}>
         <Item title="Add New" Icon={IconPlus} onAction={() => setOpenToolCreationMenu({ open: true })} />
         {/* User generated tools */}
-        {...tools.map(tool => {
+        {tools.map(tool => {
           const toolId = tool.id
           const toolName = tool.name
           if (!toolId) return null
