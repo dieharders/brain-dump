@@ -349,6 +349,14 @@ export interface I_Text_Settings {
   response: I_Response_State
 }
 
+export interface I_Tools_Settings {
+  id: string
+  name: string
+  path: string
+  description: string
+  args: Array<{ [key: string]: string }>
+}
+
 type T_Endpoint = { [key: string]: any }
 
 interface I_BaseServiceApis {
@@ -424,6 +432,9 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to persist data
    */
   storage: {
+    saveToolsSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    getToolsSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    deleteToolsSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
     getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     deleteBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     saveBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>

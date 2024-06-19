@@ -55,7 +55,6 @@ const HomeMenuPage = () => {
         isConnecting={isConnecting}
         setIsConnecting={setIsConnecting}
         onSubmit={() => { /* exec logic when a list item is clicked */ }}
-        services={services}
       />
     </div>
   )
