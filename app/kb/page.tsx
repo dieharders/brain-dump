@@ -68,7 +68,7 @@ export default function KnowledgeBasePage() {
   const toggleStyle = cn("flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl")
   const headingStyle = cn("text-2xl font-bold")
   const subHeadingStyle = cn("text-lg font-semibold")
-  const descriptionStyle = cn("text-md break-all text-muted-foreground")
+  const descriptionStyle = cn("text-md break-all text-muted-foreground saturate-50")
   const tagStyle = cn("flex flex-row flex-wrap items-center justify-start gap-2")
 
   // Render markdown string
@@ -139,6 +139,7 @@ export default function KnowledgeBasePage() {
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden lg:flex-row">
           {/* Document info */}
           <div className="flex h-fit w-full flex-1 flex-col items-center justify-start gap-8">
+            <h1 className={cn(subHeadingStyle, "text-center text-xl")}>Document Info</h1>
             {/* Action Menus */}
             <DialogAddDocument
               action={updateDocument}
@@ -148,7 +149,6 @@ export default function KnowledgeBasePage() {
               document={document}
             />
             {/* Actions */}
-            <h1 className={cn(subHeadingStyle, "text-xl underline")}>{documentName || 'No title'}</h1>
             <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setCreateDialogOpen(true)}>Edit</Button>
@@ -171,7 +171,9 @@ export default function KnowledgeBasePage() {
             </div>
             {/* Form */}
             <div className="flex w-full flex-1 flex-col items-start justify-start gap-3 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
-              <h1 className={subHeadingStyle}>Description</h1>
+              <div className={subHeadingStyle}>Title</div>
+              <p className={descriptionStyle}>{documentName || 'No title'}</p>
+              <div className={subHeadingStyle}>Description</div>
               <p className={descriptionStyle}>{description || 'No description.'}</p>
               <div className={subHeadingStyle}>Info</div>
               <p className={descriptionStyle}>🍪 <span className="text-primary">Chunks:</span> {numDocumentChunks}</p>
@@ -187,8 +189,8 @@ export default function KnowledgeBasePage() {
           {/* Separator */}
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
           {/* Document Text/Chunks */}
-          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden">
-            <h1 className={cn(subHeadingStyle, "text-center text-xl underline")}>View document content</h1>
+          <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden px-1">
+            <h1 className={cn(subHeadingStyle, "text-center text-xl")}>Document Content</h1>
             {/* Toggle Group */}
             <ToggleGroup
               label="Text Mode"
@@ -202,7 +204,15 @@ export default function KnowledgeBasePage() {
               <div id="chunk" className={toggleStyle}>🍪<p className="text-xs">Chunks</p></div>
             </ToggleGroup>
             {/* Select chunk */}
-            {toggleTextMode === 'chunk' && <Select value={selectedChunk} onChange={setSelectedChunk} items={chunkItems() || []} placeholder="Select chunk" />}
+            {toggleTextMode === 'chunk' &&
+              <Select
+                value={selectedChunk}
+                onChange={setSelectedChunk}
+                items={chunkItems() || []}
+                placeholder="Select chunk"
+                className="max-w-[16rem]"
+              />
+            }
             {/* Document/Chunk Output text */}
             {toggleTextMode === 'document' ?
               mkdn(documentText())
@@ -241,19 +251,13 @@ export default function KnowledgeBasePage() {
         {/* Form */}
         <div className="flex w-full flex-col items-start justify-start gap-2 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
           {/* Title */}
-          <h1 className={cn(subHeadingStyle, "text-xl underline")} >{collectionName || "Explore files in this collection"}</h1>
+          <div className={subHeadingStyle}>Title</div>
+          <div className={descriptionStyle} >{collectionName || "Explore files in this collection"}</div>
           {/* Description */}
+          <div className={subHeadingStyle}>Description</div>
           <p className={descriptionStyle}>
             {collection?.metadata?.description || "Add a detailed description of the contents of this collection..."}
           </p>
-          {/* Info */}
-          <div className={subHeadingStyle}>Info</div>
-          <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
-            <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
-              <span className="w-fit">📂 <span className="text-primary">Documents:</span> {collection?.metadata?.sources.length || 0}</span>
-              <span className="w-fit">📆 <span className="text-primary">Created:</span> {collection?.metadata?.createdAt || "?"}</span>
-            </p>
-          </div>
           {/* Tags */}
           <div className={subHeadingStyle} >Tags</div>
           <div className={tagStyle}>
@@ -262,6 +266,14 @@ export default function KnowledgeBasePage() {
                 <RandomUnderlinedText className="text-muted-foreground" text={collectionTags} /> :
                 <p className={descriptionStyle}>Add hashtags to categorize collections...</p>
             }
+          </div>
+          {/* Info */}
+          <div className={subHeadingStyle}>Info</div>
+          <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
+            <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
+              <span className="w-fit">📂 <span className="text-primary">Documents:</span> {collection?.metadata?.sources.length || 0}</span>
+              <span className="w-fit">📆 <span className="text-primary">Created:</span> {collection?.metadata?.createdAt || "?"}</span>
+            </p>
           </div>
         </div>
       </div>
