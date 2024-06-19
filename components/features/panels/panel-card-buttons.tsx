@@ -9,23 +9,23 @@ import {
   IconCopy,
 } from '@/components/ui/icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ClearData } from '@/components/features/crud/dialog-clear-data'
 
 interface I_Props {
-  setAddDocumentDialogOpen?: (open: boolean) => void
+  setAddDialogOpen?: (open: boolean) => void
   setExploreDialogOpen?: (open: boolean) => void
   setShareDialogOpen?: (open: boolean) => void
-  setDeleteDialogOpen?: (open: boolean) => void
-  setSelectedCollection: () => void
-  copyCollectionId: () => void
+  onDeleteAction?: () => void
+  copyCollectionId?: () => void
 }
 
 export const CollectionActions = (props: I_Props) => {
-  const { setAddDocumentDialogOpen, setExploreDialogOpen, setShareDialogOpen, setDeleteDialogOpen, setSelectedCollection, copyCollectionId } = props
+  const { setAddDialogOpen, setExploreDialogOpen, setShareDialogOpen, onDeleteAction, copyCollectionId } = props
 
   return (
     <div className="flex justify-between space-x-1">
       {/* Copy id Button */}
-      <Tooltip delayDuration={350}>
+      {copyCollectionId && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -40,83 +40,78 @@ export const CollectionActions = (props: I_Props) => {
           </Button>
         </TooltipTrigger>
         <TooltipContent>Copy id</TooltipContent>
-      </Tooltip>
+      </Tooltip>}
 
       {/* Add Document Button */}
-      <Tooltip delayDuration={350}>
+      {setAddDialogOpen && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
             onClick={e => {
               e.stopPropagation()
-              setSelectedCollection()
-              setAddDocumentDialogOpen && setAddDocumentDialogOpen(true)
+              setAddDialogOpen && setAddDialogOpen(true)
             }}
           >
             <IconPlus />
-            <span className="sr-only">Add document</span>
+            <span className="sr-only">Add new</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Add</TooltipContent>
-      </Tooltip>
+      </Tooltip>}
 
       {/* Edit Button */}
-      <Tooltip delayDuration={350}>
+      {setExploreDialogOpen && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
             onClick={e => {
               e.stopPropagation()
-              setSelectedCollection()
-              setExploreDialogOpen && setExploreDialogOpen(true)
+              setExploreDialogOpen(true)
             }}
           >
             <IconEdit />
-            <span className="sr-only">Edit collection</span>
+            <span className="sr-only">Edit</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Edit</TooltipContent>
-      </Tooltip>
+      </Tooltip>}
 
       {/* Share Button */}
-      <Tooltip delayDuration={350}>
+      {setShareDialogOpen && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
             onClick={e => {
               e.stopPropagation()
-              setSelectedCollection()
-              setShareDialogOpen && setShareDialogOpen(true)
+              setShareDialogOpen(true)
             }}
           >
             <IconShare />
-            <span className="sr-only">Share collection</span>
+            <span className="sr-only">Share</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Share</TooltipContent>
-      </Tooltip>
+      </Tooltip>}
 
       {/* Delete Button */}
-      <Tooltip delayDuration={350}>
+      {onDeleteAction && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
-          <Button
+          <ClearData
+            // variant="destructive"
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
-            onClick={e => {
-              e.stopPropagation()
-              setSelectedCollection()
-              setDeleteDialogOpen && setDeleteDialogOpen(true)
+            action={async () => {
+              onDeleteAction()
+              return true
             }}
-          >
-            <IconTrash />
-            <span className="sr-only">Delete collection</span>
-          </Button>
+            Icon={IconTrash}
+          />
         </TooltipTrigger>
-        <TooltipContent>Delete Collection</TooltipContent>
-      </Tooltip>
+        <TooltipContent>Delete</TooltipContent>
+      </Tooltip>}
     </div>
   )
 }

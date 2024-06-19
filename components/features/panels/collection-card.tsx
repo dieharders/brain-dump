@@ -9,8 +9,8 @@ import { I_Collection } from '@/lib/homebrew'
 
 interface SidebarItemProps {
   collection: I_Collection
-  isActive?: boolean
-  isSelected?: boolean
+  isActive?: boolean   // when hovered or clicked
+  isSelected?: boolean // when selected in a checkbox
   onClick?: () => void
   children?: React.ReactNode
   className?: string
@@ -65,12 +65,16 @@ export const CollectionCard = (props: SidebarItemProps) => {
             <TooltipContent>Collection</TooltipContent>
           </Tooltip>
         </div>
+
         {/* Card name */}
         <span className="h-100 my-auto w-full truncate">
           {collection.name}
         </span>
-        {/* Button actions */}
-        <span className="flex h-8 w-fit items-center">{isActive && children}</span>
+
+        {/* Render action buttons when clicked and active */}
+        <span className="flex h-8 w-fit items-center">
+          {isHighlighted && children}
+        </span>
       </div>
 
       {/* Description */}

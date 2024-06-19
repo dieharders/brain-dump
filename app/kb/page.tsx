@@ -7,14 +7,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { cn } from '@/lib/utils'
 import { I_Collection, I_DocumentChunk, useHomebrew } from '@/lib/homebrew'
-import { notifications } from '@/lib/notifications'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useRenderText } from '@/components/ui/useRenderText'
 import { Select } from '@/components/ui/select'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
+// import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
 import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { MemoizedReactMarkdown } from '@/components/ui/markdown'
 import { CodeBlock } from '@/components/ui/codeblock'
@@ -150,10 +149,10 @@ export default function KnowledgeBasePage() {
             />
             {/* Actions */}
             <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
+              {/* <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button> */}
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setCreateDialogOpen(true)}>Edit</Button>
               <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
+              {/* <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button> */}
               <ClearData
                 className="w-fit p-5 text-lg"
                 variant="destructive"
@@ -231,7 +230,7 @@ export default function KnowledgeBasePage() {
       {/* Collection info */}
       <div className="flex w-full flex-col items-start justify-start gap-2 sm:w-fit">
         {/* Pop-up Action Menus */}
-        <DialogShareCollection
+        {/* <DialogShareCollection
           action={shareMemory}
           dialogOpen={shareDialogOpen}
           setDialogOpen={setShareDialogOpen}
@@ -239,15 +238,15 @@ export default function KnowledgeBasePage() {
           sharePath={collection?.metadata?.sharePath}
           createdAt={collection?.metadata?.createdAt}
           numSources={collection?.metadata?.sources.length || 0}
-        />
+        /> */}
         {/* Header */}
         <div className={cn("self-center pb-4 text-center", headingStyle)}>Collection</div>
         {/* Actions */}
-        <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden pb-4">
+        {/* <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden pb-4">
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => copyId(id)}>Copy Id</Button>
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
-        </div>
+        </div> */}
         {/* Form */}
         <div className="flex w-full flex-col items-start justify-start gap-2 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
           {/* Title */}

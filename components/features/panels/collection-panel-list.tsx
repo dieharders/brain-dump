@@ -9,17 +9,18 @@ import { ROUTE_KNOWLEDGE } from '@/app/constants'
 import { useRouter } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { useMemoryActions } from '@/components/features/crud/actions'
+import { CollectionActions } from '@/components/features/panels/panel-card-buttons'
 
 export interface CollectionListProps {
   userId?: string
-  fetchAction?: () => void
+  fetchAction?: () => Promise<void>
 }
 
 export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => {
   const router = useRouter()
   const { collections, setSelectedDocumentId, setDocuments, selectedCollectionName, setSelectedCollectionName } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
-  const { addCollection } = useMemoryActions()
+  const { addCollection, copyId, deleteCollection } = useMemoryActions()
 
   return (
     <div className="my-4 flex w-full flex-col space-y-8 overflow-y-auto">
@@ -49,6 +50,17 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
                     // Update url to reflect selected id
                     router.push(`/${ROUTE_KNOWLEDGE}?collectionName=${collection.name}`, { shallow: true })
                   }}>
+                  <CollectionActions
+                    onDeleteAction={async () => {
+                      const res = await deleteCollection(collection?.name)
+                      if (res?.success) {
+                        fetchAction && fetchAction()
+                        return true
+                      }
+                      return false
+                    }}
+                    copyCollectionId={() => copyId(collection?.name)}
+                  />
                 </CollectionCard>
               )
             )}
