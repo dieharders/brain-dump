@@ -17,16 +17,16 @@ import { toast } from 'react-hot-toast'
 export type I_Submit_Tool_Settings = Omit<I_Tools_Settings, 'id'>
 
 interface I_Props {
-  dialogOpen: boolean
-  setDialogOpen: (open: boolean) => void
-  onSubmit: (saveSettings: I_Submit_Tool_Settings) => Promise<void>
+  dialogOpen: { open: boolean, initialState?: I_Tools_Settings }
+  setDialogOpen: (isOpen: boolean) => void
+  onSubmit: (saveSettings: I_Submit_Tool_Settings | I_Tools_Settings) => Promise<void>
 }
 
 export const ToolCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit } = props
 
   // State values
-  const defaults = defaultState
+  const defaults = dialogOpen?.initialState || defaultState
   const [state, setState] = useState<I_Submit_Tool_Settings>(defaults)
   const [isDisabled, setDisabled] = useState(false)
 
@@ -61,7 +61,7 @@ export const ToolCreationMenu = (props: I_Props) => {
   }, [defaults, dialogOpen])
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog open={dialogOpen.open} onOpenChange={setDialogOpen}>
       <DialogContent className="lg:min-w-[35%]">
         <DialogHeader>
           <DialogTitle className="text-xl">Add tool</DialogTitle>

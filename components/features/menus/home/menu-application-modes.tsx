@@ -61,7 +61,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
-  const [openToolCreationMenu, setOpenToolCreationMenu] = useState(false)
+  const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tools_Settings }>({ open: false })
   const [bots, setBots] = useState<I_Text_Settings[]>([])
   const [tools, setTools] = useState<I_Tools_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
@@ -144,9 +144,9 @@ export const ApplicationModesMenu = (props: I_Props) => {
     return result
   }, [services?.storage])
 
-  const saveTool = useCallback(async (toolsSettings: I_Submit_Tool_Settings) => {
+  const saveTool = useCallback(async (toolSettings: I_Submit_Tool_Settings | I_Tools_Settings) => {
     // Save menu forms to a json file
-    const res = await services?.storage?.saveToolSettings?.({ body: toolsSettings })
+    const res = await services?.storage?.saveToolSettings?.({ body: toolSettings })
     if (!res?.success) {
       toast.error(`${res?.message}`)
       return
@@ -290,7 +290,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Menu for tool creation */}
       <ToolCreationMenu
         dialogOpen={openToolCreationMenu}
-        setDialogOpen={setOpenToolCreationMenu}
+        setDialogOpen={(isOpen) => setOpenToolCreationMenu({ open: isOpen })}
         onSubmit={saveTool}
       />
 
@@ -304,7 +304,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
 
       {/* Content */}
       <div className={gridContentClass}>
-        <Item title="Add New" Icon={IconPlus} onAction={() => setOpenToolCreationMenu(true)} />
+        <Item title="Add New" Icon={IconPlus} onAction={() => setOpenToolCreationMenu({ open: true })} />
         {/* User generated tools */}
         {...tools.map(tool => {
           const toolId = tool.id
@@ -316,7 +316,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
               title={toolName}
               Icon={() => <div className="text-4xl">🔧</div>}
               onAction={() => {
-                // @TODO Open an edit menu here
+                // Open edit menu
+                setOpenToolCreationMenu({ open: true, initialState: tool })
               }}
             >
               <ClearData
