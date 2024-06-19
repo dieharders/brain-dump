@@ -51,11 +51,13 @@ export const AddToolTab = (props: I_Props) => {
     }
   ]
 
-  const addNewArgumentInput = () => {
+  const addNewArgumentInput = (ind: number) => {
+    const key = `argument${ind}`
     setState(prev => {
       const ergs = { ...prev }
       const newArgs = ergs.args
-      newArgs.push({ someValue: 'string' })
+      const defaultValue = 'string'
+      newArgs.push({ [key]: defaultValue })
       return { ...prev, args: newArgs }
     })
   }
@@ -64,9 +66,9 @@ export const AddToolTab = (props: I_Props) => {
     <div className="px-1">
       {/* Add new tool */}
       <DialogHeader className="my-8">
-        <DialogTitle className="text-md">Define your new Ai tool</DialogTitle>
+        <DialogTitle className="text-md">Define a function for your tool</DialogTitle>
         <DialogDescription className="mb-4">
-          Tools are used by bots to extend their capabilities. They will execute the code you specify in a safe environment.
+          Tools are used by bots to extend their capabilities. They will execute code you specify in a safe environment.
         </DialogDescription>
       </DialogHeader>
       {/* Content */}
@@ -147,7 +149,7 @@ export const AddToolTab = (props: I_Props) => {
                   </div>
                 )
               })}
-              <Button variant="outline" className="text-md w-full overflow-hidden px-2 py-4" onClick={addNewArgumentInput}>Add Argument (optional)</Button>
+              <Button variant="outline" className="text-md w-full overflow-hidden px-2 py-4" onClick={() => addNewArgumentInput(state.args.length)}>Add Argument (optional)</Button>
             </div>
           </div>
         </div>
