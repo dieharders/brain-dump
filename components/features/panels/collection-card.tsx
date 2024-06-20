@@ -9,7 +9,7 @@ import { I_Collection } from '@/lib/homebrew'
 
 interface SidebarItemProps {
   collection: I_Collection
-  isActive?: boolean   // when hovered or clicked
+  isActive?: boolean // when hovered or clicked
   isSelected?: boolean // when selected in a checkbox
   onClick?: () => void
   children?: React.ReactNode

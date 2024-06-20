@@ -13,9 +13,8 @@ An Ai engineer's tool for building custom Ai agents and workflows for use in you
 - ✅ CPU & GPU support
 - ✅ Windows OS build
 - ✅ Save chat history
-- ❌ MacOS & Linux builds
-- ❌ Build assistants with access to tools
-- ❌ Orchestrate multiple assistants in a team
+- ❌ Build agents with access to tools
+- ❌ Create workloads
 - ❌ Share model configs with community
 
 ## Supported Model Providers
@@ -23,8 +22,8 @@ An Ai engineer's tool for building custom Ai agents and workflows for use in you
 This is a local model first project. We have future plans to support cloud inference providers as a config option.
 
 - ✅ [Local](https://github.com/dieharders/ai-text-server)
-- ❌ [OpenAI](https://openai.com/chatgpt)
 - ❌ [Google Gemini](https://gemini.google.com)
+- ❌ [OpenAI](https://openai.com/chatgpt)
 - ❌ [Anthropic](https://www.anthropic.com)
 - ❌ [Mistral AI](https://mistral.ai)
 - ❌ [Groq](https://groq.com)
@@ -64,9 +63,6 @@ Increase the minor version by 1 (x.1.x to x.2.x)
 
 ### Major
 
-Increase the major version by 1 (1.x.x to 2.x.x) -->
+Increase the major version by 1 (1.x.x to 2.x.x)
 
-<!-- ## Tagging
-
-- Create a commit with the package.json version increased.
-- From Github, click "Releases" then create and select your tagged commit for release. -->
+-->
