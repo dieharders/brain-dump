@@ -91,6 +91,18 @@ export const ConnectServerPage = () => {
 
       {/* Inputs Container */}
       <div className="mb-16 flex w-full max-w-[32rem] flex-col items-center justify-between gap-6 rounded-xl border-neutral-500 p-0 dark:border-neutral-600 sm:border sm:p-8">
+        {/* Switch to advanced UI */}
+        <div className="flex flex-col w-full items-end">
+          <div className="flex flex-row gap-2 text-lg items-center cursor-default">
+            <label title="Advanced Settings">⚙️</label>
+            <Switch
+              defaultChecked={false}
+              checked={isAdvChecked}
+              onCheckedChange={setIsAdvChecked}
+            ></Switch>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-2 text-sm text-muted-foreground">
           {/* Instructions */}
           <div className="leading-snug">
@@ -120,43 +132,33 @@ export const ConnectServerPage = () => {
           </div>}
         </div>
 
-        {/* Switch to advanced UI */}
-        <div className="flex flex-col w-full items-end">
-          <div className="flex flex-row gap-2 text-lg items-center cursor-default">
-            <label title="Advanced Settings">⚡</label>
-            <Switch
-              defaultChecked={false}
-              checked={isAdvChecked}
-              onCheckedChange={setIsAdvChecked}
-            ></Switch>
-          </div>
-        </div>
-
         {/* Server Inputs */}
-        {isAdvChecked && <div className="flex w-full flex-col items-center gap-8">
-          {/* Enter remote server address */}
-          <div className={containerStyle}>
-            <Input
-              name="domain"
-              value={domainValue}
-              placeholder={defaultDomain}
-              onChange={e => setDomainValue(e.target.value)}
-              className={inputStyle}
-            />
-            <Label htmlFor="domain" className={labelStyle}><div className="px-4">Hostname</div></Label>
+        {isAdvChecked && (
+          <div className="flex w-full flex-col items-center gap-8 pt-2">
+            {/* Enter remote server address */}
+            <div className={containerStyle}>
+              <Input
+                name="domain"
+                value={domainValue}
+                placeholder={defaultDomain}
+                onChange={e => setDomainValue(e.target.value)}
+                className={inputStyle}
+              />
+              <Label htmlFor="domain" className={labelStyle}><div className="px-4">Hostname</div></Label>
+            </div>
+            {/* Enter remote server port */}
+            <div className={containerStyle}>
+              <Input
+                name="port"
+                value={portValue}
+                placeholder={`port (${defaultPort})`}
+                onChange={e => setPortValue(e.target.value)}
+                className={inputStyle}
+              />
+              <Label htmlFor="port" className={labelStyle}><div className="px-4">Port</div></Label>
+            </div>
           </div>
-          {/* Enter remote server port */}
-          <div className={containerStyle}>
-            <Input
-              name="port"
-              value={portValue}
-              placeholder={`port (${defaultPort})`}
-              onChange={e => setPortValue(e.target.value)}
-              className={inputStyle}
-            />
-            <Label htmlFor="port" className={labelStyle}><div className="px-4">Port</div></Label>
-          </div>
-        </div>}
+        )}
 
         {/* Connect */}
         <Button
