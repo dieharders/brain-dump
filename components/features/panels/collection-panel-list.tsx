@@ -9,17 +9,18 @@ import { ROUTE_KNOWLEDGE } from '@/app/constants'
 import { useRouter } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { useMemoryActions } from '@/components/features/crud/actions'
+import { CardButtons } from '@/components/features/panels/panel-card-buttons'
 
 export interface CollectionListProps {
   userId?: string
-  fetchAction?: () => void
+  fetchAction?: () => Promise<void>
 }
 
 export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => {
   const router = useRouter()
-  const { collections, setSelectedDocumentId, setDocuments, setSelectedCollectionName } = useGlobalContext()
+  const { collections, setSelectedDocumentId, setDocuments, selectedCollectionName, setSelectedCollectionName } = useGlobalContext()
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
-  const { addCollection } = useMemoryActions()
+  const { addCollection, copyId, deleteCollection } = useMemoryActions()
 
   return (
     <div className="my-4 flex w-full flex-col space-y-8 overflow-y-auto">
@@ -40,6 +41,7 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
                 <CollectionCard
                   key={collection?.id}
                   collection={collection}
+                  isActive={selectedCollectionName === collection?.name}
                   onClick={() => {
                     setSelectedCollectionName(collection?.name)
                     // Reset data when changing collections
@@ -48,6 +50,17 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
                     // Update url to reflect selected id
                     router.push(`/${ROUTE_KNOWLEDGE}?collectionName=${collection.name}`, { shallow: true })
                   }}>
+                  <CardButtons
+                    onDeleteAction={async () => {
+                      const res = await deleteCollection(collection?.name)
+                      if (res?.success) {
+                        fetchAction && fetchAction()
+                        return true
+                      }
+                      return false
+                    }}
+                    copyId={() => copyId(collection?.name)}
+                  />
                 </CollectionCard>
               )
             )}

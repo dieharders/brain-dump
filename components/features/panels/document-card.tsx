@@ -12,13 +12,16 @@ interface I_Props {
   isActive?: boolean
   isSelected?: boolean
   onClick?: () => void
+  children?: React.ReactNode
+  className?: string
 }
 
 /**
- * A card container for document
+ * A card container for document.
+ * @TODO combine with collection-card
  */
 export const DocumentCard = (props: I_Props) => {
-  const { document, numChunks, onClick, isSelected, isActive: isHighlighted } = props
+  const { document, numChunks, onClick, isSelected, isActive: isHighlighted, className, children } = props
   const [isActive, setIsActive] = useState(false)
   const numTags = document?.tags ? document?.tags?.split(' ').length : 0
   const description = document?.description || 'No description.'
@@ -32,7 +35,8 @@ export const DocumentCard = (props: I_Props) => {
     <div
       className={cn(
         buttonVariants({ variant: 'outline' }),
-        'hover-bg-accent relative flex min-h-[8rem] select-none flex-col space-y-4 overflow-hidden break-all py-4 text-left sm:w-[20rem]',
+        'hover-bg-accent relative flex h-fit min-h-[9rem] w-full select-none flex-col space-y-4 overflow-hidden py-4 text-left sm:w-[20rem]',
+        className,
         (isActive || isHighlighted) && 'bg-accent',
         isSelected && 'bg-accent',
         onClick && 'cursor-pointer',
@@ -50,14 +54,32 @@ export const DocumentCard = (props: I_Props) => {
     >
       {/* Header */}
       <div className="flex w-full items-stretch overflow-hidden">
+        {/* Icon */}
+        <div className="h-100 flex cursor-pointer items-center justify-center">
+          <Tooltip delayDuration={350}>
+            <TooltipTrigger
+              tabIndex={-1}
+              className="focus:bg-muted focus:ring-1 focus:ring-ring"
+            >
+              <div className="mr-2">📄</div>
+            </TooltipTrigger>
+            <TooltipContent>Source Document</TooltipContent>
+          </Tooltip>
+        </div>
+
         {/* Card name */}
         <span className="h-100 my-auto w-full truncate">
           {name}
         </span>
+
+        {/* Render action buttons when clicked and active */}
+        <span className="flex h-8 w-fit items-center">
+          {isHighlighted && children}
+        </span>
       </div>
 
       {/* Description */}
-      <div className="my-2 flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
+      <div className="flex h-fit w-full text-left text-slate-500 overflow-hidden">
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
           {description}
         </span>
@@ -72,7 +94,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">🍪:{numChunks}</p>
+              <p className="truncate">🍪{numChunks}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Chunks: {numChunks}</TooltipContent>
@@ -85,7 +107,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">💾:{documentType}</p>
+              <p className="truncate">💾{documentType}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Document type: {documentType}</TooltipContent>
@@ -98,7 +120,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">🔖:{numTags}</p>
+              <p className="truncate">🔖{numTags}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Tag count: {numTags}</TooltipContent>
@@ -111,7 +133,7 @@ export const DocumentCard = (props: I_Props) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">📆:{createdAt}</p>
+              <p className="truncate">📆{createdAt}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Created: {createdAt}</TooltipContent>

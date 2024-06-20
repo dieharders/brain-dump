@@ -9,15 +9,16 @@ import { I_Collection } from '@/lib/homebrew'
 
 interface SidebarItemProps {
   collection: I_Collection
-  isActive?: boolean
-  isSelected?: boolean
+  isActive?: boolean   // when hovered or clicked
+  isSelected?: boolean // when selected in a checkbox
   onClick?: () => void
   children?: React.ReactNode
   className?: string
 }
 
 /**
- * A card container for collection of documents
+ * A card container for collection of documents.
+ * @TODO combine with document-card
  */
 export const CollectionCard = (props: SidebarItemProps) => {
   const { collection, onClick, isSelected, isActive: isHighlighted, className, children } = props
@@ -65,16 +66,20 @@ export const CollectionCard = (props: SidebarItemProps) => {
             <TooltipContent>Collection</TooltipContent>
           </Tooltip>
         </div>
+
         {/* Card name */}
         <span className="h-100 my-auto w-full truncate">
           {collection.name}
         </span>
-        {/* Button actions */}
-        <span className="flex h-8 w-fit items-center">{isActive && children}</span>
+
+        {/* Render action buttons when clicked and active */}
+        <span className="flex h-8 w-fit items-center">
+          {isHighlighted && children}
+        </span>
       </div>
 
       {/* Description */}
-      <div className="flex max-h-16 w-full flex-1 overflow-hidden text-left text-slate-500">
+      <div className="flex h-fit w-full text-left text-slate-500 overflow-hidden">
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
           {collection.metadata?.description || 'No description.'}
         </span>
@@ -88,7 +93,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">📂: {numSources}</p>
+              <p className="truncate">📂 {numSources}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Source count: {numSources}</TooltipContent>
@@ -101,7 +106,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">⭐: {numFavorites}</p>
+              <p className="truncate">⭐ {numFavorites}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Favorite count: {numFavorites}</TooltipContent>
@@ -114,7 +119,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">🔖: {numTags}</p>
+              <p className="truncate">🔖 {numTags}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Tag count: {numTags}</TooltipContent>
@@ -127,7 +132,7 @@ export const CollectionCard = (props: SidebarItemProps) => {
             className={toolTipStyle}
           >
             <div className={labelStyle}>
-              <p className="truncate">📆: {createdAt}</p>
+              <p className="truncate">📆 {createdAt}</p>
             </div>
           </TooltipTrigger>
           <TooltipContent>Created: {createdAt}</TooltipContent>

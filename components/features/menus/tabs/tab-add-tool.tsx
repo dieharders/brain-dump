@@ -101,7 +101,7 @@ export const AddToolTab = (props: I_Props) => {
               <Input
                 name="path"
                 value={state.path}
-                placeholder="Code path (file::// or https://)"
+                placeholder="Path to tool (file::// or https://)"
                 onChange={e => setState(prev => ({ ...prev, path: e.target.value }))}
                 className="text-md"
               />
@@ -115,7 +115,7 @@ export const AddToolTab = (props: I_Props) => {
                 return (
                   <div
                     key={index}
-                    className="flex flex-row gap-4"
+                    className="w-full flex flex-row gap-4 items-center"
                   >
                     {/* Argument name */}
                     <Input
@@ -127,7 +127,7 @@ export const AddToolTab = (props: I_Props) => {
                         newArgs[index] = { [e.target.value]: type }
                         return { ...prev, args: newArgs }
                       })}
-                      className="text-md"
+                      className="text-md h-full"
                     />
                     {/* Argument type */}
                     <Select
@@ -136,7 +136,7 @@ export const AddToolTab = (props: I_Props) => {
                       value={type || undefined}
                       placeholder="Argument type"
                       items={argTypes}
-                      className="text-md"
+                      className="text-md h-full"
                       onChange={val => setState(prev => {
                         const newArgs = prev.args
                         newArgs[index] = { [name]: val }
@@ -146,7 +146,13 @@ export const AddToolTab = (props: I_Props) => {
                   </div>
                 )
               })}
-              <Button variant="outline" className="text-md w-full overflow-hidden px-2 py-4" onClick={() => addNewArgumentInput(state.args.length)}>Add Argument (optional)</Button>
+              <Button
+                variant="outline"
+                className="text-md w-full overflow-hidden px-2 py-4"
+                onClick={() => addNewArgumentInput(state.args.length)}
+              >
+                Add Argument (optional)
+              </Button>
             </div>
           </div>
         </div>
