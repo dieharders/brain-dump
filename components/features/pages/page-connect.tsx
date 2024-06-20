@@ -9,6 +9,7 @@ import { useTheme } from 'next-themes'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { Switch } from "@/components/ui/switch"
 import { Button } from '@/components/ui/button'
 // import { useSettings } from '@/components/features/settings/hooks'
 import { Highlight, InfoLink } from '@/components/ui/info'
@@ -36,6 +37,8 @@ export const ConnectServerPage = () => {
   const [domainValue, setDomainValue] = useState(hostParam || defaultDomain)
   const [portValue, setPortValue] = useState(portParam || defaultPort)
   const docsUrl = `${domainValue}:${portValue}/docs`
+  // State
+  const [isAdvChecked, setIsAdvChecked] = useState(false)
 
   const connect = useCallback(async () => {
     setIsConnecting(true)
@@ -87,13 +90,50 @@ export const ConnectServerPage = () => {
       </h1>
 
       {/* Inputs Container */}
-      <div className="mb-16 flex min-h-[28rem] w-full max-w-[32rem] flex-col items-center justify-between gap-6 rounded-xl border-neutral-500 p-0 dark:border-neutral-600 sm:border sm:p-8">
-        {/* Title */}
-        <h2 className="self-center justify-self-start text-center text-2xl font-semibold text-primary">
-          Connect to server
-        </h2>
+      <div className="mb-16 flex w-full max-w-[32rem] flex-col items-center justify-between gap-6 rounded-xl border-neutral-500 p-0 dark:border-neutral-600 sm:border sm:p-8">
+        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+          {/* Instructions */}
+          <div className="leading-snug">
+            Please download and start <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0"><label title="Download Obrew Server" className="cursor-pointer">Obrew Server</label></Button></Link> before attempting to connect.{' '}
+            {/* Issues */}
+            <InfoLink label="Click to resolve issues" title="Issues connecting?" className="inline-block text-left">
+              <span>
+                If you cannot connect to the <Highlight>Obrew Server</Highlight> make sure you have entered the address shown on the host computer correctly and click {' '}
+                <Link href={`${domainValue}:${portValue}`} target="_blank" prefetch={false}>
+                  <Button variant="link" className="m-0 h-fit p-0">
+                    here
+                  </Button></Link>
+                {`. If your browser reports it blocked, click the "advanced" option in your browser and choose "accept" then try connecting again.`}
+              </span>
+            </InfoLink>
+          </div>
+          {/* API Docs link */}
+          {isAdvChecked && <div className="justify-left flex w-full flex-row flex-wrap items-start gap-2">
+            <div className="inline-block w-fit min-w-[4rem] text-left">API docs:</div>
+            <div className="inline-block w-fit">
+              <Link href={docsUrl} prefetch={false} className="justify-start">
+                <Button variant="link" className="h-fit p-0 text-left">
+                  {docsUrl}
+                </Button>
+              </Link>
+            </div>
+          </div>}
+        </div>
 
-        <div className="flex w-full flex-col items-center gap-8">
+        {/* Switch to advanced UI */}
+        <div className="flex flex-col w-full items-end">
+          <div className="flex flex-row gap-2 text-lg items-center cursor-default">
+            <label title="Advanced Settings">⚡</label>
+            <Switch
+              defaultChecked={false}
+              checked={isAdvChecked}
+              onCheckedChange={setIsAdvChecked}
+            ></Switch>
+          </div>
+        </div>
+
+        {/* Server Inputs */}
+        {isAdvChecked && <div className="flex w-full flex-col items-center gap-8">
           {/* Enter remote server address */}
           <div className={containerStyle}>
             <Input
@@ -116,36 +156,7 @@ export const ConnectServerPage = () => {
             />
             <Label htmlFor="port" className={labelStyle}><div className="px-4">Port</div></Label>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-          {/* Instructions */}
-          <div className="leading-snug">
-            Please download and startup <Link href="https://openbrewai.com" target="_blank" prefetch={false}><Button variant="link" className="m-0 h-fit p-0">Obrew Server</Button></Link> on a desktop computer before attempting to connect.{' '}
-            {/* Issues */}
-            <InfoLink label="Click to resolve issues" title="Issues connecting?" className="inline-block text-left">
-              <span>
-                If you cannot connect to the <Highlight>Obrew Server</Highlight> make sure you have entered the address shown on the host computer correctly and click {' '}
-                <Link href={`${domainValue}:${portValue}`} target="_blank" prefetch={false}>
-                  <Button variant="link" className="m-0 h-fit p-0">
-                    here
-                  </Button></Link>
-                {`. If it is blocked, click the "advanced" option and choose "accept" then try connecting again.`}
-              </span>
-            </InfoLink>
-          </div>
-          {/* API Docs link */}
-          <div className="justify-left flex w-full flex-row flex-wrap items-start gap-2">
-            <div className="inline-block w-fit min-w-[4rem] text-left">API docs:</div>
-            <div className="inline-block w-fit">
-              <Link href={docsUrl} prefetch={false} className="justify-start">
-                <Button variant="link" className="h-fit p-0 text-left">
-                  {docsUrl}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
+        </div>}
 
         {/* Connect */}
         <Button
@@ -157,7 +168,7 @@ export const ConnectServerPage = () => {
           })}
           disabled={isConnecting}
         >
-          Connect
+          Connect to server
         </Button>
       </div>
     </div>
