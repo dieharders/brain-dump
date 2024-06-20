@@ -233,7 +233,7 @@ interface I_Props {
   dialogOpen: boolean,
   setDialogOpen: (open: boolean) => void,
   action: T_GenericAPIRequest<T_DocPayload, T_GenericDataRes>,
-  document?: I_Source,
+  document?: I_Source, // initial data
 }
 
 /**

@@ -13,6 +13,7 @@ import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
 import { FileIcon } from '@radix-ui/react-icons'
 import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
+import { CardButtons } from '@/components/features/panels/panel-card-buttons'
 
 interface I_Props {
   session: Session
@@ -22,10 +23,11 @@ interface I_Props {
 
 export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Props) => {
   const { getServices } = useHomebrew()
-  const { addDocument, fetchDocumentChunks } = useMemoryActions()
-  const { setChunks, selectedDocumentId, setSelectedDocumentId, documents, services, setServices, collections, selectedCollectionName } = useGlobalContext()
+  const { addDocument, fetchDocumentChunks, copyId, deleteSource } = useMemoryActions()
+  const { setChunks, selectedDocumentId, setSelectedDocumentId, documents, services, setServices, collections, selectedCollectionName, setDocuments } = useGlobalContext()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const currentCollection = collections?.find(c => c.name === collectionName) || null
+  const currentDocument = documents.find(d => selectedDocumentId === d.id)
 
   const emptyDocuments = (
     <div className="p-8 text-center">
@@ -49,7 +51,22 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
             docId && setSelectedDocumentId(docId)
             const res = await fetchDocumentChunks({ collectionId: selectedCollectionName, documentId: docId })
             res && setChunks(res)
-          }} />
+          }}>
+          <CardButtons
+            editAction={() => {
+              setCreateDialogOpen(true)
+            }}
+            onDeleteAction={async () => {
+              await deleteSource(selectedCollectionName || '', document)
+              // Reset data
+              setSelectedDocumentId('')
+              // Re-fetch sources
+              fetchAction && await fetchAction()
+              return true
+            }}
+            copyId={() => copyId(document?.id)}
+          />
+        </DocumentCard>
       )
     }), [documents, fetchDocumentChunks, selectedCollectionName, selectedDocumentId, setChunks, setSelectedDocumentId])
 
@@ -72,6 +89,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
             dialogOpen={createDialogOpen}
             setDialogOpen={setCreateDialogOpen}
             collection={currentCollection}
+            document={currentDocument}
           />
           {/* "Add New" and "Refresh" buttons */}
           <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap px-4 py-2">

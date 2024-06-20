@@ -9,7 +9,7 @@ import { ROUTE_KNOWLEDGE } from '@/app/constants'
 import { useRouter } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { CollectionActions } from '@/components/features/panels/panel-card-buttons'
+import { CardButtons } from '@/components/features/panels/panel-card-buttons'
 
 export interface CollectionListProps {
   userId?: string
@@ -50,7 +50,7 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
                     // Update url to reflect selected id
                     router.push(`/${ROUTE_KNOWLEDGE}?collectionName=${collection.name}`, { shallow: true })
                   }}>
-                  <CollectionActions
+                  <CardButtons
                     onDeleteAction={async () => {
                       const res = await deleteCollection(collection?.name)
                       if (res?.success) {
@@ -59,7 +59,7 @@ export const CollectionList = ({ userId, fetchAction }: CollectionListProps) => 
                       }
                       return false
                     }}
-                    copyCollectionId={() => copyId(collection?.name)}
+                    copyId={() => copyId(collection?.name)}
                   />
                 </CollectionCard>
               )

@@ -13,26 +13,29 @@ import { ClearData } from '@/components/features/crud/dialog-clear-data'
 
 interface I_Props {
   setAddDialogOpen?: (open: boolean) => void
-  setExploreDialogOpen?: (open: boolean) => void
+  editAction?: (open: boolean) => void
   setShareDialogOpen?: (open: boolean) => void
   onDeleteAction?: () => void
-  copyCollectionId?: () => void
+  copyId?: () => void
 }
 
-export const CollectionActions = (props: I_Props) => {
-  const { setAddDialogOpen, setExploreDialogOpen, setShareDialogOpen, onDeleteAction, copyCollectionId } = props
+/**
+ * Assorted action buttons displayed when card is active.
+ */
+export const CardButtons = (props: I_Props) => {
+  const { setAddDialogOpen, editAction, setShareDialogOpen, onDeleteAction, copyId } = props
 
   return (
     <div className="flex justify-between space-x-1">
       {/* Copy id Button */}
-      {copyCollectionId && <Tooltip delayDuration={350}>
+      {copyId && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
             onClick={e => {
               e.stopPropagation()
-              copyCollectionId()
+              copyId()
             }}
           >
             <IconCopy />
@@ -61,14 +64,14 @@ export const CollectionActions = (props: I_Props) => {
       </Tooltip>}
 
       {/* Edit Button */}
-      {setExploreDialogOpen && <Tooltip delayDuration={350}>
+      {editAction && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             className="h-6 w-6 p-0 hover:bg-background"
             onClick={e => {
               e.stopPropagation()
-              setExploreDialogOpen(true)
+              editAction(true)
             }}
           >
             <IconEdit />
@@ -99,16 +102,18 @@ export const CollectionActions = (props: I_Props) => {
       {/* Delete Button */}
       {onDeleteAction && <Tooltip delayDuration={350}>
         <TooltipTrigger asChild>
-          <ClearData
-            // variant="destructive"
-            variant="ghost"
-            className="h-6 w-6 p-0 hover:bg-background"
-            action={async () => {
-              onDeleteAction()
-              return true
-            }}
-            Icon={IconTrash}
-          />
+          <Button className="w-6 h-6 p-0 m-0 bg-transparent hover:bg-transparent shadow-none">
+            <ClearData
+              variant="ghost"
+              className="h-6 w-6 p-0 text-foreground hover:text-foreground hover:bg-background"
+              action={async () => {
+                onDeleteAction()
+                return true
+              }}
+              Icon={IconTrash}
+            />
+            <span className="sr-only">Delete</span>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>Delete</TooltipContent>
       </Tooltip>}
