@@ -339,7 +339,12 @@ export interface I_Attention_State {
   mode: T_ConversationMode
 }
 
+export interface I_Tools_Inference_State {
+  index: string[]
+}
+
 export interface I_Text_Settings {
+  tools: I_Tools_Inference_State
   attention: I_Attention_State
   performance: I_LLM_Init_Options
   system: I_System_State

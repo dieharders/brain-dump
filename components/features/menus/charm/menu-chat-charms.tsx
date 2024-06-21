@@ -17,6 +17,7 @@ import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-cha
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { useGlobalContext } from '@/contexts'
+import { useActions } from '@/components/features/menus/home/actions'
 
 export interface I_Charm {
   id: T_CharmId
@@ -57,6 +58,7 @@ export const CharmMenu = (props: I_Props) => {
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [knowledgeType, setKnowledgeType] = useState<string>(playgroundSettings.knowledge.type || '')
+  const [stateTools, setStateTools] = useState(playgroundSettings.tools.index || [])
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
@@ -112,6 +114,14 @@ export const CharmMenu = (props: I_Props) => {
     return action()
   }, [setPlaygroundSettings])
 
+  const { fetchTools } = useActions()
+
+  const fetchToolsAction = useCallback(async () => {
+    const res = await fetchTools()
+    const data = res?.data
+    return data
+  }, [fetchTools])
+
   // Get services
   useEffect(() => {
     const action = async () => {
@@ -144,6 +154,9 @@ export const CharmMenu = (props: I_Props) => {
       {/* Menu for Prompt Template settings */}
       {shouldRender('prompt') &&
         <PromptTemplateCharmMenu
+          fetchToolsAction={fetchToolsAction}
+          stateTools={stateTools}
+          setStateTools={setStateTools}
           dialogOpen={openPromptCharmDialog}
           setDialogOpen={setOpenPromptCharmDialog}
           onSubmit={async (settings) => {

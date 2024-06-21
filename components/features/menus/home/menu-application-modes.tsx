@@ -71,11 +71,17 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
   // Methods
-  const { fetchInstalledModelsAndConfigs } = useActions()
+  const { fetchInstalledModelsAndConfigs, fetchTools } = useActions()
   const modelExploreAction = useCallback(async () => {
     await services?.textInference?.modelExplore()
     return
   }, [services?.textInference])
+
+  const fetchToolsAction = useCallback(async () => {
+    const res = await fetchTools()
+    const data = res?.data
+    data && setTools(data)
+  }, [fetchTools])
 
   const goToKnowledgePage = (name: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionName=${name}`)
 
@@ -137,13 +143,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     action()
   }, [services?.storage])
 
-  const fetchTools = useCallback(async () => {
-    const result = await services?.storage.getToolSettings?.()
-    const data = result?.data
-    data && setTools(data)
-    return result
-  }, [services?.storage])
-
   const saveTool = useCallback(async (toolSettings: I_Submit_Tool_Settings | I_Tools_Settings) => {
     // Save menu forms to a json file
     const res = await services?.storage?.saveToolSettings?.({ body: toolSettings })
@@ -152,20 +151,20 @@ export const ApplicationModesMenu = (props: I_Props) => {
       return
     }
     // Update list of tools
-    await fetchTools()
+    await fetchToolsAction()
     // Success
     toast.success(`${res?.message}`)
     return
-  }, [services?.storage])
+  }, [fetchToolsAction, services?.storage])
 
   const deleteTool = useCallback(async (id: string) => {
     const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
     // Failed
     if (!res?.success) return false
     // Success
-    await fetchTools()
+    await fetchToolsAction()
     return true
-  }, [services?.storage])
+  }, [fetchToolsAction, services?.storage])
 
   const fetchModelInfo = useCallback(
     async (repoId: string) => {
@@ -202,7 +201,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       // do stuff here when tab is selected ...
       switch (val) {
         case 'models':
-          fetchInstalledModelsAndConfigs(services)
+          fetchInstalledModelsAndConfigs()
           break
         case 'playground':
           // fetch installed models?
@@ -211,7 +210,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           services && fetchBots()
           break
         case 'tools':
-          services && fetchTools()
+          fetchToolsAction()
           break
         case 'jobs':
           // services && fetchJobs()
@@ -225,7 +224,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           break
       }
     },
-    [fetchBots, fetchInstalledModelsAndConfigs, fetchTools, services, updateKBCollections],
+    [fetchBots, fetchInstalledModelsAndConfigs, fetchToolsAction, services, updateKBCollections],
   )
 
   // Menus

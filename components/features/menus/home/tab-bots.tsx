@@ -19,9 +19,12 @@ import { SystemTab, defaultState as defaultSystemState } from '@/components/feat
 import { PromptTab, defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
 import { KnowledgeTab, defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { ResponseTab, defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
+import { ToolsTab, defaultState as defaultToolsState } from '@/components/features/menus/tabs/tab-tools'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
+import { useToolsMenu } from '@/components/features/menus/charm/hook-charm-tools'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
+import { useActions } from '@/components/features/menus/home/actions'
 import { toast } from 'react-hot-toast'
 
 interface I_Props {
@@ -41,6 +44,7 @@ export const BotCreationMenu = (props: I_Props) => {
 
   // Defaults
   const defaults: I_Text_Settings = useMemo(() => ({
+    tools: defaultToolsState,
     attention: defaultAttentionState,
     performance: defaultPerformanceState,
     system: defaultSystemState,
@@ -59,6 +63,13 @@ export const BotCreationMenu = (props: I_Props) => {
     disableForm,
     setDisableForm,
   } = useKnowledgeMenu()
+  const {
+    selected: toolsIndex,
+    setSelected: setToolsIndex,
+    disableForm: disableToolsForm,
+    setDisableForm: setDisableToolsForm,
+  } = useToolsMenu()
+  const { fetchTools } = useActions()
   const { fetchData: fetchModelSettingsData, systemPrompts, promptTemplates, ragTemplates, ragModes } = useModelSettingsMenu({ services: data.services })
   const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
   const [stateAttention, setStateAttention] = useState<I_Attention_State>(defaults.attention)
@@ -68,10 +79,17 @@ export const BotCreationMenu = (props: I_Props) => {
   const [stateResponse, setStateResponse] = useState<I_Response_State>(defaults.response)
   const [fetchOnce, setFetchOnce] = useState(false)
 
+  // Functions
+  const fetchToolsAction = useCallback(async () => {
+    const res = await fetchTools()
+    return res?.data
+  }, [fetchTools])
+
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [stateSystem, systemPrompts])
   const knowledgeMenu = useMemo(() => <KnowledgeTab type={knowledgeType} setType={setKnowledgeType} selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchCollections, knowledgeIndex, knowledgeType, setDisableForm, setKnowledgeIndex, setKnowledgeType])
+  const toolsMenu = useMemo(() => <ToolsTab selected={toolsIndex} setSelected={setToolsIndex} fetchListAction={fetchToolsAction} disableForm={disableToolsForm} setDisableForm={setDisableToolsForm} />, [disableToolsForm, fetchToolsAction, setDisableToolsForm, setToolsIndex, toolsIndex])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [stateResponse])
   const modelMenu = useMemo(() => <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />, [data.installedList, data.modelConfigs, stateModel])
   const attentionMenu = useMemo(() => <AttentionTab state={stateAttention} setState={setStateAttention} />, [stateAttention])
@@ -82,10 +100,11 @@ export const BotCreationMenu = (props: I_Props) => {
     { icon: '👀', label: '', key: 'Attention', content: attentionMenu },
     { icon: '🏃‍♂️', label: '', key: 'Performance', content: performanceMenu },
     { icon: '📚', label: '', key: 'Knowledge', content: knowledgeMenu },
+    { icon: '🛠', label: '', key: 'Tools', content: toolsMenu },
     { icon: '🤬', label: '', key: 'Personality', content: systemMessageMenu },
     { icon: '🧠', label: '', key: 'Thinking', content: promptMenu },
-    { icon: '🙊', label: '', key: 'Response', content: responseMenu },
-  ], [attentionMenu, knowledgeMenu, modelMenu, performanceMenu, promptMenu, responseMenu, systemMessageMenu])
+    { icon: '💬', label: '', key: 'Response', content: responseMenu },
+  ], [attentionMenu, knowledgeMenu, modelMenu, performanceMenu, promptMenu, responseMenu, systemMessageMenu, toolsMenu])
 
   // Hooks
   const onSaveClick = useCallback(
@@ -114,17 +133,21 @@ export const BotCreationMenu = (props: I_Props) => {
           type: knowledgeType,
           index: knowledgeIndex,
         },
+        tools: {
+          index: toolsIndex, // @TODO just set toolsIndex as the value
+        },
         response: stateResponse,
       })
       // Close
       setDialogOpen(false)
     },
-    [knowledgeIndex, knowledgeType, onSubmit, setDialogOpen, stateAttention, stateModel, statePerformance, statePrompt, stateResponse, stateSystem],
+    [knowledgeIndex, knowledgeType, onSubmit, setDialogOpen, stateAttention, stateModel, statePerformance, statePrompt, stateResponse, stateSystem, toolsIndex],
   )
 
   useEffect(() => {
     // Reset settings
     if (dialogOpen) {
+      setToolsIndex(defaults.tools.index)
       setKnowledgeType(defaults.knowledge.type)
       setKnowledgeIndex(defaults.knowledge.index)
       setStateModel(defaults.model)
@@ -134,7 +157,7 @@ export const BotCreationMenu = (props: I_Props) => {
       setStatePrompt(defaults.prompt)
       setStateResponse(defaults.response)
     }
-  }, [defaults, dialogOpen, setKnowledgeIndex, setKnowledgeType])
+  }, [defaults, dialogOpen, setKnowledgeIndex, setKnowledgeType, setToolsIndex])
 
   // Fetch on mount
   useEffect(() => {

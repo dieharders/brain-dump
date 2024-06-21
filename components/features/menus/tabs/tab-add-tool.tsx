@@ -115,7 +115,7 @@ export const AddToolTab = (props: I_Props) => {
                 return (
                   <div
                     key={index}
-                    className="w-full flex flex-row gap-4 items-center"
+                    className="flex w-full flex-row items-center gap-4"
                   >
                     {/* Argument name */}
                     <Input
