@@ -186,6 +186,7 @@ export const useLocalInference = (props: IProps) => {
         mode,
         messageFormat,
         collectionNames: settings?.knowledge?.index,
+        tools: settings?.tools?.assigned,
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,
         ragPromptTemplate: settings?.prompt?.ragTemplate,

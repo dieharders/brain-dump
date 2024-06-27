@@ -6,7 +6,9 @@ export const useToolsMenu = () => {
   // Menu states
   const [disableForm, setDisableForm] = useState(false)
   // Tracks all checkbox states
-  const [selected, setSelected] = useState<string[]>(playgroundSettings.tools.index || [])
+  const [selected, setSelected] = useState<string[]>(
+    playgroundSettings.tools?.assigned || [],
+  )
 
   return {
     disableForm,

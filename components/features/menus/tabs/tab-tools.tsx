@@ -12,9 +12,10 @@ import { I_Tools_Settings } from '@/lib/homebrew'
 import { Root, Indicator } from '@radix-ui/react-checkbox'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { ToolCard } from '@/components/features/panels/tool-card'
+import { useGlobalContext } from '@/contexts'
 
 interface I_Props {
-  fetchListAction: () => Promise<I_Tools_Settings[] | undefined>
+  fetchListAction: () => Promise<void>
   selected: string[]
   setSelected: Dispatch<SetStateAction<string[]>>
   disableForm: boolean
@@ -22,12 +23,12 @@ interface I_Props {
 }
 
 export const defaultState = {
-  index: [],
+  assigned: [],
 }
 
 export const ToolsTab = (props: I_Props) => {
   const { fetchListAction, disableForm, setDisableForm, setSelected, selected } = props
-  const [tools, setTools] = useState<I_Tools_Settings[]>([])
+  const { tools } = useGlobalContext()
   const renderDefaultMsg = <div className="font-semibold">No tools added yet.</div>
 
   const ToolItem = ({ item, index }: { item: I_Tools_Settings, index: number }) => {
@@ -125,12 +126,8 @@ export const ToolsTab = (props: I_Props) => {
 
   // Fetch the tools list when opened
   useEffect(() => {
-    const action = async () => {
-      const result = await fetchListAction()
-      if (result) setTools(result)
-    }
-    action()
-  }, [fetchListAction, setTools])
+    fetchListAction()
+  }, [fetchListAction])
 
   return (
     <div className="overflow-hidden px-1">

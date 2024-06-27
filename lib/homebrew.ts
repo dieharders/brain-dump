@@ -71,6 +71,7 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   mode?: T_ConversationMode
   messageFormat?: string
   collectionNames?: string[]
+  tools?: string[]
 }
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
@@ -340,7 +341,7 @@ export interface I_Attention_State {
 }
 
 export interface I_Tools_Inference_State {
-  index: string[]
+  assigned: string[]
 }
 
 export interface I_Text_Settings {

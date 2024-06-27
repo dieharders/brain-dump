@@ -64,7 +64,7 @@ export const ToolCreationMenu = (props: I_Props) => {
     <Dialog open={dialogOpen.open} onOpenChange={setDialogOpen}>
       <DialogContent className="lg:min-w-[35%]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Add tool</DialogTitle>
+          <DialogTitle className="text-xl">{state.name ? 'Edit tool' : 'Add tool'}</DialogTitle>
         </DialogHeader>
 
         <AddToolTab state={state} setState={setState} />

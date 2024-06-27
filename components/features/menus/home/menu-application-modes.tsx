@@ -56,14 +56,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting } = props
   const { notAvailable: notAvailableNotification } = notifications()
   // State
-  const { collections, setCollections, installedList, modelConfigs, services } = useGlobalContext()
+  const { collections, setCollections, installedList, modelConfigs, services, tools } = useGlobalContext()
   const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tools_Settings }>({ open: false })
   const [bots, setBots] = useState<I_Text_Settings[]>([])
-  const [tools, setTools] = useState<I_Tools_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   const deleteButtonStyle = "absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
@@ -76,12 +75,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
     await services?.textInference?.modelExplore()
     return
   }, [services?.textInference])
-
-  const fetchToolsAction = useCallback(async () => {
-    const res = await fetchTools()
-    const data = res?.data
-    data && setTools(data)
-  }, [fetchTools])
 
   const goToKnowledgePage = (name: string) => router.push(`/${ROUTE_KNOWLEDGE}/?collectionName=${name}`)
 
@@ -150,21 +143,21 @@ export const ApplicationModesMenu = (props: I_Props) => {
       toast.error(`${res?.message}`)
       return
     }
-    // Update list of tools
-    await fetchToolsAction()
+    // Fetch list of tools
+    await fetchTools()
     // Success
     toast.success(`${res?.message}`)
     return
-  }, [fetchToolsAction, services?.storage])
+  }, [fetchTools, services?.storage])
 
   const deleteTool = useCallback(async (id: string) => {
     const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
     // Failed
     if (!res?.success) return false
     // Success
-    await fetchToolsAction()
+    await fetchTools()
     return true
-  }, [fetchToolsAction, services?.storage])
+  }, [fetchTools, services?.storage])
 
   const fetchModelInfo = useCallback(
     async (repoId: string) => {
@@ -210,7 +203,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           services && fetchBots()
           break
         case 'tools':
-          fetchToolsAction()
+          fetchTools()
           break
         case 'jobs':
           // services && fetchJobs()
@@ -224,7 +217,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           break
       }
     },
-    [fetchBots, fetchInstalledModelsAndConfigs, fetchToolsAction, services, updateKBCollections],
+    [fetchBots, fetchInstalledModelsAndConfigs, fetchTools, services, updateKBCollections],
   )
 
   // Menus

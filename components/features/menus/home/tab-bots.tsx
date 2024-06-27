@@ -64,8 +64,8 @@ export const BotCreationMenu = (props: I_Props) => {
     setDisableForm,
   } = useKnowledgeMenu()
   const {
-    selected: toolsIndex,
-    setSelected: setToolsIndex,
+    selected: selectedTools,
+    setSelected: setSelectedTools,
     disableForm: disableToolsForm,
     setDisableForm: setDisableToolsForm,
   } = useToolsMenu()
@@ -79,17 +79,11 @@ export const BotCreationMenu = (props: I_Props) => {
   const [stateResponse, setStateResponse] = useState<I_Response_State>(defaults.response)
   const [fetchOnce, setFetchOnce] = useState(false)
 
-  // Functions
-  const fetchToolsAction = useCallback(async () => {
-    const res = await fetchTools()
-    return res?.data
-  }, [fetchTools])
-
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [stateSystem, systemPrompts])
   const knowledgeMenu = useMemo(() => <KnowledgeTab type={knowledgeType} setType={setKnowledgeType} selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchCollections, knowledgeIndex, knowledgeType, setDisableForm, setKnowledgeIndex, setKnowledgeType])
-  const toolsMenu = useMemo(() => <ToolsTab selected={toolsIndex} setSelected={setToolsIndex} fetchListAction={fetchToolsAction} disableForm={disableToolsForm} setDisableForm={setDisableToolsForm} />, [disableToolsForm, fetchToolsAction, setDisableToolsForm, setToolsIndex, toolsIndex])
+  const toolsMenu = useMemo(() => <ToolsTab selected={selectedTools} setSelected={setSelectedTools} fetchListAction={fetchTools} disableForm={disableToolsForm} setDisableForm={setDisableToolsForm} />, [disableToolsForm, fetchTools, setDisableToolsForm, setSelectedTools, selectedTools])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [stateResponse])
   const modelMenu = useMemo(() => <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />, [data.installedList, data.modelConfigs, stateModel])
   const attentionMenu = useMemo(() => <AttentionTab state={stateAttention} setState={setStateAttention} />, [stateAttention])
@@ -134,20 +128,20 @@ export const BotCreationMenu = (props: I_Props) => {
           index: knowledgeIndex,
         },
         tools: {
-          index: toolsIndex, // @TODO just set toolsIndex as the value
+          assigned: selectedTools,
         },
         response: stateResponse,
       })
       // Close
       setDialogOpen(false)
     },
-    [knowledgeIndex, knowledgeType, onSubmit, setDialogOpen, stateAttention, stateModel, statePerformance, statePrompt, stateResponse, stateSystem, toolsIndex],
+    [knowledgeIndex, knowledgeType, onSubmit, setDialogOpen, stateAttention, stateModel, statePerformance, statePrompt, stateResponse, stateSystem, selectedTools],
   )
 
   useEffect(() => {
     // Reset settings
     if (dialogOpen) {
-      setToolsIndex(defaults.tools.index)
+      setSelectedTools(defaults.tools?.assigned)
       setKnowledgeType(defaults.knowledge.type)
       setKnowledgeIndex(defaults.knowledge.index)
       setStateModel(defaults.model)
@@ -157,7 +151,7 @@ export const BotCreationMenu = (props: I_Props) => {
       setStatePrompt(defaults.prompt)
       setStateResponse(defaults.response)
     }
-  }, [defaults, dialogOpen, setKnowledgeIndex, setKnowledgeType, setToolsIndex])
+  }, [defaults, dialogOpen, setKnowledgeIndex, setKnowledgeType, setSelectedTools])
 
   // Fetch on mount
   useEffect(() => {

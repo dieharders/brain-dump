@@ -58,12 +58,13 @@ export const CharmMenu = (props: I_Props) => {
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [knowledgeType, setKnowledgeType] = useState<string>(playgroundSettings.knowledge.type || '')
-  const [stateTools, setStateTools] = useState(playgroundSettings.tools.index || [])
+  const [selectedTools, setSelectedTools] = useState(playgroundSettings.tools?.assigned || [])
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
   const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
   const { fetchCollections } = useMemoryActions()
+  const { fetchTools } = useActions()
 
   const {
     fetchData,
@@ -114,14 +115,6 @@ export const CharmMenu = (props: I_Props) => {
     return action()
   }, [setPlaygroundSettings])
 
-  const { fetchTools } = useActions()
-
-  const fetchToolsAction = useCallback(async () => {
-    const res = await fetchTools()
-    const data = res?.data
-    return data
-  }, [fetchTools])
-
   // Get services
   useEffect(() => {
     const action = async () => {
@@ -154,9 +147,9 @@ export const CharmMenu = (props: I_Props) => {
       {/* Menu for Prompt Template settings */}
       {shouldRender('prompt') &&
         <PromptTemplateCharmMenu
-          fetchToolsAction={fetchToolsAction}
-          stateTools={stateTools}
-          setStateTools={setStateTools}
+          fetchToolsAction={fetchTools}
+          selectedTools={selectedTools}
+          setSelectedTools={setSelectedTools}
           dialogOpen={openPromptCharmDialog}
           setDialogOpen={setOpenPromptCharmDialog}
           onSubmit={async (settings) => {

@@ -19,7 +19,6 @@ import {
   I_RAGPromptTemplates,
   I_Response_State,
   I_System_State,
-  I_Tools_Settings,
   T_SystemPrompts,
 } from '@/lib/homebrew'
 import { ToolsTab } from '@/components/features/menus/tabs/tab-tools'
@@ -28,7 +27,7 @@ export const charmId: T_CharmId = 'prompt'
 
 type I_Tools_Selection = string[]
 interface I_Tools_State {
-  index: I_Tools_Selection
+  assigned: I_Tools_Selection
 }
 
 export interface I_State {
@@ -42,9 +41,9 @@ interface I_Props {
   dialogOpen: boolean
   setDialogOpen: (open: boolean) => void
   onSubmit: (saveSettings: I_State) => void
-  fetchToolsAction: () => Promise<I_Tools_Settings[] | undefined>
-  stateTools: I_Tools_Selection
-  setStateTools: Dispatch<SetStateAction<I_Tools_Selection>>
+  fetchToolsAction: () => Promise<void>
+  selectedTools: I_Tools_Selection
+  setSelectedTools: Dispatch<SetStateAction<I_Tools_Selection>>
   stateResponse: I_Response_State
   setStateResponse: Dispatch<SetStateAction<I_Response_State>>
   stateSystem: I_System_State
@@ -64,8 +63,8 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     setDialogOpen,
     onSubmit,
     fetchToolsAction,
-    stateTools,
-    setStateTools,
+    selectedTools,
+    setSelectedTools,
     stateResponse,
     setStateResponse,
     stateSystem,
@@ -85,7 +84,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     () => {
       // Save settings
       onSubmit({
-        tools: { index: stateTools },
+        tools: { assigned: selectedTools },
         system: stateSystem,
         prompt: statePrompt,
         response: stateResponse,
@@ -93,11 +92,11 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
       // Close
       setDialogOpen(false)
     },
-    [onSubmit, setDialogOpen, statePrompt, stateResponse, stateSystem, stateTools],
+    [onSubmit, setDialogOpen, statePrompt, stateResponse, stateSystem, selectedTools],
   )
 
   // Tabs
-  const toolsMenu = useMemo(() => <ToolsTab selected={stateTools} setSelected={setStateTools} fetchListAction={fetchToolsAction} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchToolsAction, setStateTools, stateTools])
+  const toolsMenu = useMemo(() => <ToolsTab selected={selectedTools} setSelected={setSelectedTools} fetchListAction={fetchToolsAction} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchToolsAction, setSelectedTools, selectedTools])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [setStateResponse, stateResponse])
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={knowledgeType === 'augmented_retrieval'} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [knowledgeType, promptTemplates, ragModes, ragTemplates, setStatePrompt, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [setStateSystem, stateSystem, systemPrompts])

@@ -2,7 +2,7 @@ import { useCallback } from "react"
 import { useGlobalContext } from "@/contexts"
 
 export const useActions = () => {
-  const { services, setInstalledList, setModelConfigs } = useGlobalContext()
+  const { services, setInstalledList, setModelConfigs, setTools } = useGlobalContext()
 
   const fetchInstalledModelsAndConfigs = useCallback(async () => {
     // Get all currently installed models
@@ -17,9 +17,10 @@ export const useActions = () => {
   }, [services?.textInference, setInstalledList, setModelConfigs])
 
   const fetchTools = useCallback(async () => {
-    const result = await services?.storage.getToolSettings?.()
-    return result
-  }, [services?.storage])
+    const res = await services?.storage.getToolSettings?.()
+    if (res?.success && res.data) setTools(res.data)
+    return
+  }, [services?.storage, setTools])
 
   return {
     fetchInstalledModelsAndConfigs,
