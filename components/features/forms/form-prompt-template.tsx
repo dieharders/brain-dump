@@ -68,7 +68,7 @@ export const PromptTemplateForm = (props: I_Props) => {
     <>
       {/* Prompt Template (Normal chat) */}
       <DialogHeader className="my-8">
-        <DialogTitle>Thought Structure</DialogTitle>
+        <DialogTitle>Thought Structure<p className="text-sm">(query prompt)</p></DialogTitle>
         <DialogDescription>
           Write a template to give your prompts coherant structure. Influence how the LLM thinks and determine how responses are returned. This template will wrap every query.
         </DialogDescription>

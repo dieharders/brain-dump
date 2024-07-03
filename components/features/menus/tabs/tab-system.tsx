@@ -68,7 +68,7 @@ export const SystemTab = (props: I_Props) => {
   return (
     <div className="px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Give Your Ai Personality</DialogTitle>
+        <DialogTitle>Ai Personality<p className="text-sm">(system message)</p></DialogTitle>
         <DialogDescription className="mb-4">
           {`Every model comes with a pre-trained personality type. Choose from premade templates to override the model's behavior. Or write your own custom role description in the form below.`}
         </DialogDescription>
