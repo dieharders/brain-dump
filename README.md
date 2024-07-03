@@ -12,7 +12,7 @@ The goal of this project are:
 
 ## How It Works
 
-A simple WebUI which performs all its' functions via [Obrew Server](https://github.com/dieharders/ai-text-server). You can use it to interface with a server running locally or a hosted server.
+Obrew Studio is the WebUI tool used to talk to oBrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/ai-text-server).
 
 ## Features Roadmap
 
@@ -24,11 +24,10 @@ A simple WebUI which performs all its' functions via [Obrew Server](https://gith
 - ✅ Inspect & optimize document chunking (for RAG)
 - ✅ Long-term memory (scrape website, file, raw text)
 - ✅ Save chat history
-- ❌ Build agents with access to tools
+- ✅ Build agents with access to tools
 - ❌ Create and execute jobs
-- ❌ Source citations in chat
-- ❌ Explore/Share model configs from community
-- ❌ Use voice to speak to Ai and text-to-speech to hear responses
+- ❌ Display source citations in chat
+- ❌ Explore/Share model configs and tools from community
 
 ## How to Run
 
@@ -71,6 +70,6 @@ Increase the major version by 1 (1.x.x to 2.x.x)
 
 ## Learn More
 
-- [OpenBrewAi](https://openbrewai.com)
+- [OpenBrew Ai](https://openbrewai.com)
 - [Obrew Server](https://github.com/dieharders/ai-text-server)
-<!-- https://github.com/vercel-labs/ai-chatbot -->
+- [Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)
