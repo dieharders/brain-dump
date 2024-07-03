@@ -8,6 +8,8 @@ import {
 } from '@/components/ui/dialog'
 import { Select } from '@/components/ui/select'
 import { I_PromptTemplates, T_PromptTemplate } from '@/lib/homebrew'
+import { TemplateVarsInfo } from '@/components/features/menus/tabs/info-template-vars'
+import { CUSTOM_ID } from './constants'
 
 interface I_Props {
   state: T_PromptTemplate
@@ -17,7 +19,6 @@ interface I_Props {
 
 // Prompt
 const defaultPromptText = '{query_str}'
-const CUSTOM_ID = 'custom_default'
 const CUSTOM_NAME = 'Custom'
 
 export const defaultPromptState = {
@@ -74,6 +75,9 @@ export const PromptTemplateForm = (props: I_Props) => {
         </DialogDescription>
       </DialogHeader>
 
+      {/* Info about all template vars */}
+      <TemplateVarsInfo />
+
       {/* Select where to load from */}
       <div className="mb-4 w-full">
         <Select
@@ -86,7 +90,7 @@ export const PromptTemplateForm = (props: I_Props) => {
         />
       </div>
 
-      {/* Content */}
+      {/* Input prompt text */}
       <textarea
         disabled={state.id !== CUSTOM_ID}
         className="scrollbar h-48 w-full resize-none rounded border-2 p-2 outline-none focus:border-primary/50"
