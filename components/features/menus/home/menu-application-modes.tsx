@@ -59,6 +59,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const { collections, setCollections, installedList, modelConfigs, services, tools } = useGlobalContext()
   const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
   const router = useRouter()
+  const [presetTools, setPresetTools] = useState<I_Tool_Definition[]>([])
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
   const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tool_Definition }>({ open: false })
@@ -189,6 +190,14 @@ export const ApplicationModesMenu = (props: I_Props) => {
     [services?.textInference],
   )
 
+  const fetchPresetTools = async () => {
+    if (presetTools.length > 0) return
+    // Load in data for all tool presets
+    const file = await import('data/tools/calculator.json')
+    const data = file?.default
+    data && setPresetTools(prev => ([...prev, data]))
+  }
+
   const onTabChange = useCallback(
     (val: string) => {
       // do stuff here when tab is selected ...
@@ -203,6 +212,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           services && fetchBots()
           break
         case 'tools':
+          fetchPresetTools()
           fetchTools()
           break
         case 'jobs':
@@ -320,10 +330,19 @@ export const ApplicationModesMenu = (props: I_Props) => {
               />
             </Item>
           )
-        }
-        )}
+        })}
         {/* Presets */}
-        <Item title="Calculator" Icon={() => <div className="text-4xl">➗</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        {presetTools.map(tool => {
+          return (<Item
+            key={tool?.name}
+            title="Calculator"
+            Icon={() => <div className="text-4xl">➗</div>}
+            onAction={() => {
+              setOpenToolCreationMenu({ open: true, initialState: tool })
+            }}
+            className={presetBotClass}
+          />)
+        })}
         <Item title="Web Search" Icon={() => <div className="text-4xl">🌐</div>} onAction={notAvailableNotification} className={presetBotClass} />
         <Item title="WIKI API" Icon={() => <div className="text-4xl">🔗</div>} onAction={notAvailableNotification} className={presetBotClass} />
         <Item title="Web Crawl" Icon={() => <div className="text-4xl">🕸</div>} onAction={notAvailableNotification} className={presetBotClass} />
