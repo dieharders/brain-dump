@@ -28,6 +28,7 @@ export const AddToolTab = (props: I_Props) => {
   const isEditMode = !!state.name
   const [argumentsInputType, setArgumentsInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
   const [exampleInputType, setExampleInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
+  const textareaStyle = "text-md scrollbar w-full rounded border-2 p-2 outline-none focus:border-primary/50"
 
   const argInputTypes = [
     {
@@ -124,7 +125,7 @@ export const AddToolTab = (props: I_Props) => {
                   disabled={isEditMode && argumentsInputType === 'auto'}
                   placeholder="{}"
                   onChange={e => setState(prev => ({ ...prev, arguments: e.target.value }))}
-                  className="text-md scrollbar w-full rounded-md p-4"
+                  className={textareaStyle}
                 />}
               </div>
               {/* Tool example output */}
@@ -152,7 +153,7 @@ export const AddToolTab = (props: I_Props) => {
                   disabled={isEditMode && exampleInputType === 'auto'}
                   placeholder="{}"
                   onChange={e => setState(prev => ({ ...prev, example_arguments: e.target.value }))}
-                  className="text-md scrollbar w-full rounded-md p-4"
+                  className={textareaStyle}
                 />}
               </div>
             </div>
