@@ -58,5 +58,12 @@
       "name": "Basic Question & Answer",
       "text": "{query_str}\nPlease answer in the following format:\nQ: <<QUESTION>>\n\nA: <<ANSWER>>"
     }
+  ],
+  "agent": [
+    {
+      "id": "agent_basic",
+      "name": "Basic tool use agent",
+      "text": "QUESTION: {query_str}\nOUTPUT: "
+    }
   ]
 }
