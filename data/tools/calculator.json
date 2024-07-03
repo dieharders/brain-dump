@@ -1,7 +1,0 @@
-{
-  "name": "calculator",
-  "path": "calculator.py",
-  "description": "Perform simple arithmetic on numbers (operands) according to the specified operation.",
-  "arguments": "",
-  "example_arguments": ""
-}
