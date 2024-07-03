@@ -25,7 +25,9 @@ export const ToolCard = (props: SidebarItemProps) => {
   const icon = '🔧'
   const toolTipStyle = cn("w-full overflow-hidden")
   const labelStyle = cn("justify-left flex")
-  const numArgs = item.arguments?.length
+  const toolPath = item.path
+  const isCloudFuncPath = toolPath?.includes('https://') || toolPath?.includes('http://')
+  const pathIcon = isCloudFuncPath ? '🌐' : '💻'
 
   return (
     <div
@@ -81,27 +83,26 @@ export const ToolCard = (props: SidebarItemProps) => {
         </span>
       </div>
 
-      {/* Path to code */}
-      {item?.path && <div className="flex h-fit w-full flex-row items-stretch justify-start justify-items-stretch gap-4 overflow-hidden text-left text-slate-500">
-        <span className="line-clamp-1 block w-fit overflow-hidden text-ellipsis whitespace-nowrap">
-          🌐{item?.path}
-        </span>
-        {/* Stats */}
-        <div className="flex h-fit w-fit flex-row justify-between justify-items-stretch space-x-2 overflow-hidden text-gray-400">
-          {/* Number of metadata tags */}
-          <Tooltip delayDuration={350}>
-            <TooltipTrigger
-              tabIndex={-1}
-              className={toolTipStyle}
-            >
-              <div className={labelStyle}>
-                <p className="truncate">❔ {numArgs}</p>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>Argument count: {numArgs}</TooltipContent>
-          </Tooltip>
-        </div>
-      </div>}
+      {/* Stats */}
+      <div className="flex h-fit w-full flex-row justify-start justify-items-stretch gap-4 space-x-2 overflow-hidden text-ellipsis whitespace-nowrap text-gray-400">
+        {/* Path to code */}
+        {item?.path &&
+          // This div correctly aligns tool popup
+          <div className="w-fit">
+            <Tooltip delayDuration={350}>
+              <TooltipTrigger
+                tabIndex={-1}
+                className={toolTipStyle}
+              >
+                <div className={labelStyle}>
+                  <p className="truncate">{pathIcon}{' '}{toolPath}</p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Tool location: {toolPath}</TooltipContent>
+            </Tooltip>
+          </div>
+        }
+      </div>
 
     </div>
   )
