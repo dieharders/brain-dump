@@ -8,8 +8,8 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_Submit_Tool_Settings, ToolCreationMenu } from '@/components/features/menus/home/tab-tools'
-import { I_Knowledge_State, I_Text_Settings, I_Tools_Settings } from '@/lib/homebrew'
+import { ToolCreationMenu } from '@/components/features/menus/home/tab-tools'
+import { I_Knowledge_State, I_Text_Settings, I_Tool_Definition } from '@/lib/homebrew'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { toast } from 'react-hot-toast'
@@ -61,7 +61,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
-  const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tools_Settings }>({ open: false })
+  const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tool_Definition }>({ open: false })
   const [bots, setBots] = useState<I_Text_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
@@ -136,7 +136,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     action()
   }, [services?.storage])
 
-  const saveTool = useCallback(async (toolSettings: I_Submit_Tool_Settings | I_Tools_Settings) => {
+  const saveTool = useCallback(async (toolSettings: I_Tool_Definition) => {
     // Save menu forms to a json file
     const res = await services?.storage?.saveToolSettings?.({ body: toolSettings })
     if (!res?.success) {

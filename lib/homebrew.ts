@@ -355,12 +355,13 @@ export interface I_Text_Settings {
   response: I_Response_State
 }
 
-export interface I_Tools_Settings {
-  id: string
-  name: string
-  path: string
-  description: string
-  args: Array<{ [key: string]: string }>
+export interface I_Tool_Definition {
+  id?: string | undefined
+  name?: string | undefined
+  path?: string | undefined
+  description?: string | undefined
+  arguments?: string | undefined
+  example_arguments?: string | undefined
 }
 
 type T_Endpoint = { [key: string]: any }
@@ -439,7 +440,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   storage: {
     saveToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>
-    getToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    getToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tool_Definition[]>
     deleteToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>
     getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     deleteBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>

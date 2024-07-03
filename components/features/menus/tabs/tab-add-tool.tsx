@@ -1,63 +1,55 @@
 'use client'
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
-import { I_Submit_Tool_Settings } from '@/components/features/menus/home/tab-tools'
+import { I_Tool_Definition } from '@/lib/homebrew'
 
 interface I_Props {
-  state: I_Submit_Tool_Settings,
-  setState: Dispatch<SetStateAction<I_Submit_Tool_Settings>>
+  state: I_Tool_Definition,
+  setState: Dispatch<SetStateAction<I_Tool_Definition>>
 }
 
-export const defaultState: I_Submit_Tool_Settings = {
+export const defaultState: I_Tool_Definition = {
   name: '',
   path: '',
   description: '',
-  args: [],
+  arguments: '',
+  example_arguments: ''
 }
 
 export const AddToolTab = (props: I_Props) => {
   const { state, setState } = props
+  const isEditMode = !!state.name
+  const [argumentsInputType, setArgumentsInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
+  const [exampleInputType, setExampleInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
 
-  const argTypes = [
+  const argInputTypes = [
     {
-      name: 'string',
-      value: 'string'
+      name: 'Write custom arguments',
+      value: 'custom'
     },
     {
-      name: 'number',
-      value: 'number'
-    },
-    {
-      name: 'boolean',
-      value: 'boolean'
-    },
-    {
-      name: 'array',
-      value: 'array'
-    },
-    {
-      name: 'dictionary',
-      value: 'dictionary'
+      name: 'Auto add arguments',
+      value: 'auto'
     }
   ]
 
-  const addNewArgumentInput = (ind: number) => {
-    setState(prev => {
-      const key = `argument${ind}`
-      const newArgs = [...prev.args]
-      const defaultValue = 'string'
-      newArgs.push({ [key]: defaultValue })
-      return { ...prev, args: newArgs }
-    })
-  }
+  const exampleInputTypes = [
+    {
+      name: 'Write custom example',
+      value: 'custom'
+    },
+    {
+      name: 'Auto add example',
+      value: 'auto'
+    }
+  ]
 
   return (
     <div className="px-1">
@@ -101,58 +93,68 @@ export const AddToolTab = (props: I_Props) => {
               <Input
                 name="path"
                 value={state.path}
-                placeholder="Path to tool (file::// or https://)"
+                placeholder="Path to tool (filename or https://)"
                 onChange={e => setState(prev => ({ ...prev, path: e.target.value }))}
                 className="text-md"
               />
             </div>
-            {/* Tool arguments */}
             <div className="flex w-full flex-col gap-4">
-              {state.args.map((arg, index) => {
-                const name = Object.entries(arg)[0][0]
-                const type = Object.entries(arg)[0][1]
-
-                return (
-                  <div
-                    key={index}
-                    className="flex w-full flex-row items-center gap-4"
-                  >
-                    {/* Argument name */}
-                    <Input
-                      name={`${index}-name`}
-                      value={name}
-                      placeholder="Argument Name"
-                      onChange={e => setState(prev => {
-                        const newArgs = prev.args
-                        newArgs[index] = { [e.target.value]: type }
-                        return { ...prev, args: newArgs }
-                      })}
-                      className="text-md h-full"
-                    />
-                    {/* Argument type */}
-                    <Select
-                      id={`${index}-type`}
-                      name="Argument type"
-                      value={type || undefined}
-                      placeholder="Argument type"
-                      items={argTypes}
-                      className="text-md h-full"
-                      onChange={val => setState(prev => {
-                        const newArgs = prev.args
-                        newArgs[index] = { [name]: val }
-                        return { ...prev, args: newArgs }
-                      })}
-                    />
-                  </div>
-                )
-              })}
-              <Button
-                variant="outline"
-                className="text-md w-full overflow-hidden px-2 py-4"
-                onClick={() => addNewArgumentInput(state.args.length)}
+              {/* Tool arguments */}
+              <div
+                className="flex w-full flex-col items-center gap-2"
               >
-                Add Argument (optional)
-              </Button>
+                <Select
+                  /* Choose Custom/Auto arguments */
+                  id="argument-type"
+                  name="argument-type"
+                  value={argumentsInputType}
+                  placeholder="Auto/Manual arguments"
+                  items={argInputTypes}
+                  className="text-md h-full"
+                  onChange={val => {
+                    setArgumentsInputType(val)
+                    // reset when setting to auto
+                    if (argumentsInputType === 'custom') setState(prev => ({ ...prev, arguments: '' }))
+                  }}
+                />
+                {(argumentsInputType === 'custom' || isEditMode) && <textarea
+                  /* (arguments) multi-line text input */
+                  name="arguments-input"
+                  value={state.arguments}
+                  disabled={isEditMode && argumentsInputType === 'auto'}
+                  placeholder="{}"
+                  onChange={e => setState(prev => ({ ...prev, arguments: e.target.value }))}
+                  className="text-md scrollbar w-full rounded-md p-4"
+                />}
+              </div>
+              {/* Tool example output */}
+              <div
+                className="flex w-full flex-col items-center gap-2"
+              >
+                <Select
+                  /* Choose Custom/Auto example */
+                  id="example-type"
+                  name="example-type"
+                  value={exampleInputType}
+                  placeholder="Auto/Manual example"
+                  items={exampleInputTypes}
+                  className="text-md h-full"
+                  onChange={val => {
+                    setExampleInputType(val)
+                    // reset when setting to auto
+                    if (exampleInputType === 'custom') setState(prev => ({ ...prev, example_arguments: '' }))
+                  }}
+                />
+                {(exampleInputType === 'custom' || isEditMode) && <textarea
+                  /* (example) multi-line text input */
+                  name="example-input"
+                  value={state.example_arguments}
+                  disabled={isEditMode && exampleInputType === 'auto'}
+                  placeholder="{}"
+                  onChange={e => setState(prev => ({ ...prev, example_arguments: e.target.value }))}
+                  className="text-md scrollbar w-full rounded-md p-4"
+                />}
+              </div>
             </div>
           </div>
         </div>

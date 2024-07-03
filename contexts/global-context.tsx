@@ -1,5 +1,5 @@
 import { createContext, Dispatch, MutableRefObject, ReactNode, SetStateAction, useRef, useState } from 'react'
-import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_Message, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, I_Thread, I_Tools_Settings, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_Collection, I_DocumentChunk, I_LoadedModelRes, I_Message, I_ModelConfigs, I_ServiceApis, I_Source, I_Text_Settings, I_Thread, I_Tool_Definition, T_InstalledTextModel } from '@/lib/homebrew'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -15,8 +15,8 @@ interface IGlobalContextProps {
   services: I_ServiceApis | null
   setServices: (services: I_ServiceApis) => void
   // downloads: any
-  tools: I_Tools_Settings[]
-  setTools: Dispatch<SetStateAction<I_Tools_Settings[]>>
+  tools: I_Tool_Definition[]
+  setTools: Dispatch<SetStateAction<I_Tool_Definition[]>>
   collections: Array<I_Collection>
   setCollections: Dispatch<SetStateAction<Array<I_Collection>>>
   selectedCollectionName: string | null
@@ -104,7 +104,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const [threads, setThreads] = useState<Array<I_Thread>>([])
   const currentThreadId = useRef('')
   const [currentMessages, setCurrentMessages] = useState<Array<I_Message>>([])
-  const [tools, setTools] = useState<I_Tools_Settings[]>([])
+  const [tools, setTools] = useState<I_Tool_Definition[]>([])
 
   return (
     <GlobalContext.Provider

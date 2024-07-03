@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { I_Tools_Settings } from '@/lib/homebrew'
+import { I_Tool_Definition } from '@/lib/homebrew'
 
 interface SidebarItemProps {
-  item: I_Tools_Settings
+  item: I_Tool_Definition
   isActive?: boolean // when hovered or clicked
   isSelected?: boolean // when selected in a checkbox
   onClick?: () => void
@@ -25,7 +25,7 @@ export const ToolCard = (props: SidebarItemProps) => {
   const icon = '🔧'
   const toolTipStyle = cn("w-full overflow-hidden")
   const labelStyle = cn("justify-left flex")
-  const numArgs = item.args?.length
+  const numArgs = item.arguments?.length
 
   return (
     <div

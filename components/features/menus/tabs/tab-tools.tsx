@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { IconSpinner } from '@/components/ui/icons'
-import { I_Tools_Settings } from '@/lib/homebrew'
+import { I_Tool_Definition } from '@/lib/homebrew'
 import { Root, Indicator } from '@radix-ui/react-checkbox'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { ToolCard } from '@/components/features/panels/tool-card'
@@ -31,21 +31,20 @@ export const ToolsTab = (props: I_Props) => {
   const { tools } = useGlobalContext()
   const renderDefaultMsg = <div className="font-semibold">No tools added yet.</div>
 
-  const ToolItem = ({ item, index }: { item: I_Tools_Settings, index: number }) => {
-    const itemName = item.name
+  const ToolItem = ({ item, index }: { item: I_Tool_Definition, index: number }) => {
+    const itemName = item?.name
     const [isActive, setIsActive] = useState(false)
     const selectedItem = selected.find(name => name === itemName)
     const isInList = typeof selectedItem !== 'undefined'
 
     const onChange = useCallback(() => {
       if (!isInList) {
-        setSelected([...selected, itemName])
-      }
-      else {
+        itemName && setSelected([...selected, itemName || ''])
+      } else {
         const indItem = selected.findIndex(i => i === itemName)
         const newVal = [...selected]
         newVal.splice(indItem, 1)
-        setSelected(newVal)
+        newVal && setSelected(newVal)
       }
     }, [isInList, itemName])
 
@@ -98,7 +97,7 @@ export const ToolsTab = (props: I_Props) => {
             className="m-0 w-full p-0"
             onClick={() => {
               // Add all items to list
-              setSelected([...tools.map(i => i.name)])
+              setSelected([...tools.map(i => i?.name || '')])
               setDisableForm(false)
             }}
           >
