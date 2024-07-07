@@ -62,8 +62,13 @@
   "agent": [
     {
       "id": "agent_basic",
-      "name": "Basic tool use agent",
+      "name": "Basic tool use",
       "text": "QUESTION: {query_str}\nOUTPUT: "
+    },
+    {
+      "id": "agent_advanced",
+      "name": "Advanced tool use",
+      "text": "{tool_name_str}: {tool_description_str}\n\nPlease provide a JSON response that includes values from the QUESTION. The response should be formatted as follows:\n\n{tool_example_str}\n\nEnsure the JSON is properly formatted and each field is correctly typed like\n\n{tool_arguments_str}\n\nQUESTION: {query_str}\nOUTPUT: "
     }
   ]
 }

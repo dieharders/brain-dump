@@ -18,7 +18,18 @@ export const useActions = () => {
 
   const fetchTools = useCallback(async () => {
     const res = await services?.storage.getToolSettings?.()
-    if (res?.success && res.data) setTools(res.data)
+    if (res?.success && res.data) {
+      const result = res.data.map(tool => {
+        // Parse the json to object for certain props
+        return {
+          ...tool,
+          arguments: JSON.stringify(tool.arguments),
+          example_arguments: JSON.stringify(tool.example_arguments)
+        }
+      })
+      // Store result
+      setTools(result)
+    }
     return
   }, [services?.storage, setTools])
 

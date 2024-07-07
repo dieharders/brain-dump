@@ -20,7 +20,7 @@ export const defaultState: I_Tool_Definition = {
   path: '',
   description: '',
   arguments: '',
-  example_arguments: ''
+  example_arguments: '',
 }
 
 export const AddToolTab = (props: I_Props) => {
@@ -32,22 +32,22 @@ export const AddToolTab = (props: I_Props) => {
 
   const argInputTypes = [
     {
-      name: 'Write custom arguments',
+      name: 'Arguments (custom)',
       value: 'custom'
     },
     {
-      name: 'Auto add arguments',
+      name: 'Arguments (auto)',
       value: 'auto'
     }
   ]
 
   const exampleInputTypes = [
     {
-      name: 'Write custom example',
+      name: 'Example output (custom)',
       value: 'custom'
     },
     {
-      name: 'Auto add example',
+      name: 'Example output (auto)',
       value: 'auto'
     }
   ]
@@ -79,8 +79,8 @@ export const AddToolTab = (props: I_Props) => {
                 className="text-md"
               />
             </div>
-            {/* Tool description */}
-            <div className="w-full">
+            {/* Tool description, only display for already added tool */}
+            {state.id && <div className="w-full">
               <Input
                 name="description"
                 value={state.description}
@@ -88,7 +88,7 @@ export const AddToolTab = (props: I_Props) => {
                 onChange={e => setState(prev => ({ ...prev, description: e.target.value }))}
                 className="text-md"
               />
-            </div>
+            </div>}
             {/* Tool path */}
             <div className="w-full">
               <Input
@@ -118,11 +118,10 @@ export const AddToolTab = (props: I_Props) => {
                     if (argumentsInputType === 'custom') setState(prev => ({ ...prev, arguments: '' }))
                   }}
                 />
-                {(argumentsInputType === 'custom' || isEditMode) && <textarea
+                {(argumentsInputType === 'custom') && <textarea
                   /* (arguments) multi-line text input */
                   name="arguments-input"
                   value={state.arguments}
-                  disabled={isEditMode && argumentsInputType === 'auto'}
                   placeholder="{}"
                   onChange={e => setState(prev => ({ ...prev, arguments: e.target.value }))}
                   className={textareaStyle}
@@ -146,11 +145,10 @@ export const AddToolTab = (props: I_Props) => {
                     if (exampleInputType === 'custom') setState(prev => ({ ...prev, example_arguments: '' }))
                   }}
                 />
-                {(exampleInputType === 'custom' || isEditMode) && <textarea
+                {(exampleInputType === 'custom') && <textarea
                   /* (example) multi-line text input */
                   name="example-input"
                   value={state.example_arguments}
-                  disabled={isEditMode && exampleInputType === 'auto'}
                   placeholder="{}"
                   onChange={e => setState(prev => ({ ...prev, example_arguments: e.target.value }))}
                   className={textareaStyle}

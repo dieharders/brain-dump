@@ -329,9 +329,6 @@ export const ApplicationModesMenu = (props: I_Props) => {
             const tool = {
               name: 'Calculator',
               path: 'calculator.py',
-              description: 'Perform simple arithmetic on numbers (operands) according to the specified operation.',
-              arguments: '',
-              example_arguments: ''
             }
             setOpenToolCreationMenu({ open: true, initialState: tool })
           }}

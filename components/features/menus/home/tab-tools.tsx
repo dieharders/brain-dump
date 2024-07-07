@@ -24,8 +24,7 @@ export const ToolCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit } = props
 
   // State values
-  const initialData = dialogOpen?.initialState || defaultState
-  const [state, setState] = useState<I_Tool_Definition>(initialData)
+  const [state, setState] = useState<I_Tool_Definition>(defaultState)
   const [isDisabled, setDisabled] = useState(false)
 
   // Hooks
@@ -43,7 +42,18 @@ export const ToolCreationMenu = (props: I_Props) => {
       // Save settings
       setDisabled(true)
       const action = async () => {
-        await onSubmit(state)
+        // Convert json strings to objects
+        let newArgs
+        let newExample
+        try {
+          newArgs = JSON.parse(state.arguments || '')
+          newExample = JSON.parse(state.example_arguments || '')
+        } catch {
+          newArgs = {}
+          newExample = {}
+        }
+        const parsedRes = { ...state, arguments: newArgs, example_arguments: newExample }
+        await onSubmit(parsedRes)
         // Close
         setDisabled(false)
         setDialogOpen(false)
@@ -55,8 +65,8 @@ export const ToolCreationMenu = (props: I_Props) => {
 
   // Load/Reload settings data
   useEffect(() => {
-    if (dialogOpen.open) setState(initialData)
-  }, [dialogOpen, initialData])
+    if (dialogOpen.open) setState({ ...defaultState, ...dialogOpen?.initialState })
+  }, [dialogOpen])
 
   return (
     <Dialog open={dialogOpen.open} onOpenChange={setDialogOpen}>
