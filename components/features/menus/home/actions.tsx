@@ -20,11 +20,11 @@ export const useActions = () => {
     const res = await services?.storage.getToolSettings?.()
     if (res?.success && res.data) {
       const result = res.data.map(tool => {
-        // Parse the json to object for certain props
+        // Parse the json => object for certain props
         return {
           ...tool,
-          arguments: JSON.stringify(tool.arguments),
-          example_arguments: JSON.stringify(tool.example_arguments)
+          arguments: JSON.stringify(tool.arguments, null, 2),
+          example_arguments: JSON.stringify(tool.example_arguments, null, 2)
         }
       })
       // Store result

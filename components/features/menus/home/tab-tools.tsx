@@ -42,17 +42,8 @@ export const ToolCreationMenu = (props: I_Props) => {
       // Save settings
       setDisabled(true)
       const action = async () => {
-        // Convert json strings to objects
-        let newArgs
-        let newExample
-        try {
-          newArgs = JSON.parse(state.arguments || '')
-          newExample = JSON.parse(state.example_arguments || '')
-        } catch {
-          newArgs = {}
-          newExample = {}
-        }
-        const parsedRes = { ...state, arguments: newArgs, example_arguments: newExample }
+        // Convert args to objects
+        const parsedRes = { ...state, arguments: {}, example_arguments: {} }
         await onSubmit(parsedRes)
         // Close
         setDisabled(false)

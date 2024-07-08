@@ -1,13 +1,12 @@
 'use client'
 
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
 import { I_Tool_Definition } from '@/lib/homebrew'
 import { cn } from '@/lib/utils'
 
@@ -26,32 +25,7 @@ export const defaultState: I_Tool_Definition = {
 
 export const AddToolTab = (props: I_Props) => {
   const { state, setState } = props
-  const isEditMode = !!state.name
-  const [argumentsInputType, setArgumentsInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
-  const [exampleInputType, setExampleInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
   const textareaStyle = cn("text-md scrollbar min-h-[8rem] w-full rounded border-2 p-2 outline-none focus:border-primary/50")
-
-  const argInputTypes = [
-    {
-      name: 'Arguments (custom)',
-      value: 'custom'
-    },
-    {
-      name: 'Arguments (auto)',
-      value: 'auto'
-    }
-  ]
-
-  const exampleInputTypes = [
-    {
-      name: 'Example output (custom)',
-      value: 'custom'
-    },
-    {
-      name: 'Example output (auto)',
-      value: 'auto'
-    }
-  ]
 
   return (
     <div className="px-1">
@@ -105,55 +79,31 @@ export const AddToolTab = (props: I_Props) => {
               <div
                 className="flex w-full flex-col items-center gap-2"
               >
-                <Select
-                  /* Choose Custom/Auto arguments */
-                  id="argument-type"
-                  name="argument-type"
-                  value={argumentsInputType}
-                  placeholder="Auto/Manual arguments"
-                  items={argInputTypes}
-                  className="text-md h-full"
-                  onChange={val => {
-                    setArgumentsInputType(val)
-                    // reset when setting to auto
-                    if (argumentsInputType === 'custom') setState(prev => ({ ...prev, arguments: '' }))
-                  }}
-                />
-                {(argumentsInputType === 'custom') && <textarea
+                <DialogTitle className="self-justify-start self-start text-sm">Arguments schema</DialogTitle>
+                <textarea
                   /* (arguments) multi-line text input */
                   name="arguments-input"
-                  value={state.arguments}
+                  value={typeof state.arguments === 'string' ? state.arguments : ''}
                   placeholder="{}"
+                  disabled
                   onChange={e => setState(prev => ({ ...prev, arguments: e.target.value }))}
                   className={textareaStyle}
-                />}
+                />
               </div>
               {/* Tool example output */}
               <div
                 className="flex w-full flex-col items-center gap-2"
               >
-                <Select
-                  /* Choose Custom/Auto example */
-                  id="example-type"
-                  name="example-type"
-                  value={exampleInputType}
-                  placeholder="Auto/Manual example"
-                  items={exampleInputTypes}
-                  className="text-md h-full"
-                  onChange={val => {
-                    setExampleInputType(val)
-                    // reset when setting to auto
-                    if (exampleInputType === 'custom') setState(prev => ({ ...prev, example_arguments: '' }))
-                  }}
-                />
-                {(exampleInputType === 'custom') && <textarea
+                <DialogTitle className="self-justify-start self-start text-sm">Example output</DialogTitle>
+                <textarea
                   /* (example) multi-line text input */
                   name="example-input"
-                  value={state.example_arguments}
+                  value={typeof state.example_arguments === 'string' ? state.example_arguments : ''}
                   placeholder="{}"
+                  disabled
                   onChange={e => setState(prev => ({ ...prev, example_arguments: e.target.value }))}
                   className={textareaStyle}
-                />}
+                />
               </div>
             </div>
           </div>

@@ -360,8 +360,8 @@ export interface I_Tool_Definition {
   name?: string | undefined
   path?: string | undefined
   description?: string | undefined
-  arguments?: string | undefined
-  example_arguments?: string | undefined
+  arguments?: { [key: string]: any } | string | undefined
+  example_arguments?: { [key: string]: any } | string | undefined
 }
 
 type T_Endpoint = { [key: string]: any }
