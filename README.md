@@ -12,7 +12,7 @@ The goal of this project are:
 
 ## How It Works
 
-Obrew Studio is the WebUI tool used to talk to oBrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/ai-text-server).
+Obrew Studio is the WebUI tool used to talk to Obrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/ai-text-server).
 
 ## Features Roadmap
 
@@ -21,7 +21,7 @@ Obrew Studio is the WebUI tool used to talk to oBrew Server which performs all A
 - ✅ Build custom bots (like GPT store)
 - ✅ Streaming chat UI
 - ✅ Chat with your documents (RAG)
-- ✅ Inspect & optimize document chunking (for RAG)
+- ✅ Inspect & optimize document chunking for RAG
 - ✅ Long-term memory (scrape website, file, raw text)
 - ✅ Save chat history
 - ✅ Build agents with access to tools
