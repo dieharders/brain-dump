@@ -139,6 +139,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const saveTool = useCallback(async (toolSettings: I_Tool_Definition) => {
     // Save menu forms to a json file
     const res = await services?.storage?.saveToolSettings?.({ body: toolSettings })
+    // Failed
     if (!res?.success) {
       toast.error(`${res?.message}`)
       return

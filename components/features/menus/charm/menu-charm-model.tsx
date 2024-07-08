@@ -77,7 +77,6 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     ragModes,
     knowledgeType,
   } = props
-  // @TODO Maybe this comes from useActions() ?
   const [disableForm, setDisableForm] = useState(false)
 
   const onSaveClick = useCallback(
