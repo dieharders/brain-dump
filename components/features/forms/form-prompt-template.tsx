@@ -10,6 +10,7 @@ import { Select } from '@/components/ui/select'
 import { I_PromptTemplates, T_PromptTemplate } from '@/lib/homebrew'
 import { TemplateVarsInfo } from '@/components/features/menus/tabs/info-template-vars'
 import { CUSTOM_ID } from './constants'
+import { Highlight, Info } from '@/components/ui/info'
 
 interface I_Props {
   state: T_PromptTemplate
@@ -69,9 +70,14 @@ export const PromptTemplateForm = (props: I_Props) => {
     <>
       {/* Prompt Template (Normal chat) */}
       <DialogHeader className="my-8">
-        <DialogTitle>Thought Structure<p className="text-sm">(query prompt)</p></DialogTitle>
+        <div className="flex flex-row items-center gap-2">
+          <DialogTitle>Thought Structure</DialogTitle>
+          <Info label="sys_msg" className="h-full w-6 p-1">
+            <span><Highlight>query prompt</Highlight> The primary instruction that determines how the LLM thinks and responds.</span>
+          </Info>
+        </div>
         <DialogDescription>
-          Write a template to give your prompts coherant structure. Influence how the LLM thinks and determine how responses are returned. This template will wrap every query.
+          Templates to give structure to the Bot response. Choose from pre-made templates or write your own.
         </DialogDescription>
       </DialogHeader>
 

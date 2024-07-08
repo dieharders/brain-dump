@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { I_Tool_Definition } from '@/lib/homebrew'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
   state: I_Tool_Definition,
@@ -28,7 +29,7 @@ export const AddToolTab = (props: I_Props) => {
   const isEditMode = !!state.name
   const [argumentsInputType, setArgumentsInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
   const [exampleInputType, setExampleInputType] = useState<string>(isEditMode ? 'custom' : 'auto')
-  const textareaStyle = "text-md scrollbar w-full rounded border-2 p-2 outline-none focus:border-primary/50"
+  const textareaStyle = cn("text-md scrollbar min-h-[8rem] w-full rounded border-2 p-2 outline-none focus:border-primary/50")
 
   const argInputTypes = [
     {
@@ -94,7 +95,7 @@ export const AddToolTab = (props: I_Props) => {
               <Input
                 name="path"
                 value={state.path}
-                placeholder="Path to tool (filename or https://)"
+                placeholder="filename.ext or https://"
                 onChange={e => setState(prev => ({ ...prev, path: e.target.value }))}
                 className="text-md"
               />

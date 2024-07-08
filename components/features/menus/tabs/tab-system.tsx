@@ -10,6 +10,7 @@ import { Select } from '@/components/ui/select'
 import { T_SystemPrompt, T_SystemPrompts, I_System_State as I_State } from '@/lib/homebrew'
 import { TemplateVarsInfo } from '@/components/features/menus/tabs/info-template-vars'
 import { CUSTOM_ID } from '@/components/features/forms/constants'
+import { Highlight, Info } from '@/components/ui/info'
 
 interface I_Props {
   state: I_State
@@ -68,9 +69,14 @@ export const SystemTab = (props: I_Props) => {
   return (
     <div className="px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Ai Personality<p className="text-sm">(system message)</p></DialogTitle>
+        <div className="flex flex-row items-center gap-2">
+          <DialogTitle>Ai Role</DialogTitle>
+          <Info label="sys_msg" className="h-full w-6 p-1">
+            <span><Highlight>system message</Highlight> A special instruction to guide the model to play a role.</span>
+          </Info>
+        </div>
         <DialogDescription className="mb-4">
-          {`Every model comes with a pre-trained personality type. Choose from premade templates to override the model's behavior. Or write your own custom role description in the form below.`}
+          {`Templates to override the model's behavior. Choose from pre-made templates or write your own.`}
         </DialogDescription>
       </DialogHeader>
 
