@@ -328,7 +328,7 @@ export type I_Prompt_State = {
 export interface I_Model_State {
   id: string | undefined // @TODO change to modelId
   botName?: string
-  filename: string | undefined // @TODO change to modelFile
+  filename: string | undefined // @TODO change to modelFileName
 }
 
 export interface I_System_State {
@@ -356,9 +356,9 @@ export interface I_Text_Settings {
 }
 
 export interface I_Tool_Definition {
+  name: string | undefined
+  path: string | undefined
   id?: string | undefined
-  name?: string | undefined
-  path?: string | undefined
   description?: string | undefined
   arguments?: { [key: string]: any } | string | undefined
   example_arguments?: { [key: string]: any } | string | undefined
@@ -490,7 +490,6 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 
   try {
-    // @TODO Remove the use of fetching configs. Just use connect() and have it return everything fetchAPIConfig does.
     const endpoint = '/v1/services/api'
     const domain = createDomainName()
     const res = await fetch(`${domain}${endpoint}`, options)

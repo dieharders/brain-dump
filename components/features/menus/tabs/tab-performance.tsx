@@ -38,28 +38,6 @@ export const PerformanceTab = (props: I_Props) => {
   const inputContainerClass = "grid w-full gap-1"
   const infoClass = "flex w-full flex-row gap-2"
 
-  // @TODO Maybe need to implement this with setState
-  // const saveParsedSettings = useCallback((settings: { [key: string]: any }) => {
-  //   const saveSettings: { [key: string]: any } = {}
-  //   // Cleanup exported values to correct types
-  //   Object.entries(settings)?.forEach(([key, val]) => {
-  //     let newVal = val
-  //     if (typeof val === 'string') {
-  //       if (key === 'n_batch') newVal = parseInt(val)
-  //       if (key === 'n_ctx') newVal = parseInt(val)
-  //       if (key === 'n_threads') newVal = parseInt(val)
-  //       if (key === 'seed') newVal = parseInt(val)
-  //       if (key === 'n_gpu_layers') newVal = parseInt(val)
-  //       if (val.length === 0) newVal = undefined
-  //     }
-  //     // Set result
-  //     const isZero = typeof val === 'number' && val === 0
-  //     const shouldSet = newVal || isZero || typeof val === 'boolean'
-  //     if (shouldSet) saveSettings[key] = newVal
-  //   })
-  //   setState(saveSettings)
-  // }, [setState])
-
   // Handle input state changes
   const handleFloatChange = (propName: string, value: string) => setState(prev => {
     const defState = defaultState[propName as keyof I_LLM_Init_Options]
