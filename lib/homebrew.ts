@@ -71,6 +71,7 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   mode?: T_ConversationMode
   messageFormat?: string
   collectionNames?: string[]
+  tools?: string[]
 }
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
@@ -339,7 +340,12 @@ export interface I_Attention_State {
   mode: T_ConversationMode
 }
 
+export interface I_Tools_Inference_State {
+  assigned: string[]
+}
+
 export interface I_Text_Settings {
+  tools: I_Tools_Inference_State
   attention: I_Attention_State
   performance: I_LLM_Init_Options
   system: I_System_State
@@ -349,12 +355,13 @@ export interface I_Text_Settings {
   response: I_Response_State
 }
 
-export interface I_Tools_Settings {
-  id: string
-  name: string
-  path: string
-  description: string
-  args: Array<{ [key: string]: string }>
+export interface I_Tool_Definition {
+  id?: string | undefined
+  name?: string | undefined
+  path?: string | undefined
+  description?: string | undefined
+  arguments?: { [key: string]: any } | string | undefined
+  example_arguments?: { [key: string]: any } | string | undefined
 }
 
 type T_Endpoint = { [key: string]: any }
@@ -433,7 +440,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   storage: {
     saveToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>
-    getToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tools_Settings[]>
+    getToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tool_Definition[]>
     deleteToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>
     getBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>
     deleteBotSettings: T_GenericAPIRequest<T_GenericReqPayload, I_Text_Settings[]>

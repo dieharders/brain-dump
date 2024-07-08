@@ -10,24 +10,21 @@ import {
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { I_Tools_Settings } from '@/lib/homebrew'
+import { I_Tool_Definition } from '@/lib/homebrew'
 import { AddToolTab, defaultState } from '@/components/features/menus/tabs/tab-add-tool'
 import { toast } from 'react-hot-toast'
 
-export type I_Submit_Tool_Settings = Omit<I_Tools_Settings, 'id'>
-
 interface I_Props {
-  dialogOpen: { open: boolean, initialState?: I_Tools_Settings }
+  dialogOpen: { open: boolean, initialState?: I_Tool_Definition }
   setDialogOpen: (isOpen: boolean) => void
-  onSubmit: (saveSettings: I_Submit_Tool_Settings | I_Tools_Settings) => Promise<void>
+  onSubmit: (saveSettings: I_Tool_Definition) => Promise<void>
 }
 
 export const ToolCreationMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit } = props
 
   // State values
-  const defaults = dialogOpen?.initialState || defaultState
-  const [state, setState] = useState<I_Submit_Tool_Settings>(defaults)
+  const [state, setState] = useState<I_Tool_Definition>(defaultState)
   const [isDisabled, setDisabled] = useState(false)
 
   // Hooks
@@ -45,7 +42,9 @@ export const ToolCreationMenu = (props: I_Props) => {
       // Save settings
       setDisabled(true)
       const action = async () => {
-        await onSubmit(state)
+        // Convert args to objects
+        const parsedRes = { ...state, arguments: {}, example_arguments: {} }
+        await onSubmit(parsedRes)
         // Close
         setDisabled(false)
         setDialogOpen(false)
@@ -55,16 +54,16 @@ export const ToolCreationMenu = (props: I_Props) => {
     [onSubmit, setDialogOpen, state],
   )
 
+  // Load/Reload settings data
   useEffect(() => {
-    // Reset settings
-    if (dialogOpen) setState(defaults)
-  }, [defaults, dialogOpen])
+    if (dialogOpen.open) setState({ ...defaultState, ...dialogOpen?.initialState })
+  }, [dialogOpen])
 
   return (
     <Dialog open={dialogOpen.open} onOpenChange={setDialogOpen}>
       <DialogContent className="lg:min-w-[35%]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Add tool</DialogTitle>
+          <DialogTitle className="text-xl">{state.id ? 'Edit tool' : 'Add custom tool'}</DialogTitle>
         </DialogHeader>
 
         <AddToolTab state={state} setState={setState} />

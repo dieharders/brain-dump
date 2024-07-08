@@ -1,32 +1,33 @@
 # 🍺 Obrew Studio - WebUI
 
-An Ai engineer's tool for building custom Ai agents and workflows for use in your own applications or everyday life.
+Obrew Studio is a tool for building custom Ai agents and workflows. It is built to support rapid Ai app development at no cost.
 
-<!-- https://github.com/vercel-labs/ai-chatbot -->
+## Introduction
+
+The goal of this project are:
+
+1. Provide the easiest way for anyone to install and run open-source Ai locally
+2. Provide "batteries included" building blocks (RAG, models, UI, server, memory, etc) for Ai Engineers
+3. Support fast and cheap development on commodity hardware
+
+## How It Works
+
+Obrew Studio is the WebUI tool used to talk to Obrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/ai-text-server).
 
 ## Features Roadmap
 
 - ✅ Run open source models locally for free
+- ✅ Explore and download models from HuggingFace
+- ✅ Build custom bots (like GPT store)
 - ✅ Streaming chat UI
 - ✅ Chat with your documents (RAG)
-- ✅ Build custom bots from a mix of LLM's, software configs and prompt configs
-- ✅ CPU & GPU support
-- ✅ Windows OS build
+- ✅ Inspect & optimize document chunking for RAG
+- ✅ Long-term memory (scrape website, file, raw text)
 - ✅ Save chat history
-- ❌ Build agents with access to tools
-- ❌ Create workloads
-- ❌ Share model configs with community
-
-## Supported Model Providers
-
-This is a local model first project. We have future plans to support cloud inference providers as a config option.
-
-- ✅ [Local](https://github.com/dieharders/ai-text-server)
-- ❌ [Google Gemini](https://gemini.google.com)
-- ❌ [OpenAI](https://openai.com/chatgpt)
-- ❌ [Anthropic](https://www.anthropic.com)
-- ❌ [Mistral AI](https://mistral.ai)
-- ❌ [Groq](https://groq.com)
+- ✅ Build agents with access to tools
+- ❌ Create and execute jobs
+- ❌ Display source citations in chat
+- ❌ Explore/Share model configs and tools from community
 
 ## How to Run
 
@@ -66,3 +67,9 @@ Increase the minor version by 1 (x.1.x to x.2.x)
 Increase the major version by 1 (1.x.x to 2.x.x)
 
 -->
+
+## Learn More
+
+- [OpenBrew Ai](https://openbrewai.com)
+- [Obrew Server](https://github.com/dieharders/ai-text-server)
+- [Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)

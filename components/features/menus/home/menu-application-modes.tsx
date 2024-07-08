@@ -8,8 +8,8 @@ import { IconPlus } from '@/components/ui/icons'
 import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
-import { I_Submit_Tool_Settings, ToolCreationMenu } from '@/components/features/menus/home/tab-tools'
-import { I_Knowledge_State, I_Text_Settings, I_Tools_Settings } from '@/lib/homebrew'
+import { ToolCreationMenu } from '@/components/features/menus/home/tab-tools'
+import { I_Knowledge_State, I_Text_Settings, I_Tool_Definition } from '@/lib/homebrew'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { toast } from 'react-hot-toast'
@@ -56,14 +56,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const { onSubmit, setHasTextServiceConnected, isConnecting, setIsConnecting } = props
   const { notAvailable: notAvailableNotification } = notifications()
   // State
-  const { collections, setCollections, installedList, modelConfigs, services } = useGlobalContext()
+  const { collections, setCollections, installedList, modelConfigs, services, tools } = useGlobalContext()
   const { fetchCollections, addCollection, deleteCollection } = useMemoryActions()
   const router = useRouter()
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>('')
   const [openBotCreationMenu, setOpenBotCreationMenu] = useState(false)
-  const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tools_Settings }>({ open: false })
+  const [openToolCreationMenu, setOpenToolCreationMenu] = useState<{ open: boolean, initialState?: I_Tool_Definition }>({ open: false })
   const [bots, setBots] = useState<I_Text_Settings[]>([])
-  const [tools, setTools] = useState<I_Tools_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
   const deleteButtonStyle = "absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
@@ -71,7 +70,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
   const presetBotClass = "opacity-40"
   // Methods
-  const { fetchInstalledModelsAndConfigs } = useActions()
+  const { fetchInstalledModelsAndConfigs, fetchTools } = useActions()
   const modelExploreAction = useCallback(async () => {
     await services?.textInference?.modelExplore()
     return
@@ -137,26 +136,20 @@ export const ApplicationModesMenu = (props: I_Props) => {
     action()
   }, [services?.storage])
 
-  const fetchTools = useCallback(async () => {
-    const result = await services?.storage.getToolSettings?.()
-    const data = result?.data
-    data && setTools(data)
-    return result
-  }, [services?.storage])
-
-  const saveTool = useCallback(async (toolSettings: I_Submit_Tool_Settings | I_Tools_Settings) => {
+  const saveTool = useCallback(async (toolSettings: I_Tool_Definition) => {
     // Save menu forms to a json file
     const res = await services?.storage?.saveToolSettings?.({ body: toolSettings })
+    // Failed
     if (!res?.success) {
       toast.error(`${res?.message}`)
       return
     }
-    // Update list of tools
+    // Fetch list of tools
     await fetchTools()
     // Success
     toast.success(`${res?.message}`)
     return
-  }, [services?.storage])
+  }, [fetchTools, services?.storage])
 
   const deleteTool = useCallback(async (id: string) => {
     const res = await services?.storage?.deleteToolSettings?.({ queryParams: { id } })
@@ -165,7 +158,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     // Success
     await fetchTools()
     return true
-  }, [services?.storage])
+  }, [fetchTools, services?.storage])
 
   const fetchModelInfo = useCallback(
     async (repoId: string) => {
@@ -202,7 +195,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       // do stuff here when tab is selected ...
       switch (val) {
         case 'models':
-          fetchInstalledModelsAndConfigs(services)
+          fetchInstalledModelsAndConfigs()
           break
         case 'playground':
           // fetch installed models?
@@ -211,7 +204,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           services && fetchBots()
           break
         case 'tools':
-          services && fetchTools()
+          fetchTools()
           break
         case 'jobs':
           // services && fetchJobs()
@@ -328,10 +321,20 @@ export const ApplicationModesMenu = (props: I_Props) => {
               />
             </Item>
           )
-        }
-        )}
+        })}
         {/* Presets */}
-        <Item title="Calculator" Icon={() => <div className="text-4xl">➗</div>} onAction={notAvailableNotification} className={presetBotClass} />
+        <Item
+          title="Calculator"
+          Icon={() => <div className="text-4xl">➗</div>}
+          onAction={() => {
+            const tool = {
+              name: 'Calculator',
+              path: 'calculator.py',
+            }
+            setOpenToolCreationMenu({ open: true, initialState: tool })
+          }}
+          className={presetBotClass}
+        />
         <Item title="Web Search" Icon={() => <div className="text-4xl">🌐</div>} onAction={notAvailableNotification} className={presetBotClass} />
         <Item title="WIKI API" Icon={() => <div className="text-4xl">🔗</div>} onAction={notAvailableNotification} className={presetBotClass} />
         <Item title="Web Crawl" Icon={() => <div className="text-4xl">🕸</div>} onAction={notAvailableNotification} className={presetBotClass} />

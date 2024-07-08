@@ -1,11 +1,10 @@
 import { useCallback } from "react"
 import { useGlobalContext } from "@/contexts"
-import { I_ServiceApis } from "@/lib/homebrew"
 
 export const useActions = () => {
-  const { setInstalledList, setModelConfigs } = useGlobalContext()
+  const { services, setInstalledList, setModelConfigs, setTools } = useGlobalContext()
 
-  const fetchInstalledModelsAndConfigs = useCallback(async (services: I_ServiceApis | null) => {
+  const fetchInstalledModelsAndConfigs = useCallback(async () => {
     // Get all currently installed models
     services?.textInference?.installed?.().then(listResponse =>
       listResponse?.data && setInstalledList(listResponse.data)
@@ -15,10 +14,28 @@ export const useActions = () => {
       cfgs?.data && setModelConfigs(cfgs.data)
     )
     return
-  }, [setInstalledList, setModelConfigs])
+  }, [services?.textInference, setInstalledList, setModelConfigs])
+
+  const fetchTools = useCallback(async () => {
+    const res = await services?.storage.getToolSettings?.()
+    if (res?.success && res.data) {
+      const result = res.data.map(tool => {
+        // Parse the json => object for certain props
+        return {
+          ...tool,
+          arguments: JSON.stringify(tool.arguments, null, 2),
+          example_arguments: JSON.stringify(tool.example_arguments, null, 2)
+        }
+      })
+      // Store result
+      setTools(result)
+    }
+    return
+  }, [services?.storage, setTools])
 
   return {
     fetchInstalledModelsAndConfigs,
+    fetchTools,
   }
 }
 

@@ -92,8 +92,8 @@ export const ConnectServerPage = () => {
       {/* Inputs Container */}
       <div className="mb-16 flex w-full max-w-[32rem] flex-col items-center justify-between gap-6 rounded-xl border-neutral-500 p-0 dark:border-neutral-600 sm:border sm:p-8">
         {/* Switch to advanced UI */}
-        <div className="flex flex-col w-full items-end">
-          <div className="flex flex-row gap-2 text-lg items-center cursor-default">
+        <div className="flex w-full flex-col items-end">
+          <div className="flex cursor-default flex-row items-center gap-2 text-lg">
             <label title="Advanced Settings">⚙️</label>
             <Switch
               defaultChecked={false}

@@ -79,7 +79,7 @@ export const DocumentCard = (props: I_Props) => {
       </div>
 
       {/* Description */}
-      <div className="flex h-fit w-full text-left text-slate-500 overflow-hidden">
+      <div className="flex h-fit w-full overflow-hidden text-left text-slate-500">
         <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
           {description}
         </span>

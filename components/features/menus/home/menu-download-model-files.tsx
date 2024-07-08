@@ -93,7 +93,7 @@ export const DownloadModelMenu = (props: I_Props) => {
                   setIsDownloading(false)
                   setIsCached(true)
                   // Update installed models list
-                  fetchInstalledModelsAndConfigs(services)
+                  fetchInstalledModelsAndConfigs()
                   return
                 }}
                 className="flex h-fit flex-1 flex-row items-center gap-1 rounded-md p-2 text-lg text-primary hover:bg-accent"

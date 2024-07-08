@@ -174,7 +174,7 @@ export const KnowledgeTab = (props: I_Props) => {
       </ToggleGroup>
 
       {/* Content */}
-      {type !== DEFAULT_TYPE ? <Content /> : <p className="mt-4 text-muted-foreground">Use the knowledge gained during training. This LLM was trained on all the data on the internet (probably).</p>}
+      {type !== DEFAULT_TYPE ? <Content /> : <p className="mt-4 text-muted-foreground">Use the knowledge gained during training.</p>}
     </div>
   )
 }

@@ -7,57 +7,25 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
-import { I_Submit_Tool_Settings } from '@/components/features/menus/home/tab-tools'
+import { I_Tool_Definition } from '@/lib/homebrew'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
-  state: I_Submit_Tool_Settings,
-  setState: Dispatch<SetStateAction<I_Submit_Tool_Settings>>
+  state: I_Tool_Definition,
+  setState: Dispatch<SetStateAction<I_Tool_Definition>>
 }
 
-export const defaultState: I_Submit_Tool_Settings = {
+export const defaultState: I_Tool_Definition = {
   name: '',
   path: '',
   description: '',
-  args: [],
+  arguments: '',
+  example_arguments: '',
 }
 
 export const AddToolTab = (props: I_Props) => {
   const { state, setState } = props
-
-  const argTypes = [
-    {
-      name: 'string',
-      value: 'string'
-    },
-    {
-      name: 'number',
-      value: 'number'
-    },
-    {
-      name: 'boolean',
-      value: 'boolean'
-    },
-    {
-      name: 'array',
-      value: 'array'
-    },
-    {
-      name: 'dictionary',
-      value: 'dictionary'
-    }
-  ]
-
-  const addNewArgumentInput = (ind: number) => {
-    setState(prev => {
-      const key = `argument${ind}`
-      const newArgs = [...prev.args]
-      const defaultValue = 'string'
-      newArgs.push({ [key]: defaultValue })
-      return { ...prev, args: newArgs }
-    })
-  }
+  const textareaStyle = cn("text-md scrollbar min-h-[8rem] w-full rounded border-2 p-2 outline-none focus:border-primary/50")
 
   return (
     <div className="px-1">
@@ -86,8 +54,8 @@ export const AddToolTab = (props: I_Props) => {
                 className="text-md"
               />
             </div>
-            {/* Tool description */}
-            <div className="w-full">
+            {/* Tool description, only display for already added tool */}
+            {state.id && <div className="w-full">
               <Input
                 name="description"
                 value={state.description}
@@ -95,64 +63,48 @@ export const AddToolTab = (props: I_Props) => {
                 onChange={e => setState(prev => ({ ...prev, description: e.target.value }))}
                 className="text-md"
               />
-            </div>
+            </div>}
             {/* Tool path */}
             <div className="w-full">
               <Input
                 name="path"
                 value={state.path}
-                placeholder="Path to tool (file::// or https://)"
+                placeholder="filename.ext or https://"
                 onChange={e => setState(prev => ({ ...prev, path: e.target.value }))}
                 className="text-md"
               />
             </div>
-            {/* Tool arguments */}
             <div className="flex w-full flex-col gap-4">
-              {state.args.map((arg, index) => {
-                const name = Object.entries(arg)[0][0]
-                const type = Object.entries(arg)[0][1]
-
-                return (
-                  <div
-                    key={index}
-                    className="w-full flex flex-row gap-4 items-center"
-                  >
-                    {/* Argument name */}
-                    <Input
-                      name={`${index}-name`}
-                      value={name}
-                      placeholder="Argument Name"
-                      onChange={e => setState(prev => {
-                        const newArgs = prev.args
-                        newArgs[index] = { [e.target.value]: type }
-                        return { ...prev, args: newArgs }
-                      })}
-                      className="text-md h-full"
-                    />
-                    {/* Argument type */}
-                    <Select
-                      id={`${index}-type`}
-                      name="Argument type"
-                      value={type || undefined}
-                      placeholder="Argument type"
-                      items={argTypes}
-                      className="text-md h-full"
-                      onChange={val => setState(prev => {
-                        const newArgs = prev.args
-                        newArgs[index] = { [name]: val }
-                        return { ...prev, args: newArgs }
-                      })}
-                    />
-                  </div>
-                )
-              })}
-              <Button
-                variant="outline"
-                className="text-md w-full overflow-hidden px-2 py-4"
-                onClick={() => addNewArgumentInput(state.args.length)}
+              {/* Tool arguments */}
+              <div
+                className="flex w-full flex-col items-center gap-2"
               >
-                Add Argument (optional)
-              </Button>
+                <DialogTitle className="self-justify-start self-start text-sm">Arguments schema</DialogTitle>
+                <textarea
+                  /* (arguments) multi-line text input */
+                  name="arguments-input"
+                  value={typeof state.arguments === 'string' ? state.arguments : ''}
+                  placeholder="{}"
+                  disabled
+                  onChange={e => setState(prev => ({ ...prev, arguments: e.target.value }))}
+                  className={textareaStyle}
+                />
+              </div>
+              {/* Tool example output */}
+              <div
+                className="flex w-full flex-col items-center gap-2"
+              >
+                <DialogTitle className="self-justify-start self-start text-sm">Example output</DialogTitle>
+                <textarea
+                  /* (example) multi-line text input */
+                  name="example-input"
+                  value={typeof state.example_arguments === 'string' ? state.example_arguments : ''}
+                  placeholder="{}"
+                  disabled
+                  onChange={e => setState(prev => ({ ...prev, example_arguments: e.target.value }))}
+                  className={textareaStyle}
+                />
+              </div>
             </div>
           </div>
         </div>
