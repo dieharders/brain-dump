@@ -129,8 +129,6 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
-      {/* @TODO We may need to move these menus outside this component due to re-renders */}
-
       {/* Collections list for Knowledge Base menu */}
       {shouldRender('memory') &&
         <KnowledgeCharmMenu

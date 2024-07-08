@@ -1,143 +1,60 @@
 'use client'
 
-import { useState } from 'react'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
-import { IconBrain } from '@/components/ui/icons'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { I_PanelCardProps, PanelCard } from '@/components/features/panels/panel-card'
 import { I_Collection } from '@/lib/homebrew'
 
-interface SidebarItemProps {
+interface I_Props extends I_PanelCardProps {
   collection: I_Collection
-  isActive?: boolean // when hovered or clicked
-  isSelected?: boolean // when selected in a checkbox
-  onClick?: () => void
-  children?: React.ReactNode
-  className?: string
 }
 
 /**
  * A card container for collection of documents.
- * @TODO combine with document-card
  */
-export const CollectionCard = (props: SidebarItemProps) => {
-  const { collection, onClick, isSelected, isActive: isHighlighted, className, children } = props
-  const [isActive, setIsActive] = useState(false)
+export const CollectionCard = (props: I_Props) => {
+  const { collection, onClick, isSelected, isActive, className, children } = props
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags ? collection?.metadata?.tags?.split(' ').length : 0
   const numSources = collection?.metadata?.sources.length || 0
   const createdAt = collection?.metadata?.createdAt || '?'
-  const icon = collection?.metadata?.icon || ''
-  const toolTipStyle = cn("w-full overflow-hidden")
-  const labelStyle = cn("justify-left flex")
+  const icon = collection?.metadata?.icon || '🧠'
+  const data = {
+    name: collection.name || 'No name',
+    type: 'Collection',
+    description: collection.metadata?.description || 'No description.',
+    icon: icon,
+    stats: [
+      {
+        name: 'Source count',
+        value: numSources,
+        icon: '📂'
+      },
+      {
+        name: 'Favorite count',
+        value: numFavorites,
+        icon: '⭐'
+      },
+      {
+        name: 'Tag count',
+        value: numTags,
+        icon: '🔖'
+      },
+      {
+        name: 'Created',
+        value: createdAt,
+        icon: '📆'
+      }
+    ]
+  }
 
   return (
-    <div
-      className={cn(
-        buttonVariants({ variant: 'outline' }),
-        'hover-bg-accent relative flex h-fit min-h-[9rem] w-full select-none flex-col space-y-4 overflow-hidden py-4 text-left sm:w-[20rem]',
-        className,
-        (isActive || isHighlighted) && 'bg-accent',
-        isSelected && 'bg-accent',
-        onClick && 'cursor-pointer',
-      )}
-      onClick={e => {
-        e.preventDefault()
-        onClick && onClick()
-      }}
-      onMouseEnter={() => {
-        setIsActive(true)
-      }}
-      onMouseLeave={() => {
-        setIsActive(false)
-      }}
+    <PanelCard
+      onClick={onClick}
+      isSelected={isSelected}
+      isActive={isActive}
+      data={data}
+      className={className}
     >
-      {/* Header */}
-      <div className="flex w-full items-stretch overflow-hidden">
-        {/* Icon */}
-        <div className="h-100 flex cursor-pointer items-center justify-center">
-          <Tooltip delayDuration={350}>
-            <TooltipTrigger
-              tabIndex={-1}
-              className="focus:bg-muted focus:ring-1 focus:ring-ring"
-            >
-              {icon ? <div className="mr-2">{icon}</div> : <IconBrain className="mr-2" />}
-            </TooltipTrigger>
-            <TooltipContent>Collection</TooltipContent>
-          </Tooltip>
-        </div>
-
-        {/* Card name */}
-        <span className="h-100 my-auto w-full truncate">
-          {collection.name}
-        </span>
-
-        {/* Render action buttons when clicked and active */}
-        <span className="flex h-8 w-fit items-center">
-          {isHighlighted && children}
-        </span>
-      </div>
-
-      {/* Description */}
-      <div className="flex h-fit w-full overflow-hidden text-left text-slate-500">
-        <span className="whitespace-wrap line-clamp-3 w-full overflow-hidden text-ellipsis">
-          {collection.metadata?.description || 'No description.'}
-        </span>
-      </div>
-
-      {/* Stats */}
-      <div className="flex h-fit w-full flex-row justify-between justify-items-stretch space-x-2 overflow-hidden text-gray-400">
-        <Tooltip delayDuration={350}>
-          <TooltipTrigger
-            tabIndex={-1}
-            className={toolTipStyle}
-          >
-            <div className={labelStyle}>
-              <p className="truncate">📂 {numSources}</p>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>Source count: {numSources}</TooltipContent>
-        </Tooltip>
-
-        {/* Number of times favorited */}
-        <Tooltip delayDuration={350}>
-          <TooltipTrigger
-            tabIndex={-1}
-            className={toolTipStyle}
-          >
-            <div className={labelStyle}>
-              <p className="truncate">⭐ {numFavorites}</p>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>Favorite count: {numFavorites}</TooltipContent>
-        </Tooltip>
-
-        {/* Number of metadata tags */}
-        <Tooltip delayDuration={350}>
-          <TooltipTrigger
-            tabIndex={-1}
-            className={toolTipStyle}
-          >
-            <div className={labelStyle}>
-              <p className="truncate">🔖 {numTags}</p>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>Tag count: {numTags}</TooltipContent>
-        </Tooltip>
-
-        {/* Creation date */}
-        <Tooltip delayDuration={350}>
-          <TooltipTrigger
-            tabIndex={-1}
-            className={toolTipStyle}
-          >
-            <div className={labelStyle}>
-              <p className="truncate">📆 {createdAt}</p>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>Created: {createdAt}</TooltipContent>
-        </Tooltip>
-      </div>
-    </div>
+      {children}
+    </PanelCard>
   )
 }
