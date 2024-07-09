@@ -63,7 +63,7 @@ export const ResponseTab = (props: I_Props) => {
             <span><Highlight>temperature</Highlight> {`affects how likely the Ai is to "hallucinate" facts, be creative.`}</span>
           </Info>
         </div>
-        <DialogDescription>
+        <DialogDescription className="text-md">
           Choose an accuracy that matches your desired response.
         </DialogDescription>
       </DialogHeader>
@@ -105,7 +105,7 @@ export const ResponseTab = (props: I_Props) => {
       </DialogHeader>
 
       {/* Options Content */}
-      <div className="grid-auto-flow m-auto grid w-fit grid-flow-row auto-rows-max grid-cols-2 gap-4">
+      <div className="grid-auto-flow m-auto grid w-full grid-flow-row auto-rows-max grid-cols-2 gap-4">
         {/* Sampling Precision (top_k) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>

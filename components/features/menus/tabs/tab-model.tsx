@@ -45,7 +45,7 @@ export const ModelTab = (props: I_Props) => {
       {/* Choose model */}
       <DialogHeader className="my-8">
         <DialogTitle>Choose Ai Model</DialogTitle>
-        <DialogDescription className="mb-4">
+        <DialogDescription className="text-md mb-4">
           Each model can possess unique abilities depending on their training data. Their capabilities can vary so experiment with different parameters.
         </DialogDescription>
       </DialogHeader>

@@ -56,7 +56,7 @@ export const RAGStrategyForm = (props: I_Props) => {
         {/* Max Number of Results (similarity_top_k) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
-            <Label className="text-sm font-semibold">Num Matching Results</Label>
+            <Label className="text-sm font-semibold">Num matching results</Label>
             <Info label="similarity_top_k">
               <span><Highlight>similarity_top_k</Highlight> determines how many matching documents to consider when synthesizing a response.</span>
             </Info>
@@ -76,7 +76,7 @@ export const RAGStrategyForm = (props: I_Props) => {
         {/* Type of response (response_mode) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
-            <Label className="text-sm font-semibold">Response Type</Label>
+            <Label className="text-sm font-semibold">Response mode</Label>
             <Info label="response_mode">
               <span><Highlight>response_mode</Highlight> determines how the LLM responds to the context.</span>
             </Info>

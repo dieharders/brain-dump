@@ -72,6 +72,7 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   messageFormat?: string
   collectionNames?: string[]
   tools?: string[]
+  retrievalType?: string
 }
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
@@ -102,7 +103,10 @@ interface I_ConnectResponse {
 }
 
 export const DEFAULT_CONVERSATION_MODE = 'instruct'
-
+export const BASE_RETRIEVAL_METHOD = 'base'
+export const AUGMENTED_RETRIEVAL_METHOD = 'augmented'
+export const AGENT_RETRIEVAL_METHOD = 'agent'
+export const DEFAULT_RETRIEVAL_METHOD = BASE_RETRIEVAL_METHOD
 export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
 
 export type T_GenericDataRes = any
@@ -307,10 +311,7 @@ export interface I_Response_State {
   grammar?: string
 }
 
-export type T_Memory_Type = 'training' | 'augmented_retrieval'
-
 export interface I_Knowledge_State {
-  type: T_Memory_Type
   index: string[] // collection names
 }
 
@@ -336,7 +337,10 @@ export interface I_System_State {
   systemMessageName: string | undefined
 }
 
+export type T_RetrievalTypes = 'base' | 'augmented' | 'agent'
+
 export interface I_Attention_State {
+  retrievalMethod: T_RetrievalTypes
   mode: T_ConversationMode
 }
 

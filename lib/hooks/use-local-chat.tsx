@@ -186,6 +186,7 @@ export const useLocalInference = (props: IProps) => {
         mode,
         messageFormat,
         collectionNames: settings?.knowledge?.index,
+        retrievalType: settings?.attention?.retrievalMethod,
         tools: settings?.tools?.assigned,
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,

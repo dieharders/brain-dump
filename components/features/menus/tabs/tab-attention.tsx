@@ -6,10 +6,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Select } from '@/components/ui/select'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
 import { ClipboardIcon } from '@radix-ui/react-icons'
-import { DEFAULT_CONVERSATION_MODE, I_Attention_State as I_State, T_ConversationMode } from '@/lib/homebrew'
+import {
+  AGENT_RETRIEVAL_METHOD,
+  AUGMENTED_RETRIEVAL_METHOD,
+  BASE_RETRIEVAL_METHOD,
+  DEFAULT_CONVERSATION_MODE,
+  DEFAULT_RETRIEVAL_METHOD,
+  I_Attention_State as I_State,
+  T_ConversationMode,
+  T_RetrievalTypes
+} from '@/lib/homebrew'
 import { cn } from '@/lib/utils'
 
 interface I_Props {
@@ -17,22 +27,39 @@ interface I_Props {
   setState: Dispatch<SetStateAction<I_State>>
 }
 
-export const defaultState: I_State = { mode: DEFAULT_CONVERSATION_MODE }
+// @TODO Change "mode" to "conversationMode"
+export const defaultState: I_State = { mode: DEFAULT_CONVERSATION_MODE, retrievalMethod: DEFAULT_RETRIEVAL_METHOD }
 
 export const AttentionTab = (props: I_Props) => {
   const { state, setState } = props
   const toggleGroupClass = cn("flex w-full flex-row gap-2 rounded p-2")
+  const selectStyle = cn("w-full flex-1")
+  const selectItems = [
+    {
+      name: 'Base (default)',
+      value: BASE_RETRIEVAL_METHOD
+    },
+    {
+      name: 'Augmented (RAG)',
+      value: AUGMENTED_RETRIEVAL_METHOD
+    },
+    {
+      name: 'Agent (tool use)',
+      value: AGENT_RETRIEVAL_METHOD
+    },
+  ]
 
   return (
     <div className="px-1">
+      {/* Chat conversation type */}
       <DialogHeader className="my-8">
         <DialogTitle>Chat Context Window</DialogTitle>
-        <DialogDescription className="mb-4">
+        <DialogDescription className="text-md mb-4">
           {`Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.`}
         </DialogDescription>
       </DialogHeader>
 
-      {/* Content */}
+      {/* Conversation content */}
       <ToggleGroup
         className="w-full"
         label="Chat Mode"
@@ -57,6 +84,29 @@ export const AttentionTab = (props: I_Props) => {
           <span className="flex-1 self-center text-ellipsis">Conversational</span>
         </div>
       </ToggleGroup>
+
+      {/* Retrieval type */}
+      <DialogHeader className="my-8">
+        <DialogTitle>Retrieval method</DialogTitle>
+        <DialogDescription className="text-md mb-4">
+          Choose a method of retrieving information whether that be using external tools (web search, etc) or private data (RAG).
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* Retrieval content */}
+      <div className="mb-4 w-full">
+        <Select
+          id="retrieval_type_select"
+          className={selectStyle}
+          placeholder="Choose retrieval method"
+          name="Retrieval methods"
+          value={state.retrievalMethod}
+          items={selectItems}
+          onChange={val => {
+            setState(prev => ({ ...prev, retrievalMethod: val as T_RetrievalTypes }))
+          }}
+        />
+      </div>
     </div>
   )
 }

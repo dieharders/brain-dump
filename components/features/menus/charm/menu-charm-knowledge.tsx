@@ -29,22 +29,18 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
   const {
     disableForm,
     setDisableForm,
-    type,
-    setType,
     selected,
     setSelected,
   } = useKnowledgeMenu()
 
   const knowledgeMenu = useMemo(() =>
     <KnowledgeTab
-      type={type}
-      setType={setType}
       selected={selected}
       setSelected={setSelected}
       fetchListAction={fetchListAction}
       disableForm={disableForm}
       setDisableForm={setDisableForm}
-    />, [disableForm, fetchListAction, selected, setDisableForm, setSelected, setType, type])
+    />, [disableForm, fetchListAction, selected, setDisableForm, setSelected])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -74,7 +70,7 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
             onClick={async () => {
               setDisableForm(true)
               // Save the list based on currently selected checkboxes
-              const payload = { knowledge: { type, index: selected } }
+              const payload = { knowledge: { index: selected } }
               onSubmit(payload)
               setDialogOpen(false)
               setDisableForm(false)

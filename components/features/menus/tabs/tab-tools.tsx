@@ -131,9 +131,9 @@ export const ToolsTab = (props: I_Props) => {
   return (
     <div className="overflow-hidden px-1">
       <DialogHeader className="my-8">
-        <DialogTitle>Assign tools to this Bot</DialogTitle>
-        <DialogDescription className="mb-4">
-          Select one or more tools for the agent to use when generating a response.
+        <DialogTitle>Assign tools</DialogTitle>
+        <DialogDescription className="text-md mb-4">
+          Select one or more tools for the bot to use when generating a response.
         </DialogDescription>
       </DialogHeader>
 
