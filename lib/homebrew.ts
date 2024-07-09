@@ -72,6 +72,7 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   messageFormat?: string
   collectionNames?: string[]
   tools?: string[]
+  retrievalType?: string
 }
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
