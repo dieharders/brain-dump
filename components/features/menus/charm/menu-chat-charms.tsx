@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
 import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/menus/charm/menu-charm-model'
 import { useMemoryActions } from '@/components/features/crud/actions'
-import { I_Knowledge_State, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { DEFAULT_RETRIEVAL_METHOD, I_Knowledge_State, I_ServiceApis, T_RetrievalTypes, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
@@ -57,7 +57,7 @@ export const CharmMenu = (props: I_Props) => {
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
-  const [knowledgeType, setKnowledgeType] = useState<string>(playgroundSettings.knowledge.type || '')
+  const [retrievalMethod, setRetrievalMethod] = useState<T_RetrievalTypes>(playgroundSettings.attention.retrievalMethod || DEFAULT_RETRIEVAL_METHOD)
   const [selectedTools, setSelectedTools] = useState(playgroundSettings.tools?.assigned || [])
   const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
@@ -109,11 +109,11 @@ export const CharmMenu = (props: I_Props) => {
       // Save menu forms
       setPlaygroundSettings(prev => ({ ...prev, knowledge: settings.knowledge }))
       // Save state
-      settings?.knowledge?.type && setKnowledgeType(settings.knowledge.type)
+      playgroundSettings.attention?.retrievalMethod && setRetrievalMethod(playgroundSettings.attention.retrievalMethod)
       return
     }
     return action()
-  }, [setPlaygroundSettings])
+  }, [playgroundSettings.attention.retrievalMethod, setPlaygroundSettings])
 
   // Get services
   useEffect(() => {
@@ -164,7 +164,7 @@ export const CharmMenu = (props: I_Props) => {
           systemPrompts={systemPrompts}
           ragTemplates={ragTemplates}
           ragModes={ragModes}
-          knowledgeType={knowledgeType}
+          retrievalMethod={retrievalMethod}
         />
       }
 

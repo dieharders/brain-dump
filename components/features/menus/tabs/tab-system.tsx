@@ -75,7 +75,7 @@ export const SystemTab = (props: I_Props) => {
             <span><Highlight>system message</Highlight> A special instruction to guide the model to play a role.</span>
           </Info>
         </div>
-        <DialogDescription className="mb-4">
+        <DialogDescription className="text-md mb-4">
           {`Templates to override the model's behavior. Choose from pre-made templates or write your own.`}
         </DialogDescription>
       </DialogHeader>

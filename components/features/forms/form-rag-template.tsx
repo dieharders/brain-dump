@@ -78,7 +78,7 @@ export const RAGTemplateForm = (props: I_Props) => {
       {/* Prompt Template (Chat with Memories) */}
       < DialogHeader className="my-8" >
         <DialogTitle>Memory Template</DialogTitle>
-        <DialogDescription>
+        <DialogDescription className="text-md">
           When chatting with your memories, instruct and guide the Ai on how to handle your requests.
         </DialogDescription>
       </DialogHeader >

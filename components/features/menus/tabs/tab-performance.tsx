@@ -54,8 +54,8 @@ export const PerformanceTab = (props: I_Props) => {
       {/* Advanced Settings, should override all other settings */}
       <DialogHeader className="my-8">
         <DialogTitle>Performance Settings</DialogTitle>
-        <DialogDescription>
-          Customize how the model performs on your hardware. Configure memory management, inference splitting across CPU cores and/or enable acceleration on a dedicated GPU.
+        <DialogDescription className="text-md">
+          Optimize how the model performs on your hardware. Memory management, inference splitting, GPU acceleration, etc.
         </DialogDescription>
       </DialogHeader>
 
