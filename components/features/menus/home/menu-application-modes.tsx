@@ -233,7 +233,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       />
       {/* Title and description */}
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Build Custom Bots</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Custom Bots</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
           Build unique Ai with knowledge and expertise in a specific domain. Create your own or choose from our curated list.
         </Description>
