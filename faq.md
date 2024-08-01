@@ -72,4 +72,4 @@ The backend server runs locally on the user's device as an installed native app.
 
 You can choose from curated open-source models to download from HuggingFace and run locally. All data, including conversations, tools, settings are stored locally on device.
 
-It is very much meant to be "hacked" as all data is output into plain text (json or otherwise) and new tools can be added simply by adding files to the appropriate folder on your local disk.
+It is very much meant to be "hackable" as all data is output into plain text (json or otherwise) and new tools can be added simply by adding files to the appropriate folder on your local disk.
