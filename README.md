@@ -2,6 +2,11 @@
 
 Obrew Studio is a tool for building custom Ai agents and workflows. It is built to support rapid Ai app development at no cost.
 
+<p align="middle">
+  <img src="assets/images/pc-poster.png" height="250" />
+  <img src="assets/images/phone-poster.png" height="250" />
+</p>
+
 ## Introduction
 
 The goal of this project are:
