@@ -17,7 +17,7 @@ The goal of this project are:
 
 ## How It Works
 
-Obrew Studio is the WebUI tool used to talk to Obrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/ai-text-server).
+Obrew Studio is the WebUI tool used to talk to Obrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/obrew-studio-server).
 
 ## Features Roadmap
 
@@ -76,5 +76,5 @@ Increase the major version by 1 (1.x.x to 2.x.x)
 ## Learn More
 
 - [OpenBrew Ai](https://openbrewai.com)
-- [Obrew Server](https://github.com/dieharders/ai-text-server)
+- [Obrew Server](https://github.com/dieharders/obrew-studio-server)
 - [Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)
