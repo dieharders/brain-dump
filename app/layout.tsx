@@ -8,19 +8,39 @@ import { Providers } from '@/components/core/providers'
 import { Header } from '@/components/features/layout/header'
 
 export const metadata: Metadata = {
-  title: {
-    default: 'Obrew Studio - Customize your Ai',
-    template: `%s - Obrew Studio - Customize your Ai`,
+  title: 'Obrew Studio - Build your Ai',
+  description: 'A tool for building Ai agents and automated workflows on your device.',
+  applicationName: 'Obrew Studio',
+  metadataBase: new URL(`https://studio.openbrewai.com`),
+  alternates: {
+    canonical: 'https://studio.openbrewai.com',
   },
-  description: 'A tool for building Ai agents and companies.',
+  keywords: ['ai', 'agents', 'localai', 'text-generation', 'inference-engine'],
+  // twitter: { card: 'summary', images: [{ url: cardWide.src }] },
+  openGraph: {
+    title: 'Obrew Studio - Free & private Ai builder',
+    description: 'Build private Ai on your device. No subscriptions or limits.',
+    url: 'https://studio.openbrewai.com',
+    siteName: 'Obrew Studio',
+    type: "website",
+    locale: 'en_US',
+    // images: [
+    //   {
+    //     url: cardWide.src,
+    //     alt: "Obrew logo and title",
+    //     width: cardWide.width,
+    //     height: cardWide.height,
+    //   },
+    // ],
+  },
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    shortcut: '/icon-192.png',
+    apple: '/icon-180.png.png',
   },
 }
 
