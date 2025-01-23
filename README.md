@@ -57,21 +57,19 @@ To preview:
 vercel deploy
 ```
 
-<!-- ## Release versioning
+## Release versioning
 
-### Patch
+### Increase the major version by 1 (1.x.x to 2.x.x)
 
-Increase the patch version by 1 (x.x.1 to x.x.2)
+pnpm version major
 
-### Minor
+### Increase the minor version by 1 (x.1.x to x.2.x)
 
-Increase the minor version by 1 (x.1.x to x.2.x)
+pnpm version minor
 
-### Major
+### Increase the patch version by 1 (x.x.1 to x.x.2)
 
-Increase the major version by 1 (1.x.x to 2.x.x)
-
--->
+pnpm version patch
 
 ## Learn More
 
