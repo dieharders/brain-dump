@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/images/logo.svg" height="320" />
+  <img src="assets/images/logo.svg" height="320" width="320" />
   <br>
   <br>
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" />
@@ -23,7 +23,7 @@ The goal of this project are:
 
 ## How It Works
 
-<img align="left" src="assets/images/pc-poster.png" height="300" />
+<img align="left" src="assets/images/pc-poster.png" height="300" width="478" />
 
 Obrew Studio can be used via the API or the WebUI. Both methods are used to talk to Obrew Server, which is what performs all the Ai workloads. To start using Obrew Studio, download the latest installer from [releases](https://github.com/dieharders/obrew-studio-server/releases) and install the app.
 
@@ -92,6 +92,6 @@ pnpm version patch
 
 ## Learn More
 
-[OpenBrewAi](https://www.openbrewai.com)<br>
+[OpenBrewAi.com](https://www.openbrewai.com)<br>
 [Obrew Studio - Server](https://github.com/dieharders/obrew-studio-server)<br>
 [Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)<br>
