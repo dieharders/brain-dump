@@ -2,12 +2,9 @@
 
 Obrew Studio is a tool for building custom Ai agents and workflows. It is built to support rapid Ai app development at no cost.
 
-<p align="middle">
-  <img src="assets/images/pc-poster.png" height="400" />
-  <img src="assets/images/phone-poster.png" height="400" />
-</p>
-
 ## Introduction
+
+<img align="right" src="assets/images/phone-poster.png" height="300" />
 
 The goal of this project are:
 
@@ -15,9 +12,15 @@ The goal of this project are:
 2. Provide "batteries included" building blocks (RAG, models, UI, server, memory, etc) for Ai Engineers
 3. Support fast and cheap development on commodity hardware
 
+<br clear="right"/>
+
 ## How It Works
 
-Obrew Studio is the WebUI tool used to talk to Obrew Server which performs all Ai workloads. It is required to install locally or host [Obrew Server](https://github.com/dieharders/obrew-studio-server).
+<img align="left" src="assets/images/pc-poster.png" height="200" />
+
+Obrew Studio can be used via the API or the WebUI. Both methods are used to talk to Obrew Server, which is what performs all the Ai workloads. To start using Obrew Studio, download the installer from [openbrewai.com](https://github.com/dieharders/obrew-studio-server) and install the app.
+
+<br clear="left"/>
 
 ## Features Roadmap
 
@@ -78,6 +81,6 @@ pnpm version patch
 
 ## Learn More
 
-- [OpenBrewAi](https://www.openbrewai.com)
-- [Obrew Studio - Server](https://github.com/dieharders/obrew-studio-server)
-- [Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)
+[OpenBrewAi](https://openbrewai.com)<br>
+[Obrew Server](https://github.com/dieharders/obrew-studio-server)<br>
+[Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)<br>
