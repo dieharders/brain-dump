@@ -55,7 +55,7 @@ export const AttentionTab = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Response Mode</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          Choose how you want the Ai to respond and interact with you. Instruction-tuned models will not work as expected in conversation mode.
+          Choose how you want the Ai to respond and interact with you. Instruction-tuned models may not work as expected in conversation mode.
         </DialogDescription>
       </DialogHeader>
 
