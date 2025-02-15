@@ -23,7 +23,7 @@ The goal of this project are:
 
 ## How It Works
 
-<img align="left" src="assets/images/pc-poster.png" height="300" width="478" />
+<img align="left" src="assets/images/pc-poster.png" width="320" />
 
 Obrew Studio can be used via the API or the WebUI. Both methods are used to talk to Obrew Server, which is what performs all the Ai workloads. To start using Obrew Studio, download the latest installer from [releases](https://github.com/dieharders/obrew-studio-server/releases) and install the app.
 
