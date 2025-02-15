@@ -69,7 +69,7 @@ export const PerformanceTab = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Context Size</Label>
             <Info label="n_ctx">
-              <span><Highlight>n_ctx</Highlight> determines the number of tokens to consider when generating a response.</span>
+              <span><Highlight>n_ctx</Highlight> determines the number of tokens to consider when generating a response. 0 = taken from model.</span>
             </Info>
           </div>
           <Input
@@ -197,7 +197,7 @@ export const PerformanceTab = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Memory Lock</Label>
             <Info label="use_mlock">
-              <span><Highlight>use_mlock</Highlight> forces the system to keep the model in RAM.</span>
+              <span><Highlight>use_mlock</Highlight> forces the system to keep the model in RAM. Faster but uses more available memory.</span>
             </Info>
           </div>
           <Switch
