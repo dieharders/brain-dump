@@ -1,10 +1,10 @@
-# 🍺 Obrew Studio - WebUI
+# Obrew Studio - WebUI
 
 Obrew Studio is a tool for building custom Ai agents and workflows. It is built to support rapid Ai app development at no cost.
 
 <p align="middle">
-  <img src="assets/images/pc-poster.png" height="250" />
-  <img src="assets/images/phone-poster.png" height="250" />
+  <img src="assets/images/pc-poster.png" height="400" />
+  <img src="assets/images/phone-poster.png" height="400" />
 </p>
 
 ## Introduction
@@ -36,10 +36,15 @@ Obrew Studio is the WebUI tool used to talk to Obrew Server which performs all A
 
 ## How to Run
 
-This will start a local development server with hot-reloading.
+Install dependencies:
 
 ```bash
 pnpm i
+```
+
+Start a local development server with hot-reloading:
+
+```bash
 pnpm dev
 ```
 
@@ -73,6 +78,6 @@ pnpm version patch
 
 ## Learn More
 
-- [OpenBrew Ai](https://openbrewai.com)
-- [Obrew Server](https://github.com/dieharders/obrew-studio-server)
+- [OpenBrewAi](https://www.openbrewai.com)
+- [Obrew Studio - Server](https://github.com/dieharders/obrew-studio-server)
 - [Based on Vercel's chatbot](https://github.com/vercel-labs/ai-chatbot)
