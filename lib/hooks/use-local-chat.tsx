@@ -173,18 +173,11 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(true)
       abortRef.current = false
 
-      // Get model data
-      const model_configs = await services?.textInference.getModelConfigs()
-      const current_text_model = await services?.textInference.model()
-      const current_text_model_id = current_text_model?.data?.modelId || ''
-      const messageFormat = model_configs?.data?.[current_text_model_id]?.messageFormat
-
       // Send request completion for prompt
       console.log('[Chat] Sending request to inference server...', newUserMsg)
       const mode = settings?.attention?.mode || DEFAULT_CONVERSATION_MODE
       const options: I_InferenceGenerateOptions = {
         mode,
-        messageFormat,
         collectionNames: settings?.knowledge?.index,
         retrievalType: settings?.attention?.retrievalMethod,
         tools: settings?.tools?.assigned,
@@ -226,14 +219,10 @@ export const useLocalInference = (props: IProps) => {
         )
       }
 
-      // Check success if not streamed (chatbot)
-      if (typeof response?.response === 'string') {
-        onNonStreamResult(response?.response)
-      }
 
       // Check success if not streamed (playground)
-      if (typeof response?.text === 'string') {
-        onNonStreamResult(response?.text)
+      if (typeof response?.data?.text === 'string') {
+        onNonStreamResult(response?.data?.text)
       }
       // Save final results
       setCurrentMessages(prevMsgs => {
@@ -254,7 +243,7 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(false)
       toast.error(`Prompt request error: \n ${err}`)
     }
-  }, [saveThreads, setThreads, setCurrentMessages, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, services?.textInference, setIsLoading, settings, session.user.id, session.user.sub])
+  }, [saveThreads, setThreads, setCurrentMessages, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, setIsLoading, settings, session.user.id, session.user.sub])
 
   const reload = useCallback(async () => {
     try {

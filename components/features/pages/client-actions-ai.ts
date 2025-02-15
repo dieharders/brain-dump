@@ -31,14 +31,15 @@ const loadModelAction = async (
   const installedModel = installedList?.find(i => i.repoId === selectedModelId)
   const installPath = installedModel?.savePath[filename]
   // Load LLM
-  const payload = {
-    modelPath: installPath || '',
-    modelId: selectedModelId || '',
-    mode,
-    init: initOptions || {},
-    call: callOptions,
-  }
-  const res = await services?.textInference.load({ body: payload })
+  const res = await services?.textInference.load({
+    body: {
+      modelPath: installPath || '',
+      modelId: selectedModelId || '',
+      mode,
+      init: initOptions || {},
+      call: callOptions,
+    },
+  })
   // Finished
   return res
 }

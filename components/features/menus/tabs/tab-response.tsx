@@ -23,7 +23,7 @@ export const defaultState: I_State = {
   top_k: 40,
   top_p: 0.95,
   stop: [],
-  max_tokens: 128,
+  max_tokens: 256,
   repeat_penalty: 1.1,
   stream: true,
   echo: false,
@@ -173,14 +173,14 @@ export const ResponseTab = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Max Response Tokens</Label>
             <Info label="max_tokens">
-              <span><Highlight>max_tokens</Highlight> determines the maximum number of tokens to generate. 0 means auto calculate.</span>
+              <span><Highlight>max_tokens</Highlight> determines the maximum number of tokens to generate. -1 = infinity, -2 = until context filled.</span>
             </Info>
           </div>
           <Input
             name="url"
             type="number"
             value={handleFloatValue(state?.max_tokens)}
-            min={4}
+            min={-2}
             step={1}
             placeholder={defaultState?.max_tokens?.toString()}
             className="w-full"

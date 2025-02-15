@@ -19,7 +19,8 @@ export interface I_LLM_Init_Options {
   n_threads?: number
   offload_kqv?: boolean
   chat_format?: string // 'llama2' @TODO check backend if we use this
-  f16_kv?: boolean
+  cache_type_k?: string
+  cache_type_v?: string
   verbose?: boolean
 }
 
@@ -107,7 +108,7 @@ export const BASE_RETRIEVAL_METHOD = 'base'
 export const AUGMENTED_RETRIEVAL_METHOD = 'augmented'
 export const AGENT_RETRIEVAL_METHOD = 'agent'
 export const DEFAULT_RETRIEVAL_METHOD = BASE_RETRIEVAL_METHOD
-export type T_ConversationMode = 'instruct' | 'chat' | 'sliding'
+export type T_ConversationMode = 'instruct' | 'chat' | 'collab'
 
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
@@ -390,6 +391,7 @@ interface I_DeleteTextModelReqPayload {
 
 export interface I_LoadedModelRes {
   modelId: string
+  modelName: string
   mode: T_ConversationMode
   modelSettings: I_LLM_Init_Options
   generateSettings: I_LLM_Call_Options
@@ -440,7 +442,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     }
   }
   /**
-   * Use to persist data
+   * Use to persist data specific to the app itself
    */
   storage: {
     saveToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>
@@ -503,17 +505,6 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   } catch (err) {
     console.log('[homebrew] fetchAPIConfig error:', err)
     return null
-  }
-}
-
-const getModelConfigs = async () => {
-  // Read in json file
-  const file = await import('../data/text-model-configs.json')
-
-  return {
-    success: true,
-    message: 'Returned configurations for all curated models.',
-    data: file.default,
   }
 }
 
@@ -639,7 +630,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   })
 
   // Inject non-backend related methods
-  serviceApis.textInference.getModelConfigs = getModelConfigs
   serviceApis.textInference.getPromptTemplates = getPromptTemplates
   serviceApis.textInference.getRagPromptTemplates = getRagPromptTemplates
   serviceApis.textInference.getSystemPrompts = getSystemPrompts
