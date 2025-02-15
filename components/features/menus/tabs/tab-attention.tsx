@@ -53,9 +53,9 @@ export const AttentionTab = (props: I_Props) => {
     <div className="px-1">
       {/* Chat conversation type */}
       <DialogHeader className="my-8">
-        <DialogTitle>Chat Context Window</DialogTitle>
+        <DialogTitle>Response Mode</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          {`Each model has a limited attention size. Choose how you want the Ai's attention to be handled when conversing.`}
+          Choose how you want the Ai to respond and interact with you. Instruction-tuned models will not work as expected in conversation mode.
         </DialogDescription>
       </DialogHeader>
 
@@ -68,18 +68,13 @@ export const AttentionTab = (props: I_Props) => {
           setState(prev => ({ ...prev, mode: val as T_ConversationMode }))
         }}
       >
-        {/* Conversational Chat - Multiple messages can be sent until the context is filled, then the conversation ends. */}
-        {/* <div id="chat" className={toggleGroupClass}>
-            <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis">Conversational</span>
-          </div> */}
-        {/* Instruction - Maximum context is used for each query, conversation ends with each query. */}
+        {/* Instruction - Conversation ends with each query. */}
         <div id="instruct" className={toggleGroupClass}>
           <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
           <span className="flex-1 self-center text-ellipsis">Instruction</span>
         </div>
-        {/* Sliding Attention/ Rolling Chat - When context fills up, move the attention window forward after each query. Conversation can continue indefinitely. */}
-        <div id="sliding" className={toggleGroupClass}>
+        {/* Chat Conversation can continue indefinitely. */}
+        <div id="chat" className={toggleGroupClass}>
           <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
           <span className="flex-1 self-center text-ellipsis">Conversational</span>
         </div>

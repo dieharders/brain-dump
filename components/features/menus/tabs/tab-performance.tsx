@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Highlight, Info } from '@/components/ui/info'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import { Select } from '@/components/ui/select'
 import { I_LLM_Init_Options, T_ModelConfig } from '@/lib/homebrew'
 
 interface I_Props {
@@ -19,14 +20,15 @@ interface I_Props {
 }
 
 export const defaultState: I_LLM_Init_Options = {
-  n_ctx: 1000,
+  n_ctx: 0, // 0 = loaded from model
   seed: 1337,
-  n_threads: -1,
+  n_threads: -1, // -1 = all available
   n_batch: 512,
-  offload_kqv: false,
+  offload_kqv: true, // cache generated responses
   n_gpu_layers: -1,
-  f16_kv: true,
-  use_mlock: false,
+  cache_type_k: 'f16',
+  cache_type_v: 'f16',
+  use_mlock: true, // keep model in memory, dont swap to disk
   chat_format: undefined,
   verbose: false,
 }
@@ -35,8 +37,9 @@ export const PerformanceTab = (props: I_Props) => {
   const { modelConfig, state, setState } = props
   const maxContextWindow = modelConfig?.context_window
   const max_gpu_layers = modelConfig?.num_gpu_layers
-  const inputContainerClass = "grid w-full gap-1"
-  const infoClass = "flex w-full flex-row gap-2"
+  const inputContainerClass = "grid w-full gap-2"
+  const infoClass = "flex w-full flex-row items-center gap-2 max-h-[1.5rem]"
+  const precisionTypes = [{ name: 'f32', value: 'f32' }, { name: 'f16 (default)', value: 'f16' }, { name: 'bf16', value: 'bf16' }, { name: 'q8_0', value: 'q8_0' }, { name: 'q4_0', value: 'q4_0' }, { name: 'q4_1', value: 'q4_1' }, { name: 'iq4_nl', value: 'iq4_nl' }, { name: 'q5_0', value: 'q5_0' }, { name: 'q5_1', value: 'q5_1' }]
 
   // Handle input state changes
   const handleFloatChange = (propName: string, value: string) => setState(prev => {
@@ -73,7 +76,7 @@ export const PerformanceTab = (props: I_Props) => {
             name="url"
             type="number"
             value={(state?.n_ctx === 0) ? 0 : state?.n_ctx || ''}
-            min={64}
+            min={0}
             max={maxContextWindow || defaultState.n_ctx}
             step={1}
             placeholder={defaultState?.n_ctx?.toString()}
@@ -172,18 +175,21 @@ export const PerformanceTab = (props: I_Props) => {
             onCheckedChange={val => handleStateChange('offload_kqv', val)}
           />
         </div>
-        {/* Precision (f16_kv) */}
+        {/* Precision (cache type k) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
-            <Label className="text-sm font-semibold">Half-Precision</Label>
-            <Info label="f16_kv">
-              <span><Highlight>f16_kv</Highlight> Use half-precision for key/value generation cache.</span>
+            <Label className="text-sm font-semibold">Cache Precision (K)</Label>
+            <Info label="cache_type_k">
+              <span><Highlight>cache_type_k</Highlight> Specify the precision of the cache (K) for generated responses.</span>
             </Info>
           </div>
-          <Switch
-            className="block"
-            checked={state?.f16_kv}
-            onCheckedChange={val => handleStateChange('f16_kv', val)}
+          <Select
+            id="cache_type_k"
+            placeholder="Choose a precision"
+            name="Cache precision type (k)"
+            value={state?.cache_type_k || undefined}
+            items={precisionTypes}
+            onChange={val => handleStateChange('cache_type_k', val)}
           />
         </div>
         {/* Memory Lock (use_mlock) */}
@@ -198,6 +204,23 @@ export const PerformanceTab = (props: I_Props) => {
             className="block"
             checked={state?.use_mlock}
             onCheckedChange={val => handleStateChange('use_mlock', val)}
+          />
+        </div>
+        {/* Precision (cache type v) */}
+        <div className={inputContainerClass}>
+          <div className={infoClass}>
+            <Label className="text-sm font-semibold">Cache Precision (V)</Label>
+            <Info label="cache_type_v">
+              <span><Highlight>cache_type_v</Highlight> Specify the precision of the cache (V) for generated responses.</span>
+            </Info>
+          </div>
+          <Select
+            id="cache_type_v"
+            placeholder="Choose a precision"
+            name="Cache precision type (v)"
+            value={state?.cache_type_v || undefined}
+            items={precisionTypes}
+            onChange={val => handleStateChange('cache_type_v', val)}
           />
         </div>
       </form>
