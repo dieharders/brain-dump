@@ -10,7 +10,6 @@
   <br>
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" />
   <img src="https://img.shields.io/badge/-Typescript-000?&logo=Typescript" />
-  <img src="https://img.shields.io/badge/-JavaScript-000?&logo=JavaScript" />
   <img src="https://img.shields.io/badge/next.js-000000?logo=nextdotjs&logoColor=white" />
 </p>
 
