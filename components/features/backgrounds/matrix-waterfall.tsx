@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useEffect, useRef } from "react"
 
-export const MatrixWaterfall = ({ className }: { className?: string }) => {
+export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { padding?: number, fontSize?: number, className?: string }) => {
   // Get the canvas node and the drawing context
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const ctx = useRef<CanvasRenderingContext2D | null>(null)
@@ -17,7 +17,7 @@ export const MatrixWaterfall = ({ className }: { className?: string }) => {
   if (ctx.current?.fillRect) ctx.current.fillRect(0, 0, w, h)
   // if (ctx.current?.globalCompositeOperation) ctx.current.globalCompositeOperation = 'destination-over'
 
-  const cols = Math.floor(w / 20) + 1
+  const cols = Math.floor(w / padding) + 1
   const ypos = Array(cols).fill(0)
 
   // Draw matrix effect
@@ -28,7 +28,7 @@ export const MatrixWaterfall = ({ className }: { className?: string }) => {
 
     // Set color to green and font to 15pt monospace in the drawing context
     if (ctx.current?.fillStyle) ctx.current.fillStyle = '#0f0'
-    if (ctx.current?.font) ctx.current.font = '15pt monospace'
+    if (ctx.current?.font) ctx.current.font = `${fontSize}pt monospace`
 
     // for each column put a random character at the end
     ypos.forEach((y, ind) => {
@@ -36,14 +36,14 @@ export const MatrixWaterfall = ({ className }: { className?: string }) => {
       const text = String.fromCharCode(Math.random() * 128)
 
       // x coordinate of the column, y coordinate is already given
-      const x = ind * 20
+      const x = ind * padding
       // render the character at (x, y)
       if (ctx.current?.fillText) ctx.current.fillText(text, x, y)
 
       // randomly reset the end of the column if it's at least 100px high
       if (y > 100 + Math.random() * 10000) ypos[ind] = 0
-      // otherwise just move the y coordinate for the column 20px down,
-      else ypos[ind] = y + 20
+      // otherwise just move the y coordinate for the column `padding` down,
+      else ypos[ind] = y + padding
     })
   }
 
@@ -62,7 +62,7 @@ export const MatrixWaterfall = ({ className }: { className?: string }) => {
 
   return (
     <div className={cn("absolute inset-0 h-full w-full overflow-hidden mix-blend-screen", className)}>
-      <canvas ref={canvas} width={4000} height={4000} />
+      <canvas ref={canvas} width={window.screen.width} height={window.screen.height} />
     </div>
   )
 }

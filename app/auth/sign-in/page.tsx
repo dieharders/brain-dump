@@ -44,28 +44,17 @@ export default async function SignInPage({
   // Splash page
   return (
     <div className="flex flex-1 flex-row items-stretch justify-items-stretch self-stretch justify-self-stretch">
-      {/* Left side */}
-      <div className="relative hidden w-full items-center overflow-hidden bg-indigo-800/30 md:flex">
-        {/* BG */}
-        <div className="absolute left-0 top-0 h-full w-full" style={{ 'backgroundSize': '100% auto' }}>
-          {/* <SVGBG className="text-indigo-500 dark:text-indigo-800/30" /> */}
-          <MatrixWaterfall className="h-screen" />
-        </div>
+      {/* BG */}
+      <div className="absolute left-0 top-0 h-full w-full" style={{ 'backgroundSize': '100% auto' }}>
+        <MatrixWaterfall fontSize={20} padding={25} className="h-screen" />
         {/* Blur */}
-        <div className="absolute left-0 top-0 h-full w-full">
-          <div className="h-full w-full backdrop-blur-sm"></div>
-        </div>
-        {/* Words */}
-        <div className="light:text-black h-100 relative px-8 text-5xl font-extrabold dark:text-fuchsia-400">
-          <p>Give me ideas for {' '}</p>
-          <p className="text-4xl font-normal">a fun afternoon in San Francisco...without zombies</p>
-        </div>
+        <div className="left-0 top-0 h-full w-full backdrop-blur-sm"></div>
       </div>
-      {/* Right side */}
-      <div className="light:bg-primary flex w-full flex-col items-stretch justify-center overflow-hidden dark:bg-black lg:basis-1/2">
+      {/* Login */}
+      <div className="light:bg-primary absolute left-0 top-0 flex h-full w-full flex-col items-stretch justify-center gap-16 overflow-hidden">
         <div className="h-fit text-center text-3xl font-bold text-primary">Get started</div>
         <div className="flex h-fit w-full flex-col items-center justify-center justify-items-stretch gap-6 px-8 py-4 lg:flex-row">
-          <Button className="light:hover:bg-accent h-fit w-full max-w-[32rem] whitespace-nowrap py-4 text-primary dark:hover:bg-indigo-700" variant="outline" asChild>
+          <Button className="light:hover:bg-accent h-fit w-full max-w-[32rem] whitespace-nowrap bg-white py-4 text-primary dark:bg-black dark:hover:bg-indigo-700" variant="outline" asChild>
             <Link href="/sign-in?login=true" className="text-xl font-bold" prefetch={false}>Log in</Link>
           </Button>
           <Button className="light:hover:bg-white light:bg-background h-fit w-full max-w-[32rem] whitespace-nowrap py-4 text-primary dark:bg-indigo-700 dark:hover:bg-indigo-500" variant="secondary" asChild>
