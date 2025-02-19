@@ -190,6 +190,6 @@ export const ConnectPage = () => {
         {/* Inputs */}
         <Menu />
       </div>
-    </div >
+    </div>
   )
 }

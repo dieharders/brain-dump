@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { IconExternalLink } from '@/components/ui/icons'
+import { useEffect, useState } from 'react'
+import { I_Session } from '@/lib/hooks/use-local-chat'
 
 function getUserInitials(name: string) {
   const [firstName, lastName] = name.split(' ')
@@ -20,8 +22,15 @@ function getUserInitials(name: string) {
 }
 
 export function UserMenu() {
-  const session = auth()
-  const user = session?.user
+  const [session, setSession] = useState<I_Session>()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const s = auth()
+      if (s) setSession(s)
+    }
+  }, [])
+
 
   return (
     session ?
@@ -30,25 +39,25 @@ export function UserMenu() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="px-0">
               {/* User badge */}
-              {user?.image ? (
+              {session.user?.image ? (
                 <Image
                   className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                  src={user?.image ? `${user.image}&s=60` : ''}
-                  alt={user.name ?? 'Avatar'}
+                  src={session.user?.image ? `${session.user.image}&s=60` : ''}
+                  alt={session.user.name ?? 'Avatar'}
                 />
               ) : (
                 <div className="flex h-7 w-7 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
-                  {user?.name ? getUserInitials(user?.name) : null}
+                  {session.user?.name ? getUserInitials(session.user?.name) : null}
                 </div>
               )}
               {/* User name */}
-              <span className="mx-2 hidden sm:block">{user?.name}</span>
+              <span className="mx-2 hidden sm:block">{session.user?.name}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">
             <DropdownMenuItem className="flex-col items-start">
-              <div className="text-xs font-medium">{user?.name}</div>
-              <div className="text-xs text-zinc-500">{user?.email}</div>
+              <div className="text-xs font-medium">{session.user?.name}</div>
+              <div className="text-xs text-zinc-500">{session.user?.email}</div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {/* Docs link */}
