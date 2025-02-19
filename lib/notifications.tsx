@@ -28,7 +28,7 @@ export const notifications = () => {
         <div className="flex flex-col items-center justify-center gap-4">
           <span className="flex flex-col gap-1">
             <b className="pr-2">Model loaded!</b>
-            <br />{res?.message} flex flex-col items-center justify-center gap-4
+            <br />{res?.message}
           </span>
           <Button
             variant="default"
