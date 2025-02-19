@@ -10,7 +10,7 @@ import { IconChat } from '@/components/ui/icons'
 import { useThreads } from '@/components/features/chat/hook-chat-actions'
 import { useGlobalContext } from '@/contexts'
 
-export const ChatsButton = ({ session }: { session: Session }) => {
+export const ChatsButton = ({ session }: { session: Session | undefined }) => {
   // State
   const { setThreads, currentThreadId, setCurrentMessages, isAiThinking } = useGlobalContext()
   // Actions

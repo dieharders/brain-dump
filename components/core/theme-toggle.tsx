@@ -20,6 +20,7 @@ export function ThemeToggle() {
     <Tooltip delayDuration={350}>
       <TooltipTrigger asChild>
         <Button
+          className="pointer-events-auto"
           variant="ghost"
           size="icon"
           onClick={() => {

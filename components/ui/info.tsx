@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils"
-import { InfoCircledIcon } from "@radix-ui/react-icons"
-import { Button } from "./button"
-import { PopOver } from "./pop-over"
+import { cn } from '@/lib/utils'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { Button } from './button'
+import { PopOver } from './pop-over'
 
 interface I_Props {
   children: React.ReactNode
@@ -14,25 +14,23 @@ export const InfoLink = ({ label = 'Info', title, children, className }: I_Props
     <Button
       variant="link"
       title={label}
-      className={cn("m-0 flex cursor-pointer flex-col items-center justify-center self-center p-0 shadow-none", className)}
+      className={cn('m-0 flex cursor-pointer flex-col items-center justify-center self-center p-0 shadow-none', className)}
     >
       {title}
     </Button>
   )
-
-  return <PopOver trigger={trigger}>{children}</PopOver>
+  return <PopOver trigger={trigger} portal>{children}</PopOver>
 }
 
 export const Info = ({ label = 'Info', children, className }: I_Props) => {
   const trigger = (
     <Button
       title={label}
-      className={cn("flex h-6 w-6 cursor-default flex-col items-center justify-center self-center rounded-sm bg-muted/60 p-1 text-neutral-500 shadow-none hover:bg-muted", className)}
+      className={cn('flex h-6 w-6 cursor-pointer flex-col items-center justify-center self-center rounded-sm bg-muted/60 p-1 text-neutral-500 shadow-none hover:bg-muted', className)}
     >
       <InfoCircledIcon className="h-full w-full" />
     </Button>
   )
-
   return <PopOver trigger={trigger}>{children}</PopOver>
 }
 

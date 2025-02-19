@@ -108,7 +108,7 @@ export const ChatPromptMenu = ({
                   content: value,
                   role: 'user',
                   createdAt: formatDate(new Date()),
-                  username: session.user.name || '',
+                  username: session?.user?.name || '',
                 })
               }}
             />

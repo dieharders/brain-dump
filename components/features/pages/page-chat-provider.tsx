@@ -1,14 +1,16 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react"
-import { Session } from "next-auth/types"
-import { usePathname, useSearchParams } from 'next/navigation'
-import { ROUTE_PLAYGROUND } from "@/app/constants"
-import { I_Text_Settings, useHomebrew } from "@/lib/homebrew"
-import { useGlobalContext } from "@/contexts"
+import { useCallback, useEffect, useState } from 'react'
+import { Session } from 'next-auth/types'
+import { I_Session } from '@/lib/hooks/use-local-chat'
+import { redirect, usePathname, useSearchParams } from 'next/navigation'
+import { ROUTE_PLAYGROUND } from '@/app/constants'
+import { I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
 import { ChatPageLocal } from '@/components/features/chat/chat-page-local'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
-import { loadTextModel } from "@/components/features/pages/client-actions-ai"
+import { loadTextModel } from '@/components/features/pages/client-actions-ai'
+import auth from '@/lib/auth/auth'
 
 const PlaygroundPage = ({ isLoading, session, action, settings, fetchSettings }: any) => {
   const { currentModel, services } = useGlobalContext()
@@ -59,11 +61,11 @@ const BotPage = ({ isLoading, session, action, settings, routeId, name }: any) =
 }
 
 export interface I_Props {
-  session: Session
+  session?: Session
 }
 
 export const ChatProvider = (props: I_Props) => {
-  const { session } = props
+  const [session, setSession] = useState<I_Session>()
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
   const searchParams = useSearchParams()
@@ -104,6 +106,15 @@ export const ChatProvider = (props: I_Props) => {
     setIsLoading(false)
     return
   }, [fetchChatBotSettings, hasLoaded, isLoading, services, setCurrentModel, settings])
+
+  useEffect(() => {
+    if (!props?.session && typeof window !== 'undefined') {
+      // If nothing was passed to us then fetch it
+      const s = auth()
+      if (s) setSession(s)
+      else redirect('/')
+    }
+  }, [props?.session])
 
   // Get services
   useEffect(() => {

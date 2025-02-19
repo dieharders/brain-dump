@@ -1,3 +1,5 @@
+import { I_Session } from '@/lib/hooks/use-local-chat'
+
 interface I_Connection {
   domain: string
   port: string
@@ -5,6 +7,22 @@ interface I_Connection {
 
 const CONNECTION_KEY = 'remote_host'
 const IS_CONNECTED_KEY = 'has_connection'
+const USER = 'user'
+
+const clearUserDetails = () => {
+  sessionStorage.removeItem(USER)
+}
+
+const setUserDetails = (data: I_Session) => {
+  const setting = JSON.stringify(data)
+  sessionStorage.setItem(USER, setting)
+}
+
+const getUserDetails = (): I_Session | never => {
+  const data = sessionStorage.getItem(USER)
+  const user = data ? JSON.parse(data) : null
+  return user
+}
 
 const getHostConnection = (): I_Connection => {
   const data = localStorage.getItem(CONNECTION_KEY)
@@ -17,20 +35,6 @@ const setHostConnection = (newConnection: I_Connection) => {
   localStorage.setItem(CONNECTION_KEY, setting)
 }
 
-/**
- * Have we already connected to this host during this session?
- */
-const getHostConnectionFlag = () => {
-  const data = sessionStorage.getItem(IS_CONNECTED_KEY)
-  const hasConn = data ? JSON.parse(data) : false
-  return hasConn
-}
-
-const setHostConnectionFlag = (flag: boolean) => {
-  const setting = JSON.stringify(flag)
-  sessionStorage.setItem(IS_CONNECTED_KEY, setting)
-}
-
 const deleteHostConnectionFlag = () => {
   sessionStorage.removeItem(IS_CONNECTED_KEY)
 }
@@ -38,9 +42,10 @@ const deleteHostConnectionFlag = () => {
 const storage = {
   getHostConnection,
   setHostConnection,
-  getHostConnectionFlag,
-  setHostConnectionFlag,
   deleteHostConnectionFlag,
+  setUserDetails,
+  getUserDetails,
+  clearUserDetails,
 }
 
 export default storage
