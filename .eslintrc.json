@@ -24,6 +24,7 @@
     // ESLint
     "object-curly-spacing": ["warn", "always"],
     "semi": ["error", "never"],
+    "quotes": ["warn", "single"],
     "no-multi-spaces": ["error"],
     "no-trailing-spaces": ["warn"],
     "no-unused-vars": "off",

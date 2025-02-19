@@ -1,7 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
-import { Session } from 'next-auth'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CollectionsButton } from '@/components/features/panels/collection-panel-button'
@@ -9,16 +8,18 @@ import { ChatsButton } from '@/components/features/panels/chats-panel-button'
 import { DocumentsButton } from '@/components/features/panels/document-panel-button'
 import { ROUTE_CHATBOT, ROUTE_KNOWLEDGE, ROUTE_PLAYGROUND } from '@/app/constants'
 import { IconArrowElbow } from '@/components/ui/icons'
-import { CubeIcon } from '@radix-ui/react-icons'
 import { useHomebrew } from '@/lib/homebrew'
 import { useGlobalContext } from '@/contexts'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMemoryActions } from '@/components/features/crud/actions'
+import auth from '@/lib/auth/auth'
+import { I_Session } from '@/lib/hooks/use-local-chat'
 
-export const MenuPanelTriggers = ({ session }: { session: Session }) => {
+export const MenuPanelTriggers = () => {
   const { getServices } = useHomebrew()
   const { services, setServices, setCollections, setDocuments } = useGlobalContext()
   const { fetchCollections } = useMemoryActions()
+  const [session, setSession] = useState<I_Session>()
   const pathname = usePathname()
   const search = useSearchParams()
   const router = useRouter()
@@ -28,7 +29,6 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
   const showKB = header_url === ROUTE_KNOWLEDGE
   const showChatThreads = header_url === ROUTE_CHATBOT || header_url === ROUTE_PLAYGROUND
   const showHomeShortcut = showChatThreads || showKB
-  const showHostConnPage = header_url === 'home'
 
   const fetchDocumentsAction = useCallback(async () => {
     // Need to re-fetch all collections before getting documents
@@ -40,6 +40,12 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
     if (sources && sources.length > 0) setDocuments(sources)
     return
   }, [fetchCollections, selectedCollectionName, setCollections, setDocuments])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const s = auth()
+    if (s.user) setSession(s)
+  }, [])
 
   useEffect(() => {
     const action = async () => {
@@ -69,7 +75,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
       }
 
       {/* Host connection page shortcut */}
-      {showHostConnPage &&
+      {/* {showHostConnPage &&
         <Tooltip delayDuration={450}>
           <TooltipTrigger asChild>
             <Button
@@ -85,7 +91,7 @@ export const MenuPanelTriggers = ({ session }: { session: Session }) => {
           </TooltipTrigger>
           <TooltipContent>Server connection</TooltipContent>
         </Tooltip>
-      }
+      } */}
 
       {/* Chats Pane Button */}
       {showChatThreads &&

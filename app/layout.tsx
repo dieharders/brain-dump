@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'Obrew Studio - Build your Ai',
   description: 'A tool for building Ai agents and automated workflows on your device.',
   applicationName: 'Obrew Studio',
-  metadataBase: new URL(`https://studio.openbrewai.com`),
+  metadataBase: new URL('https://studio.openbrewai.com'),
   alternates: {
     canonical: 'https://studio.openbrewai.com',
   },
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description: 'Build private Ai on your device. No subscriptions or limits.',
     url: 'https://studio.openbrewai.com',
     siteName: 'Obrew Studio',
-    type: "website",
+    type: 'website',
     locale: 'en_US',
     // images: [
     //   {

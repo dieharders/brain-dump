@@ -1,16 +1,20 @@
 'use client'
 
-import { cn } from "@/lib/utils"
-import { useEffect, useRef } from "react"
+import { cn } from '@/lib/utils'
+import { useEffect, useRef, useState } from 'react'
 
 export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { padding?: number, fontSize?: number, className?: string }) => {
   // Get the canvas node and the drawing context
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const ctx = useRef<CanvasRenderingContext2D | null>(null)
+  const [hasMounted, setHasMounted] = useState(false)
 
   // Set the width and height of the canvas
-  const w = window ? window?.screen?.width : 0
-  const h = window ? window?.screen?.height : 0
+  let w = 0, h = 0
+  if (hasMounted) {
+    w = window ? window?.screen?.width : 0
+    h = window ? window?.screen?.height : 0
+  }
 
   // Draw a black rectangle of width and height same as that of the canvas
   if (ctx.current?.fillStyle) ctx.current.fillStyle = '#000'
@@ -51,6 +55,11 @@ export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { pa
   const timer = setInterval(matrix, 60)
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    setHasMounted(true)
+  }, [])
+
+  useEffect(() => {
     return () => {
       timer && clearInterval(timer)
     }
@@ -61,8 +70,8 @@ export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { pa
   }, [])
 
   return (
-    <div className={cn("absolute inset-0 h-full w-full overflow-hidden mix-blend-screen", className)}>
-      <canvas ref={canvas} width={window.screen.width} height={window.screen.height} />
+    <div className={cn('absolute inset-0 h-full w-full overflow-hidden mix-blend-screen', className)}>
+      <canvas ref={canvas} width={w} height={h} />
     </div>
   )
 }

@@ -16,7 +16,7 @@ import { DialogAddDocument } from '@/components/features/crud/dialog-add-documen
 import { CardButtons } from '@/components/features/panels/panel-card-buttons'
 
 interface I_Props {
-  session: Session
+  session: Session | undefined
   collectionName: string | null
   fetchAction?: () => Promise<void>
 }

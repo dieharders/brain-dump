@@ -38,7 +38,7 @@ export const LoginForm = (args: { onSuccess: () => void }) => {
         <LoginButton name={ANON} text="Login as Anonymous" username={usernameValue} onSuccess={onSuccess} className={cn(btnStyle, 'bg-sky-600 text-sky-100 hover:bg-sky-800 hover:text-sky-100')} />
         {/* Go to Sign Up page */}
         <p className="mt-2 text-sm font-normal">
-          {`Don't have an account?`}
+          {'Don\'t have an account?'}
           <Button variant="link">
             <Link href="/sign-in?create=true" prefetch={false} className="text-sky-400">Sign Up</Link>
           </Button>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useHomebrew } from '@/lib/homebrew'
 import { useGlobalContext } from '@/contexts'
 import { ApplicationModesMenu } from '@/components/features/menus/home/menu-application-modes'
+import { IconSpinner } from '@/components/ui/icons'
 import { useTheme } from 'next-themes'
 import { cn, constructMainBgStyle } from '@/lib/utils'
 import appSettings from '@/lib/localStorage'
@@ -30,12 +31,12 @@ const HomeMenuPage = () => {
   }, [hasMounted, theme])
 
   useEffect(() => {
-    const setting = appSettings.getHostConnectionFlag()
+    const session = appSettings.getUserDetails()
     const action = async () => {
       const res = await getServices()
       if (res) setServices(res)
     }
-    if (setting) action()
+    if (session) action()
   }, [getServices, setServices])
 
   // Render
@@ -45,7 +46,9 @@ const HomeMenuPage = () => {
   // Render empty (indeterminant loading) page
   if (isConnecting || hasTextServiceConnected)
     return (
-      <div className={cn(wrapperStyle, 'flex flex-col items-center justify-center')}></div>
+      <div className={cn(wrapperStyle, 'flex flex-col items-center justify-center')}>
+        <IconSpinner className="mr-2 h-[2rem] w-[2rem] animate-spin" />
+      </div>
     )
   // Main Menu
   return (

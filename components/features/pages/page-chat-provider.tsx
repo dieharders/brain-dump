@@ -1,14 +1,15 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react"
-import { Session } from "next-auth/types"
-import { usePathname, useSearchParams } from 'next/navigation'
-import { ROUTE_PLAYGROUND } from "@/app/constants"
-import { I_Text_Settings, useHomebrew } from "@/lib/homebrew"
-import { useGlobalContext } from "@/contexts"
+import { useCallback, useEffect, useState } from 'react'
+import { Session } from 'next-auth/types'
+import { redirect, usePathname, useSearchParams } from 'next/navigation'
+import { ROUTE_PLAYGROUND } from '@/app/constants'
+import { I_Text_Settings, useHomebrew } from '@/lib/homebrew'
+import { useGlobalContext } from '@/contexts'
 import { ChatPageLocal } from '@/components/features/chat/chat-page-local'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
-import { loadTextModel } from "@/components/features/pages/client-actions-ai"
+import { loadTextModel } from '@/components/features/pages/client-actions-ai'
+import auth from '@/lib/auth/auth'
 
 const PlaygroundPage = ({ isLoading, session, action, settings, fetchSettings }: any) => {
   const { currentModel, services } = useGlobalContext()
@@ -59,11 +60,15 @@ const BotPage = ({ isLoading, session, action, settings, routeId, name }: any) =
 }
 
 export interface I_Props {
-  session: Session
+  session?: Session
 }
 
 export const ChatProvider = (props: I_Props) => {
-  const { session } = props
+  let session = props?.session
+  if (!session) {
+    session = auth()
+    if (!session) redirect('/')
+  }
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
   const searchParams = useSearchParams()

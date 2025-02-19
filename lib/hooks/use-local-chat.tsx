@@ -15,6 +15,7 @@ export interface I_Session extends Session {
     jti: string
     name: string
     sub: string
+    image?: string
   }
 }
 

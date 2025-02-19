@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useGlobalContext } from '@/contexts'
 import { ROUTE_CHATBOT, ROUTE_PLAYGROUND } from '@/app/constants'
 
-export const ModelReadout = () => {
+const ReadoutComponent = () => {
   const { services, currentModel } = useGlobalContext()
   const [title, setTitle] = useState('???')
   // @TODO Get these values from somewhere
@@ -36,4 +36,10 @@ export const ModelReadout = () => {
       :
       null
   )
+}
+
+export const ModelReadout = () => {
+  const pathname = usePathname().split('/')
+  const location = pathname[1]
+  return location === 'playground' || location === 'bot' ? <ReadoutComponent /> : null
 }

@@ -10,7 +10,7 @@ import { ArchiveIcon } from '@radix-ui/react-icons'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
 
-export const CollectionsButton = ({ session }: { session: Session }) => {
+export const CollectionsButton = ({ session }: { session: Session | undefined }) => {
   const { fetchCollections } = useMemoryActions()
   const { deleteAllCollections } = useMemoryActions()
   const { setCollections } = useGlobalContext()
