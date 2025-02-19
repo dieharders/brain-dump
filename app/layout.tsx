@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/core/tailwind-indicator'
 import { Providers } from '@/components/core/providers'
 import { Header } from '@/components/features/layout/header'
+import { GlobalEvents } from '@/components/core/global-events'
 
 export const metadata: Metadata = {
   title: 'Obrew Studio - Build your Ai',
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
+            <GlobalEvents />
             <Header />
             <main className="flex flex-1 flex-col items-center">{children}</main>
           </div>

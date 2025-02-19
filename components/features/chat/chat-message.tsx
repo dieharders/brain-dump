@@ -3,7 +3,7 @@ import remarkMath from 'remark-math'
 import { cn } from '@/lib/utils'
 import { CodeBlock } from '@/components/ui/codeblock'
 import { MemoizedReactMarkdown } from '@/components/ui/markdown'
-import { IconOpenAI, IconUser } from '@/components/ui/icons'
+import { IconUser, ObrewAiIcon } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/features/chat/chat-message-actions'
 import { InferenceLoadingSpinner } from '@/components/features/effects/matrice-loader'
 import { I_Message } from '@/lib/homebrew'
@@ -24,13 +24,13 @@ export const ChatMessage = ({ isLoading, message, theme, ...props }: ChatMessage
     >
       <div
         className={cn(
-          'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
+          'flex h-8 w-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow',
           message.role === 'user'
             ? 'bg-background'
             : 'bg-primary text-primary-foreground'
         )}
       >
-        {message.role === 'user' ? <IconUser /> : <IconOpenAI />}
+        {message.role === 'user' ? <IconUser /> : <ObrewAiIcon />}
       </div>
       <div className={`ml-4 flex-1 space-y-2 overflow-hidden rounded px-3 py-2 ${bgStyle}`}>
         {
