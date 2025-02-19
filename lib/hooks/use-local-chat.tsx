@@ -158,7 +158,7 @@ export const useLocalInference = (props: IProps) => {
           createdAt: formatDate(new Date()),
           summary: '', // @TODO fill in with Ai or let user edit
           numMessages: 1,
-          userId: session?.user.id || session.user.sub || '', // ids come as "sub" when using jwtoken
+          userId: session?.user?.id || session?.user?.sub || '', // ids come as "sub" when using jwtoken
           messages: [newUserMsg],
           // sharePath: `/thread?id=${newThreadId}`, // this is added later when user allows sharing
         } as I_Thread

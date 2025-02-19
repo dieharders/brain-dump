@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Session } from 'next-auth/types'
+import { I_Session } from '@/lib/hooks/use-local-chat'
 import { redirect, usePathname, useSearchParams } from 'next/navigation'
 import { ROUTE_PLAYGROUND } from '@/app/constants'
 import { I_Text_Settings, useHomebrew } from '@/lib/homebrew'
@@ -64,11 +65,7 @@ export interface I_Props {
 }
 
 export const ChatProvider = (props: I_Props) => {
-  let session = props?.session
-  if (!session) {
-    session = auth()
-    if (!session) redirect('/')
-  }
+  const [session, setSession] = useState<I_Session>()
   const pathname = usePathname()
   const routeId = pathname.split('/')[1] // base url
   const searchParams = useSearchParams()
@@ -109,6 +106,15 @@ export const ChatProvider = (props: I_Props) => {
     setIsLoading(false)
     return
   }, [fetchChatBotSettings, hasLoaded, isLoading, services, setCurrentModel, settings])
+
+  useEffect(() => {
+    if (!props?.session && typeof window !== 'undefined') {
+      // If nothing was passed to us then fetch it
+      const s = auth()
+      if (s) setSession(s)
+      else redirect('/')
+    }
+  }, [props?.session])
 
   // Get services
   useEffect(() => {
