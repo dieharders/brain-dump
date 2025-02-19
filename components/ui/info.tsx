@@ -27,7 +27,7 @@ export const Info = ({ label = 'Info', children, className }: I_Props) => {
   const trigger = (
     <Button
       title={label}
-      className={cn('flex h-6 w-6 cursor-default flex-col items-center justify-center self-center rounded-sm bg-muted/60 p-1 text-neutral-500 shadow-none hover:bg-muted', className)}
+      className={cn('flex h-6 w-6 cursor-pointer flex-col items-center justify-center self-center rounded-sm bg-muted/60 p-1 text-neutral-500 shadow-none hover:bg-muted', className)}
     >
       <InfoCircledIcon className="h-full w-full" />
     </Button>
