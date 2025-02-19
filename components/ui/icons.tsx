@@ -4,6 +4,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
+// Use https://react-svgr.com/playground/ to convert svg file to ReactComponent
 function ObrewAiIcon({
   className,
   ...props
