@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { Custom } from '@/lib/auth/providers/custom'
@@ -31,8 +31,8 @@ const Bg = () => {
   )
 }
 
-{/* Enter name, etc of user */ }
-const Login = ({ nameRef }: any) => {
+{/* Enter name, etc of User */ }
+const Login = ({ nameRef }: { nameRef: MutableRefObject<HTMLInputElement> }) => {
   const [nameValue, setNameValue] = useState('')
 
   return (
@@ -125,20 +125,17 @@ const Menu = () => {
             onCheckedChange={setIsAdvChecked}
           ></Switch>
         </div>
-        {/* Instructions */}
-        <div className="leading-snug">
-          {/* Issues */}
-          <InfoLink label="Click to resolve issues" title="Issues connecting?" className="inline-block">
-            <span>
-              If you cannot connect to <Highlight>Obrew Server</Highlight> verify you have entered the address shown on the host computer correctly and click {' '}
-              <Link href={docsUrl} target="_blank" prefetch={false}>
-                <Button variant="link" className="m-0 h-fit p-0">
-                  here
-                </Button></Link>
-              . If your browser reports it blocked, click the &quot;advanced&quot; option in your browser and choose &quot;accept&quot; then try connecting again.
-            </span>
-          </InfoLink>
-        </div>
+        {/* Issues */}
+        <InfoLink label="Click to resolve issues" title="Issues connecting?" className="inline-block">
+          <span>
+            If you cannot connect to <Highlight>Obrew Server</Highlight> verify you have entered the address shown on the host computer correctly and click {' '}
+            <Link href={docsUrl} target="_blank" prefetch={false}>
+              <Button variant="link" className="m-0 h-fit p-0">
+                here
+              </Button></Link>
+            . If your browser reports it blocked, click the &quot;advanced&quot; option in your browser and choose &quot;accept&quot; then try connecting again.
+          </span>
+        </InfoLink>
       </div>
       {/* Server Inputs */}
       {isAdvChecked && (
@@ -189,11 +186,9 @@ export const ConnectPage = () => {
   return (
     <div className="flex flex-row items-stretch justify-items-stretch self-stretch justify-self-stretch">
       <Bg />
-      <div className="light:bg-primary absolute left-0 top-0 flex h-full w-full flex-col items-stretch gap-16 overflow-x-hidden">
-        <div className="flex h-full w-full flex-col items-center justify-around justify-items-stretch p-8">
-          {/* Inputs */}
-          <Menu />
-        </div>
+      <div className="light:bg-primary absolute left-0 top-0 flex h-full w-full flex-col items-center justify-around justify-items-stretch overflow-x-hidden p-12">
+        {/* Inputs */}
+        <Menu />
       </div>
     </div >
   )

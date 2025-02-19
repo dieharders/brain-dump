@@ -19,8 +19,7 @@ export const InfoLink = ({ label = 'Info', title, children, className }: I_Props
       {title}
     </Button>
   )
-
-  return <PopOver trigger={trigger}>{children}</PopOver>
+  return <PopOver trigger={trigger} portal>{children}</PopOver>
 }
 
 export const Info = ({ label = 'Info', children, className }: I_Props) => {
@@ -32,7 +31,6 @@ export const Info = ({ label = 'Info', children, className }: I_Props) => {
       <InfoCircledIcon className="h-full w-full" />
     </Button>
   )
-
   return <PopOver trigger={trigger}>{children}</PopOver>
 }
 
