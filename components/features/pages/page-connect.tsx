@@ -45,7 +45,7 @@ const Login = ({ nameRef }: { nameRef: MutableRefObject<HTMLInputElement> }) => 
         onChange={e => setNameValue(e.target.value)}
         className={inputStyle}
       />
-      <Label htmlFor="username" className={labelStyle}><div className="px-4">User Name (optional)</div></Label>
+      <Label htmlFor="username" className={labelStyle}><div className="px-4">Name (optional)</div></Label>
     </div>
   )
 }
@@ -168,7 +168,7 @@ const Menu = () => {
       <Login nameRef={nameRef} />
       {/* Connect */}
       <Button
-        className="h-fit w-full justify-center justify-self-end border border-[#343a40] bg-[#ffd43b] px-16 text-center text-[#343a40] shadow-none hover:bg-[#fab005]"
+        className="h-fit w-full justify-center justify-self-end border border-[#343a40] bg-[#ffd43b] px-16 text-center text-lg text-[#343a40] shadow-none hover:bg-[#fab005]"
         onClick={() => toast.promise(connectAction({ username: nameRef.current?.value }), {
           loading: 'Connecting to Ai server.',
           success: 'Success! Loading app...',
