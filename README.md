@@ -1,23 +1,23 @@
-# Obrew Studio - WebUI
+<h1 align="center">Obrew Studio: WebUI</h1>
 
-<p align="center">
-  Obrew Studio is a tool for building custom Ai agents and workflows. It is built to support rapid Ai app development at no cost.
-</p>
-
-<p align="center">
+<h3 align="center">
   <img src="assets/images/logo.svg" height="320" width="320" />
+  <br>
+  <br>
+    A tool for building custom agents and workflows. Built to support low-code Ai app development at no cost.
   <br>
   <br>
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" />
   <img src="https://img.shields.io/badge/-Typescript-000?&logo=Typescript" />
   <img src="https://img.shields.io/badge/next.js-000000?logo=nextdotjs&logoColor=white" />
-</p>
+
+</h3>
 
 ## Introduction
 
 The goal of this project are:
 
-1. Provide the easiest way for anyone to install and run open-source Ai locally
+1. Allow anyone to install and run open-source LLM's on hardware they own
 2. Provide "batteries included" building blocks (RAG, models, UI, server, memory, etc) for Ai Engineers
 3. Support fast and cheap development on commodity hardware
 
@@ -39,12 +39,12 @@ Obrew Studio can be used via the API or the WebUI. Both methods are used to talk
 ✅ Streaming chat UI<br>
 ✅ Chat with your documents (RAG)<br>
 ✅ Inspect & optimize document chunking for RAG<br>
-✅ Long-term memory (scrape website, file, raw text)<br>
+✅ Data retrieval (scrape website, file, raw text)<br>
 ✅ Save chat history<br>
 ✅ Build agents with access to tools<br>
 ❌ Create and execute jobs<br>
 ❌ Display source citations in chat<br>
-❌ Explore/Share model configs and tools from community<br>
+❌ Curated lists of models, templates, tools, cloud saves<br>
 
 <br clear="right"/>
 
