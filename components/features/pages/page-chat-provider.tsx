@@ -81,8 +81,12 @@ export const ChatProvider = (props: I_Props) => {
   const playgroundAction = useCallback(async () => {
     if (!services || isLoading || hasLoaded) return
     setIsLoading(true)
-    const res = await loadTextModel(services, fetchPlaygroundSettings)
-    res?.success && setCurrentModel(res?.data)
+    try {
+      const res = await loadTextModel(services, fetchPlaygroundSettings)
+      res?.success && setCurrentModel(res?.data)
+    } catch (err) {
+      // failed
+    }
     setHasLoaded(true)
     setIsLoading(false)
   }, [fetchPlaygroundSettings, hasLoaded, isLoading, services, setCurrentModel])
