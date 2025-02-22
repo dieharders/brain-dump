@@ -2,6 +2,7 @@ import { I_Attention_State, I_LLM_Init_Options } from '@/lib/homebrew'
 import { useState } from 'react'
 import { defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
+import { useGlobalContext } from '@/contexts'
 
 // Defaults
 export const defaultState = {
@@ -10,11 +11,12 @@ export const defaultState = {
 }
 
 export const usePerformanceMenu = () => {
+  const { playgroundSettings } = useGlobalContext()
   const [stateAttention, setStateAttention] = useState<I_Attention_State>(
-    defaultState.attention,
+    playgroundSettings.attention || defaultState.attention,
   )
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(
-    defaultState.performance,
+    playgroundSettings.performance || defaultState.performance,
   )
 
   return {
