@@ -176,11 +176,11 @@ export const useLocalInference = (props: IProps) => {
 
       // Send request completion for prompt
       console.log('[Chat] Sending request to inference server...', newUserMsg)
-      const mode = settings?.attention?.mode || DEFAULT_CONVERSATION_MODE
+      const mode = settings?.attention?.response_mode || DEFAULT_CONVERSATION_MODE
       const options: I_InferenceGenerateOptions = {
-        mode,
+        responseMode: mode,
+        activeRole: settings?.attention?.active_role,
         collectionNames: settings?.knowledge?.index,
-        retrievalType: settings?.attention?.retrievalMethod,
         tools: settings?.tools?.assigned,
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,

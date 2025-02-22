@@ -29,6 +29,7 @@ interface I_Props {
   modelConfig: T_ModelConfig | undefined
 }
 
+// @TODO Rename this to PlaygroundModelInitMenu
 export const PerformanceMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit, stateAttention, setStateAttention, statePerformance, setStatePerformance, modelConfig } = props
 

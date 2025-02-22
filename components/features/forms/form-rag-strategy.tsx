@@ -26,8 +26,8 @@ export const defaultState = {
 
 export const RAGStrategyForm = (props: I_Props) => {
   const { state, setState, ragModes } = props
-  const infoClass = "flex w-full flex-row gap-2"
-  const inputContainerClass = "grid w-full gap-1"
+  const infoClass = 'flex w-full flex-row gap-2'
+  const inputContainerClass = 'grid w-full gap-1'
 
   const responseModes = useMemo(() => {
     const parseName = (str: string) => {
@@ -76,7 +76,7 @@ export const RAGStrategyForm = (props: I_Props) => {
         {/* Type of response (response_mode) */}
         <div className={inputContainerClass}>
           <div className={infoClass}>
-            <Label className="text-sm font-semibold">Response mode</Label>
+            <Label className="text-sm font-semibold">Response Mode</Label>
             <Info label="response_mode">
               <span><Highlight>response_mode</Highlight> determines how the LLM responds to the context.</span>
             </Info>

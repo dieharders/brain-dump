@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DEFAULT_RETRIEVAL_METHOD, T_RetrievalTypes } from '@/lib/homebrew'
+import { DEFAULT_ACTIVE_ROLE, T_ActiveRoles } from '@/lib/homebrew'
 import { useGlobalContext } from '@/contexts'
 
 export const useKnowledgeMenu = () => {
@@ -7,8 +7,8 @@ export const useKnowledgeMenu = () => {
   // Menu states
   const [disableForm, setDisableForm] = useState(false)
   // Settings states
-  const [type, setType] = useState<T_RetrievalTypes>(
-    playgroundSettings.attention.retrievalMethod || DEFAULT_RETRIEVAL_METHOD,
+  const [type, setType] = useState<T_ActiveRoles>(
+    playgroundSettings.attention.active_role || DEFAULT_ACTIVE_ROLE,
   )
   // Tracks all checkbox states
   const [selected, setSelected] = useState<string[]>(

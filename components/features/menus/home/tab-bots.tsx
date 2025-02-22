@@ -11,7 +11,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/tabs'
-import { AUGMENTED_RETRIEVAL_METHOD, I_Attention_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_Prompt_State, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
+import { I_Attention_State, I_LLM_Init_Options, I_ModelConfigs, I_Model_State, I_Prompt_State, I_Response_State, I_ServiceApis, I_System_State, I_Text_Settings, T_InstalledTextModel } from '@/lib/homebrew'
 import { AttentionTab, defaultState as defaultAttentionState } from '@/components/features/menus/tabs/tab-attention'
 import { PerformanceTab, defaultState as defaultPerformanceState } from '@/components/features/menus/tabs/tab-performance'
 import { ModelTab, defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
@@ -68,7 +68,7 @@ export const BotCreationMenu = (props: I_Props) => {
     setDisableForm: setDisableToolsForm,
   } = useToolsMenu()
   const { fetchTools } = useActions()
-  const { fetchData: fetchModelSettingsData, systemPrompts, promptTemplates, ragTemplates, ragModes } = useModelSettingsMenu({ services: data.services })
+  const { fetchData: fetchModelSettingsData, systemPrompts, promptTemplates } = useModelSettingsMenu({ services: data.services })
   const [stateModel, setStateModel] = useState<I_Model_State>(defaults.model)
   const [stateAttention, setStateAttention] = useState<I_Attention_State>(defaults.attention)
   const [statePerformance, setStatePerformance] = useState<I_LLM_Init_Options>(defaults.performance)
@@ -78,7 +78,7 @@ export const BotCreationMenu = (props: I_Props) => {
   const [fetchOnce, setFetchOnce] = useState(false)
 
   // Menus
-  const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={stateAttention.retrievalMethod === AUGMENTED_RETRIEVAL_METHOD} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [stateAttention.retrievalMethod, promptTemplates, ragModes, ragTemplates, statePrompt])
+  const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} promptTemplates={promptTemplates} />, [promptTemplates, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [stateSystem, systemPrompts])
   const knowledgeMenu = useMemo(() => <KnowledgeTab selected={knowledgeIndex} setSelected={setKnowledgeIndex} fetchListAction={fetchCollections} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchCollections, knowledgeIndex, setDisableForm, setKnowledgeIndex])
   const toolsMenu = useMemo(() => <ToolsTab selected={selectedTools} setSelected={setSelectedTools} fetchListAction={fetchTools} disableForm={disableToolsForm} setDisableForm={setDisableToolsForm} />, [disableToolsForm, fetchTools, setDisableToolsForm, setSelectedTools, selectedTools])

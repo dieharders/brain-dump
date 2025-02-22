@@ -18,7 +18,6 @@ export interface I_LLM_Init_Options {
   n_batch?: number
   n_threads?: number
   offload_kqv?: boolean
-  chat_format?: string // 'llama2' @TODO check backend if we use this
   cache_type_k?: string
   cache_type_v?: string
   verbose?: boolean
@@ -69,11 +68,11 @@ export type T_APIConfigOptions = {
 }
 
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
-  mode?: T_ConversationMode
+  responseMode?: T_ConversationMode
+  activeRole?: T_ActiveRoles
   messageFormat?: string
   collectionNames?: string[]
   tools?: string[]
-  retrievalType?: string
 }
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
@@ -108,7 +107,9 @@ export const BASE_RETRIEVAL_METHOD = 'base'
 export const AUGMENTED_RETRIEVAL_METHOD = 'augmented'
 export const AGENT_RETRIEVAL_METHOD = 'agent'
 export const DEFAULT_RETRIEVAL_METHOD = BASE_RETRIEVAL_METHOD
+export const DEFAULT_ACTIVE_ROLE = 'worker'
 export type T_ConversationMode = 'instruct' | 'chat' | 'collab'
+export type T_ActiveRoles = 'agent' | 'worker'
 
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
@@ -228,9 +229,6 @@ export type T_ModelConfig = {
   name: string
   description?: string
   messageFormat?: string
-  // used for model init
-  context_window?: number
-  num_gpu_layers?: number
 }
 
 export interface I_ModelConfigs {
@@ -288,7 +286,8 @@ export type T_SystemPrompts = {
 }
 
 export interface I_LoadTextModelRequestPayload {
-  mode?: T_ConversationMode
+  responseMode?: T_ConversationMode
+  activeRole?: T_ActiveRoles
   modelPath: string
   modelId: string
   init: I_LLM_Init_Options
@@ -338,11 +337,9 @@ export interface I_System_State {
   systemMessageName: string | undefined
 }
 
-export type T_RetrievalTypes = 'base' | 'augmented' | 'agent'
-
 export interface I_Attention_State {
-  retrievalMethod: T_RetrievalTypes
-  mode: T_ConversationMode
+  active_role: T_ActiveRoles
+  response_mode: T_ConversationMode
 }
 
 export interface I_Tools_Inference_State {
@@ -392,7 +389,7 @@ interface I_DeleteTextModelReqPayload {
 export interface I_LoadedModelRes {
   modelId: string
   modelName: string
-  mode: T_ConversationMode
+  responseMode: T_ConversationMode
   modelSettings: I_LLM_Init_Options
   generateSettings: I_LLM_Call_Options
 }
