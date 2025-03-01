@@ -78,17 +78,11 @@ vercel deploy
 
 ## Release versioning
 
-### Increase the major version by 1 (1.x.x to 2.x.x)
-
-pnpm version major
-
-### Increase the minor version by 1 (x.1.x to x.2.x)
-
-pnpm version minor
-
-### Increase the patch version by 1 (x.x.1 to x.x.2)
-
-pnpm version patch
+```bash
+pnpm version major # Increase the major version by 1 (1.x.x to 2.x.x)
+pnpm version minor # Increase the minor version by 1 (x.1.x to x.2.x)
+pnpm version patch # Increase the patch version by 1 (x.x.1 to x.x.2)
+```
 
 ## Learn More
 
