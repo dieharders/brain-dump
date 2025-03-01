@@ -5,7 +5,6 @@ import { defaultState as defaultPerformanceState } from '@/components/features/m
 import { defaultState as defaultModelState } from '@/components/features/menus/tabs/tab-model'
 import { defaultState as defaultSystemState } from '@/components/features/menus/tabs/tab-system'
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
-import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { defaultState as defaultToolsState } from '@/components/features/menus/tabs/tab-tools'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 
@@ -52,7 +51,6 @@ const defaultPlaygroundSettings = {
   system: defaultSystemState,
   model: defaultModelState,
   prompt: defaultPromptState,
-  knowledge: defaultKnowledgeState,
   response: defaultResponse,
 }
 

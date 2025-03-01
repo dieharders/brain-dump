@@ -1,5 +1,5 @@
-import { useCallback } from "react"
-import { useGlobalContext } from "@/contexts"
+import { useCallback } from 'react'
+import { useGlobalContext } from '@/contexts'
 
 export const useActions = () => {
   const { services, setInstalledList, setModelConfigs, setTools } = useGlobalContext()
@@ -19,16 +19,8 @@ export const useActions = () => {
   const fetchTools = useCallback(async () => {
     const res = await services?.storage.getToolSettings?.()
     if (res?.success && res.data) {
-      const result = res.data.map(tool => {
-        // Parse the json => object for certain props
-        return {
-          ...tool,
-          arguments: JSON.stringify(tool.arguments, null, 2),
-          example_arguments: JSON.stringify(tool.example_arguments, null, 2)
-        }
-      })
       // Store result
-      setTools(result)
+      setTools(res.data)
     }
     return
   }, [services?.storage, setTools])

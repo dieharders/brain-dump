@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/button'
 import { I_Collection, I_Knowledge_State } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
 import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
-import { KnowledgeTab } from '@/components/features/menus/tabs/tab-knowledge'
-import { useKnowledgeMenu } from '@/components/features/menus/charm/hook-charm-knowledge'
+import { KnowledgeTab } from '@/components/features/menus/tabs/_depra-tab-knowledge'
+import { useKnowledgeMenu } from '@/components/features/menus/knowledge/hook-charm-knowledge'
 
 interface I_Props {
   dialogOpen: boolean
@@ -23,6 +23,7 @@ interface I_Props {
 
 export const charmId: T_CharmId = 'memory'
 
+// @TODO Deprecate
 // A menu to select from a list of collections
 export const KnowledgeCharmMenu = (props: I_Props) => {
   const { fetchListAction, dialogOpen, setDialogOpen, onSubmit } = props

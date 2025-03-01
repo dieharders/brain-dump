@@ -26,6 +26,7 @@ export const defaultState: I_Knowledge_State = {
   index: [],
 }
 
+// @TODO Remove as this is no longer its own tab. Abstract the components out as sep exports.
 export const KnowledgeTab = (props: I_Props) => {
   const { collections, setCollections } = useGlobalContext()
   const { fetchListAction, disableForm, setDisableForm, setSelected, selected } = props

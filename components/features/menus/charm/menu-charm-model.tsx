@@ -16,7 +16,6 @@ import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import {
   I_PromptTemplates,
   I_Prompt_State,
-  I_RAGPromptTemplates,
   I_Response_State,
   I_System_State,
   T_ActiveRoles,
@@ -53,8 +52,6 @@ interface I_Props {
   setStatePrompt: Dispatch<SetStateAction<I_Prompt_State>>
   promptTemplates: I_PromptTemplates
   systemPrompts: T_SystemPrompts
-  ragTemplates: I_RAGPromptTemplates
-  ragModes: string[]
   activeRole: T_ActiveRoles
 }
 

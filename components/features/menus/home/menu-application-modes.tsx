@@ -1,7 +1,7 @@
 'use client'
 
 import { Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from 'react'
-import { useRouter } from "next/navigation"
+import { useRouter } from 'next/navigation'
 import { PersonIcon, ClipboardIcon, Cross1Icon } from '@radix-ui/react-icons'
 import { buttonVariants } from '@/components/ui/button'
 import { IconPlus } from '@/components/ui/icons'
@@ -9,7 +9,7 @@ import { Tabs } from '@/components/ui/tabs'
 import { Playground } from '@/components/features/menus/home/tab-playground'
 import { BotCreationMenu } from '@/components/features/menus/home/tab-bots'
 import { ToolCreationMenu } from '@/components/features/menus/home/tab-tools'
-import { I_Knowledge_State, I_Text_Settings, I_Tool_Definition } from '@/lib/homebrew'
+import { I_Text_Settings, I_Tool_Definition } from '@/lib/homebrew'
 import { ModelExplorerMenu } from '@/components/features/menus/home/tab-model-explorer'
 import { DialogCreateCollection } from '@/components/features/crud/dialog-add-collection'
 import { toast } from 'react-hot-toast'
@@ -32,7 +32,7 @@ const Header = ({ children }: { children: React.ReactNode }) => <div className="
 
 const Title = ({ children }: { children: React.ReactNode }) => <h1 className="text-lg font-semibold leading-none tracking-tight">{children}</h1>
 
-const Description = ({ className, children }: { className?: string, children: React.ReactNode }) => <p className={cn("mb-4 text-sm text-muted-foreground", className)}>{children}</p>
+const Description = ({ className, children }: { className?: string, children: React.ReactNode }) => <p className={cn('mb-4 text-sm text-muted-foreground', className)}>{children}</p>
 
 const Item = ({ title, onAction, Icon, children, className }: { children?: ReactNode, title?: string, onAction?: () => void, Icon: any, className?: string }) => {
   return (
@@ -41,7 +41,7 @@ const Item = ({ title, onAction, Icon, children, className }: { children?: React
         onClick={onAction}
         className={cn(
           buttonVariants({ size: 'sm', variant: 'outline' }),
-          `outline-3 h-[50%] w-[50%] cursor-pointer rounded-full bg-background p-0 outline-offset-0 outline-muted-foreground hover:outline-dashed focus:outline-none`,
+          'outline-3 h-[50%] w-[50%] cursor-pointer rounded-full bg-background p-0 outline-offset-0 outline-muted-foreground hover:outline-dashed focus:outline-none',
         )}
       >
         <Icon className="h-[50%] w-[50%] text-foreground" />
@@ -65,10 +65,10 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const [bots, setBots] = useState<I_Text_Settings[]>([])
   const [createCollectionDialogOpen, setCreateCollectionDialogOpen] = useState(false)
   const [hfModelsInfo, setHFModelsInfo] = useState<any[]>([])
-  const deleteButtonStyle = "absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500"
   // Styling
-  const gridContentClass = "grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6"
-  const presetBotClass = "opacity-40"
+  const deleteButtonStyle = 'absolute right-0 top-0 m-auto flex h-[2.5rem] w-[2.5rem] flex-row items-center justify-center gap-2 rounded-none rounded-bl-md bg-transparent p-2 text-sm outline outline-8 outline-neutral-200 hover:bg-red-500 dark:bg-transparent dark:outline-neutral-900 dark:hover:bg-red-500'
+  const gridContentClass = 'grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] justify-items-center gap-6'
+  const presetBotClass = 'opacity-40'
   // Methods
   const { fetchInstalledModelsAndConfigs, fetchTools } = useActions()
   const modelExploreAction = useCallback(async () => {
@@ -119,7 +119,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     return action()
   }, [services?.storage])
 
-  const saveBotConfig = useCallback((settings: { knowledge: I_Knowledge_State }) => {
+  const saveBotConfig = useCallback((settings: I_Text_Settings) => {
     const action = async () => {
       // Save menu forms to a json file
       const res = await services?.storage.saveBotSettings({ body: settings })
@@ -323,7 +323,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
           )
         })}
         {/* Presets */}
-        <Item
+        {/* <Item
           title="Calculator"
           Icon={() => <div className="text-4xl">➗</div>}
           onAction={() => {
@@ -334,7 +334,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
             setOpenToolCreationMenu({ open: true, initialState: tool })
           }}
           className={presetBotClass}
-        />
+        /> */}
         <Item title="Web Search" Icon={() => <div className="text-4xl">🌐</div>} onAction={notAvailableNotification} className={presetBotClass} />
         <Item title="WIKI API" Icon={() => <div className="text-4xl">🔗</div>} onAction={notAvailableNotification} className={presetBotClass} />
         <Item title="Web Crawl" Icon={() => <div className="text-4xl">🕸</div>} onAction={notAvailableNotification} className={presetBotClass} />
@@ -349,7 +349,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Ai Workloads</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          {`One or more Bots working together under a "Director" to complete a job. The job Director delivers a document in the format you specify.`}
+          Many Bots working together to complete a task. A real-world result is delivered in the format you specify.
         </Description>
       </Header>
 
@@ -451,7 +451,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
   const tabs = [
     {
       label: 'models',
-      icon: "👨‍💻",
+      icon: '👨‍💻',
       content: (
         <ModelExplorerMenu
           data={modelConfigs}
@@ -468,13 +468,13 @@ export const ApplicationModesMenu = (props: I_Props) => {
         />
       )
     },
-    { label: 'playground', icon: "🌎", content: playgroundMenu },
-    { label: 'bots', icon: "🤖", content: botsMenu },
-    { label: 'tools', icon: "🛠", content: toolsMenu },
-    { label: 'jobs', icon: "🧰", content: jobsMenu },
+    { label: 'playground', icon: '🌎', content: playgroundMenu },
+    { label: 'bots', icon: '🤖', content: botsMenu },
+    { label: 'tools', icon: '🛠', content: toolsMenu },
+    { label: 'jobs', icon: '🧰', content: jobsMenu },
     {
       label: 'knowledge',
-      icon: "📚",
+      icon: '📚',
       content: knowledgeMenu
     },
   ]

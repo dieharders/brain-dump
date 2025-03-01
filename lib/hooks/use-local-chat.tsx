@@ -180,11 +180,9 @@ export const useLocalInference = (props: IProps) => {
       const options: I_InferenceGenerateOptions = {
         responseMode: mode,
         activeRole: settings?.attention?.active_role,
-        collectionNames: settings?.knowledge?.index,
         tools: settings?.tools?.assigned,
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,
-        ragPromptTemplate: settings?.prompt?.ragTemplate,
         systemMessage: settings?.system?.systemMessage,
         ...settings?.prompt?.ragMode,
         ...settings?.performance,
