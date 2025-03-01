@@ -6,19 +6,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Select } from '@/components/ui/select'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
-import { ClipboardIcon } from '@radix-ui/react-icons'
+import { ClipboardIcon, CursorArrowIcon, PersonIcon } from '@radix-ui/react-icons'
 import {
-  AGENT_RETRIEVAL_METHOD,
-  AUGMENTED_RETRIEVAL_METHOD,
-  BASE_RETRIEVAL_METHOD,
   DEFAULT_CONVERSATION_MODE,
-  DEFAULT_RETRIEVAL_METHOD,
+  DEFAULT_ACTIVE_ROLE,
   I_Attention_State as I_State,
   T_ConversationMode,
-  T_RetrievalTypes
+  T_ActiveRoles
 } from '@/lib/homebrew'
 import { cn } from '@/lib/utils'
 
@@ -27,27 +23,11 @@ interface I_Props {
   setState: Dispatch<SetStateAction<I_State>>
 }
 
-// @TODO Change "mode" to "conversationMode"
-export const defaultState: I_State = { mode: DEFAULT_CONVERSATION_MODE, retrievalMethod: DEFAULT_RETRIEVAL_METHOD }
+export const defaultState: I_State = { response_mode: DEFAULT_CONVERSATION_MODE, active_role: DEFAULT_ACTIVE_ROLE }
 
 export const AttentionTab = (props: I_Props) => {
   const { state, setState } = props
-  const toggleGroupClass = cn("flex w-full flex-row gap-2 rounded p-2")
-  const selectStyle = cn("w-full flex-1")
-  const selectItems = [
-    {
-      name: 'Base (default)',
-      value: BASE_RETRIEVAL_METHOD
-    },
-    {
-      name: 'Augmented (RAG)',
-      value: AUGMENTED_RETRIEVAL_METHOD
-    },
-    {
-      name: 'Agent (tool use)',
-      value: AGENT_RETRIEVAL_METHOD
-    },
-  ]
+  const toggleGroupClass = cn('flex h-full w-full flex-col items-stretch gap-2 rounded p-2')
 
   return (
     <div className="px-1">
@@ -55,53 +35,71 @@ export const AttentionTab = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Response Mode</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          Choose how you want the Ai to respond and interact with you. Instruction-tuned models may not work as expected in conversation mode.
+          Choose how you want the Ai to respond and interact with you. Note, instruction-tuned models may not work as expected in chat mode.
         </DialogDescription>
       </DialogHeader>
 
       {/* Conversation content */}
       <ToggleGroup
-        className="w-full"
+        className="w-full items-stretch"
         label="Chat Mode"
-        value={state?.mode || DEFAULT_CONVERSATION_MODE}
+        value={state?.response_mode}
         onChange={val => {
-          setState(prev => ({ ...prev, mode: val as T_ConversationMode }))
+          setState(prev => ({ ...prev, response_mode: val as T_ConversationMode }))
         }}
       >
         {/* Instruction - Conversation ends with each query. */}
         <div id="instruct" className={toggleGroupClass}>
-          <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-          <span className="flex-1 self-center text-ellipsis">Instruction</span>
+          <div className="flex flex-row gap-2">
+            <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis text-xl">Instruct</span>
+          </div>
+          <p className="text-xs">Each question or instruction to your Ai will end the session.</p>
         </div>
         {/* Chat Conversation can continue indefinitely. */}
         <div id="chat" className={toggleGroupClass}>
-          <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-          <span className="flex-1 self-center text-ellipsis">Conversational</span>
+          <div className="flex flex-row gap-2">
+            <IconConversationType className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis text-xl">Chat</span>
+          </div>
+          <p className="text-xs">Engage in a multi-turn conversational chat with your Ai.</p>
         </div>
       </ToggleGroup>
 
-      {/* Retrieval type */}
+      {/* Active Role type */}
       <DialogHeader className="my-8">
-        <DialogTitle>Retrieval method</DialogTitle>
+        <DialogTitle>Active Role</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          Choose a method of retrieving information whether that be using external tools (web search, etc) or private data (RAG).
+          Choose a decision strategy for how Ai actions are carried out.
         </DialogDescription>
       </DialogHeader>
 
-      {/* Retrieval content */}
-      <div className="mb-4 w-full">
-        <Select
-          id="retrieval_type_select"
-          className={selectStyle}
-          placeholder="Choose retrieval method"
-          name="Retrieval methods"
-          value={state.retrievalMethod}
-          items={selectItems}
-          onChange={val => {
-            setState(prev => ({ ...prev, retrievalMethod: val as T_RetrievalTypes }))
-          }}
-        />
-      </div>
+      {/* Active Role toggle */}
+      <ToggleGroup
+        className="w-full items-stretch"
+        label="Active Role"
+        value={state?.active_role}
+        onChange={val => {
+          setState(prev => ({ ...prev, active_role: val as T_ActiveRoles }))
+        }}
+      >
+        {/* Worker */}
+        <div id="worker" className={toggleGroupClass}>
+          <div className="flex flex-row gap-2">
+            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis text-xl">Worker</span>
+          </div>
+          <p className="text-xs">Workers will perform the action specified in the user prompt.</p>
+        </div>
+        {/* Agent */}
+        <div id="agent" className={toggleGroupClass}>
+          <div className="flex flex-row gap-2">
+            <CursorArrowIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis text-xl">Agent</span>
+          </div>
+          <p className="text-xs">Agents can decide what actions to take and what tools to use.</p>
+        </div>
+      </ToggleGroup>
     </div>
   )
 }

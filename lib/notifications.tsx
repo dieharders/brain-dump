@@ -39,7 +39,7 @@ export const notifications = () => {
         </div>,
       error: (err: any) => (
         <div className="flex flex-col gap-4">
-          <p>
+          <p className="text-center">
             <b>Could not load model.</b>
             <br></br>
             <span className="overflow-hidden">{err?.message}</span>

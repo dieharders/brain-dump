@@ -20,7 +20,8 @@ const loadModelAction = async (
   // Make payload
   const selectedModelId = settings?.model?.id
   const filename = settings?.model?.filename || ''
-  const mode = settings?.attention?.mode
+  const responseMode = settings?.attention?.response_mode
+  const activeRole = settings?.attention?.active_role
   const initOptions = settings?.performance
   const callOptions = {
     model: 'local' as ModelID, // @TODO should load from settings
@@ -35,7 +36,8 @@ const loadModelAction = async (
     body: {
       modelPath: installPath || '',
       modelId: selectedModelId || '',
-      mode,
+      responseMode,
+      activeRole,
       init: initOptions || {},
       call: callOptions,
     },

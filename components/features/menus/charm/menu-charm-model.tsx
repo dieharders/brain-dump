@@ -14,13 +14,11 @@ import { Tabs } from '@/components/ui/tabs'
 import { SystemTab } from '@/components/features/menus/tabs/tab-system'
 import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import {
-  AUGMENTED_RETRIEVAL_METHOD,
   I_PromptTemplates,
   I_Prompt_State,
-  I_RAGPromptTemplates,
   I_Response_State,
   I_System_State,
-  T_RetrievalTypes,
+  T_ActiveRoles,
   T_SystemPrompts,
 } from '@/lib/homebrew'
 import { ToolsTab } from '@/components/features/menus/tabs/tab-tools'
@@ -54,9 +52,7 @@ interface I_Props {
   setStatePrompt: Dispatch<SetStateAction<I_Prompt_State>>
   promptTemplates: I_PromptTemplates
   systemPrompts: T_SystemPrompts
-  ragTemplates: I_RAGPromptTemplates
-  ragModes: string[]
-  retrievalMethod: T_RetrievalTypes
+  activeRole: T_ActiveRoles
 }
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {
@@ -75,9 +71,6 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     setStatePrompt,
     promptTemplates,
     systemPrompts,
-    ragTemplates,
-    ragModes,
-    retrievalMethod,
   } = props
   const [disableForm, setDisableForm] = useState(false)
 
@@ -99,7 +92,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   // Tabs
   const toolsMenu = useMemo(() => <ToolsTab selected={selectedTools} setSelected={setSelectedTools} fetchListAction={fetchToolsAction} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchToolsAction, setSelectedTools, selectedTools])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [setStateResponse, stateResponse])
-  const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} isRAGEnabled={retrievalMethod === AUGMENTED_RETRIEVAL_METHOD} promptTemplates={promptTemplates} ragPromptTemplates={ragTemplates} ragModes={ragModes} />, [retrievalMethod, promptTemplates, ragModes, ragTemplates, setStatePrompt, statePrompt])
+  const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} promptTemplates={promptTemplates} />, [promptTemplates, setStatePrompt, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [setStateSystem, stateSystem, systemPrompts])
 
   const tabs = [

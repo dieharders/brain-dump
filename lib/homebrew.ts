@@ -18,7 +18,6 @@ export interface I_LLM_Init_Options {
   n_batch?: number
   n_threads?: number
   offload_kqv?: boolean
-  chat_format?: string // 'llama2' @TODO check backend if we use this
   cache_type_k?: string
   cache_type_v?: string
   verbose?: boolean
@@ -69,11 +68,11 @@ export type T_APIConfigOptions = {
 }
 
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
-  mode?: T_ConversationMode
+  responseMode?: T_ConversationMode
+  activeRole?: T_ActiveRoles
   messageFormat?: string
   collectionNames?: string[]
   tools?: string[]
-  retrievalType?: string
 }
 
 type T_LLM_InferenceOptions = I_LLM_Call_Options & I_LLM_Init_Options
@@ -108,7 +107,9 @@ export const BASE_RETRIEVAL_METHOD = 'base'
 export const AUGMENTED_RETRIEVAL_METHOD = 'augmented'
 export const AGENT_RETRIEVAL_METHOD = 'agent'
 export const DEFAULT_RETRIEVAL_METHOD = BASE_RETRIEVAL_METHOD
+export const DEFAULT_ACTIVE_ROLE = 'worker'
 export type T_ConversationMode = 'instruct' | 'chat' | 'collab'
+export type T_ActiveRoles = 'agent' | 'worker'
 
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
@@ -228,9 +229,6 @@ export type T_ModelConfig = {
   name: string
   description?: string
   messageFormat?: string
-  // used for model init
-  context_window?: number
-  num_gpu_layers?: number
 }
 
 export interface I_ModelConfigs {
@@ -288,7 +286,8 @@ export type T_SystemPrompts = {
 }
 
 export interface I_LoadTextModelRequestPayload {
-  mode?: T_ConversationMode
+  responseMode?: T_ConversationMode
+  activeRole?: T_ActiveRoles
   modelPath: string
   modelId: string
   init: I_LLM_Init_Options
@@ -321,6 +320,11 @@ export interface I_RAG_Strat_State {
   response_mode: string | undefined
 }
 
+export interface I_Knowledge_Base {
+  collectionNames: I_Knowledge_State
+  strategy: I_RAG_Strat_State
+}
+
 export type I_Prompt_State = {
   promptTemplate: T_PromptTemplate
   ragTemplate: T_RAGPromptTemplate
@@ -338,11 +342,9 @@ export interface I_System_State {
   systemMessageName: string | undefined
 }
 
-export type T_RetrievalTypes = 'base' | 'augmented' | 'agent'
-
 export interface I_Attention_State {
-  retrievalMethod: T_RetrievalTypes
-  mode: T_ConversationMode
+  active_role: T_ActiveRoles
+  response_mode: T_ConversationMode
 }
 
 export interface I_Tools_Inference_State {
@@ -356,17 +358,51 @@ export interface I_Text_Settings {
   system: I_System_State
   model: I_Model_State
   prompt: I_Prompt_State
-  knowledge: I_Knowledge_State
   response: I_Response_State
 }
 
-export interface I_Tool_Definition {
-  name: string | undefined
-  path: string | undefined
-  id?: string | undefined
+// The types of UI input that can be used for displaying a tool's params
+export type T_InputOptionTypes =
+  | 'options-sel'
+  | 'options-multi'
+  | 'options-button'
+  | 'text'
+  | 'text-multi'
+
+export interface I_Tool_Def_Parameter extends I_Tool_Parameter {
+  value?: any
+}
+
+// Tool function's field data returned from server
+export interface I_Tool_Parameter {
+  name: string
+  title: string
+  description: string
+  type: string
+  placeholder?: string
+  input_type?: T_InputOptionTypes
+  default_value?: any
+  value?: any
+  min_value?: string | number
+  max_value?: string | number
+  options_source?: string
+  options?: string[]
+  items?: any[]
+}
+
+// Tool function's struct from server
+export interface I_ToolFunctionSchemaRes {
+  params: I_Tool_Parameter[]
   description?: string | undefined
-  arguments?: { [key: string]: any } | string | undefined
-  example_arguments?: { [key: string]: any } | string | undefined
+  params_schema?: any | undefined
+  params_example?: any | undefined
+}
+
+// Tool struct that is persisted to disk
+export interface I_Tool_Definition extends I_ToolFunctionSchemaRes {
+  name: string
+  path: string
+  id?: string | undefined // assigned on tool save
 }
 
 type T_Endpoint = { [key: string]: any }
@@ -389,10 +425,14 @@ interface I_DeleteTextModelReqPayload {
   filename: string
 }
 
+interface I_ToolSchemaReqPayload {
+  filename: string
+}
+
 export interface I_LoadedModelRes {
   modelId: string
   modelName: string
-  mode: T_ConversationMode
+  responseMode: T_ConversationMode
   modelSettings: I_LLM_Init_Options
   generateSettings: I_LLM_Call_Options
 }
@@ -445,6 +485,8 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to persist data specific to the app itself
    */
   storage: {
+    getToolSchema: T_GenericAPIRequest<I_ToolSchemaReqPayload, I_ToolFunctionSchemaRes>
+    getToolFunctions: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     saveToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>
     getToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, I_Tool_Definition[]>
     deleteToolSettings?: T_GenericAPIRequest<T_GenericReqPayload, null>

@@ -48,7 +48,7 @@ The entire list of charms are as follows:
 - Microphone
 - Mentions
 - Prompt template (style of talking)
-- Conversation mode (instruct or chat)
+- Response mode (instruct or chat)
 - System prompt (how LLM should behave)
 - prompt options (temperature, context size, etc)
 

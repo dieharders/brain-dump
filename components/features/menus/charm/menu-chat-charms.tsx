@@ -2,17 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import {
-  IconBrain,
   IconMicrophone,
   IconGear,
   IconSynth,
 } from '@/components/ui/icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
 import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/menus/charm/menu-charm-model'
-import { useMemoryActions } from '@/components/features/crud/actions'
-import { DEFAULT_RETRIEVAL_METHOD, I_Knowledge_State, I_ServiceApis, T_RetrievalTypes, useHomebrew } from '@/lib/homebrew'
+import { DEFAULT_ACTIVE_ROLE, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
@@ -57,13 +54,10 @@ export const CharmMenu = (props: I_Props) => {
   const [hasMounted, setHasMounted] = useState(false)
   const [services, setServices] = useState<I_ServiceApis>({} as I_ServiceApis)
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
-  const [retrievalMethod, setRetrievalMethod] = useState<T_RetrievalTypes>(playgroundSettings.attention.retrievalMethod || DEFAULT_RETRIEVAL_METHOD)
   const [selectedTools, setSelectedTools] = useState(playgroundSettings.tools?.assigned || [])
-  const [openQueryCharmDialog, setOpenQueryCharmDialog] = useState(false)
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
   const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
-  const { fetchCollections } = useMemoryActions()
   const { fetchTools } = useActions()
 
   const {
@@ -76,8 +70,6 @@ export const CharmMenu = (props: I_Props) => {
     setStatePrompt,
     promptTemplates,
     systemPrompts,
-    ragTemplates,
-    ragModes,
   } = useModelSettingsMenu({ services })
 
   const CharmItem = (props: I_CharmItemProps) => {
@@ -104,17 +96,6 @@ export const CharmMenu = (props: I_Props) => {
     return action()
   }, [setPlaygroundSettings])
 
-  const saveKnowledgeSettings = useCallback((settings: { knowledge: I_Knowledge_State }) => {
-    const action = async () => {
-      // Save menu forms
-      setPlaygroundSettings(prev => ({ ...prev, knowledge: settings.knowledge }))
-      // Save state
-      playgroundSettings.attention?.retrievalMethod && setRetrievalMethod(playgroundSettings.attention.retrievalMethod)
-      return
-    }
-    return action()
-  }, [playgroundSettings.attention.retrievalMethod, setPlaygroundSettings])
-
   // Get services
   useEffect(() => {
     const action = async () => {
@@ -129,19 +110,6 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
-      {/* Collections list for Knowledge Base menu */}
-      {shouldRender('memory') &&
-        <KnowledgeCharmMenu
-          dialogOpen={openQueryCharmDialog}
-          setDialogOpen={setOpenQueryCharmDialog}
-          fetchListAction={fetchCollections}
-          onSubmit={async (knowledgeSettings) => {
-            await saveKnowledgeSettings(knowledgeSettings)
-            toast.success('Knowledge settings saved!')
-          }}
-        />
-      }
-
       {/* Menu for Prompt Template settings */}
       {shouldRender('prompt') &&
         <PromptTemplateCharmMenu
@@ -162,9 +130,8 @@ export const CharmMenu = (props: I_Props) => {
           setStatePrompt={setStatePrompt}
           promptTemplates={promptTemplates}
           systemPrompts={systemPrompts}
-          ragTemplates={ragTemplates}
-          ragModes={ragModes}
-          retrievalMethod={retrievalMethod}
+          // This was set from a sep page and thus has not controls on this one
+          activeRole={playgroundSettings.attention.active_role || DEFAULT_ACTIVE_ROLE}
         />
       }
 
@@ -189,16 +156,6 @@ export const CharmMenu = (props: I_Props) => {
               children: <IconSynth className={iconStyle} />,
               actionText: 'Speak - Have the Ai speak back to you',
               onClick: () => toggleActiveCharm('speak'),
-            })
-          }
-
-          {/* Query Memory - target a memory collection to use as context */}
-          {shouldRender('memory') &&
-            CharmItem({
-              className: emptyRingStyle,
-              children: <IconBrain className={iconStyle} />,
-              actionText: 'Query Memory - Select a memory to use as context',
-              onClick: () => setOpenQueryCharmDialog(true),
             })
           }
 

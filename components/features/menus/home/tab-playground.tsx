@@ -1,16 +1,16 @@
 'use client'
 
-import { Dispatch, SetStateAction, useState } from "react"
-import { useRouter } from "next/navigation"
+import { Dispatch, SetStateAction, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { MixerHorizontalIcon, LightningBoltIcon } from '@radix-ui/react-icons'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
-import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from "@/lib/homebrew"
+import { I_ModelConfigs, I_ServiceApis, T_InstalledTextModel } from '@/lib/homebrew'
 import { PerformanceMenu } from '@/components/features/menus/playground/menu-performance'
 import { usePerformanceMenu } from '@/components/features/menus/playground/hook-performance'
-import { ROUTE_PLAYGROUND } from "@/app/constants"
-import { useGlobalContext } from "@/contexts"
+import { ROUTE_PLAYGROUND } from '@/app/constants'
+import { useGlobalContext } from '@/contexts'
 
 interface I_Props {
   installedList: T_InstalledTextModel[]

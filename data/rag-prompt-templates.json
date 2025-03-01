@@ -67,6 +67,11 @@
   ],
   "structured": [
     {
+      "id": "tool_schema_response",
+      "name": "Tool use",
+      "text": "{tool_name_str}: {tool_description_str}\n\nPlease provide a JSON response that includes values from the QUESTION. The response should be formatted as follows:\n\n{tool_example_str}\n\nEnsure the JSON is properly formatted and each field is correctly typed like\n\n{tool_arguments_str}"
+    },
+    {
       "id": "schema_extract",
       "name": "Extract Schema",
       "text": "We wish to extract relevant fields from an unstructured text chunk into a structured schema. We first provide the unstructured text, and then we provide the schema that we wish to extract.\n-----------text-----------\n{text}\n-----------schema-----------\n{schema}\n---------------------\nGiven the text and schema, extract the relevant fields from the text in the following format: field1: <value>\nfield2: <value>\n...\n\nIf a field is not present in the text, don't include it in the output.If no fields are present in the text, return a blank string.\nFields: ",
@@ -133,6 +138,11 @@
       "name": "Return JSON Query",
       "text": "We have provided a JSON schema below:\n{schema}\nGiven a task, respond with a JSON Path query that can retrieve data from a JSON value that matches the schema.\nTask: {query_str}\nJSONPath: ",
       "type": "JSON_PATH"
+    },
+    {
+      "id": "json_formatter",
+      "name": "JSON formatter",
+      "text": "Assistant is an AI chatbot that helps users turn a natural language list into JSON format. After users input a list they want in JSON format, it will provide suggested list of attribute labels if the user has not provided any, then ask the user to confirm them before creating the list."
     }
   ],
   "choice": [

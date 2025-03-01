@@ -29,16 +29,13 @@ export const defaultState: I_LLM_Init_Options = {
   cache_type_k: 'f16',
   cache_type_v: 'f16',
   use_mlock: true, // keep model in memory, dont swap to disk
-  chat_format: undefined,
   verbose: false,
 }
 
 export const PerformanceTab = (props: I_Props) => {
-  const { modelConfig, state, setState } = props
-  const maxContextWindow = modelConfig?.context_window
-  const max_gpu_layers = modelConfig?.num_gpu_layers
-  const inputContainerClass = "grid w-full gap-2"
-  const infoClass = "flex w-full flex-row items-center gap-2 max-h-[1.5rem]"
+  const { state, setState } = props
+  const inputContainerClass = 'grid w-full gap-2'
+  const infoClass = 'flex w-full flex-row items-center gap-2 max-h-[1.5rem]'
   const precisionTypes = [{ name: 'f32', value: 'f32' }, { name: 'f16 (default)', value: 'f16' }, { name: 'bf16', value: 'bf16' }, { name: 'q8_0', value: 'q8_0' }, { name: 'q4_0', value: 'q4_0' }, { name: 'q4_1', value: 'q4_1' }, { name: 'iq4_nl', value: 'iq4_nl' }, { name: 'q5_0', value: 'q5_0' }, { name: 'q5_1', value: 'q5_1' }]
 
   // Handle input state changes
@@ -73,11 +70,10 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Input
-            name="url"
+            name="context-size"
             type="number"
-            value={(state?.n_ctx === 0) ? 0 : state?.n_ctx || ''}
+            value={state?.n_ctx}
             min={0}
-            max={maxContextWindow || defaultState.n_ctx}
             step={1}
             placeholder={defaultState?.n_ctx?.toString()}
             className="w-full"
@@ -93,7 +89,7 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Input
-            name="url"
+            name="seed"
             type="number"
             value={state?.seed}
             min={0}
@@ -112,9 +108,9 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Input
-            name="url"
+            name="threads"
             type="number"
-            value={state?.n_threads || '0'}
+            value={state?.n_threads}
             min={-1}
             step={1}
             placeholder={defaultState?.n_threads?.toString()}
@@ -131,7 +127,7 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Input
-            name="url"
+            name="n-batch"
             type="number"
             value={state?.n_batch}
             min={64}
@@ -150,11 +146,10 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Input
-            name="url"
+            name="gpu-layers"
             type="number"
             value={state?.n_gpu_layers}
             min={-1}
-            max={max_gpu_layers}
             step={1}
             placeholder={defaultState?.n_gpu_layers?.toString()}
             className="w-full"
