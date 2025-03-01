@@ -361,6 +361,7 @@ export interface I_Text_Settings {
   response: I_Response_State
 }
 
+// The types of UI input that can be used for displaying a tool's params
 export type T_InputOptionTypes =
   | 'options-sel'
   | 'options-multi'
@@ -371,7 +372,8 @@ export type T_InputOptionTypes =
 export interface I_Tool_Def_Parameter extends I_Tool_Parameter {
   value?: any
 }
-// Function field data returned from server
+
+// Tool function's field data returned from server
 export interface I_Tool_Parameter {
   name: string
   title: string
@@ -388,7 +390,7 @@ export interface I_Tool_Parameter {
   items?: any[]
 }
 
-// Tool function struct from server
+// Tool function's struct from server
 export interface I_ToolFunctionSchemaRes {
   params: I_Tool_Parameter[]
   description?: string | undefined

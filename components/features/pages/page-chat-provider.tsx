@@ -86,6 +86,7 @@ export const ChatProvider = (props: I_Props) => {
       res?.success && setCurrentModel(res?.data)
     } catch (err) {
       // failed
+      console.error('Failed to load text model.')
     }
     setHasLoaded(true)
     setIsLoading(false)

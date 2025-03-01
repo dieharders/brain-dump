@@ -37,6 +37,7 @@ const RetrievalTemplateSelector = ({ param, setState }: I_BuiltInProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [selectedTemplateName, setSelectedTemplateName] = useState(param.value)
 
+  // Fetch templates
   useEffect(
     () => {
       const action = async () => {
@@ -92,6 +93,7 @@ const KnowledgeSelector = ({ param, setState, savedState }: I_BuiltInProps) => {
     return i
   })
 
+  // Fetch data
   useEffect(
     () => {
       const action = async () => {
@@ -127,6 +129,7 @@ const ModelSelector = (props: I_BuiltInProps) => {
   useEffect(
     () => {
       const action = async () => {
+        // Fetch data
         const response = await services?.textInference.installed()
         const data = response?.data
         response?.success && data && setmodels(data)
@@ -151,9 +154,7 @@ const ModelSelector = (props: I_BuiltInProps) => {
         name: `${i}`,
         value: i
       }))}
-      onChange={e => {
-        e && setModel(e)
-      }}
+      onChange={e => e && setModel(e)}
     />
     <Select
       id="model_quant_select"
@@ -192,19 +193,20 @@ const BuiltInComponent = (props: I_BuiltInProps) => {
 }
 
 // Return a component specific to the param type
-export const ToolParameterInput = ({
-  param,
-  options,
-  savedState,
-  state,
-  setState,
-}: {
+export const ToolParameterInput = (props: {
   param: I_Tool_Parameter,
   options: string[] | number[],
   savedState: I_Tool_Definition | undefined,
   state: I_Tool_Definition,
   setState: Dispatch<SetStateAction<I_Tool_Definition>>
 }) => {
+  const {
+    param,
+    options,
+    savedState,
+    state,
+    setState,
+  } = props
   const [component, setComponent] = useState<any>()
   const initParam = savedState?.params.find(p => p.name === param.name)
   const setParamValue = useCallback((paramName: string, value: any) => {
@@ -216,6 +218,7 @@ export const ToolParameterInput = ({
     })
   }, [setState])
 
+  // Create component for the input param on mount
   useEffect(() => {
     let input_type
 

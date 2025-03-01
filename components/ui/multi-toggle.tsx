@@ -149,7 +149,7 @@ export const MultiSelector = ({ options, onSubmit, children, initValue = [], cla
         <Button
           className="m-0 w-full p-0"
           onClick={() => {
-            // Add all collections to list
+            // Add all items to list
             setSelected(options)
           }}
         >
@@ -158,7 +158,7 @@ export const MultiSelector = ({ options, onSubmit, children, initValue = [], cla
         <Button
           className="m-0 w-full p-0"
           onClick={async () => {
-            // Remove all collections from list
+            // Remove all items from list
             setSelected([])
           }}
         >

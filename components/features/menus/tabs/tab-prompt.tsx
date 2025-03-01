@@ -26,35 +26,6 @@ export const PromptTab = (props: I_Props) => {
   } = props
 
   return (
-    // @TODO Move this to retrieval tool creation
-    //   <>
-    //   <RAGTemplateForm
-    //     state={state.ragTemplate}
-    //     setState={val => {
-    //       setState(prev => {
-    //         return {
-    //           promptTemplate: prev.promptTemplate,
-    //           ragTemplate: val,
-    //           ragMode: prev.ragMode,
-    //         }
-    //       })
-    //     }}
-    //     templates={ragPromptTemplates}
-    //   />
-    //   <RAGStrategyForm
-    //     ragModes={ragModes}
-    //     state={state.ragMode}
-    //     setState={val => {
-    //       setState(prev => {
-    //         return {
-    //           promptTemplate: prev.promptTemplate,
-    //           ragTemplate: prev.ragTemplate,
-    //           ragMode: val,
-    //         }
-    //       })
-    //     }}
-    //   />
-    // </>
     <div className="px-1">
       <PromptTemplateForm
         templates={promptTemplates}
