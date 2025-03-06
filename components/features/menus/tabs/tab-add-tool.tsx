@@ -128,7 +128,7 @@ export const AddToolTab = (props: I_Props) => {
                   >
                     <DialogTitle className={dialogTitleStyle}>{`"${param.title}"`}</DialogTitle>
                     <DialogDescription className={cn(dialogTitleStyle, 'mb-2')}>{param.description}</DialogDescription>
-                    <ToolParameterInput param={param} options={param.options || []} savedState={savedState} state={state} setState={setState} />
+                    <ToolParameterInput param={param} options={param.options || []} savedState={savedState} setState={setState} />
                   </div>
                 )
               })}
