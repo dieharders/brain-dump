@@ -442,7 +442,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    * Use to query the text inference engine
    */
   textInference: {
-    inference: T_TextInferenceAPIRequest
+    generate: T_TextInferenceAPIRequest
     load: T_GenericAPIRequest<
       I_LoadTextModelRequestPayload,
       I_GenericAPIResponse<undefined>

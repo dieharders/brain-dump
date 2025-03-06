@@ -39,7 +39,7 @@ export const useLocalInference = (props: IProps) => {
     options: I_InferenceGenerateOptions,
   ) => {
     try {
-      return services?.textInference.inference({ body: options })
+      return services?.textInference.generate({ body: options })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
