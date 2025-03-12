@@ -49,7 +49,7 @@ export const AddToolTab = (props: I_Props) => {
       {/* Add new tool */}
       {!savedState?.id &&
         <DialogDescription className="mb-8">
-          Extend the capabilities of Bots and execute code you specify in a safe environment.
+          Extend the capabilities of Agents and execute code you specify in a safe environment.
         </DialogDescription>
       }
       {/* Content */}

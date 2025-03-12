@@ -200,7 +200,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
         case 'playground':
           // fetch installed models?
           break
-        case 'bots':
+        case 'agents':
           services && fetchBots()
           break
         case 'tools':
@@ -233,7 +233,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       />
       {/* Title and description */}
       <Header>
-        <Title><div className="my-2 text-center text-3xl font-bold">Custom Bots</div></Title>
+        <Title><div className="my-2 text-center text-3xl font-bold">Custom Agents</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
           Build unique Ai with knowledge and expertise in a specific domain. Create your own or choose from our curated list.
         </Description>
@@ -291,7 +291,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Tools for Ai Agents</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Augment your Bots with access to external tools. Build your own or choose from our open-source tools available in the cloud.
+          Augment your Agents with access to external tools. Build your own or choose from our open-source tools available in the cloud.
         </Description>
       </Header>
 
@@ -349,7 +349,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Ai Workloads</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Many Bots working together to complete a task. A real-world result is delivered in the format you specify.
+          Many Agents working together to complete a task. A real-world result is delivered in the format you specify.
         </Description>
       </Header>
 
@@ -371,7 +371,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Knowledge Base</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Enhance your Bots with long-term memory and private data. Upload text, images, video, audio into a collection and assign to any Bot.
+          Enhance your Agents with long-term memory and private data. Upload text, images, video, audio into a collection and assign to any Agent.
         </Description>
       </Header>
 
@@ -469,7 +469,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       )
     },
     { label: 'playground', icon: '🌎', content: playgroundMenu },
-    { label: 'bots', icon: '🤖', content: botsMenu },
+    { label: 'agents', icon: '🤖', content: botsMenu },
     { label: 'tools', icon: '🛠', content: toolsMenu },
     { label: 'jobs', icon: '🧰', content: jobsMenu },
     {

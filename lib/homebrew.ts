@@ -30,8 +30,6 @@ export interface I_LLM_Call_Options extends I_Response_State {
   model?: ModelID
   promptTemplate?: string
   systemMessage?: string
-  ragPromptTemplate?: T_RAGPromptTemplate
-  similarity_top_k?: number
   response_mode?: string
 }
 
@@ -62,7 +60,6 @@ export interface I_Thread {
 
 export type T_APIConfigOptions = {
   chunkingStrategies?: Array<string>
-  ragResponseModes?: Array<string>
   domain?: string
   port?: string
 }
@@ -255,17 +252,6 @@ export type T_PromptTemplate = {
   text: string
 }
 
-export type T_RAGPromptTemplate = {
-  id: string
-  name: string
-  text: string
-  type: string
-}
-
-export interface I_RAGPromptTemplates {
-  [key: string]: T_RAGPromptTemplate[]
-}
-
 export type T_SystemPrompt = {
   id: string
   name: string
@@ -274,11 +260,6 @@ export type T_SystemPrompt = {
 
 export interface I_PromptTemplates {
   [key: string]: T_PromptTemplate[]
-}
-
-export type T_PromptTemplates = {
-  rag_presets: I_RAGPromptTemplates
-  normal_presets: I_PromptTemplates
 }
 
 export type T_SystemPrompts = {
@@ -299,7 +280,7 @@ export interface I_Response_State {
   max_tokens?: number
   top_p?: number
   echo?: boolean
-  stop?: string[]
+  stop?: string
   repeat_penalty?: number
   top_k?: number
   stream?: boolean
@@ -315,6 +296,7 @@ export interface I_Knowledge_State {
   index: string[] // collection names
 }
 
+// @TODO Can maybe remove after retrieval is re-implemented
 export interface I_RAG_Strat_State {
   similarity_top_k: number
   response_mode: string | undefined
@@ -322,13 +304,11 @@ export interface I_RAG_Strat_State {
 
 export interface I_Knowledge_Base {
   collectionNames: I_Knowledge_State
-  strategy: I_RAG_Strat_State
+  strategy: I_RAG_Strat_State // @TODO Can maybe remove after retrieval is re-implemented
 }
 
 export type I_Prompt_State = {
   promptTemplate: T_PromptTemplate
-  ragTemplate: T_RAGPromptTemplate
-  ragMode: I_RAG_Strat_State
 }
 
 export interface I_Model_State {
@@ -396,6 +376,7 @@ export interface I_ToolFunctionSchemaRes {
   description?: string | undefined
   params_schema?: any | undefined
   params_example?: any | undefined
+  output_type?: string[]
 }
 
 // Tool struct that is persisted to disk
@@ -411,12 +392,11 @@ interface I_BaseServiceApis {
   [key: string]: T_Endpoint
 }
 
-type T_TextInferenceAPIRequest = (props: {
-  body: I_InferenceGenerateOptions
-}) =>
+type T_TextInferenceAPIRequest = (props: { body: I_InferenceGenerateOptions }) =>
   | (Response &
       I_NonStreamPlayground &
       I_NonStreamChatbotResponse &
+      string & // a JSON string
       I_GenericAPIResponse<any>)
   | null
 
@@ -459,9 +439,6 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getSystemPrompts: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    configs: {
-      ragResponseModes: Array<string>
-    }
   }
   /**
    * Use to add/create/update/delete embeddings from database
@@ -561,17 +538,6 @@ const getPromptTemplates = async () => {
   }
 }
 
-const getRagPromptTemplates = async () => {
-  // Read in json file
-  const file = await import('../data/rag-prompt-templates.json')
-
-  return {
-    success: true,
-    message: 'Returned retrieval augmented generation templates for text inference.',
-    data: file.default,
-  }
-}
-
 const getSystemPrompts = async () => {
   // Read in json file
   const file = await import('../data/system-prompts.json')
@@ -636,14 +602,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             const result = await res.json()
 
             if (!result) throw new Error('Something went wrong')
-            // Check error from homebrew api
-            if (typeof result?.error === 'boolean' && result?.error) {
-              const error = new Error(`${result?.error}`) as Error & {
-                status: number
-              }
-              error.status = res.status
-              throw error
-            }
             // Check failure from homebrew api
             if (typeof result?.success === 'boolean' && !result?.success)
               throw new Error(
@@ -673,7 +631,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
 
   // Inject non-backend related methods
   serviceApis.textInference.getPromptTemplates = getPromptTemplates
-  serviceApis.textInference.getRagPromptTemplates = getRagPromptTemplates
   serviceApis.textInference.getSystemPrompts = getSystemPrompts
 
   return serviceApis

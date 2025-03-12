@@ -77,7 +77,7 @@ export const PromptTemplateForm = (props: I_Props) => {
           </Info>
         </div>
         <DialogDescription>
-          Templates to give structure to the Bot response. Choose from pre-made templates or write your own.
+          Templates to give structure to the Agent response. Choose from pre-made templates or write your own.
         </DialogDescription>
       </DialogHeader>
 

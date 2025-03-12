@@ -4,7 +4,6 @@ const SSE_COMMENT_PREFIX = ':'
 
 const processSseStream = async (
   fetchStream: Response,
-  stopSequences: string[] = ['[DONE]'], // @TODO Check if this should have default
   {
     onData,
     onFinish,
@@ -49,13 +48,6 @@ const processSseStream = async (
 
         if (line?.startsWith(SSE_DATA_PREFIX)) {
           const eventData = line.slice(SSE_DATA_PREFIX.length).trim()
-
-          if (stopSequences.some(name => name === eventData)) {
-            // Handle early termination here if needed. This is the final value event emitted by the server before closing the connection.
-
-            break
-          }
-
           await onData(eventData)
         }
       }

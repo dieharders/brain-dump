@@ -22,7 +22,7 @@ export const defaultState: I_State = {
   temperature: 0.8,
   top_k: 40,
   top_p: 0.95,
-  stop: [],
+  stop: '',
   max_tokens: 256,
   repeat_penalty: 1.1,
   stream: true,
@@ -31,8 +31,8 @@ export const defaultState: I_State = {
 
 export const ResponseTab = (props: I_Props) => {
   const { state, setState } = props
-  const infoClass = "flex w-full flex-row gap-2"
-  const inputContainerClass = "grid w-full gap-1"
+  const infoClass = 'flex w-full flex-row gap-2'
+  const inputContainerClass = 'grid w-full gap-1'
   const stopPlaceholder = '[DONE]'
 
   // Handle input state changes
@@ -46,11 +46,6 @@ export const ResponseTab = (props: I_Props) => {
 
   const handleFloatChange = (propName: string, value: string) => {
     setState({ ...state, [propName]: parseFloat(value) })
-  }
-
-  const convertToString = (value: string[] | undefined) => {
-    if (!value) return ''
-    return value.join(' ')
   }
 
   return (
@@ -150,21 +145,17 @@ export const ResponseTab = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">Stop Words</Label>
             <Info label="stop">
-              <span><Highlight>stop</Highlight> words are phrases that should be excluded from the input due to high occurance. Enter space seperated words.</span>
+              <span><Highlight>stop</Highlight> words are phrases that will prematurely end text generation when encountered.</span>
             </Info>
           </div>
           <Input
             name="url"
-            value={convertToString(state?.stop)}
+            value={state?.stop}
             placeholder={stopPlaceholder}
             className="w-full"
             onChange={event => {
-              // Remove multiple consecutive spaces
-              const inputVal = event.target.value.replace(/ +/g, ' ')
-              const arrVal = inputVal.split(' ')
-              const parsed: string[] = []
-              arrVal?.forEach(i => i.length > 0 && parsed.push(i))
-              setState({ ...state, stop: parsed })
+              const inputVal = event.target.value
+              setState({ ...state, stop: inputVal })
             }}
           />
         </div>

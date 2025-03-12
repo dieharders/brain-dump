@@ -217,8 +217,8 @@ export const ToolParameterInput = (props: {
     })
   }, [setState])
 
-  let input_type
-
+  // Determine type of value for input
+  let input_type = ''
   switch (param.type) {
     case 'string':
       input_type = 'text'
@@ -296,7 +296,13 @@ export const ToolParameterInput = (props: {
           type={input_type}
           min={param.min_value}
           max={param.max_value}
-          onChange={e => setParamValue(param.name, e.target.value)}
+          onChange={e => {
+            let outputValue: any = e.target.value
+            if (input_type === 'number')
+              // Record correct type
+              outputValue = parseInt(e.target.value)
+            setParamValue(param.name, outputValue)
+          }}
           className="text-md"
         />
       )
