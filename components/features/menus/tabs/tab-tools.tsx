@@ -9,11 +9,11 @@ import {
 import { ToolPanelCard } from '@/components/features/panels/panel-card-tool'
 import { MultiSelector } from '@/components/ui/multi-toggle'
 import { useGlobalContext } from '@/contexts'
-import { useToolsMenu } from '../charm/hook-charm-tools'
 
 interface I_Props {
   fetchListAction: () => Promise<void>
   setSelected: Dispatch<SetStateAction<string[]>>
+  selected: string[]
 }
 
 export const defaultState = {
@@ -21,8 +21,7 @@ export const defaultState = {
 }
 
 export const ToolsTab = (props: I_Props) => {
-  const { fetchListAction, setSelected } = props
-  const { selected } = useToolsMenu()
+  const { fetchListAction, setSelected, selected } = props
   const { tools } = useGlobalContext()
   const renderDefaultMsg = <div className="font-semibold">No tools added yet.</div>
 

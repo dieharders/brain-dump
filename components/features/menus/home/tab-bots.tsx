@@ -67,7 +67,7 @@ export const BotCreationMenu = (props: I_Props) => {
   // Menus
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} promptTemplates={promptTemplates} />, [promptTemplates, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [stateSystem, systemPrompts])
-  const toolsMenu = useMemo(() => <ToolsTab fetchListAction={fetchTools} setSelected={setSelectedTools} />, [fetchTools, setSelectedTools])
+  const toolsMenu = useMemo(() => <ToolsTab fetchListAction={fetchTools} selected={selectedTools} setSelected={setSelectedTools} />, [fetchTools, selectedTools, setSelectedTools])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [stateResponse])
   const modelMenu = useMemo(() => <ModelTab state={stateModel} setState={setStateModel} installedList={data.installedList} modelConfigs={data.modelConfigs} />, [data.installedList, data.modelConfigs, stateModel])
   const attentionMenu = useMemo(() => <AttentionTab state={stateAttention} setState={setStateAttention} />, [stateAttention])

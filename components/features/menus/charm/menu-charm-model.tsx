@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -72,7 +72,6 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     promptTemplates,
     systemPrompts,
   } = props
-  const [disableForm, setDisableForm] = useState(false)
 
   const onSaveClick = useCallback(
     () => {
@@ -90,7 +89,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
   )
 
   // Tabs
-  const toolsMenu = useMemo(() => <ToolsTab selected={selectedTools} setSelected={setSelectedTools} fetchListAction={fetchToolsAction} disableForm={disableForm} setDisableForm={setDisableForm} />, [disableForm, fetchToolsAction, setSelectedTools, selectedTools])
+  const toolsMenu = useMemo(() => <ToolsTab selected={selectedTools} setSelected={setSelectedTools} fetchListAction={fetchToolsAction} />, [fetchToolsAction, selectedTools, setSelectedTools])
   const responseMenu = useMemo(() => <ResponseTab state={stateResponse} setState={setStateResponse} />, [setStateResponse, stateResponse])
   const promptMenu = useMemo(() => <PromptTab state={statePrompt} setState={setStatePrompt} promptTemplates={promptTemplates} />, [promptTemplates, setStatePrompt, statePrompt])
   const systemMessageMenu = useMemo(() => <SystemTab state={stateSystem} setState={setStateSystem} systemPrompts={systemPrompts} />, [setStateSystem, stateSystem, systemPrompts])
