@@ -51,7 +51,7 @@ export const ModelCard = ({ expandable = true, onClick = (_props: { id: string, 
         {/* File Format (GGUF) */}
 
         {/* Description */}
-        <div className={cn("text-ellipsis break-normal text-primary/50", !isOpen && "hidden")}>{description}</div>
+        <div className={cn("text-ellipsis whitespace-pre-line break-normal text-primary/50", !isOpen && "hidden")}>{description}</div>
         {/* Info/Stats */}
         <div className={cn("text-nowrap inline-flex w-full shrink-0 flex-col items-stretch justify-start gap-2 text-ellipsis break-words p-0 text-left text-sm text-primary/50", !isOpen && "hidden")}>
           {provider && <div><p className={cn(secTextStyle)}>Provider: </p>{provider}</div>}
