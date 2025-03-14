@@ -59,7 +59,7 @@ export const ModelExplorerMenu = ({
       </Header>
 
       {/* Content Container */}
-      <div className="flex max-w-[70rem] flex-col items-start justify-items-stretch gap-8 overflow-hidden">
+      <div className="flex w-full max-w-[70rem] flex-col items-start justify-items-stretch gap-8 overflow-hidden">
         {/* Model Management Buttons */}
         <div className="flex w-full flex-col justify-center gap-4 overflow-hidden sm:flex-row">
           <ModelCard
