@@ -104,7 +104,7 @@ export const BASE_RETRIEVAL_METHOD = 'base'
 export const AUGMENTED_RETRIEVAL_METHOD = 'augmented'
 export const AGENT_RETRIEVAL_METHOD = 'agent'
 export const DEFAULT_RETRIEVAL_METHOD = BASE_RETRIEVAL_METHOD
-export const DEFAULT_ACTIVE_ROLE = 'worker'
+export const DEFAULT_ACTIVE_ROLE = 'agent'
 export type T_ConversationMode = 'instruct' | 'chat' | 'collab'
 export type T_ActiveRoles = 'agent' | 'worker'
 
