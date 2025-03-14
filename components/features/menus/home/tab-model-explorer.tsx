@@ -50,7 +50,7 @@ export const ModelExplorerMenu = ({
   }, [fetchModelInfo, setHFModelsInfo])
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Download Ai Models</div></Title>
         <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
@@ -59,7 +59,7 @@ export const ModelExplorerMenu = ({
       </Header>
 
       {/* Content Container */}
-      <div className="flex flex-col items-start justify-items-stretch gap-8 overflow-hidden">
+      <div className="flex max-w-[70rem] flex-col items-start justify-items-stretch gap-8 overflow-hidden">
         {/* Model Management Buttons */}
         <div className="flex w-full flex-col justify-center gap-4 overflow-hidden sm:flex-row">
           <ModelCard

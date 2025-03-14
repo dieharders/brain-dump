@@ -527,6 +527,17 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   }
 }
 
+const getRagPromptTemplates = async () => {
+  // Read in json file
+  const file = await import('../data/rag-prompt-templates.json')
+
+  return {
+    success: true,
+    message: 'Returned retrieval augmented generation templates for text inference.',
+    data: file.default,
+  }
+}
+
 const getPromptTemplates = async () => {
   // Read in json file
   const file = await import('../data/prompt-templates.json')
@@ -632,6 +643,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   // Inject non-backend related methods
   serviceApis.textInference.getPromptTemplates = getPromptTemplates
   serviceApis.textInference.getSystemPrompts = getSystemPrompts
+  serviceApis.textInference.getRagPromptTemplates = getRagPromptTemplates
 
   return serviceApis
 }

@@ -110,7 +110,7 @@ export const MultiSelectItem = ({ value, index, selected, setSelected, className
       </div>
     </Root>
     <label
-      className="w-full flex-1 overflow-hidden"
+      className="w-full flex-1 overflow-hidden pr-2"
       htmlFor={`c${index}`}
     >
       <MultiSelectPanel
@@ -151,7 +151,7 @@ export const MultiSelector = ({ options, onSubmit, children, initValue = [], cla
             className="m-0 w-full p-0"
             onClick={() => {
               // Add all items to list
-              setSelected(options)
+              onSelected(options)
             }}
           >
             Add all
@@ -160,7 +160,7 @@ export const MultiSelector = ({ options, onSubmit, children, initValue = [], cla
             className="m-0 w-full p-0"
             onClick={async () => {
               // Remove all items from list
-              setSelected([])
+              onSelected([])
             }}
           >
             Remove all
