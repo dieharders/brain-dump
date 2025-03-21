@@ -110,7 +110,7 @@ export const MultiSelectItem = ({ value, index, selected, setSelected, className
       </div>
     </Root>
     <label
-      className="w-full flex-1 overflow-hidden"
+      className="w-full flex-1 overflow-hidden pr-2"
       htmlFor={`c${index}`}
     >
       <MultiSelectPanel
@@ -145,26 +145,28 @@ export const MultiSelector = ({ options, onSubmit, children, initValue = [], cla
   return (
     <>
       {/* Buttons */}
-      <div className="mb-6 flex w-full flex-row items-center justify-between space-x-4">
-        <Button
-          className="m-0 w-full p-0"
-          onClick={() => {
-            // Add all items to list
-            setSelected(options)
-          }}
-        >
-          Add all
-        </Button>
-        <Button
-          className="m-0 w-full p-0"
-          onClick={async () => {
-            // Remove all items from list
-            setSelected([])
-          }}
-        >
-          Remove all
-        </Button>
-      </div>
+      {options.length > 0 && (
+        <div className="mb-6 flex w-full flex-row items-center justify-between space-x-4">
+          <Button
+            className="m-0 w-full p-0"
+            onClick={() => {
+              // Add all items to list
+              onSelected(options)
+            }}
+          >
+            Add all
+          </Button>
+          <Button
+            className="m-0 w-full p-0"
+            onClick={async () => {
+              // Remove all items from list
+              onSelected([])
+            }}
+          >
+            Remove all
+          </Button>
+        </div>
+      )}
       {/* Selections */}
       <div className="scrollbar flex max-h-[32rem] w-full flex-col space-y-2 overflow-y-auto overflow-x-hidden pl-2">
         {children?.map((child, i) =>

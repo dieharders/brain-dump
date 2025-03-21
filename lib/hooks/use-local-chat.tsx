@@ -39,32 +39,28 @@ export const useLocalInference = (props: IProps) => {
     options: I_InferenceGenerateOptions,
   ) => {
     try {
-      return services?.textInference.inference({ body: options })
+      return services?.textInference.generate({ body: options })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
     }
   }, [services?.textInference])
 
-  const onNonStreamResult = useCallback((result: string) => {
-    setResponseText(result)
+  const onNonStreamResult = useCallback((result: any) => {
     console.log('[Chat] non-stream finished!')
+    result?.text && setResponseText(result?.text)
   }, [])
 
   const onStreamResult = useCallback(async (result: string) => {
     try {
-      // This is how the llama-cpp-python-server sends back data...
-      // const parsedResult = JSON.parse(result)
-      // const text = parsedResult?.choices?.[0]?.text
-
-      // How Homebrew server sends data
+      // How server sends data back
       const parsedResult = result ? JSON.parse(result) : null
-      const text = parsedResult?.data
-
-      setResponseText(prevText => {
-        return (prevText += text)
-      })
-
+      const data = parsedResult?.data
+      const text = data?.text
+      if (text)
+        setResponseText(prevText => {
+          return (prevText += text)
+        })
       return
     } catch (err) {
       console.log('[Chat] onStreamResult err:', typeof result, ' | ', err)
@@ -184,7 +180,6 @@ export const useLocalInference = (props: IProps) => {
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,
         systemMessage: settings?.system?.systemMessage,
-        ...settings?.prompt?.ragMode,
         ...settings?.performance,
         ...settings?.response,
       }
@@ -197,11 +192,10 @@ export const useLocalInference = (props: IProps) => {
       if (typeof response.success === 'boolean' && !response.success) throw new Error(response.message)
 
       // Check success if streamed
-      if (response?.body?.getReader && response?.ok) {
+      if (response?.body?.getReader) {
         // Process the stream into text tokens
         await processSseStream(
           response,
-          settings?.response?.stop,
           {
             onData: (res: string) => onStreamResult(res),
             onFinish: async () => {
@@ -219,10 +213,9 @@ export const useLocalInference = (props: IProps) => {
       }
 
 
-      // Check success if not streamed (playground)
-      if (typeof response?.data?.text === 'string') {
-        onNonStreamResult(response?.data?.text)
-      }
+      // Check success if not streamed
+      if (!settings?.response.stream) onNonStreamResult(response)
+
       // Save final results
       setCurrentMessages(prevMsgs => {
         setThreads(prevThreads => {

@@ -7,14 +7,13 @@ export interface I_MiniPanelCardProps {
   name: string
   description?: string
   icon?: string
-  isHighlighted?: boolean
   className?: string
 }
 
 /**
  * A card container for some data that resides in a panel.
  */
-export const MiniPanelCard = ({ name = 'No title', description = 'No description.', icon, isHighlighted, className }: I_MiniPanelCardProps) => {
+export const MiniPanelCard = ({ name = 'No title', description = 'No description.', icon, className }: I_MiniPanelCardProps) => {
   return <>
     {/* Header */}
     <div className={cn('flex w-full items-stretch overflow-hidden', className)}>

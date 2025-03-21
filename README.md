@@ -35,7 +35,7 @@ Obrew Studio can be used via the API or the WebUI. Both methods are used to talk
 
 ✅ Run open source models locally for free<br>
 ✅ Explore and download models from HuggingFace<br>
-✅ Build custom bots (like GPT store)<br>
+✅ Build custom agents (like GPT store)<br>
 ✅ Streaming chat UI<br>
 ✅ Chat with your documents (RAG)<br>
 ✅ Inspect & optimize document chunking for RAG<br>

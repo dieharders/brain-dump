@@ -109,10 +109,10 @@ const KnowledgeSelector = ({ param, setState, savedState }: I_BuiltInProps) => {
     <MultiSelector
       initValue={savedState?.value}
       onSubmit={(val: any) => setState(param.name, val)}
-      options={data.map(p => p.name)}
+      options={data?.map?.(p => p.name)}
       className="min-h-[5rem] w-full sm:w-full"
     >
-      {data.map(p => <MiniPanelCard key={p.id} name={p.name || 'No Title'} description={p.description || 'No description.'} icon={p.icon} />)}
+      {data?.map?.(p => <MiniPanelCard key={p.id} name={p.name || 'No Title'} description={p.description || 'No description.'} icon={p.icon} />)}
     </MultiSelector>
   )
 }
@@ -124,6 +124,8 @@ const ModelSelector = (props: I_BuiltInProps) => {
   const [models, setmodels] = useState<any[]>([])
   const [quants, setQuants] = useState<string[]>([''])
   const [quant, setQuant] = useState<string>(param.value?.[1])
+  const noModelInstalled = { name: 'No models installed!', value: '' }
+  const noQuantsInstalled = { name: 'No quants installed!', value: '' }
 
   // Update quants when "model" changes
   useEffect(
@@ -153,7 +155,7 @@ const ModelSelector = (props: I_BuiltInProps) => {
       items={models?.map(e => e.repoId)?.map?.((i: string) => ({
         name: `${i}`,
         value: i
-      }))}
+      })) || [noModelInstalled]}
       onChange={e => e && setModel(e)}
     />
     <Select
@@ -164,7 +166,7 @@ const ModelSelector = (props: I_BuiltInProps) => {
       items={quants?.map?.((i: string) => ({
         name: `${i}`,
         value: i
-      }))}
+      })) || [noQuantsInstalled]}
       onChange={q => {
         if (q) {
           q && setQuant(q)
@@ -197,17 +199,14 @@ export const ToolParameterInput = (props: {
   param: I_Tool_Parameter,
   options: string[] | number[],
   savedState: I_Tool_Definition | undefined,
-  state: I_Tool_Definition,
   setState: Dispatch<SetStateAction<I_Tool_Definition>>
 }) => {
   const {
     param,
     options,
     savedState,
-    state,
     setState,
   } = props
-  const [component, setComponent] = useState<any>()
   const initParam = savedState?.params.find(p => p.name === param.name)
   const setParamValue = useCallback((paramName: string, value: any) => {
     setState((prev: any) => {
@@ -218,101 +217,96 @@ export const ToolParameterInput = (props: {
     })
   }, [setState])
 
-  // Create component for the input param on mount
-  useEffect(() => {
-    let input_type
+  // Determine type of value for input
+  let input_type = ''
+  switch (param.type) {
+    case 'string':
+      input_type = 'text'
+      break
+    case 'integer':
+      input_type = 'number'
+      break
+    default:
+      input_type = 'text'
+      break
+  }
 
-    switch (param.type) {
-      case 'string':
-        input_type = 'text'
-        break
-      case 'integer':
-        input_type = 'number'
-        break
-      default:
-        input_type = 'text'
-        break
+  // Return component specific to the built-in tool function
+  if (param.options_source) {
+    return (<BuiltInComponent param={param} savedState={initParam} setState={setParamValue} />)
+  }
+
+  // Return user-generated inputs
+  switch (param.input_type) {
+    case 'options-sel': {
+      return (
+        <Select
+          id={`${param.name}_param_select`}
+          placeholder={param.placeholder || ''}
+          name={param.name}
+          value={initParam?.value || undefined}
+          items={options?.map?.(i => ({
+            name: `${i}`,
+            value: `${i}`
+          }))}
+          onChange={e => e && setParamValue(param.name, e)}
+        />
+      )
     }
-
-    // Return component specific to the built-in tool function
-    if (param.options_source) {
-      setComponent(<BuiltInComponent param={param} savedState={initParam} setState={setParamValue} />)
-      return
+    // Select multiple items at once
+    case 'options-multi': {
+      return (
+        <MultiSelector
+          initValue={initParam?.value}
+          onSubmit={(val: any) => setParamValue(param.name, val)}
+          options={options?.map?.(p => `${p}`)}
+          className="min-h-[5rem] w-full sm:w-full"
+        >
+          {options?.map?.(p => <MiniPanelCard key={p} name={`${p}`} description="No description." />)}
+        </MultiSelector>
+      )
     }
-
-    // User generated tool function inputs
-    switch (param.input_type) {
-      case 'options-sel': {
-        setComponent(
-          <Select
-            id={`${param.name}_param_select`}
-            placeholder={param.placeholder || ''}
-            name={param.name}
+    case 'options-button':
+      // @TODO Implement
+      return (<></>)
+    case 'text-multi': {
+      return (
+        <div
+          className="mb-2 flex w-full flex-col items-center gap-2"
+        >
+          <DialogTitle className={dialogTitleStyle}>{param.name}</DialogTitle>
+          <DialogDescription className={cn(dialogTitleStyle, 'mb-2')}>
+            {param.description}
+          </DialogDescription>
+          <textarea
+            name="tool-param-text"
             value={initParam?.value || param.default_value || undefined}
-            items={options?.map?.(i => ({
-              name: `${i}`,
-              value: `${i}`
-            }))}
-            onChange={e => e && setParamValue(param.name, e)}
+            placeholder={param.placeholder}
+            disabled
+            className={textareaStyle}
           />
-        )
-        break
-      }
-      // Select multiple items at once
-      case 'options-multi': {
-        setComponent(
-          <MultiSelector
-            initValue={initParam?.value}
-            onSubmit={(val: any) => setParamValue(param.name, val)}
-            options={options.map(p => `${p}`)}
-            className="min-h-[5rem] w-full sm:w-full"
-          >
-            {options.map(p => <MiniPanelCard key={p} name={`${p}`} description="No description." />)}
-          </MultiSelector>
-        )
-        break
-      }
-      case 'options-button':
-        // @TODO Implement
-        setComponent(<></>)
-        break
-      case 'text-multi': {
-        setComponent(
-          <div
-            className="mb-2 flex w-full flex-col items-center gap-2"
-          >
-            <DialogTitle className={dialogTitleStyle}>{param.name}</DialogTitle>
-            <DialogDescription className={cn(dialogTitleStyle, 'mb-2')}>
-              {param.description}
-            </DialogDescription>
-            <textarea
-              name="tool-param-text"
-              value={initParam?.value || param.default_value || undefined}
-              placeholder={param.placeholder}
-              disabled
-              className={textareaStyle}
-            />
-          </div>)
-        break
-      }
-      case 'text':
-        setComponent(
-          <Input
-            name={param.name}
-            defaultValue={initParam?.value}
-            placeholder={param.placeholder || ''}
-            type={input_type}
-            min={param.min_value}
-            max={param.max_value}
-            onChange={e => setParamValue(param.name, e.target.value)}
-            className="text-md"
-          />
-        )
-        break
-      default:
-        setComponent(<></>)
+        </div>)
     }
-  }, [initParam, options, param, setParamValue])
-
-  return component
+    case 'text':
+      return (
+        <Input
+          name={param.name}
+          defaultValue={initParam?.value}
+          placeholder={param.placeholder || ''}
+          type={input_type}
+          min={param.min_value}
+          max={param.max_value}
+          onChange={e => {
+            let outputValue: any = e.target.value
+            if (input_type === 'number')
+              // Record correct type
+              outputValue = parseInt(e.target.value)
+            setParamValue(param.name, outputValue)
+          }}
+          className="text-md"
+        />
+      )
+    default:
+      return <></>
+  }
 }

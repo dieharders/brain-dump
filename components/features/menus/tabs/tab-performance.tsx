@@ -25,7 +25,7 @@ export const defaultState: I_LLM_Init_Options = {
   n_threads: -1, // -1 = all available
   n_batch: 512,
   offload_kqv: true, // cache generated responses
-  n_gpu_layers: -1,
+  n_gpu_layers: 0,
   cache_type_k: 'f16',
   cache_type_v: 'f16',
   use_mlock: true, // keep model in memory, dont swap to disk

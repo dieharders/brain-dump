@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react'
 import {
   I_PromptTemplates,
   I_Prompt_State,
-  I_RAGPromptTemplates,
   I_Response_State,
   I_ServiceApis,
   I_System_State,
@@ -33,8 +32,6 @@ export const useModelSettingsMenu = ({
   // Data values
   const [promptTemplates, setPromptTemplates] = useState<I_PromptTemplates>({})
   const [systemPrompts, setSystemPrompts] = useState<T_SystemPrompts>({ presets: {} })
-  const [ragTemplates, setRagTemplates] = useState<I_RAGPromptTemplates>({})
-  const [ragModes, setRagModes] = useState<string[]>([])
 
   // Fetch data
   const getSystemPrompts = useCallback(async () => {
@@ -49,26 +46,9 @@ export const useModelSettingsMenu = ({
     setPromptTemplates(data)
   }, [services?.textInference])
 
-  const getRagTemplates = useCallback(async () => {
-    const req = await services?.textInference.getRagPromptTemplates()
-    const data = req?.data || {}
-    setRagTemplates(data)
-  }, [services?.textInference])
-
-  const getRagModes = useCallback(async () => {
-    if (!services) return
-    const data = services?.textInference.configs.ragResponseModes
-    data && setRagModes(data)
-  }, [services])
-
   // Fetch required data for menus
   const fetchData = async () => {
-    const actions = [
-      getPromptTemplates(),
-      getRagTemplates(),
-      getSystemPrompts(),
-      getRagModes(),
-    ]
+    const actions = [getPromptTemplates(), getSystemPrompts()]
     return Promise.allSettled(actions)
   }
 
@@ -81,8 +61,6 @@ export const useModelSettingsMenu = ({
     setStatePrompt,
     promptTemplates,
     systemPrompts,
-    ragTemplates,
-    ragModes,
     fetchData,
   }
 }

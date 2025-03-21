@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
-import { ClipboardIcon, CursorArrowIcon, PersonIcon } from '@radix-ui/react-icons'
+import { ClipboardIcon, CursorArrowIcon, AccessibilityIcon } from '@radix-ui/react-icons'
 import {
   DEFAULT_CONVERSATION_MODE,
   DEFAULT_ACTIVE_ROLE,
@@ -86,7 +86,7 @@ export const AttentionTab = (props: I_Props) => {
         {/* Worker */}
         <div id="worker" className={toggleGroupClass}>
           <div className="flex flex-row gap-2">
-            <PersonIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <AccessibilityIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis text-xl">Worker</span>
           </div>
           <p className="text-xs">Workers will perform the action specified in the user prompt.</p>

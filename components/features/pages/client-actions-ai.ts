@@ -13,7 +13,7 @@ const loadModelAction = async (
   services: I_ServiceApis | null,
   fetchSettings: (services: I_ServiceApis | null) => Promise<I_Text_Settings | undefined>,
 ) => {
-  // Eject first
+  // Eject first @TODO Do we rly need this?
   await services?.textInference?.unload?.()
   // Fetch settings
   const settings = await fetchSettings(services)
@@ -58,13 +58,17 @@ export const loadTextModel = async (
   fetchSettings: () => Promise<I_Text_Settings | undefined>,
 ): Promise<I_GenericAPIResponse<I_LoadedModelRes>> => {
   const action = async () => {
-    const res = await loadModelAction(services, fetchSettings)
-    if (res?.success) {
-      const modelRes = await getModel(services)
-      if (modelRes?.success) return modelRes
-      return Promise.reject(modelRes?.message)
+    try {
+      const res = await loadModelAction(services, fetchSettings)
+      if (res?.success) {
+        const modelRes = await getModel(services)
+        if (modelRes?.success) return modelRes
+        return Promise.reject(modelRes?.message)
+      }
+      return Promise.reject(res?.message)
+    } catch (err) {
+      return Promise.reject(err)
     }
-    return Promise.reject(res?.message)
   }
   return notifications().loadModel(action())
 }

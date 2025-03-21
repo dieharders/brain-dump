@@ -2,9 +2,7 @@
 
 import { Dispatch, SetStateAction } from 'react'
 import { I_PromptTemplates, I_Prompt_State as I_State } from '@/lib/homebrew'
-import { defaultRagTemplateState } from '@/components/features/forms/form-rag-template'
 import { PromptTemplateForm, defaultPromptState } from '@/components/features/forms/form-prompt-template'
-import { defaultState as defaultRagModes } from '@/components/features/forms/form-rag-strategy'
 
 interface I_Props {
   state: I_State
@@ -14,8 +12,6 @@ interface I_Props {
 
 export const defaultState: I_State = {
   promptTemplate: defaultPromptState,
-  ragTemplate: defaultRagTemplateState,
-  ragMode: defaultRagModes,
 }
 
 export const PromptTab = (props: I_Props) => {
@@ -33,9 +29,8 @@ export const PromptTab = (props: I_Props) => {
         setState={val => {
           setState(prev => {
             return {
-              promptTemplate: val,
-              ragTemplate: prev.ragTemplate,
-              ragMode: prev.ragMode,
+              ...prev,
+              promptTemplate: val
             }
           })
         }}
