@@ -60,7 +60,7 @@ export const ChatPromptMenu = ({
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-14 items-center justify-center">
           {isAiThinking ? (
-            <Button variant="outline" onClick={() => stop()} className="bg-background">
+            <Button variant="outline" onClick={stop} className="bg-background">
               <IconStop className="mr-2" />
               Stop generating
             </Button>
