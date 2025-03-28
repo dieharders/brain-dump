@@ -19,7 +19,7 @@ interface I_Props {
 }
 
 // Prompt
-const defaultPromptText = '{query_str}'
+const defaultPromptText = '{{user_prompt}}'
 const CUSTOM_NAME = 'Custom'
 
 export const defaultPromptState = {

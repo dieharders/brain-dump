@@ -3,60 +3,60 @@
     {
       "id": "basic_default",
       "name": "Default",
-      "text": "{query_str}"
+      "text": "{{user_prompt}}"
     }
   ],
   "instruct": [
     {
       "id": "instruct_query",
       "name": "Instruct",
-      "text": "Do exactly as the following statement says:\n{query_str}"
+      "text": "Do exactly as the following statement says:\n{{user_prompt}}"
     },
     {
       "id": "instruct_evaluate",
       "name": "Evaluate",
-      "text": "{query_str}\nThink through your steps before providing your final response or answer."
+      "text": "{{user_prompt}}\nThink through your steps before providing your final response or answer."
     }
   ],
   "thought": [
     {
       "id": "thought_chain_response",
       "name": "Respond - Chain of Thought",
-      "text": "Think through step by step then give a response before replying to the following:\n{query_str}"
+      "text": "Think through step by step then give a response before replying to the following:\n{{user_prompt}}"
     },
     {
       "id": "thought_chain_query",
       "name": "Question/Answer - Chain of Thought",
-      "text": "Q: {query_str} A: Think step by step."
+      "text": "Q: {{user_prompt}} A: Think step by step."
     }
   ],
   "logic": [
     {
       "id": "logic_basic",
       "name": "Basic Logic",
-      "text": "{query_str}\nThink carefully and logically, explaining your answer."
+      "text": "{{user_prompt}}\nThink carefully and logically, explaining your answer."
     },
     {
       "id": "logic_moe_step",
       "name": "Mixture of Experts - Lockstep",
-      "text": "Imagine three different experts are answering this question.\nAll experts will write down 1 step of their thinking, then share it with the group. Then all experts will go on to the next step, etc. If any expert realises they're wrong at any point then they leave. The question is...\n{query_str}"
+      "text": "Imagine three different experts are answering this question.\nAll experts will write down 1 step of their thinking, then share it with the group. Then all experts will go on to the next step, etc. If any expert realises they're wrong at any point then they leave. The question is...\n{{user_prompt}}"
     },
     {
       "id": "logic_moe_collab",
       "name": "Mixture of Experts - Team",
-      "text": "Simulate three brilliant, logical experts collaboratively answering a question. Each one verbosely explains their thought process in real-time, considering the prior explanations of others and openly acknowledging mistakes. At each step, whenever possible, each expert refines and builds upon the thoughts of others, acknowledging their contributions. They continue until there is a definitive answer to the question. For clarity, your entire response should be in a markdown table. The question is...\n{query_str}"
+      "text": "Simulate three brilliant, logical experts collaboratively answering a question. Each one verbosely explains their thought process in real-time, considering the prior explanations of others and openly acknowledging mistakes. At each step, whenever possible, each expert refines and builds upon the thoughts of others, acknowledging their contributions. They continue until there is a definitive answer to the question. For clarity, your entire response should be in a markdown table. The question is...\n{{user_prompt}}"
     },
     {
       "id": "logic_moe_rank",
       "name": "Mixture of Experts - Ranked",
-      "text": "Identify and behave as three different experts that are appropriate to answering this question.\nAll experts will write down the step and their thinking about the step, then share it with the group.\nThen, all experts will go on to the next step, etc.\nAt each step all experts will score their peers response between 1 and 5, 1 meaning it is highly unlikely, and 5 meaning it is highly likely.\nIf any expert is judged to be wrong at any point then they leave.\nAfter all experts have provided their analysis, you then analyze all 3 analyses and provide either the consensus solution or your best guess solution.\nThe question is...\n{query_str}"
+      "text": "Identify and behave as three different experts that are appropriate to answering this question.\nAll experts will write down the step and their thinking about the step, then share it with the group.\nThen, all experts will go on to the next step, etc.\nAt each step all experts will score their peers response between 1 and 5, 1 meaning it is highly unlikely, and 5 meaning it is highly likely.\nIf any expert is judged to be wrong at any point then they leave.\nAfter all experts have provided their analysis, you then analyze all 3 analyses and provide either the consensus solution or your best guess solution.\nThe question is...\n{{user_prompt}}"
     }
   ],
   "qa": [
     {
       "id": "qa_basic",
       "name": "Basic Question & Answer",
-      "text": "{query_str}\nPlease answer in the following format:\nQ: <<QUESTION>>\n\nA: <<ANSWER>>"
+      "text": "{{user_prompt}}\nPlease answer in the following format:\nQ: <<QUESTION>>\n\nA: <<ANSWER>>"
     }
   ]
 }

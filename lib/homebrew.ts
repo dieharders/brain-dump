@@ -169,6 +169,7 @@ export interface I_GenericAPIRequestParams<Payload> {
   queryParams?: Payload
   formData?: FormData
   body?: Payload
+  signal?: AbortSignal
 }
 
 // Pass in the type of response.data we expect
@@ -392,7 +393,10 @@ interface I_BaseServiceApis {
   [key: string]: T_Endpoint
 }
 
-type T_TextInferenceAPIRequest = (props: { body: I_InferenceGenerateOptions }) =>
+type T_TextInferenceAPIRequest = (props: {
+  body: I_InferenceGenerateOptions
+  signal: AbortSignal
+}) =>
   | (Response &
       I_NonStreamPlayground &
       I_NonStreamChatbotResponse &
@@ -423,6 +427,7 @@ export interface I_ServiceApis extends I_BaseServiceApis {
    */
   textInference: {
     generate: T_TextInferenceAPIRequest
+    stop: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     load: T_GenericAPIRequest<
       I_LoadTextModelRequestPayload,
       I_GenericAPIResponse<undefined>
@@ -584,6 +589,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
           const method = endpoint.method
           const headers = { ...(method === 'POST' && !args?.formData && contentType) }
           const body = args?.formData ? args.formData : JSON.stringify(args?.body)
+          const signal = args?.signal
           const queryParams = args?.queryParams
             ? new URLSearchParams(args?.queryParams).toString()
             : null
@@ -599,6 +605,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             redirect: 'follow',
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
             body,
+            ...(signal && { signal }),
           })
 
           // Check no response
