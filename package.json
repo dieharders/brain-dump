@@ -1,6 +1,6 @@
 {
-  "name": "obrew-studio",
-  "version": "0.7.3",
+  "name": "obrew-studio-webui",
+  "version": "0.7.4",
   "author": "OpenBrewAi",
   "license": "MIT",
   "private": false,
