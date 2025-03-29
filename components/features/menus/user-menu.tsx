@@ -63,7 +63,7 @@ export function UserMenu() {
             {/* Docs link */}
             <DropdownMenuItem asChild>
               <a
-                href="https://github.com/dieharders/brain-dump"
+                href="https://github.com/dieharders/obrew-studio-server"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex w-full items-center justify-between text-xs"
