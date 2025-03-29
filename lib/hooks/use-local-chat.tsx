@@ -58,9 +58,12 @@ export const useLocalInference = (props: IProps) => {
       // Server sends data back
       const parsedResult = result ? JSON.parse(result) : null
       const data = parsedResult?.data
+      const eventName = parsedResult?.event
       const text = data?.text
       if (text)
         setResponseText(prevText => {
+          // Overwrite prev response if final content is received
+          if (eventName === 'GENERATING_CONTENT') return text
           return (prevText += text)
         })
       return
@@ -76,6 +79,8 @@ export const useLocalInference = (props: IProps) => {
       case 'FEEDING_PROMPT':
         break
       case 'GENERATING_TOKENS':
+        break
+      case 'GENERATING_CONTENT':
         break
       default:
         break
