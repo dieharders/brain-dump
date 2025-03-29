@@ -11,7 +11,7 @@ const processSseStream = async (
     onComment,
   }: {
     onData: (str: string) => Promise<void>
-    onFinish: (isDone: boolean) => Promise<void>
+    onFinish: () => Promise<void>
     onEvent?: (str: string) => Promise<void>
     onComment?: (str: string) => Promise<void>
   },
@@ -58,10 +58,11 @@ const processSseStream = async (
     readingBuffer = await reader.read()
   }
 
-  await onFinish(readingBuffer.done)
   if (!readingBuffer.done) {
     await reader.cancel()
   }
+
+  await onFinish()
 }
 
 export const useChatHelpers = () => {

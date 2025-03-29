@@ -31,6 +31,7 @@ export const useLocalInference = (props: IProps) => {
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
   const abortRef = useRef(false)
+  const controller = useRef<AbortController>()
   const currThread = threads.find(v => v.id === currentThreadId.current)
   const currChatIndex = currentMessages?.findIndex(msg => msg?.id === responseId) || -1
 
@@ -38,8 +39,9 @@ export const useLocalInference = (props: IProps) => {
   const getCompletion = useCallback(async (
     options: I_InferenceGenerateOptions,
   ) => {
+    controller.current = new AbortController()
     try {
-      return services?.textInference.generate({ body: options })
+      return services?.textInference.generate({ body: options, signal: controller.current.signal })
     } catch (error) {
       toast.error(`Prompt completion error: ${error}`)
       return
@@ -53,12 +55,15 @@ export const useLocalInference = (props: IProps) => {
 
   const onStreamResult = useCallback(async (result: string) => {
     try {
-      // How server sends data back
+      // Server sends data back
       const parsedResult = result ? JSON.parse(result) : null
       const data = parsedResult?.data
+      const eventName = parsedResult?.event
       const text = data?.text
       if (text)
         setResponseText(prevText => {
+          // Overwrite prev response if final content is received
+          if (eventName === 'GENERATING_CONTENT') return text
           return (prevText += text)
         })
       return
@@ -74,6 +79,8 @@ export const useLocalInference = (props: IProps) => {
       case 'FEEDING_PROMPT':
         break
       case 'GENERATING_TOKENS':
+        break
+      case 'GENERATING_CONTENT':
         break
       default:
         break
@@ -121,7 +128,10 @@ export const useLocalInference = (props: IProps) => {
     // Reset state
     setIsLoading(false)
     abortRef.current = true
-  }, [saveThreads, setIsLoading, setThreads])
+    services?.textInference.stop()
+    // Not currently used, but could be used to disconnect from initial request.
+    // controller.current && controller.current.abort()
+  }, [saveThreads, services?.textInference, setIsLoading, setThreads])
 
   const append = useCallback(async (prompt: I_Message) => {
     if (!prompt) return
@@ -200,21 +210,20 @@ export const useLocalInference = (props: IProps) => {
             onData: (res: string) => onStreamResult(res),
             onFinish: async () => {
               console.log('[Chat] stream finished!')
+              return
             },
-            onEvent: async str => {
-              onStreamEvent(str)
-            },
+            onEvent: async str => onStreamEvent(str),
             onComment: async str => {
               console.log('[Chat] onComment', str)
+              return
             },
           },
           abortRef,
         )
       }
 
-
       // Check success if not streamed
-      if (!settings?.response.stream) onNonStreamResult(response)
+      else onNonStreamResult(response)
 
       // Save final results
       setCurrentMessages(prevMsgs => {

@@ -80,7 +80,7 @@ export const AddToolTab = (props: I_Props) => {
               </>
               :
               <>
-                <DialogTitle className={dialogTitleStyle}>Define a function for your tool<DialogDescription className="mt-2 font-normal">Add a custom function to the <button className="text-primary underline">/tools/defs</button> directory and/or select one.</DialogDescription></DialogTitle>
+                <DialogTitle className={dialogTitleStyle}>Define a function for your tool<DialogDescription className="mt-2 font-normal">Add a custom function to the <button className="text-primary underline">/tools/defs</button> directory or select one.</DialogDescription></DialogTitle>
                 <div className="mb-4 w-full">
                   <Select
                     id="tool_function_select"
