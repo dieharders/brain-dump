@@ -1,6 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import auth from '@/lib/auth/auth'
+import toast from 'react-hot-toast'
 import { Session } from 'next-auth/types'
 import { I_Session } from '@/lib/hooks/use-local-chat'
 import { redirect, usePathname, useSearchParams } from 'next/navigation'
@@ -10,7 +12,6 @@ import { useGlobalContext } from '@/contexts'
 import { ChatPageLocal } from '@/components/features/chat/chat-page-local'
 import { EmptyModelScreen } from '@/components/features/chat/chat-empty-model-screen'
 import { loadTextModel } from '@/components/features/pages/client-actions-ai'
-import auth from '@/lib/auth/auth'
 
 const PlaygroundPage = ({ isLoading, session, action, settings, fetchSettings }: any) => {
   const { currentModel, services } = useGlobalContext()
@@ -101,15 +102,20 @@ export const ChatProvider = (props: I_Props) => {
   }, [botName, services?.storage])
 
   const botAction = useCallback(async () => {
-    if (!services || isLoading || hasLoaded || settings) return
-    setIsLoading(true)
-    const settingsResponse = await fetchChatBotSettings()
-    settingsResponse && setSettings(settingsResponse)
-    const res = await loadTextModel(services, async () => settingsResponse)
-    res?.success && setCurrentModel(res?.data)
-    setHasLoaded(true)
-    setIsLoading(false)
-    return
+    try {
+      if (!services || isLoading || hasLoaded || settings) return
+      setIsLoading(true)
+      const settingsResponse = await fetchChatBotSettings()
+      settingsResponse && setSettings(settingsResponse)
+      const res = await loadTextModel(services, async () => settingsResponse)
+      res?.success && setCurrentModel(res?.data)
+      setHasLoaded(true)
+      setIsLoading(false)
+      return
+    } catch (err) {
+      console.error('[Chat]: Failed loading bot. ', err)
+      toast.error(`Failed loading bot. ${err}`)
+    }
   }, [fetchChatBotSettings, hasLoaded, isLoading, services, setCurrentModel, settings])
 
   useEffect(() => {

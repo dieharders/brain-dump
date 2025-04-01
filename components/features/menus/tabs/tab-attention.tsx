@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
-import { ClipboardIcon, CursorArrowIcon, AccessibilityIcon, ChatBubbleIcon, FileTextIcon } from '@radix-ui/react-icons'
+import { ListBulletIcon, CursorArrowIcon, AccessibilityIcon, ChatBubbleIcon, FileTextIcon } from '@radix-ui/react-icons'
 import {
   DEFAULT_CONVERSATION_MODE,
   DEFAULT_ACTIVE_ROLE,
@@ -53,7 +53,7 @@ export const AttentionTab = (props: I_Props) => {
         {/* Instruction - Conversation ends with each query. */}
         <div id="instruct" className={toggleGroupClass}>
           <div className="flex flex-row gap-2">
-            <ClipboardIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <ListBulletIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis text-xl">Instruct</span>
           </div>
           <p className="text-xs">Each question or instruction to your Ai will end the session.</p>
@@ -120,21 +120,21 @@ export const AttentionTab = (props: I_Props) => {
           setState(prev => ({ ...prev, active_role: val as T_ActiveRoles }))
         }}
       >
-        {/* Worker */}
+        {/* Worker - Chooses and returns tool name only, then prompts again to return struct output based only on that tool */}
         <div id="worker" className={toggleGroupClass}>
           <div className="flex flex-row gap-2">
             <AccessibilityIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis text-xl">Worker</span>
           </div>
-          <p className="text-xs">Workers will perform the action specified in the user prompt.</p>
+          <p className="text-xs">First select a tool then perform the action specified by the prompt.</p>
         </div>
-        {/* Agent */}
+        {/* Agent - Given all tools, chooses appropriate tool (or memory, etc) and returns struct ouput based on chosen tool */}
         <div id="agent" className={toggleGroupClass}>
           <div className="flex flex-row gap-2">
             <CursorArrowIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis text-xl">Agent</span>
           </div>
-          <p className="text-xs">Agents can decide what actions to take and what tools to use.</p>
+          <p className="text-xs">Decide what actions to take and tools to use at once.</p>
         </div>
       </ToggleGroup>
     </div>
