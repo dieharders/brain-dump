@@ -93,7 +93,7 @@ export const AddToolTab = (props: I_Props) => {
                       setSelectedFunction(e)
                       // Fetch the selected function's schema to display its' parameters
                       const action = async () => {
-                        const payload = { filename: e }
+                        const payload = { filename: e, tool_name: state.name }
                         const res = await services?.storage.getToolSchema({ queryParams: payload })
                         if (res?.success && res?.data) setState(prev => ({ ...prev, ...res?.data, path: e }))
                       }
