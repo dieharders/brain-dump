@@ -114,6 +114,7 @@ export type T_ConversationMode = 'instruct' | 'chat' | 'collab'
 export type T_ToolResponseMode = 'answer' | 'result'
 // export type T_ActiveRoles = 'agent' | 'worker'
 export type T_ToolUseMode = typeof UNIVERSAL_TOOL_USE | typeof NATIVE_TOOL_USE
+export type T_ToolSchemaType = 'json' | 'typescript'
 
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
@@ -276,8 +277,10 @@ export type T_SystemPrompts = {
 
 export interface I_LoadTextModelRequestPayload {
   responseMode?: T_ConversationMode
-  toolResponseMode?: T_ToolResponseMode
   toolUseMode?: T_ToolUseMode
+  toolSchemaType?: T_ToolSchemaType
+  messages?: Message[]
+  raw_input?: boolean
   modelPath: string
   modelId: string
   init: I_LLM_Init_Options
@@ -639,7 +642,7 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
             // Success
             return result
           }
-          // Return raw response from llama-cpp-python server text inference
+          // Return raw response from llama-cpp-python server text inference @TODO Is needed?
           return res
         } catch (err) {
           console.log(`[homebrew] Endpoint "${endpoint.name}":`, err)
