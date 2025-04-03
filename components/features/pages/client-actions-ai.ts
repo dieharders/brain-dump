@@ -22,7 +22,8 @@ const loadModelAction = async (
   const filename = settings?.model?.filename || ''
   const responseMode = settings?.attention?.response_mode
   const toolResponseMode = settings?.attention?.tool_response_mode
-  const activeRole = settings?.attention?.active_role
+  // const toolSchemaType = settings?.tools?.tool_schema_type @TODO Add
+  const toolUseMode = settings?.attention?.tool_use_mode
   const initOptions = settings?.performance
   const callOptions = {
     model: 'local' as ModelID, // @TODO should load from settings
@@ -39,7 +40,8 @@ const loadModelAction = async (
       modelId: selectedModelId || '',
       responseMode,
       toolResponseMode,
-      activeRole,
+      toolUseMode,
+      // toolSchemaType, @TODO Add
       init: initOptions || {},
       call: callOptions,
     },

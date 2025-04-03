@@ -67,7 +67,7 @@ export type T_APIConfigOptions = {
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   responseMode?: T_ConversationMode
   toolResponseMode?: T_ToolResponseMode
-  toolUseMode: T_ToolUseMode
+  toolUseMode?: T_ToolUseMode
   messageFormat?: string
   collectionNames?: string[]
   tools?: string[]

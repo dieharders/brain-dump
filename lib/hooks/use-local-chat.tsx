@@ -186,7 +186,7 @@ export const useLocalInference = (props: IProps) => {
       const options: I_InferenceGenerateOptions = {
         responseMode: mode,
         toolResponseMode: settings?.attention?.tool_response_mode,
-        activeRole: settings?.attention?.active_role,
+        toolUseMode: settings?.attention?.tool_use_mode,
         tools: settings?.tools?.assigned,
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,
