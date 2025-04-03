@@ -8,15 +8,15 @@ import {
 } from '@/components/ui/dialog'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { IconConversationType } from '@/components/ui/icons'
-import { ListBulletIcon, CursorArrowIcon, AccessibilityIcon, ChatBubbleIcon, FileTextIcon } from '@radix-ui/react-icons'
+import { ListBulletIcon, RocketIcon, AccessibilityIcon, ChatBubbleIcon, FileTextIcon } from '@radix-ui/react-icons'
 import {
   DEFAULT_CONVERSATION_MODE,
-  DEFAULT_ACTIVE_ROLE,
   I_Attention_State as I_State,
   T_ConversationMode,
   T_ToolResponseMode,
-  T_ActiveRoles,
-  DEFAULT_TOOL_RESPONSE_MODE
+  DEFAULT_TOOL_RESPONSE_MODE,
+  T_ToolUseMode,
+  DEFAULT_TOOL_USE_MODE
 } from '@/lib/homebrew'
 import { cn } from '@/lib/utils'
 
@@ -25,7 +25,7 @@ interface I_Props {
   setState: Dispatch<SetStateAction<I_State>>
 }
 
-export const defaultState: I_State = { response_mode: DEFAULT_CONVERSATION_MODE, tool_response_mode: DEFAULT_TOOL_RESPONSE_MODE, active_role: DEFAULT_ACTIVE_ROLE }
+export const defaultState: I_State = { response_mode: DEFAULT_CONVERSATION_MODE, tool_response_mode: DEFAULT_TOOL_RESPONSE_MODE, tool_use_mode: DEFAULT_TOOL_USE_MODE }
 
 export const AttentionTab = (props: I_Props) => {
   const { state, setState } = props
@@ -70,7 +70,7 @@ export const AttentionTab = (props: I_Props) => {
 
       {/* Tool Response Mode */}
       <DialogHeader className="my-8">
-        <DialogTitle>Tool Response Mode</DialogTitle>
+        <DialogTitle>Tool Response</DialogTitle>
         <DialogDescription className="text-md mb-4">
           Choose how the Ai responds with results from a tool.
         </DialogDescription>
@@ -103,38 +103,38 @@ export const AttentionTab = (props: I_Props) => {
         </div>
       </ToggleGroup>
 
-      {/* Active Role type */}
+      {/* Tool Use type */}
       <DialogHeader className="my-8">
-        <DialogTitle>Active Role</DialogTitle>
+        <DialogTitle>Tool Use</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          Choose the strategy for how Ai actions are carried out.
+          Choose the method for calling tools and actions.
         </DialogDescription>
       </DialogHeader>
 
-      {/* Active Role toggle */}
+      {/* Tool Use toggle */}
       <ToggleGroup
         className="w-full items-stretch"
-        label="Active Role"
-        value={state?.active_role}
+        label="Tool Use"
+        value={state?.tool_use_mode}
         onChange={val => {
-          setState(prev => ({ ...prev, active_role: val as T_ActiveRoles }))
+          setState(prev => ({ ...prev, tool_use_mode: val as T_ToolUseMode }))
         }}
       >
-        {/* Worker - Chooses and returns tool name only, then prompts again to return struct output based only on that tool */}
-        <div id="worker" className={toggleGroupClass}>
+        {/* Native - Choose tool name and return tool arguments in one call. Not supported by all models. */}
+        <div id="native" className={toggleGroupClass}>
+          <div className="flex flex-row gap-2">
+            <RocketIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
+            <span className="flex-1 self-center text-ellipsis text-xl">Native</span>
+          </div>
+          <p className="text-xs">{"Harness the model's trained tool use ability (faster, less support)."}</p>
+        </div>
+        {/* Universal - Given all tools, choose appropriate tool name (or memory, etc), then ouput arguments (2-step). Works for any model. */}
+        <div id="universal" className={toggleGroupClass}>
           <div className="flex flex-row gap-2">
             <AccessibilityIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis text-xl">Worker</span>
+            <span className="flex-1 self-center text-ellipsis text-xl">Universal</span>
           </div>
-          <p className="text-xs">First select a tool then perform the action specified by the prompt.</p>
-        </div>
-        {/* Agent - Given all tools, chooses appropriate tool (or memory, etc) and returns struct ouput based on chosen tool */}
-        <div id="agent" className={toggleGroupClass}>
-          <div className="flex flex-row gap-2">
-            <CursorArrowIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
-            <span className="flex-1 self-center text-ellipsis text-xl">Agent</span>
-          </div>
-          <p className="text-xs">Decide what actions to take and tools to use at once.</p>
+          <p className="text-xs">Multi-step approach. Identify then use tool and output result.</p>
         </div>
       </ToggleGroup>
     </div>

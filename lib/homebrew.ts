@@ -67,7 +67,7 @@ export type T_APIConfigOptions = {
 export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   responseMode?: T_ConversationMode
   toolResponseMode?: T_ToolResponseMode
-  activeRole?: T_ActiveRoles
+  toolUseMode: T_ToolUseMode
   messageFormat?: string
   collectionNames?: string[]
   tools?: string[]
@@ -106,10 +106,14 @@ export const BASE_RETRIEVAL_METHOD = 'base'
 export const AUGMENTED_RETRIEVAL_METHOD = 'augmented'
 export const AGENT_RETRIEVAL_METHOD = 'agent'
 export const DEFAULT_RETRIEVAL_METHOD = BASE_RETRIEVAL_METHOD
-export const DEFAULT_ACTIVE_ROLE = 'agent'
+// export const DEFAULT_ACTIVE_ROLE = 'agent'
+export const NATIVE_TOOL_USE = 'native'
+export const UNIVERSAL_TOOL_USE = 'universal'
+export const DEFAULT_TOOL_USE_MODE = UNIVERSAL_TOOL_USE
 export type T_ConversationMode = 'instruct' | 'chat' | 'collab'
 export type T_ToolResponseMode = 'answer' | 'result'
-export type T_ActiveRoles = 'agent' | 'worker'
+// export type T_ActiveRoles = 'agent' | 'worker'
+export type T_ToolUseMode = typeof UNIVERSAL_TOOL_USE | typeof NATIVE_TOOL_USE
 
 export type T_GenericDataRes = any
 export type T_GenericReqPayload = { [key: string]: any }
@@ -273,7 +277,7 @@ export type T_SystemPrompts = {
 export interface I_LoadTextModelRequestPayload {
   responseMode?: T_ConversationMode
   toolResponseMode?: T_ToolResponseMode
-  activeRole?: T_ActiveRoles
+  toolUseMode?: T_ToolUseMode
   modelPath: string
   modelId: string
   init: I_LLM_Init_Options
@@ -328,7 +332,7 @@ export interface I_System_State {
 }
 
 export interface I_Attention_State {
-  active_role: T_ActiveRoles
+  tool_use_mode: T_ToolUseMode
   tool_response_mode: T_ToolResponseMode
   response_mode: T_ConversationMode
 }
