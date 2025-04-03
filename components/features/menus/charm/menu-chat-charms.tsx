@@ -9,7 +9,7 @@ import {
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/menus/charm/menu-charm-model'
-import { DEFAULT_ACTIVE_ROLE, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { DEFAULT_TOOL_USE_MODE, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
@@ -131,7 +131,7 @@ export const CharmMenu = (props: I_Props) => {
           promptTemplates={promptTemplates}
           systemPrompts={systemPrompts}
           // This was set from a sep page and thus has not controls on this one
-          activeRole={playgroundSettings.attention.active_role || DEFAULT_ACTIVE_ROLE}
+          activeRole={playgroundSettings.attention.tool_use_mode || DEFAULT_TOOL_USE_MODE}
         />
       }
 
