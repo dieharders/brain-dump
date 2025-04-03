@@ -72,6 +72,16 @@ export function UserMenu() {
                 <IconExternalLink className="ml-auto h-3 w-3" />
               </a>
             </DropdownMenuItem>
+            {/* Home link */}
+            <DropdownMenuItem asChild>
+              <a
+                href="/"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-between text-xs"
+              >
+                Connection Page
+              </a>
+            </DropdownMenuItem>
             {/* Settings link */}
             <DropdownMenuItem asChild>
               <a

@@ -186,7 +186,7 @@ export const ConnectPage = () => {
   return (
     <div className="flex flex-row items-stretch justify-items-stretch self-stretch justify-self-stretch">
       <Bg />
-      <div className="light:bg-primary absolute left-0 top-0 flex h-full w-full flex-col items-center justify-around justify-items-stretch overflow-x-hidden p-12">
+      <div className="light:bg-primary absolute left-0 top-0 flex h-full w-full flex-col items-center justify-around justify-items-stretch overflow-x-hidden p-12 dark:bg-sky-400/10">
         {/* Inputs */}
         <Menu />
       </div>

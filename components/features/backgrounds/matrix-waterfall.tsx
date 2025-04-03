@@ -8,6 +8,10 @@ export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { pa
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const ctx = useRef<CanvasRenderingContext2D | null>(null)
   const [hasMounted, setHasMounted] = useState(false)
+  // const color_green = '#0f0'
+  const color_blue = '#00bcff'
+  const color_semi_black = '#0001'
+  const color_black = '#000'
 
   // Set the width and height of the canvas
   let w = 0, h = 0
@@ -17,7 +21,7 @@ export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { pa
   }
 
   // Draw a black rectangle of width and height same as that of the canvas
-  if (ctx.current?.fillStyle) ctx.current.fillStyle = '#000'
+  if (ctx.current?.fillStyle) ctx.current.fillStyle = color_black
   if (ctx.current?.fillRect) ctx.current.fillRect(0, 0, w, h)
   // if (ctx.current?.globalCompositeOperation) ctx.current.globalCompositeOperation = 'destination-over'
 
@@ -27,11 +31,11 @@ export const MatrixWaterfall = ({ padding = 20, fontSize = 15, className }: { pa
   // Draw matrix effect
   const matrix = () => {
     // Draw a semitransparent black rectangle on top of previous drawing
-    if (ctx.current?.fillStyle) ctx.current.fillStyle = '#0001'
+    if (ctx.current?.fillStyle) ctx.current.fillStyle = color_semi_black
     if (ctx.current?.fillRect) ctx.current.fillRect(0, 0, w, h)
 
     // Set color to green and font to 15pt monospace in the drawing context
-    if (ctx.current?.fillStyle) ctx.current.fillStyle = '#0f0'
+    if (ctx.current?.fillStyle) ctx.current.fillStyle = color_blue
     if (ctx.current?.font) ctx.current.font = `${fontSize}pt monospace`
 
     // for each column put a random character at the end
