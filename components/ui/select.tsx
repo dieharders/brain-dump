@@ -48,7 +48,7 @@ export const Select = ({ id, name, value, placeholder = '', className, onChange,
         value={value || undefined}
         onValueChange={onChange}
       >
-        <SelectTriggerCustom className={cn("text-md hidden h-fit w-full truncate bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex", className)}>
+        <SelectTriggerCustom className={cn('text-md hidden h-fit w-full truncate bg-background px-3 py-2 hover:bg-accent [@media(hover:hover)]:flex', className)}>
           <SelectValueCustom placeholder={placeholder}></SelectValueCustom>
         </SelectTriggerCustom>
         <SelectGroupCustom className="hidden [@media(hover:hover)]:flex">
