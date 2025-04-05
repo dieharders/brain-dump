@@ -20,18 +20,18 @@ const Gradient = ({ size = 1 }: { size?: number }) => {
 
 export const RainbowBorderCone = ({ disabled = true, children, className }: { disabled?: boolean, children: JSX.Element, className?: string }) => {
   return disabled ? children : (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
+      <Gradient size={1} />
       <Gradient size={2} />
       <Gradient size={4} />
-      <Gradient size={8} />
-      <Gradient size={18} />
+      <Gradient size={14} />
       {children}
     </div>
   )
 }
 
 export const RainbowBorderSlide = ({ disabled = true, children, className }: { disabled?: boolean, children: JSX.Element, className?: string }) => {
-  const containerClass = cn("absolute left-0 top-0 h-full w-full")
+  const containerClass = cn('absolute left-0 top-0 h-full w-full')
   const containerStyle = {
     'background': 'linear-gradient(70deg, #14ffe9, #ffeb3b, #ff00e0)',
   }
@@ -41,7 +41,7 @@ export const RainbowBorderSlide = ({ disabled = true, children, className }: { d
   }
 
   return disabled ? children : (
-    <div className={cn("relative rounded p-0", className)} style={containerStyle}>
+    <div className={cn('relative rounded p-0', className)} style={containerStyle}>
       <span className={containerClass} style={{ ...containerStyle, ...glowStyle, 'filter': 'blur(2px)' }}></span>
       <span className={containerClass} style={{ ...containerStyle, ...glowStyle, 'filter': 'blur(4px)' }}></span>
       <span className={containerClass} style={{ ...containerStyle, ...glowStyle, 'filter': 'blur(8px)' }}></span>
