@@ -388,6 +388,89 @@ function ObrewAiIcon({
   )
 }
 
+function SpinnerBlockWaves({
+  theme,
+  className,
+  ...props
+}: React.ComponentProps<'svg'> & { inverted?: boolean, theme?: string }) {
+  const color = theme === 'light' ? 'text-black' : 'text-white'
+
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(className, color)}
+      {...props}
+    >
+      <g fill="currentColor" stroke="none">
+        <style>
+          {`.spinner_zWVm{animation:spinner_5QiW 1.2s linear infinite,spinner_PnZo 1.2s linear infinite}
+      .spinner_gfyD{animation:spinner_5QiW 1.2s linear infinite,spinner_4j7o 1.2s linear infinite;animation-delay:.1s}
+      .spinner_T5JJ{animation:spinner_5QiW 1.2s linear infinite,spinner_fLK4 1.2s linear infinite;animation-delay:.1s}
+      .spinner_E3Wz{animation:spinner_5QiW 1.2s linear infinite,spinner_tDji 1.2s linear infinite;animation-delay:.2s}
+      .spinner_g2vs{animation:spinner_5QiW 1.2s linear infinite,spinner_CMiT 1.2s linear infinite;animation-delay:.2s}
+      .spinner_ctYB{animation:spinner_5QiW 1.2s linear infinite,spinner_cHKR 1.2s linear infinite;animation-delay:.2s}
+      .spinner_BDNj{animation:spinner_5QiW 1.2s linear infinite,spinner_Re6e 1.2s linear infinite;animation-delay:.3s}
+      .spinner_rCw3{animation:spinner_5QiW 1.2s linear infinite,spinner_EJmJ 1.2s linear infinite;animation-delay:.3s}
+      .spinner_Rszm{animation:spinner_5QiW 1.2s linear infinite,spinner_YJOP 1.2s linear infinite;animation-delay:.4s}
+      @keyframes spinner_5QiW{0%,50%{width:7.33px;height:7.33px}25%{width:1.33px;height:1.33px}}
+      @keyframes spinner_PnZo{0%,50%{x:1px;y:1px}25%{x:4px;y:4px}}
+      @keyframes spinner_4j7o{0%,50%{x:8.33px;y:1px}25%{x:11.33px;y:4px}}
+      @keyframes spinner_fLK4{0%,50%{x:1px;y:8.33px}25%{x:4px;y:11.33px}}
+      @keyframes spinner_tDji{0%,50%{x:15.66px;y:1px}25%{x:18.66px;y:4px}}
+      @keyframes spinner_CMiT{0%,50%{x:8.33px;y:8.33px}25%{x:11.33px;y:11.33px}}
+      @keyframes spinner_cHKR{0%,50%{x:1px;y:15.66px}25%{x:4px;y:18.66px}}
+      @keyframes spinner_Re6e{0%,50%{x:15.66px;y:8.33px}25%{x:18.66px;y:11.33px}}
+      @keyframes spinner_EJmJ{0%,50%{x:8.33px;y:15.66px}25%{x:11.33px;y:18.66px}}
+      @keyframes spinner_YJOP{0%,50%{x:15.66px;y:15.66px}25%{x:18.66px;y:18.66px}}`}
+        </style>
+        <rect className="spinner_zWVm" x="1" y="1" width="7.33" height="7.33" />
+        <rect className="spinner_gfyD" x="8.33" y="1" width="7.33" height="7.33" />
+        <rect className="spinner_T5JJ" x="1" y="8.33" width="7.33" height="7.33" />
+        <rect className="spinner_E3Wz" x="15.66" y="1" width="7.33" height="7.33" />
+        <rect className="spinner_g2vs" x="8.33" y="8.33" width="7.33" height="7.33" />
+        <rect className="spinner_ctYB" x="1" y="15.66" width="7.33" height="7.33" />
+        <rect className="spinner_BDNj" x="15.66" y="8.33" width="7.33" height="7.33" />
+        <rect className="spinner_rCw3" x="8.33" y="15.66" width="7.33" height="7.33" />
+        <rect className="spinner_Rszm" x="15.66" y="15.66" width="7.33" height="7.33" />
+      </g>
+    </svg>
+  )
+}
+
+function SpinnerBlocks({
+  theme,
+  className,
+  ...props
+}: React.ComponentProps<'svg'> & { inverted?: boolean, theme?: string }) {
+  const color = theme === 'light' ? 'text-black' : 'text-white'
+
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(className, color)}
+      {...props}
+    >
+      <g fill="currentColor" stroke="none">
+        <style>
+          {`.spinner_9y7u{animation:spinner_fUkk 2.4s linear infinite;animation-delay:-2.4s}
+      .spinner_DF2s{animation-delay:-1.6s}
+      .spinner_q27e{animation-delay:-.8s}
+      @keyframes spinner_fUkk{8.33%{x:13px;y:1px}25%{x:13px;y:1px}33.3%{x:13px;y:13px}50%{x:13px;y:13px}58.33%{x:1px;y:13px}75%{x:1px;y:13px}83.33%{x:1px;y:1px}}`}
+        </style>
+        <rect className="spinner_9y7u" x="1" y="1" rx="1" width="10" height="10" />
+        <rect className="spinner_9y7u spinner_DF2s" x="1" y="1" rx="1" width="10" height="10" />
+        <rect className="spinner_9y7u spinner_q27e" x="1" y="1" rx="1" width="10" height="10" />
+      </g>
+    </svg>
+  )
+}
+
 function IconResearch({
   className,
   ...props
@@ -1106,4 +1189,6 @@ export {
   IconGPU,
   IconCPU,
   IconResearch,
+  SpinnerBlocks,
+  SpinnerBlockWaves,
 }
