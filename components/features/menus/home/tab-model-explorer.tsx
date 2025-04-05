@@ -53,8 +53,8 @@ export const ModelExplorerMenu = ({
     <div className="flex flex-col items-center">
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Download Ai Models</div></Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Browse and install thousands of models to power your Agents. Each model can be configured to meet your specific hardware needs. A recommended list of models is curated by the team.
+        <Description className="mx-auto my-2 w-full max-w-[50rem] text-center text-lg">
+          Browse and install thousands of models to power your Agents. A recommended list of models is curated by the team.
         </Description>
       </Header>
 
