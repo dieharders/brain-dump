@@ -3,9 +3,8 @@ import remarkMath from 'remark-math'
 import { cn } from '@/lib/utils'
 import { CodeBlock } from '@/components/ui/codeblock'
 import { MemoizedReactMarkdown } from '@/components/ui/markdown'
-import { IconUser, ObrewAiIcon } from '@/components/ui/icons'
+import { IconUser, SpinnerBlocks, ObrewAiIcon } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/features/chat/chat-message-actions'
-import { InferenceLoadingSpinner } from '@/components/features/effects/matrice-loader'
 import { I_Message } from '@/lib/homebrew'
 
 export interface ChatMessageProps {
@@ -78,7 +77,7 @@ export const ChatMessage = ({ isLoading, message, theme, ...props }: ChatMessage
             >
               {message.content}
             </MemoizedReactMarkdown> :
-            isLoading ? <InferenceLoadingSpinner theme={theme} /> : <div>...</div>
+            isLoading ? <SpinnerBlocks theme={theme} /> : <div>...</div>
         }
         <ChatMessageActions message={message} />
       </div>

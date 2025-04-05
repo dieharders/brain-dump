@@ -126,7 +126,7 @@ export const AttentionTab = (props: I_Props) => {
             <RocketIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis text-xl">Native</span>
           </div>
-          <p className="text-xs">{"Harness the model's trained tool use ability (faster, less support)."}</p>
+          <p className="text-xs">{"Harness the model's trained tool use ability (faster, less stable)."}</p>
         </div>
         {/* Universal - Given all tools, choose appropriate tool name (or memory, etc), then ouput arguments (2-step). Works for any model. */}
         <div id="universal" className={toggleGroupClass}>
@@ -134,7 +134,7 @@ export const AttentionTab = (props: I_Props) => {
             <AccessibilityIcon className="h-10 w-10 self-center rounded-sm bg-background p-2" />
             <span className="flex-1 self-center text-ellipsis text-xl">Universal</span>
           </div>
-          <p className="text-xs">Multi-step approach. Identify then use tool and output result.</p>
+          <p className="text-xs">Multi-step tool use. Supports all models (slower, recommended).</p>
         </div>
       </ToggleGroup>
     </div>

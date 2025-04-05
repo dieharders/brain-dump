@@ -9,7 +9,7 @@ import { EmptyScreen } from '@/components/features/chat/chat-empty-screen'
 import { ChatScrollAnchor } from '@/components/features/chat/chat-scroll-anchor'
 import { I_Session, useLocalInference } from '@/lib/hooks/use-local-chat'
 import { I_Text_Settings } from '@/lib/homebrew'
-import { LavaLamp } from "@/components/features/backgrounds/lava-lamp"
+import { LavaLamp } from '@/components/features/backgrounds/lava-lamp'
 import { useGlobalContext } from '@/contexts'
 import { ChatContextProvider } from '@/contexts/chat-context'
 

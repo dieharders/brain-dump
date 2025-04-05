@@ -37,14 +37,15 @@ export const ChatPromptMenu = ({
   theme,
 }: I_Props) => {
   const { isAiThinking, currentThreadId } = useGlobalContext()
-  const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
-  const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
+  const shadowColor = theme === 'light' ? 'shadow-[0px_0px_40px_8px_#e5e5e5]' : 'shadow-[0px_-10px_24px_16px_#171717]'
+  // const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
+  // const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)
   const [activeCharms, setActiveCharms] = useState<T_CharmId[]>([])
   const charmsList = useMemo((): T_CharmId[] => {
     switch (routeId) {
       case ROUTE_PLAYGROUND:
-        return ['microphone', 'speak', 'memory', 'prompt']
+        return ['microphone', 'speak', 'gpu-override', 'prompt']
       case ROUTE_CHATBOT:
         return ['microphone', 'speak']
       default:
@@ -53,9 +54,7 @@ export const ChatPromptMenu = ({
   }, [routeId])
 
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 bg-gradient-to-t ${colorFrom} from-85% ${colorTo} to-100%`}
-    >
+    <div className="fixed inset-x-0 bottom-0">
       {currentThreadId.current && <ButtonScrollToBottom />}
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-14 items-center justify-center">
@@ -78,7 +77,7 @@ export const ChatPromptMenu = ({
           )}
         </div>
         {/* Prompt Panel container */}
-        <div className="flex flex-col justify-between space-y-4 border-t bg-background px-0 py-2 shadow-lg sm:rounded-t-xl sm:border sm:px-4 md:py-4">
+        <div className={`flex flex-col justify-between border-t bg-background px-0 py-4 pb-2 ${shadowColor} sm:rounded-t-xl sm:border sm:px-4`}>
           <CharmMenu
             open={charmMenuOpen}
             charmsList={charmsList}

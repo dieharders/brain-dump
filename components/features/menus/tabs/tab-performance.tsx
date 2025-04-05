@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Select } from '@/components/ui/select'
 import { I_LLM_Init_Options, T_ModelConfig } from '@/lib/homebrew'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
   state: I_LLM_Init_Options
@@ -34,8 +35,10 @@ export const defaultState: I_LLM_Init_Options = {
 
 export const PerformanceTab = (props: I_Props) => {
   const { state, setState } = props
-  const inputContainerClass = 'grid w-full gap-2'
+  const inputContainerClass = cn('align-start flex w-full flex-col justify-between gap-2')
   const infoClass = 'flex w-full flex-row items-center gap-2 max-h-[1.5rem]'
+  const switchStyle = 'block self-start'
+  const selectStyle = 'self-end -mb-2'
   const precisionTypes = [{ name: 'f32', value: 'f32' }, { name: 'f16 (default)', value: 'f16' }, { name: 'bf16', value: 'bf16' }, { name: 'q8_0', value: 'q8_0' }, { name: 'q4_0', value: 'q4_0' }, { name: 'q4_1', value: 'q4_1' }, { name: 'iq4_nl', value: 'iq4_nl' }, { name: 'q5_0', value: 'q5_0' }, { name: 'q5_1', value: 'q5_1' }]
 
   // Handle input state changes
@@ -145,16 +148,29 @@ export const PerformanceTab = (props: I_Props) => {
               <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. Adjust based on your hardware. -1 all layers are offloaded.</span>
             </Info>
           </div>
-          <Input
-            name="gpu-layers"
-            type="number"
-            value={state?.n_gpu_layers}
-            min={-1}
-            step={1}
-            placeholder={defaultState?.n_gpu_layers?.toString()}
-            className="w-full"
-            onChange={event => handleFloatChange('n_gpu_layers', event.target.value)}
-          />
+          <div className="flex w-full flex-row items-end gap-4">
+            {/* Force GPU toggle */}
+            <div className="flex flex-col items-center justify-between gap-1">
+              {state?.n_gpu_layers === 0 ? 'CPU' : state?.n_gpu_layers === -1 ? 'GPU' : 'MIX'}
+              <Switch
+                className={cn(switchStyle, 'self-end')}
+                checked={state?.n_gpu_layers === -1}
+                onCheckedChange={val => {
+                  const newVal = val ? '-1' : '0'
+                  handleFloatChange('n_gpu_layers', newVal)
+                }}
+              />
+            </div>
+            <Input
+              name="gpu-layers"
+              type="number"
+              value={state?.n_gpu_layers}
+              min={-1}
+              step={1}
+              placeholder={defaultState?.n_gpu_layers?.toString()}
+              onChange={event => handleFloatChange('n_gpu_layers', event.target.value)}
+            />
+          </div>
         </div>
         {/* Offload K, Q, V to GPU (offload_kqv) */}
         <div className={inputContainerClass}>
@@ -165,7 +181,7 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Switch
-            className="block"
+            className={switchStyle}
             checked={state?.offload_kqv}
             onCheckedChange={val => handleStateChange('offload_kqv', val)}
           />
@@ -185,6 +201,7 @@ export const PerformanceTab = (props: I_Props) => {
             value={state?.cache_type_k || undefined}
             items={precisionTypes}
             onChange={val => handleStateChange('cache_type_k', val)}
+            className={selectStyle}
           />
         </div>
         {/* Memory Lock (use_mlock) */}
@@ -196,7 +213,7 @@ export const PerformanceTab = (props: I_Props) => {
             </Info>
           </div>
           <Switch
-            className="block"
+            className={switchStyle}
             checked={state?.use_mlock}
             onCheckedChange={val => handleStateChange('use_mlock', val)}
           />
@@ -216,6 +233,7 @@ export const PerformanceTab = (props: I_Props) => {
             value={state?.cache_type_v || undefined}
             items={precisionTypes}
             onChange={val => handleStateChange('cache_type_v', val)}
+            className={selectStyle}
           />
         </div>
       </form>

@@ -18,7 +18,6 @@ import {
   I_Prompt_State,
   I_Response_State,
   I_System_State,
-  T_ActiveRoles,
   T_SystemPrompts,
 } from '@/lib/homebrew'
 import { ToolsTab } from '@/components/features/menus/tabs/tab-tools'
@@ -52,7 +51,6 @@ interface I_Props {
   setStatePrompt: Dispatch<SetStateAction<I_Prompt_State>>
   promptTemplates: I_PromptTemplates
   systemPrompts: T_SystemPrompts
-  activeRole: T_ActiveRoles
 }
 
 export const PromptTemplateCharmMenu = (props: I_Props) => {

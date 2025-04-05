@@ -234,8 +234,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Title and description */}
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Custom Agents</div></Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Build unique Ai with knowledge and expertise in a specific domain. Create your own or choose from our curated list.
+        <Description className="mx-auto my-2 w-full max-w-[50rem] text-center text-lg">
+          Create your own unique Ai with expert knowledge or choose from our curated list.
         </Description>
       </Header>
 
@@ -290,7 +290,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
       {/* Title and description */}
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Tools for Ai Agents</div></Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+        <Description className="mx-auto my-2 w-full max-w-[50rem] text-center text-lg">
           Augment your Agents with access to external tools. Build your own or choose from our open-source tools available in the cloud.
         </Description>
       </Header>
@@ -348,7 +348,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     <div>
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Ai Workloads</div></Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+        <Description className="mx-auto my-2 w-full max-w-[50rem] text-center text-lg">
           Many Agents working together to complete a task. A real-world result is delivered in the format you specify.
         </Description>
       </Header>
@@ -370,7 +370,7 @@ export const ApplicationModesMenu = (props: I_Props) => {
     <div>
       <Header>
         <Title><div className="my-2 text-center text-3xl font-bold">Knowledge Base</div></Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
+        <Description className="mx-auto my-2 w-full max-w-[50rem] text-center text-lg">
           Enhance your Agents with long-term memory and private data. Upload text, images, video, audio into a collection and assign to any Agent.
         </Description>
       </Header>
@@ -426,8 +426,8 @@ export const ApplicationModesMenu = (props: I_Props) => {
             Ai Playground
           </p>
         </Title>
-        <Description className="mx-auto my-2 w-full max-w-[56rem] text-center text-lg">
-          Try out any installed Ai model in a temporary chat session. Experiment with settings and prompting techniques in a private and safe environment.
+        <Description className="mx-auto my-2 w-full max-w-[50rem] text-center text-lg">
+          Try out your installed Ai models and experiment with settings or prompting techniques.
         </Description>
       </Header>
 

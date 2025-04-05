@@ -34,6 +34,7 @@ export const ResponseTab = (props: I_Props) => {
   const infoClass = 'flex w-full flex-row gap-2'
   const inputContainerClass = 'grid w-full gap-1'
   const stopPlaceholder = '[DONE]'
+  const switchStyle = 'block self-end'
 
   // Handle input state changes
   const handleFloatValue = (val: any) => {
@@ -206,7 +207,7 @@ export const ResponseTab = (props: I_Props) => {
             </Info>
           </div>
           <Switch
-            className="block"
+            className={switchStyle}
             checked={state?.stream}
             onCheckedChange={val => handleStateChange('stream', val)}
           />
@@ -220,7 +221,7 @@ export const ResponseTab = (props: I_Props) => {
             </Info>
           </div>
           <Switch
-            className="block"
+            className={switchStyle}
             checked={state?.echo}
             onCheckedChange={val => handleStateChange('echo', val)}
           />

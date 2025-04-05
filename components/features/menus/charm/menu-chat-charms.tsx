@@ -2,14 +2,19 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import {
+  IconGPU,
+  IconCPU,
   IconMicrophone,
   IconGear,
   IconSynth,
+  IconBrain,
+  IconResearch,
 } from '@/components/ui/icons'
+import { EyeOpenIcon, ImageIcon } from '@radix-ui/react-icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/menus/charm/menu-charm-model'
-import { DEFAULT_TOOL_USE_MODE, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
@@ -22,7 +27,7 @@ export interface I_Charm {
   onCallback?: () => any
 }
 
-export type T_CharmId = 'microphone' | 'speak' | 'memory' | 'model' | 'prompt'
+export type T_CharmId = 'microphone' | 'speak' | 'memory' | 'model' | 'prompt' | 'gpu-override' | 'deep-research' | 'image-gen' | 'vision-lang'
 
 interface I_CharmItemProps {
   children: React.ReactNode
@@ -59,6 +64,9 @@ export const CharmMenu = (props: I_Props) => {
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
   const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
   const { fetchTools } = useActions()
+  const overflowShow = 'overflow-x-auto overflow-y-hidden'
+  const overflowHide = 'overflow-hidden'
+  const overflow = open ? overflowShow : overflowHide
 
   const {
     fetchData,
@@ -75,7 +83,7 @@ export const CharmMenu = (props: I_Props) => {
   const CharmItem = (props: I_CharmItemProps) => {
     return (
       <Badge
-        className={`h-10 w-10 cursor-pointer bg-accent p-2 ring-[inherit] ring-background hover:bg-background ${props.className}`}
+        className={`h-12 w-12 cursor-pointer bg-accent p-2 ring-[inherit] ring-background hover:bg-background ${props.className}`}
         onClick={props?.onClick}
         onMouseEnter={() => setExplanation(props?.actionText || '')}
         onMouseLeave={() => setExplanation(DEFAULT_EXPLANATION)}
@@ -83,6 +91,15 @@ export const CharmMenu = (props: I_Props) => {
         {props.children}
       </Badge>
     )
+  }
+
+  // Override gpu-layers setting
+  const saveGPUOverrideSetting = (override: boolean) => {
+    const val = override ? -1 : 0
+    setPlaygroundSettings(prev => {
+      const newPerf = { ...prev.performance, n_gpu_layers: val }
+      return { ...prev, performance: newPerf }
+    })
   }
 
   const saveModelSettings = useCallback((args: I_ModelSettings) => {
@@ -130,15 +147,62 @@ export const CharmMenu = (props: I_Props) => {
           setStatePrompt={setStatePrompt}
           promptTemplates={promptTemplates}
           systemPrompts={systemPrompts}
-          // This was set from a sep page and thus has not controls on this one
-          activeRole={playgroundSettings.attention.tool_use_mode || DEFAULT_TOOL_USE_MODE}
         />
       }
 
       {/* Charms Selection Menu */}
-      <div className={`transition-[height, opacity] justify-between space-y-2 ease-out ${sizeHeight} overflow-hidden ${activeCharmVisibility} ${animDuration}`}>
+      <div className={`transition-[height, opacity] flex flex-col justify-between overflow-hidden ease-out ${sizeHeight} ${activeCharmVisibility} ${animDuration}`}>
         {/* Selectable Charms Buttons */}
-        <div className="scrollbar flex h-16 w-full flex-row flex-nowrap items-center justify-center space-x-6 overflow-x-auto overflow-y-hidden">
+        <div className={`scrollbar flex h-full w-full snap-proximity flex-row flex-nowrap items-center gap-8 sm:justify-center sm:px-0 ${overflow} justify-around px-4 py-2`}>
+          {/* Vision Language */}
+          {shouldRender('vision-lang') &&
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('vision-lang') && activeStyle),
+              actionText: 'Vision - Give the Ai an image to look at and use as context.',
+              onClick: () => toggleActiveCharm('vision-lang'),
+              children: <EyeOpenIcon className={cn(iconStyle, 'rounded-none')} />,
+            })
+          }
+          {/* Image Generation */}
+          {shouldRender('image-gen') &&
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('image-gen') && activeStyle),
+              actionText: 'Image Gen - Create an image based on the prompt.',
+              onClick: () => toggleActiveCharm('image-gen'),
+              children: <ImageIcon className={cn(iconStyle, 'rounded-none')} />,
+            })
+          }
+          {/* Deep Research */}
+          {shouldRender('deep-research') &&
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('deep-research') && activeStyle),
+              actionText: 'Research - Enable the use of a research pattern when outputting response.',
+              onClick: () => toggleActiveCharm('deep-research'),
+              children: <IconResearch className={cn(iconStyle, 'rounded-none')} />,
+            })
+          }
+          {/* Memory */}
+          {shouldRender('memory') &&
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('memory') && activeStyle),
+              actionText: 'Memory - Assign stores of data/memories for the Ai to source context from.',
+              onClick: () => toggleActiveCharm('memory'),
+              children: <IconBrain className={iconStyle} />,
+            })
+          }
+          {/* GPU - use to override gpu layers setting */}
+          {shouldRender('gpu-override') &&
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('gpu-override') && activeStyle),
+              actionText: 'Force GPU/CPU - (On) Use GPU for faster inference. (Off) Use CPU only.',
+              onClick: () => {
+                toggleActiveCharm('gpu-override')
+                const val = !!isActive('gpu-override')
+                saveGPUOverrideSetting(!val)
+              },
+              children: isActive('gpu-override') ? <IconGPU className={cn(iconStyle, 'rounded-none')} /> : <IconCPU className={cn(iconStyle, 'rounded-none')} />,
+            })
+          }
           {/* Microphone - use to input text */}
           {shouldRender('microphone') &&
             CharmItem({
@@ -148,7 +212,6 @@ export const CharmMenu = (props: I_Props) => {
               children: <IconMicrophone className={iconStyle} />,
             })
           }
-
           {/* Audio Response */}
           {shouldRender('speak') &&
             CharmItem({
@@ -158,7 +221,6 @@ export const CharmMenu = (props: I_Props) => {
               onClick: () => toggleActiveCharm('speak'),
             })
           }
-
           {/* Model Settings */}
           {shouldRender('prompt') &&
             CharmItem({
@@ -174,10 +236,10 @@ export const CharmMenu = (props: I_Props) => {
 
         </div>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="w-full self-center" />
 
         {/* Explanation of charm item when hovered */}
-        <p className="flex h-fit w-full select-none flex-col justify-center break-words px-2 text-center text-sm text-neutral-500">{explanation}</p>
+        <p className="flex h-[4rem] w-full select-none flex-col items-center justify-center overflow-hidden break-words px-2 py-0 text-center text-sm text-neutral-500">{explanation}</p>
       </div>
     </>
   )
