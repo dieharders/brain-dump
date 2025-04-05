@@ -5,10 +5,7 @@ interface IChatContextProps {
   setPromptInput: Dispatch<SetStateAction<string>>
 }
 
-export const ChatContext = createContext<IChatContextProps>({
-  promptInput: '',
-  setPromptInput: () => { },
-})
+export const ChatContext = createContext<IChatContextProps>({} as IChatContextProps)
 
 export const ChatContextProvider = ({ children }: { children: ReactNode }) => {
   const [promptInput, setPromptInput] = useState<string>('')

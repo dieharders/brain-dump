@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { IconArrowElbow } from '@/components/ui/icons'
 import { CharmMenuButton } from '@/components/features/chat/button-charm-menu-trigger'
 import { useChatContext, useGlobalContext } from '@/contexts'
+import { cn } from '@/lib/utils'
 
 interface I_Props {
   onSubmit: (value: string) => Promise<void>
@@ -16,8 +17,9 @@ interface I_Props {
 export const ChatPrompt = ({ onSubmit, onCharmClick, charmMenuIsOpen }: I_Props) => {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const { isAiThinking } = useGlobalContext()
+  const { isAiThinking, eventState, } = useGlobalContext()
   const { promptInput, setPromptInput } = useChatContext()
+  const isDisabledPointerStyle = isAiThinking ? 'cursor-not-allowed' : ''
 
   useEffect(() => {
     if (inputRef.current) {
@@ -53,13 +55,13 @@ export const ChatPrompt = ({ onSubmit, onCharmClick, charmMenuIsOpen }: I_Props)
           rows={1}
           value={promptInput}
           onChange={e => setPromptInput(e.target.value)}
-          placeholder="Send a message."
+          placeholder={isAiThinking ? eventState : 'Ask a question...'}
           spellCheck={false}
-          className="scrollbar min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          className={cn(`scrollbar min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm ${isDisabledPointerStyle}`)}
           disabled={isAiThinking}
         />
         {/* Submit button */}
-        <div className="absolute right-4 top-4">
+        <div className={cn(`absolute right-4 top-4 ${isDisabledPointerStyle}`)}>
           <Tooltip delayDuration={250}>
             <TooltipTrigger asChild>
               <Button type="submit" size="icon" disabled={isAiThinking || promptInput === ''}>
