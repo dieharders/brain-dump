@@ -41,6 +41,8 @@ interface IGlobalContextProps {
   currentThreadId: MutableRefObject<string>
   currentMessages: Array<I_Message>,
   setCurrentMessages: Dispatch<SetStateAction<Array<I_Message>>>,
+  eventState: string,
+  setEventState: Dispatch<SetStateAction<string>>,
 }
 
 // Defaults
@@ -54,38 +56,7 @@ const defaultPlaygroundSettings = {
   response: defaultResponse,
 }
 
-export const GlobalContext = createContext<IGlobalContextProps>({
-  services: {} as I_ServiceApis,
-  setServices: () => { },
-  // downloads: {}, // Used for tracking in progress downloads
-  collections: [],
-  setCollections: () => { },
-  selectedCollectionName: null,
-  setSelectedCollectionName: () => { },
-  selectedDocumentId: null,
-  setSelectedDocumentId: () => { },
-  documents: [],
-  setDocuments: () => { },
-  chunks: [],
-  setChunks: () => { },
-  playgroundSettings: defaultPlaygroundSettings,
-  setPlaygroundSettings: () => { },
-  currentModel: null,
-  setCurrentModel: () => { },
-  installedList: [],
-  setInstalledList: () => { },
-  modelConfigs: {},
-  setModelConfigs: () => { },
-  isAiThinking: false,
-  setIsAiThinking: () => { },
-  threads: [],
-  setThreads: () => { },
-  currentThreadId: { current: '' },
-  currentMessages: [],
-  setCurrentMessages: () => { },
-  tools: [],
-  setTools: () => { },
-})
+export const GlobalContext = createContext<IGlobalContextProps>({} as IGlobalContextProps)
 
 export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null)
@@ -103,6 +74,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const currentThreadId = useRef('')
   const [currentMessages, setCurrentMessages] = useState<Array<I_Message>>([])
   const [tools, setTools] = useState<I_Tool_Definition[]>([])
+  const [eventState, setEventState] = useState<string>('starting...')
 
   return (
     <GlobalContext.Provider
@@ -137,6 +109,8 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
         setCurrentMessages,
         tools,
         setTools,
+        eventState,
+        setEventState,
       }}
     >
       {children}

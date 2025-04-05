@@ -37,7 +37,7 @@ export const ChatPromptMenu = ({
   theme,
 }: I_Props) => {
   const { isAiThinking, currentThreadId } = useGlobalContext()
-  const shadowColor = theme === 'light' ? 'shadow-[0px_0px_40px_8px_#e5e5e5]' : 'shadow-[0px_-10px_24px_16px_#171717]'
+  const shadowColor = theme === 'light' ? 'shadow-[0px_0px_40px_8px_#e5e5e5]' : 'shadow-[0px_-10px_24px_16px_#0a0a0a]'
   // const colorFrom = theme === 'light' ? 'from-neutral-200' : 'from-neutral-900'
   // const colorTo = theme === 'light' ? 'to-neutral-200/0' : 'to-neutral-900/0'
   const [charmMenuOpen, setCharmMenuOpen] = useState(false)

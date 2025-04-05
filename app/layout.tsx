@@ -59,7 +59,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <div className="flex min-h-screen flex-col">
             <GlobalEvents />
             <Header />
-            <main className="flex flex-1 flex-col items-center">{children}</main>
+            <main className="flex flex-1 flex-col items-center justify-evenly bg-background">{children}</main>
           </div>
           <TailwindIndicator />
         </Providers>

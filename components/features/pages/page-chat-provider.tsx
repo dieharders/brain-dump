@@ -148,7 +148,7 @@ export const ChatProvider = (props: I_Props) => {
   }, [setCurrentModel, setCurrentMessages, currentThreadId])
 
   if (isLoading)
-    return (<div className="h-full w-full flex-1 bg-neutral-900"></div>)
+    return <EmptyModelScreen id="loading" />
 
   return routeId === ROUTE_PLAYGROUND ?
     <PlaygroundPage

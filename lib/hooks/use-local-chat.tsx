@@ -26,7 +26,7 @@ interface IProps {
 
 export const useLocalInference = (props: IProps) => {
   const { settings, session } = props
-  const { services, isAiThinking: isLoading, setIsAiThinking: setIsLoading, currentThreadId, threads, setThreads, currentModel, currentMessages, setCurrentMessages } = useGlobalContext()
+  const { services, isAiThinking: isLoading, setEventState, setIsAiThinking: setIsLoading, currentThreadId, threads, setThreads, currentModel, currentMessages, setCurrentMessages } = useGlobalContext()
   const { processSseStream } = useChatHelpers()
   const [responseText, setResponseText] = useState<string>('')
   const [responseId, setResponseId] = useState<string | null>(null)
@@ -74,7 +74,6 @@ export const useLocalInference = (props: IProps) => {
   }, [])
 
   const onStreamEvent = (eventName: string) => {
-    // @TODO Render these states on screen, display in the prompt since it is disabled
     switch (eventName) {
       case 'FEEDING_PROMPT':
         break
@@ -213,7 +212,11 @@ export const useLocalInference = (props: IProps) => {
               console.log('[Chat] stream finished!')
               return
             },
-            onEvent: async str => onStreamEvent(str),
+            onEvent: async str => {
+              onStreamEvent(str)
+              const displayEventStr = str.replace(/_/g, ' ') + '...'
+              str && setEventState(displayEventStr)
+            },
             onComment: async str => {
               console.log('[Chat] onComment', str)
               return
@@ -245,7 +248,7 @@ export const useLocalInference = (props: IProps) => {
       setIsLoading(false)
       toast.error(`Prompt request error: \n ${err}`)
     }
-  }, [saveThreads, setThreads, setCurrentMessages, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, setIsLoading, settings, session.user.id, session.user.sub])
+  }, [setEventState, saveThreads, setThreads, setCurrentMessages, currentThreadId, getCompletion, onNonStreamResult, onStreamResult, processSseStream, setIsLoading, settings, session.user.id, session.user.sub])
 
   const reload = useCallback(async () => {
     try {
