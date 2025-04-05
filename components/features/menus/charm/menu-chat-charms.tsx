@@ -147,8 +147,6 @@ export const CharmMenu = (props: I_Props) => {
           setStatePrompt={setStatePrompt}
           promptTemplates={promptTemplates}
           systemPrompts={systemPrompts}
-        // This was set from a sep page and thus has not controls on this one
-        // toolUseMode={playgroundSettings.attention.tool_use_mode || DEFAULT_TOOL_USE_MODE}
         />
       }
 
