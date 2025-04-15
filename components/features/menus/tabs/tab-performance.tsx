@@ -145,7 +145,7 @@ export const PerformanceTab = (props: I_Props) => {
           <div className={infoClass}>
             <Label className="text-sm font-semibold">GPU Layers</Label>
             <Info label="n_gpu_layers">
-              <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. Adjust based on your hardware. -1 all layers are offloaded.</span>
+              <span><Highlight>n_gpu_layers</Highlight> Number of layers to store in GPU VRAM. Adjust based on your hardware. -1 all layers are offloaded (may not be stable).</span>
             </Info>
           </div>
           <div className="flex w-full flex-row items-end gap-4">
