@@ -129,7 +129,7 @@ export const useMemoryActions = () => {
       })
       // Fail
       if (!res?.success)
-        throw new Error(`Failed to remove ${document.name}: ${res?.message}`)
+        throw new Error(`Failed to remove ${document.document_name}: ${res?.message}`)
       // Successful
       return true
     } catch (err) {
@@ -166,7 +166,7 @@ export const useMemoryActions = () => {
   }
 
   const fileExploreAction = useCallback(async (document: I_Source) => {
-    await services?.memory.fileExplore({ queryParams: { filePath: document.filePath } })
+    await services?.memory.fileExplore({ queryParams: { filePath: document.file_path } })
     return
   }, [services?.memory])
 
@@ -174,12 +174,12 @@ export const useMemoryActions = () => {
     fileExploreAction,
     shareMemory,
     copyId,
-    updateDocument,
     deleteSource,
     deleteAllCollections,
     deleteCollection,
-    addDocument,
     addCollection,
+    addDocument,
+    updateDocument,
     fetchDocumentChunks,
     fetchCollections,
     fetchCollection,

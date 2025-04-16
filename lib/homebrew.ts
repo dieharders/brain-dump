@@ -196,15 +196,17 @@ export interface I_ChunkMetadata {
 // These are the sources (documents) kept track by a collection
 export interface I_Source {
   id: string
-  name: string
+  document_name: string
   checksum: string
   urlPath: string
-  filePath: string
-  fileType: string
-  fileName: string
-  fileSize: number
-  modifiedLast: string
-  createdAt: string
+  source_file_name: string
+  source_file_path: string
+  file_path: string
+  file_type: string
+  file_name: string
+  file_size: number
+  modified_last: string
+  created_at: string
   description: string
   tags: string
   chunkIds: Array<string>

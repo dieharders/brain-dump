@@ -15,9 +15,9 @@ export const DocumentCard = (props: I_Props) => {
   const { document, numChunks, onClick, isSelected, isActive, className, children } = props
   const numTags = document?.tags ? document?.tags?.split(' ').length : 0
   const description = document?.description || 'No description.'
-  const name = document?.name || 'No title'
-  const createdAt = document?.createdAt || '?'
-  const documentType = document?.fileType || '?'
+  const name = document?.document_name || 'No title'
+  const createdAt = document?.created_at || '?'
+  const documentType = document?.file_type || '?'
   const data = {
     name: name,
     type: 'Source Document',

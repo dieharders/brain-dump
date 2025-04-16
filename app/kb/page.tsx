@@ -13,11 +13,8 @@ import { useRenderText } from '@/components/ui/useRenderText'
 import { Select } from '@/components/ui/select'
 import ToggleGroup from '@/components/ui/toggle-group'
 import { useMemoryActions } from '@/components/features/crud/actions'
-// import { DialogShareCollection } from '@/components/features/crud/dialog-share-collection'
-// import { ClearData } from '@/components/features/crud/dialog-clear-data'
 import { MemoizedReactMarkdown } from '@/components/ui/markdown'
 import { CodeBlock } from '@/components/ui/codeblock'
-import { DialogAddDocument } from '@/components/features/crud/dialog-add-document'
 
 export default function KnowledgeBasePage() {
   const {
@@ -35,18 +32,18 @@ export default function KnowledgeBasePage() {
   const id = search.get('collectionName') || selectedCollectionName || ''
   const router = useRouter()
   const { getServices } = useHomebrew()
-  const { fetchCollections, updateDocument } = useMemoryActions()
+  const { fetchCollections } = useMemoryActions()
   const { RandomUnderlinedText } = useRenderText()
   // Data
   const collection = collections?.find((c: I_Collection) => c.name === id)
   const document = documents?.find?.(d => d?.id === selectedDocumentId)
-  const documentName = document?.name
-  const documentFileName = document?.fileName
+  const documentName = document?.document_name
+  const documentFileName = document?.source_file_name
   const documentTags = document?.tags
-  const documentDate = document?.createdAt
-  const documentType = document?.fileType
-  const documentSize = document?.fileSize || 0
-  const documentPath = document?.filePath
+  const documentDate = document?.created_at
+  const documentType = document?.file_type
+  const documentSize = document?.file_size || 0
+  const documentPath = document?.file_path
   const documentUrlPath = document?.urlPath
   const description = document?.description
   const numDocumentChunks = document?.chunkIds?.length || 0
@@ -59,8 +56,6 @@ export default function KnowledgeBasePage() {
   const [toggleTextMode, setToggleTextMode] = useState<string>('document')
   const [currentChunkItem, setCurrentChunkItem] = useState<I_DocumentChunk | null>(null)
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
-  // const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
   // Styles
   const toggleStyle = cn("flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl")
   const headingStyle = cn("text-2xl font-bold")
@@ -137,35 +132,6 @@ export default function KnowledgeBasePage() {
           {/* Document info */}
           <div className="flex h-fit w-full flex-1 flex-col items-center justify-start gap-8">
             <h1 className={cn(subHeadingStyle, "text-center text-xl")}>Document Info</h1>
-            {/* Action Menus */}
-            <DialogAddDocument
-              action={updateDocument}
-              dialogOpen={createDialogOpen}
-              setDialogOpen={setCreateDialogOpen}
-              collection={collection || null}
-              document={document}
-            />
-            {/* Actions */}
-            {/* <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden">
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => fileExploreAction(document)}>Open</Button>
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setCreateDialogOpen(true)}>Edit</Button>
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => documentId && copyId(documentId)}>Copy Id</Button>
-              <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => setShareDialogOpen(true)}>Share</Button>
-              <ClearData
-                className="w-fit p-5 text-lg"
-                variant="destructive"
-                action={async () => {
-                  await deleteSource(collectionName, document)
-                  // Reset data
-                  setCurrentChunkItem(null)
-                  setSelectedChunk('')
-                  setDocuments([])
-                  setSelectedDocumentId('')
-                  return true
-                }}
-                actionTitle="Delete"
-              />
-            </div> */}
             {/* Form */}
             <div className="flex w-full flex-1 flex-col items-start justify-start gap-3 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
               <div className={subHeadingStyle}>Title</div>

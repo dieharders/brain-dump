@@ -1,13 +1,13 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Session } from 'next-auth/types'
 import { Panel } from '@/components/features/panels/panel'
 import { Button } from '@/components/ui/button'
 import { RefreshButton } from '@/components/features/refresh/refresh-button'
 // import { PanelFooter } from '@/components/panel-footer'
 // import { ClearData } from '@/components/features/crud/dialog-clear-data'
-import { useHomebrew } from '@/lib/homebrew'
+import { I_Source, useHomebrew } from '@/lib/homebrew'
 import { DocumentCard } from '@/components/features/panels/document-card'
 import { useMemoryActions } from '@/components/features/crud/actions'
 import { useGlobalContext } from '@/contexts'
@@ -23,11 +23,12 @@ interface I_Props {
 
 export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Props) => {
   const { getServices } = useHomebrew()
-  const { addDocument, fetchDocumentChunks, copyId, deleteSource } = useMemoryActions()
+  const { addDocument, updateDocument, fetchDocumentChunks, copyId, deleteSource } = useMemoryActions()
   const { setChunks, selectedDocumentId, setSelectedDocumentId, documents, services, setServices, collections, selectedCollectionName, setDocuments } = useGlobalContext()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const currentCollection = collections?.find(c => c.name === collectionName) || null
-  const currentDocument = documents.find(d => selectedDocumentId === d.id)
+  const currentSelectedDocument = documents.find(d => selectedDocumentId === d.id)
+  const docBehavior = useRef<undefined | I_Source>(undefined)
 
   const emptyDocuments = (
     <div className="p-8 text-center">
@@ -54,6 +55,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
           }}>
           <CardButtons
             editAction={() => {
+              docBehavior.current = currentSelectedDocument
               setCreateDialogOpen(true)
             }}
             onDeleteAction={async () => {
@@ -68,7 +70,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
           />
         </DocumentCard>
       )
-    }), [documents, fetchDocumentChunks, selectedCollectionName, selectedDocumentId, setChunks, setSelectedDocumentId])
+    }), [copyId, currentSelectedDocument, deleteSource, documents, fetchAction, fetchDocumentChunks, selectedCollectionName, selectedDocumentId, setChunks, setSelectedDocumentId])
 
   useEffect(() => {
     const action = async () => {
@@ -85,15 +87,18 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
         <div className="my-4 flex w-full flex-col space-y-8 overflow-y-auto">
           {/* Action Menus */}
           <DialogAddDocument
-            action={addDocument}
+            action={docBehavior.current ? updateDocument : addDocument}
             dialogOpen={createDialogOpen}
             setDialogOpen={setCreateDialogOpen}
             collection={currentCollection}
-            document={currentDocument}
+            document={docBehavior.current}
           />
           {/* "Add New" and "Refresh" buttons */}
           <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap px-4 py-2">
-            <Button className="flex-1 truncate text-center" onClick={() => setCreateDialogOpen(true)} >+ New Document</Button>
+            <Button className="flex-1 truncate text-center" onClick={() => {
+              setCreateDialogOpen(true)
+              docBehavior.current = undefined
+            }} >+ New Document</Button>
             <RefreshButton action={fetchAction} />
           </div>
           {/* List of documents */}
