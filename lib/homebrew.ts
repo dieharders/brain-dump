@@ -197,6 +197,7 @@ export interface I_ChunkMetadata {
 export interface I_Source {
   id: string
   document_name: string
+  embedding_model: string
   checksum: string
   urlPath: string
   source_file_name: string
@@ -223,6 +224,7 @@ export interface I_Collection {
   name: string
   metadata: {
     description: string
+    embedding_model: string
     tags: string
     icon: string
     sources: Array<I_Source>
