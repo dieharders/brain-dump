@@ -45,7 +45,7 @@ export const KnowledgeTab = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Choose knowledge sources</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          Select context from your collections of private data for the Ai to ground responses in.
+          Select context from your collections of private data (memories) for the Ai to ground responses in.
         </DialogDescription>
       </DialogHeader>
 

@@ -11,6 +11,7 @@ import { I_Knowledge_State } from '@/lib/homebrew'
 import { Separator } from '@/components/ui/separator'
 import { T_CharmId } from '@/components/features/menus/charm/menu-chat-charms'
 import { KnowledgeTab, defaultState } from '@/components/features/menus/tabs/tab-knowledge'
+import { useGlobalContext } from '@/contexts'
 
 interface I_Props {
   dialogOpen: boolean
@@ -23,7 +24,10 @@ export const charmId: T_CharmId = 'memory'
 // A menu to select from a list of collections
 export const KnowledgeCharmMenu = (props: I_Props) => {
   const { dialogOpen, setDialogOpen, onSubmit } = props
-  const [state, setState] = useState<I_Knowledge_State>(defaultState)
+  const { playgroundSettings } = useGlobalContext()
+  const [state, setState] = useState<I_Knowledge_State>(
+    playgroundSettings.memory || defaultState,
+  )
   const knowledgeMenu = useMemo(() => <KnowledgeTab state={state} setState={setState} />, [state])
 
   return (
@@ -40,7 +44,6 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
             className="w-full sm:w-32"
             onClick={() => {
               // Reset state
-              setState(defaultState)
               setDialogOpen(false)
             }}
           >
