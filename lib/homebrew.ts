@@ -69,7 +69,7 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   toolResponseMode?: T_ToolResponseMode
   toolUseMode?: T_ToolUseMode
   messageFormat?: string
-  collectionNames?: string[]
+  memory?: I_Knowledge_State
   tools?: string[]
 }
 
@@ -309,18 +309,13 @@ export interface I_Response_State {
 }
 
 export interface I_Knowledge_State {
-  index: string[] // collection names
+  ids: string[] // collection names
 }
 
 // @TODO Can maybe remove after retrieval is re-implemented
 export interface I_RAG_Strat_State {
   similarity_top_k: number
   response_mode: string | undefined
-}
-
-export interface I_Knowledge_Base {
-  collectionNames: I_Knowledge_State
-  strategy: I_RAG_Strat_State // @TODO Can maybe remove after retrieval is re-implemented
 }
 
 export type I_Prompt_State = {
@@ -356,6 +351,7 @@ export interface I_Text_Settings {
   model: I_Model_State
   prompt: I_Prompt_State
   response: I_Response_State
+  memory: I_Knowledge_State
 }
 
 // The types of UI input that can be used for displaying a tool's params

@@ -6,6 +6,7 @@ import { defaultState as defaultModelState } from '@/components/features/menus/t
 import { defaultState as defaultSystemState } from '@/components/features/menus/tabs/tab-system'
 import { defaultState as defaultPromptState } from '@/components/features/menus/tabs/tab-prompt'
 import { defaultState as defaultToolsState } from '@/components/features/menus/tabs/tab-tools'
+import { defaultState as defaultKnowledgeState } from '@/components/features/menus/tabs/tab-knowledge'
 import { defaultState as defaultResponse } from '@/components/features/menus/tabs/tab-response'
 
 export type T_Chunks_Map = Array<I_DocumentChunk>
@@ -49,6 +50,7 @@ interface IGlobalContextProps {
 const defaultPlaygroundSettings = {
   tools: defaultToolsState,
   attention: defaultAttentionState,
+  memory: defaultKnowledgeState,
   performance: defaultPerformanceState,
   system: defaultSystemState,
   model: defaultModelState,

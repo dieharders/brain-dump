@@ -14,12 +14,13 @@ import { EyeOpenIcon, ImageIcon } from '@radix-ui/react-icons'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { I_State as I_ModelSettings, PromptTemplateCharmMenu } from '@/components/features/menus/charm/menu-charm-model'
-import { I_ServiceApis, useHomebrew } from '@/lib/homebrew'
+import { I_Knowledge_State, I_ServiceApis, useHomebrew } from '@/lib/homebrew'
 import { useModelSettingsMenu } from '@/components/features/menus/charm/hook-charm-model'
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { useGlobalContext } from '@/contexts'
 import { useActions } from '@/components/features/menus/home/actions'
+import { KnowledgeCharmMenu } from '@/components/features/menus/charm/menu-charm-knowledge'
 
 export interface I_Charm {
   id: T_CharmId
@@ -61,6 +62,7 @@ export const CharmMenu = (props: I_Props) => {
   const [explanation, setExplanation] = useState(DEFAULT_EXPLANATION)
   const [selectedTools, setSelectedTools] = useState(playgroundSettings.tools?.assigned || [])
   const [openPromptCharmDialog, setOpenPromptCharmDialog] = useState(false)
+  const [openMemoryCharmDialog, setOpenMemoryCharmDialog] = useState(false)
   const isActive = useCallback((id: string) => activeCharms.find(n => n === id), [activeCharms])
   const shouldRender = useCallback((id: string) => charmsList.find(n => n === id), [charmsList])
   const { fetchTools } = useActions()
@@ -113,6 +115,13 @@ export const CharmMenu = (props: I_Props) => {
     return action()
   }, [setPlaygroundSettings])
 
+  const saveKnowledgeSettings = useCallback((val: I_Knowledge_State) => {
+    if (val) {
+      // Save state
+      setPlaygroundSettings(prev => ({ ...prev, knowledge: val }))
+    }
+  }, [setPlaygroundSettings])
+
   // Get services
   useEffect(() => {
     const action = async () => {
@@ -127,6 +136,17 @@ export const CharmMenu = (props: I_Props) => {
 
   return (
     <>
+      {/* Collections list for Knowledge Base menu */}
+      {shouldRender('memory') &&
+        <KnowledgeCharmMenu
+          dialogOpen={openMemoryCharmDialog}
+          setDialogOpen={setOpenMemoryCharmDialog}
+          onSubmit={(knowledgeSettings) => {
+            saveKnowledgeSettings(knowledgeSettings)
+            toast.success('Memory settings saved!')
+          }}
+        />
+      }
       {/* Menu for Prompt Template settings */}
       {shouldRender('prompt') &&
         <PromptTemplateCharmMenu
@@ -181,15 +201,6 @@ export const CharmMenu = (props: I_Props) => {
               children: <IconResearch className={cn(iconStyle, 'rounded-none')} />,
             })
           }
-          {/* Memory */}
-          {shouldRender('memory') &&
-            CharmItem({
-              className: cn(emptyRingStyle, isActive('memory') && activeStyle),
-              actionText: 'Memory - Assign stores of data/memories for the Ai to source context from.',
-              onClick: () => toggleActiveCharm('memory'),
-              children: <IconBrain className={iconStyle} />,
-            })
-          }
           {/* GPU - use to override gpu layers setting */}
           {shouldRender('gpu-override') &&
             CharmItem({
@@ -219,6 +230,15 @@ export const CharmMenu = (props: I_Props) => {
               children: <IconSynth className={iconStyle} />,
               actionText: 'Speak - Have the Ai speak back to you',
               onClick: () => toggleActiveCharm('speak'),
+            })
+          }
+          {/* Memory */}
+          {shouldRender('memory') &&
+            CharmItem({
+              className: cn(emptyRingStyle, isActive('memory') && activeStyle),
+              actionText: 'Memory - Assign stores of data for the Ai to source context from.',
+              onClick: () => setOpenMemoryCharmDialog(true),
+              children: <IconBrain className={iconStyle} />,
             })
           }
           {/* Model Settings */}

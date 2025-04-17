@@ -190,6 +190,8 @@ export const useLocalInference = (props: IProps) => {
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,
         systemMessage: settings?.system?.systemMessage,
+        // Add collections and retrieval strategy from agent's knowledge base
+        memory: settings?.memory,
         ...settings?.performance,
         ...settings?.response,
       }
