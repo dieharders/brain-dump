@@ -74,7 +74,7 @@ export const GlobalContextProvider = ({ children }: { children: ReactNode }) => 
   const currentThreadId = useRef('')
   const [currentMessages, setCurrentMessages] = useState<Array<I_Message>>([])
   const [tools, setTools] = useState<I_Tool_Definition[]>([])
-  const [eventState, setEventState] = useState<string>('starting...')
+  const [eventState, setEventState] = useState<string>('STARTING...')
 
   return (
     <GlobalContext.Provider
