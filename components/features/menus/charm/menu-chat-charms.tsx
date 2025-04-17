@@ -118,7 +118,7 @@ export const CharmMenu = (props: I_Props) => {
   const saveKnowledgeSettings = useCallback((val: I_Knowledge_State) => {
     if (val) {
       // Save state
-      setPlaygroundSettings(prev => ({ ...prev, knowledge: val }))
+      setPlaygroundSettings(prev => ({ ...prev, memory: val }))
     }
   }, [setPlaygroundSettings])
 
