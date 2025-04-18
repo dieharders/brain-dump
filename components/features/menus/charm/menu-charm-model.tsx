@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useCallback, useMemo } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import {
   T_SystemPrompts,
 } from '@/lib/homebrew'
 import { ToolsTab } from '@/components/features/menus/tabs/tab-tools'
+import { useGlobalContext } from '@/contexts'
 
 export const charmId: T_CharmId = 'prompt'
 
@@ -70,6 +71,7 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     promptTemplates,
     systemPrompts,
   } = props
+  const { playgroundSettings } = useGlobalContext()
 
   const onSaveClick = useCallback(
     () => {
@@ -98,6 +100,11 @@ export const PromptTemplateCharmMenu = (props: I_Props) => {
     { icon: '🤬', label: 'Personality', title: 'Personality', content: systemMessageMenu },
     { icon: '🛠', label: 'Tools', title: 'Tools', content: toolsMenu },
   ]
+
+  // Reset when opening again
+  useEffect(() => {
+    if (!dialogOpen) setSelectedTools(playgroundSettings.tools.assigned || [])
+  }, [dialogOpen, playgroundSettings.tools.assigned, setSelectedTools])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

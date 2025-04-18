@@ -35,13 +35,13 @@ export const ToolsTab = (props: I_Props) => {
       <DialogHeader className="my-8">
         <DialogTitle>Assign tools</DialogTitle>
         <DialogDescription className="text-md mb-4">
-          {'Select one or more tools for the Agent to use when generating a response. An agent will always attempt to use tools if any are assigned. If only one tool is assigned, it will be chosen by default. It is highly recommended to use either "Instruct" or "Function Calling" capable models when using tools.'}
+          {'Select one or more tools for the Ai to use when generating a response. An agent will always attempt to use tools if any are assigned. If only one tool is assigned, it will be chosen by default. It is highly recommended to use either "Instruct" or "Function Calling" capable models when using tools.'}
         </DialogDescription>
       </DialogHeader>
 
       <MultiSelector
         initValue={selected}
-        onSubmit={setSelected}
+        onSelect={setSelected}
         options={tools?.map?.(tool => tool.name)}
         className="min-h-[5rem] w-full sm:w-full"
       >

@@ -45,7 +45,7 @@ export const ChatPromptMenu = ({
   const charmsList = useMemo((): T_CharmId[] => {
     switch (routeId) {
       case ROUTE_PLAYGROUND:
-        return ['microphone', 'speak', 'gpu-override', 'prompt']
+        return ['microphone', 'speak', 'gpu-override', 'prompt', 'memory']
       case ROUTE_CHATBOT:
         return ['microphone', 'speak']
       default:

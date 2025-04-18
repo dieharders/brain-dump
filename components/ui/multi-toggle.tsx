@@ -127,7 +127,7 @@ export const MultiSelectItem = ({ value, index, selected, setSelected, className
 interface I_MultiSelectorProps {
   initValue?: string[]
   options: string[]
-  onSubmit: (val: any) => void
+  onSelect: (val: any) => void
   children: ReactElement[]
   className?: string
 }
@@ -135,10 +135,10 @@ interface I_MultiSelectorProps {
 /**
  * A component that displays multiple cards in a list that can be selected by toggling. One or more items can be selected at once.
  */
-export const MultiSelector = ({ options, onSubmit, children, initValue = [], className }: I_MultiSelectorProps) => {
+export const MultiSelector = ({ options, onSelect, children, initValue = [], className }: I_MultiSelectorProps) => {
   const [selected, setSelected] = useState<string[]>(initValue)
   const onSelected = (val: any) => {
-    onSubmit(val)
+    onSelect(val)
     setSelected(val)
   }
 

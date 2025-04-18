@@ -252,7 +252,7 @@ export const DialogAddDocument = (props: I_Props) => {
   // State
   const defaultFileSource = 'urlFile'
   const [fileSource, setFileSource] = useState<T_SourceFile>(defaultFileSource)
-  const [nameValue, setNameValue] = useState(document?.name ?? '')
+  const [nameValue, setNameValue] = useState(document?.document_name ?? '')
   const [descrValue, setDescrValue] = useState(document?.description ?? '')
   const [tagsValue, setTagsValue] = useState(document?.tags ?? '')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -519,21 +519,34 @@ export const DialogAddDocument = (props: I_Props) => {
 
   // Reset menu inputs when menu is open/closed
   useEffect(() => {
+    if (document) {
+      setNameValue(document?.document_name ?? '')
+      setDescrValue(document?.description ?? '')
+      setTagsValue(document?.tags ?? '')
+    }
     return () => {
       if (!dialogOpen) {
         setFileSource(defaultFileSource)
         setSelectedFile(null)
+        setNameValue('')
+        setDescrValue('')
+        setTagsValue('')
         setUrlValue('')
+        setServerPathValue('')
         setRawTextValue('')
+        setChunkSize('')
+        setChunkOverlap('')
+        setChunkingStrategy(undefined)
+        setUrlParsingMethod(undefined)
       }
     }
-  }, [dialogOpen])
+  }, [dialogOpen, document])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{document?.name ? `Update memory "${document?.name || '??'}"` : 'Embed a file into memory'}</DialogTitle>
+          <DialogTitle>{document?.document_name ? `Update memory "${document?.document_name || '??'}"` : 'Embed a file into memory'}</DialogTitle>
           <DialogDescription>
             Provide a file you want the AI to memorize (text, image, audio, video). Give it a short description and tags to help the Ai understand it better.
           </DialogDescription>

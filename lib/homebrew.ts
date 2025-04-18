@@ -69,7 +69,7 @@ export interface I_InferenceGenerateOptions extends T_LLM_InferenceOptions {
   toolResponseMode?: T_ToolResponseMode
   toolUseMode?: T_ToolUseMode
   messageFormat?: string
-  collectionNames?: string[]
+  memory?: I_Knowledge_State
   tools?: string[]
 }
 
@@ -196,15 +196,18 @@ export interface I_ChunkMetadata {
 // These are the sources (documents) kept track by a collection
 export interface I_Source {
   id: string
-  name: string
+  document_name: string
+  embedding_model: string
   checksum: string
   urlPath: string
-  filePath: string
-  fileType: string
-  fileName: string
-  fileSize: number
-  modifiedLast: string
-  createdAt: string
+  source_file_name: string
+  source_file_path: string
+  file_path: string
+  file_type: string
+  file_name: string
+  file_size: number
+  modified_last: string
+  created_at: string
   description: string
   tags: string
   chunkIds: Array<string>
@@ -221,6 +224,7 @@ export interface I_Collection {
   name: string
   metadata: {
     description: string
+    embedding_model: string
     tags: string
     icon: string
     sources: Array<I_Source>
@@ -305,18 +309,13 @@ export interface I_Response_State {
 }
 
 export interface I_Knowledge_State {
-  index: string[] // collection names
+  ids: string[] // collection names
 }
 
 // @TODO Can maybe remove after retrieval is re-implemented
 export interface I_RAG_Strat_State {
   similarity_top_k: number
   response_mode: string | undefined
-}
-
-export interface I_Knowledge_Base {
-  collectionNames: I_Knowledge_State
-  strategy: I_RAG_Strat_State // @TODO Can maybe remove after retrieval is re-implemented
 }
 
 export type I_Prompt_State = {
@@ -352,6 +351,7 @@ export interface I_Text_Settings {
   model: I_Model_State
   prompt: I_Prompt_State
   response: I_Response_State
+  memory: I_Knowledge_State
 }
 
 // The types of UI input that can be used for displaying a tool's params

@@ -190,6 +190,7 @@ export const useLocalInference = (props: IProps) => {
         prompt: prompt?.content,
         promptTemplate: settings?.prompt?.promptTemplate?.text,
         systemMessage: settings?.system?.systemMessage,
+        memory: settings?.memory,
         ...settings?.performance,
         ...settings?.response,
       }
