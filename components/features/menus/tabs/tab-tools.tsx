@@ -41,7 +41,7 @@ export const ToolsTab = (props: I_Props) => {
 
       <MultiSelector
         initValue={selected}
-        onSubmit={setSelected}
+        onSelect={setSelected}
         options={tools?.map?.(tool => tool.name)}
         className="min-h-[5rem] w-full sm:w-full"
       >

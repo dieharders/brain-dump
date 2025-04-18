@@ -15,11 +15,11 @@ export const defaultState: I_Knowledge_State = { ids: [] }
 
 interface I_Props {
   state: I_Knowledge_State
-  setState: Dispatch<SetStateAction<I_Knowledge_State>>
+  onSelect: Dispatch<SetStateAction<I_Knowledge_State>>
 }
 
 export const KnowledgeTab = (props: I_Props) => {
-  const { setState, state } = props
+  const { onSelect, state } = props
   const { fetchCollections } = useMemoryActions()
   const [options, setOptions] = useState<any[]>([])
 
@@ -49,11 +49,9 @@ export const KnowledgeTab = (props: I_Props) => {
         </DialogDescription>
       </DialogHeader>
 
-      {/* <Content /> */}
-
       <MultiSelector
         initValue={state.ids}
-        onSubmit={(selections: any) => setState(prev => ({ ...prev, ids: selections }))}
+        onSelect={(selections: any) => onSelect(prev => ({ ...prev, ids: selections }))}
         options={data?.map?.(p => p.name)}
         className="min-h-[5rem] w-full sm:w-full"
       >

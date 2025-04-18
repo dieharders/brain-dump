@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -28,7 +28,12 @@ export const KnowledgeCharmMenu = (props: I_Props) => {
   const [state, setState] = useState<I_Knowledge_State>(
     playgroundSettings.memory || defaultState,
   )
-  const knowledgeMenu = useMemo(() => <KnowledgeTab state={state} setState={setState} />, [state])
+  const knowledgeMenu = useMemo(() => <KnowledgeTab state={state} onSelect={setState} />, [state])
+
+  // Reset when opening again
+  useEffect(() => {
+    if (!dialogOpen) setState(playgroundSettings.memory || defaultState)
+  }, [dialogOpen, playgroundSettings.memory])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
