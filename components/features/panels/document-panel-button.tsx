@@ -28,7 +28,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const currentCollection = collections?.find(c => c.name === collectionName) || null
   const currentSelectedDocument = documents.find(d => selectedDocumentId === d.id)
-  const docBehavior = useRef<undefined | I_Source>(undefined)
+  const editingDoc = useRef<undefined | I_Source>(undefined)
 
   const emptyDocuments = (
     <div className="p-8 text-center">
@@ -55,7 +55,7 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
           }}>
           <CardButtons
             editAction={() => {
-              docBehavior.current = currentSelectedDocument
+              editingDoc.current = currentSelectedDocument
               setCreateDialogOpen(true)
             }}
             onDeleteAction={async () => {
@@ -87,17 +87,17 @@ export const DocumentsButton = ({ session, collectionName, fetchAction }: I_Prop
         <div className="my-4 flex w-full flex-col space-y-8 overflow-y-auto">
           {/* Action Menus */}
           <DialogAddDocument
-            action={docBehavior.current ? updateDocument : addDocument}
+            action={editingDoc.current ? updateDocument : addDocument}
             dialogOpen={createDialogOpen}
             setDialogOpen={setCreateDialogOpen}
             collection={currentCollection}
-            document={docBehavior.current}
+            document={editingDoc.current}
           />
           {/* "Add New" and "Refresh" buttons */}
           <div className="flex items-center justify-center gap-4 overflow-hidden whitespace-nowrap px-4 py-2">
             <Button className="flex-1 truncate text-center" onClick={() => {
               setCreateDialogOpen(true)
-              docBehavior.current = undefined
+              editingDoc.current = undefined
             }} >+ New Document</Button>
             <RefreshButton action={fetchAction} />
           </div>
