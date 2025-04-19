@@ -32,9 +32,14 @@
   ],
   "refine": [
     {
+      "id": "refine_simple",
+      "name": "Simplify Answer",
+      "text": "The following query:\n{{user_prompt}}\nwas given this context:\n{{context_str}}\nWrite a simplified response to the query based on the context."
+    },
+    {
       "id": "refine_answer",
-      "name": "Refine Answer",
-      "text": "The following query:\n{{user_prompt}}\nwas given this context:\n{{context_str}}\nWrite a response to the query based on the context."
+      "name": "Refine Previous Answer",
+      "text": "The original query is as follows: {{user_prompt}}\nWe have provided an existing answer: {{existing_answer}}\nWe have the opportunity to refine the existing answer (only if needed) with some more context below.\n------------\n{{context_str}}\n------------\nGiven the new context, refine the original answer to better answer the query. If the context isn't useful, return the original answer.\nRefined Answer: "
     }
   ],
   "logic": [
@@ -70,7 +75,7 @@
     {
       "id": "json_path",
       "name": "Return JSON Query",
-      "text": "We have provided a JSON schema below:\n{{schema}}\nGiven a task, respond with a JSON Path query that can retrieve data from a JSON value that matches the schema.\nTask: {{query_str}}\nJSONPath: ",
+      "text": "We have provided a JSON schema below:\n{{schema}}\nGiven a task, respond with a JSON Path query that can retrieve data from a JSON value that matches the schema.\nTask: {{user_prompt}}\nJSONPath: ",
       "type": "JSON_PATH"
     },
     {
