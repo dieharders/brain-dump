@@ -23,67 +23,6 @@ interface I_BuiltInProps {
   setState: (paramName: string, value: any) => void
 }
 
-interface I_TemplateData {
-  name: string
-  value: string
-  isLabel?: boolean
-  text?: string
-}
-
-const RetrievalTemplateSelector = ({ param, setState }: I_BuiltInProps) => {
-  const { services } = useGlobalContext()
-  const [templates, setTemplates] = useState<I_TemplateData[]>([])
-  const items = templates?.map?.(t => ({ name: t.name, value: t.value, isLabel: t.isLabel })) || []
-  const [selectedTemplate, setSelectedTemplate] = useState('')
-  const [selectedTemplateName, setSelectedTemplateName] = useState(param.value)
-
-  // Fetch templates
-  useEffect(
-    () => {
-      const action = async () => {
-        const res = await services?.textInference.getRagPromptTemplates()
-        const data = res?.data
-        const entries: any[] = Object.entries(data)
-        const result: any[] = []
-        entries.forEach(i => {
-          result.push({ name: i?.[0].toUpperCase(), isLabel: true })
-          i[1]?.forEach((v: any) => result.push({ name: v.name, value: v.id, text: v.text }))
-        })
-        if (res?.success && data) setTemplates(result)
-      }
-      action()
-    },
-    [services?.textInference],
-  )
-
-  return (
-    <div className="mb-2 flex w-full flex-col items-center gap-2">
-      <Select
-        id="param_retrieval_template"
-        placeholder="Select retrieval template"
-        name="param_retrieval_template"
-        value={selectedTemplateName}
-        items={items}
-        onChange={e => {
-          if (e) {
-            e && setSelectedTemplateName(e)
-            const templateString = templates?.find(t => t.value === e)?.text
-            e && templateString && setSelectedTemplate(templateString)
-            // Record final value
-            setState(param.name, templateString)
-          }
-        }}
-      />
-      <textarea
-        name={`${param.name}-param-text`}
-        value={param.value || selectedTemplate}
-        disabled
-        className={textareaStyle}
-      />
-    </div>
-  )
-}
-
 const KnowledgeSelector = ({ param, setState, savedState }: I_BuiltInProps) => {
   const { fetchCollections } = useMemoryActions()
   const [options, setOptions] = useState<any[]>([])
@@ -108,7 +47,7 @@ const KnowledgeSelector = ({ param, setState, savedState }: I_BuiltInProps) => {
   return (
     <MultiSelector
       initValue={savedState?.value}
-      onSubmit={(val: any) => setState(param.name, val)}
+      onSelect={(val: any) => setState(param.name, val)}
       options={data?.map?.(p => p.name)}
       className="min-h-[5rem] w-full sm:w-full"
     >
@@ -184,8 +123,6 @@ const BuiltInComponent = (props: I_BuiltInProps) => {
   switch (param.options_source) {
     case 'installed-models':
       return <ModelSelector {...props} />
-    case 'retrieval-template':
-      return <RetrievalTemplateSelector {...props} />
     case 'memories':
       return <KnowledgeSelector {...props} />
     default:
@@ -258,7 +195,7 @@ export const ToolParameterInput = (props: {
       return (
         <MultiSelector
           initValue={initParam?.value}
-          onSubmit={(val: any) => setParamValue(param.name, val)}
+          onSelect={(val: any) => setParamValue(param.name, val)}
           options={options?.map?.(p => `${p}`)}
           className="min-h-[5rem] w-full sm:w-full"
         >
