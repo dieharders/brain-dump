@@ -454,7 +454,6 @@ export interface I_ServiceApis extends I_BaseServiceApis {
     delete: T_GenericAPIRequest<I_DeleteTextModelReqPayload, T_GenericDataRes>
     getModelConfigs: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
-    getRagPromptTemplates: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
     getSystemPrompts: T_GenericAPIRequest<T_GenericReqPayload, T_GenericDataRes>
   }
   /**
@@ -541,17 +540,6 @@ const fetchAPIConfig = async (): Promise<I_ServicesResponse | null> => {
   } catch (err) {
     console.log('[homebrew] fetchAPIConfig error:', err)
     return null
-  }
-}
-
-const getRagPromptTemplates = async () => {
-  // Read in json file
-  const file = await import('../data/rag-prompt-templates.json')
-
-  return {
-    success: true,
-    message: 'Returned retrieval augmented generation templates for text inference.',
-    data: file.default,
   }
 }
 
@@ -662,7 +650,6 @@ const createServices = (response: I_API[] | null): I_ServiceApis | null => {
   // Inject non-backend related methods
   serviceApis.textInference.getPromptTemplates = getPromptTemplates
   serviceApis.textInference.getSystemPrompts = getSystemPrompts
-  serviceApis.textInference.getRagPromptTemplates = getRagPromptTemplates
 
   return serviceApis
 }
