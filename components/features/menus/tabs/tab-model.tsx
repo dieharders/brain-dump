@@ -53,7 +53,7 @@ export const ModelTab = (props: I_Props) => {
       <div className="flex w-full flex-row items-start justify-between gap-2">
         <div className="flex w-full flex-col items-stretch justify-items-stretch gap-4 pb-4">
           <div className="flex flex-col gap-2">
-            {/* Document Name */}
+            {/* Agent Name */}
             <div className="w-full">
               <Input
                 name="name"
@@ -61,7 +61,7 @@ export const ModelTab = (props: I_Props) => {
                 placeholder="Name (3-63 lowercase chars)"
                 onChange={e => {
                   let parsed = e.target.value.toLowerCase()
-                  parsed = parsed.replace(/[^a-zA-Z0-9]/g, '')
+                  parsed = parsed.replace(/[^a-zA-Z0-9-]/g, '')
                   setState({ ...state, botName: parsed })
                 }}
                 className="text-md"
