@@ -72,12 +72,12 @@ export const PromptTemplateForm = (props: I_Props) => {
       <DialogHeader className="my-8">
         <div className="flex flex-row items-center gap-2">
           <DialogTitle>Thought Structure</DialogTitle>
-          <Info label="sys_msg" className="h-full w-6 p-1">
-            <span><Highlight>query prompt</Highlight> The primary instruction that determines how the LLM thinks and responds.</span>
+          <Info label="prompt template" className="h-full w-6 p-1">
+            <span><Highlight>prompt template</Highlight> The prompt is injected into the template, giving structure to the Ai response.</span>
           </Info>
         </div>
         <DialogDescription>
-          Templates to give structure to the Agent response. Choose from pre-made templates or write your own.
+          Structure your query in a way that affects how the Ai thinks and responds. Choose from pre-made templates or write your own.
         </DialogDescription>
       </DialogHeader>
 
