@@ -1,8 +1,8 @@
 'use client'
 
 import { I_SelItemData, MultiSelector } from '@/components/ui/multi-toggle'
-import { I_Tool_Definition, I_Tool_Parameter } from '@/lib/homebrew'
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import { I_Tool_Definition, T_Tool_Param_Option, I_Tool_Parameter } from '@/lib/homebrew'
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import { Select } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { MiniPanelCard } from '@/components/features/panels/panel-card-mini'
@@ -134,7 +134,7 @@ const BuiltInComponent = (props: I_BuiltInProps) => {
 // Return a component specific to the param type
 export const ToolParameterInput = (props: {
   param: I_Tool_Parameter,
-  options: string[] | number[],
+  options: T_Tool_Param_Option,
   savedState: I_Tool_Definition | undefined,
   setState: Dispatch<SetStateAction<I_Tool_Definition>>
 }) => {
@@ -144,6 +144,7 @@ export const ToolParameterInput = (props: {
     savedState,
     setState,
   } = props
+  const selectionDescription = useRef('')
   const initParam = savedState?.params.find(p => p.name === param.name)
   const setParamValue = useCallback((paramName: string, value: any) => {
     setState((prev: any) => {
@@ -176,30 +177,44 @@ export const ToolParameterInput = (props: {
   // Return user-generated inputs
   switch (param.input_type) {
     case 'options-sel': {
+      const description = selectionDescription.current
       return (
-        <Select
-          id={`${param.name}_param_select`}
-          placeholder={param.placeholder || ''}
-          name={param.name}
-          value={initParam?.value || undefined}
-          items={options?.map?.(i => ({
-            name: `${i}`,
-            value: `${i}`
-          }))}
-          onChange={e => e && setParamValue(param.name, e)}
-        />
+        <>
+          {/* Description of the currently selected param option */}
+          {description ? <DialogDescription className={cn(dialogTitleStyle, 'mb-2')}>{description}</DialogDescription> : null}
+          <Select
+            id={`${param.name}_param_select`}
+            placeholder={param.placeholder || ''}
+            name={param.name}
+            value={initParam?.value || undefined}
+            items={options?.map?.(optionName => ({
+              name: `${optionName}`,
+              value: `${optionName}`
+            }))}
+            onChange={e => {
+              const descrIndex = param.options?.findIndex(i => i === e) || 0
+              selectionDescription.current = param.options_description?.[descrIndex] || ''
+              e && setParamValue(param.name, e)
+            }}
+          />
+        </>
       )
     }
     // Select multiple items at once
     case 'options-multi': {
+      const description = selectionDescription.current
       return (
         <MultiSelector
           initValue={initParam?.value}
-          onSelect={(val: any) => setParamValue(param.name, val)}
-          options={options?.map?.(p => `${p}`)}
+          onSelect={(val: any) => {
+            const descrIndex = param.options?.findIndex(i => i === `${val}`) || 0
+            selectionDescription.current = param.options_description?.[descrIndex] || ''
+            setParamValue(param.name, val)
+          }}
+          options={options?.map?.(optionName => `${optionName}`)}
           className="min-h-[5rem] w-full sm:w-full"
         >
-          {options?.map?.(p => <MiniPanelCard key={p} name={`${p}`} description="No description." />)}
+          {options?.map?.(optionName => <MiniPanelCard key={optionName} name={`${optionName}`} description={description || 'No description.'} />)}
         </MultiSelector>
       )
     }
