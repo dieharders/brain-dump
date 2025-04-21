@@ -366,6 +366,8 @@ export interface I_Tool_Def_Parameter extends I_Tool_Parameter {
   value?: any
 }
 
+export type T_Tool_Param_Option = string[] | number[]
+
 // Tool function's field data returned from server
 export interface I_Tool_Parameter {
   name: string
@@ -379,6 +381,7 @@ export interface I_Tool_Parameter {
   min_value?: string | number
   max_value?: string | number
   options_source?: string
+  options_description?: string[]
   options?: string[]
   items?: any[]
 }

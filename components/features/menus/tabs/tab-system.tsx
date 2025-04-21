@@ -70,13 +70,13 @@ export const SystemTab = (props: I_Props) => {
     <div className="px-1">
       <DialogHeader className="my-8">
         <div className="flex flex-row items-center gap-2">
-          <DialogTitle>Ai Role</DialogTitle>
-          <Info label="sys_msg" className="h-full w-6 p-1">
-            <span><Highlight>system message</Highlight> A special instruction to guide the model to play a role.</span>
+          <DialogTitle>Guide Behavior</DialogTitle>
+          <Info label="system message" className="h-full w-6 p-1">
+            <span><Highlight>system message</Highlight> A special instruction to guide the Ai to behave a particular way or perform a role.</span>
           </Info>
         </div>
         <DialogDescription className="text-md mb-4">
-          {`Templates to override the model's behavior. Choose from pre-made templates or write your own.`}
+          {'Templates to override the model\'s behavior. Choose from pre-made templates or write your own.'}
         </DialogDescription>
       </DialogHeader>
 

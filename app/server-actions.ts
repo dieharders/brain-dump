@@ -132,3 +132,53 @@ export async function newChat() {
   revalidatePath('/')
   return redirect('/')
 }
+
+export const getLatestRelease = async (githubToken: string) => {
+  if (!githubToken) {
+    return {
+      error: 'GitHub token is required',
+    }
+  }
+
+  try {
+    const response = await fetch(
+      'https://api.github.com/repos/dieharders/obrew-studio-server/releases/latest',
+      {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          Authorization: `Bearer ${githubToken}`,
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+        // Add Next.js fetch cache options
+        next: {
+          revalidate: 86400, // Cache for 1 day
+          tags: ['github-release'],
+        },
+      },
+    )
+
+    if (!response.ok) {
+      throw new Error(`GitHub API responded with status ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      success: true,
+      data: {
+        name: data.name,
+        tag_name: data.tag_name,
+        published_at: data.published_at,
+        relNotes: data.body,
+        downloadName: data.assets[0].name,
+        downloadSize: data.assets[0].size,
+        downloadUrl: data.assets[0].browser_download_url,
+        pageUrl: data.assets[0].url,
+      },
+    }
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Failed to fetch latest release',
+    }
+  }
+}

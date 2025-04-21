@@ -21,7 +21,6 @@ const loadModelAction = async (
   const selectedModelId = settings?.model?.id
   const filename = settings?.model?.filename || ''
   const responseMode = settings?.attention?.response_mode
-  const toolResponseMode = settings?.attention?.tool_response_mode
   // const toolSchemaType = settings?.tools?.tool_schema_type @TODO Add
   const toolUseMode = settings?.attention?.tool_use_mode
   const initOptions = settings?.performance
@@ -39,7 +38,6 @@ const loadModelAction = async (
       modelPath: installPath || '',
       modelId: selectedModelId || '',
       responseMode,
-      toolResponseMode,
       toolUseMode,
       // toolSchemaType, @TODO Add
       init: initOptions || {},
