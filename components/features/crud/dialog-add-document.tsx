@@ -358,7 +358,7 @@ export const DialogAddDocument = (props: I_Props) => {
           />
         </label>
       </div>
-      <div className={inputContainer}>
+      {/* <div className={inputContainer}>
         <Item className={radioGroupItemStyle} value="serverFilePath" id="r4">
           <Indicator className={radioGroupIndicatorStyle} />
         </Item>
@@ -373,7 +373,7 @@ export const DialogAddDocument = (props: I_Props) => {
             className={fieldContainer}
           />
         </label>
-      </div>
+      </div> */}
     </Root>
   )
 
