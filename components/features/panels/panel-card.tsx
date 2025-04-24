@@ -39,8 +39,8 @@ export const PanelCard = (props: I_Props) => {
   const [isActive, setIsActive] = useState(false)
   const description = data?.description || 'No description.'
   const name = data?.name || 'No title'
-  const toolTipStyle = cn("w-full overflow-hidden")
-  const labelStyle = cn("justify-left flex")
+  const toolTipStyle = cn('w-full overflow-hidden')
+  const labelStyle = cn('justify-left flex')
   const stats = data.stats || []
 
   return (
@@ -99,7 +99,7 @@ export const PanelCard = (props: I_Props) => {
 
       {/* Stats */}
       {data.stats &&
-        <div className="flex h-fit w-full flex-row justify-start justify-items-stretch gap-4 space-x-2 overflow-hidden text-ellipsis whitespace-nowrap text-gray-400">
+        <div className="flex h-fit w-full flex-row justify-evenly justify-items-stretch gap-4 space-x-2 overflow-hidden text-ellipsis whitespace-nowrap text-gray-400">
           {stats?.map(stat => {
             return (
               // This div correctly aligns tool popup
@@ -110,7 +110,7 @@ export const PanelCard = (props: I_Props) => {
                     className={toolTipStyle}
                   >
                     <div className={labelStyle}>
-                      <p className="truncate">{stat?.icon || '❔'}{' '}{stat?.value}</p>
+                      <p className="truncate">{stat?.icon || '⭕'}</p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>{stat?.name}: {stat?.value}</TooltipContent>
