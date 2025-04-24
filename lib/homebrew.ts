@@ -500,7 +500,7 @@ export const defaultDomain = 'http://localhost'
 const createDomainName = () => {
   const { port, domain } = appSettings.getHostConnection()
   const PORT = port || defaultPort
-  const DOMAIN = domain || defaultDomain
+  const DOMAIN = domain === '0.0.0.0' ? defaultDomain : domain
   const origin = `${DOMAIN}:${PORT}`
   return origin
 }
