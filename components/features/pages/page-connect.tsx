@@ -183,12 +183,16 @@ const Menu = () => {
 }
 
 export const ConnectPage = () => {
+  const appVer = process.env.NEXT_PUBLIC_APP_VERSION
+  const displayAppVersion = appVer && <p className="absolute left-[1rem] top-[1.5rem] text-sm font-bold text-yellow-300/40 hover:text-yellow-300/80">WebUI ver{process.env.NEXT_PUBLIC_APP_VERSION}</p>
   return (
     <div className="flex flex-row items-stretch justify-items-stretch self-stretch justify-self-stretch">
       <Bg />
       <div className="light:bg-primary absolute left-0 top-0 flex h-full w-full flex-col items-center justify-around justify-items-stretch overflow-x-hidden p-12 dark:bg-sky-400/10">
         {/* Inputs */}
         <Menu />
+        {/* Display app version */}
+        {displayAppVersion}
       </div>
     </div>
   )
