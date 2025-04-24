@@ -5,4 +5,7 @@ module.exports = {
   experimental: {
     serverActions: true,
   },
+  env: {
+    APP_VERSION: process.env.npm_package_version,
+  },
 }
