@@ -228,7 +228,7 @@ export interface I_Collection {
     tags: string
     icon: string
     sources: Array<I_Source>
-    createdAt?: string
+    created_at?: string
     sharePath?: string
     favorites?: number
   }

@@ -15,7 +15,8 @@ export const CollectionCard = (props: I_Props) => {
   const numFavorites = collection?.metadata?.favorites || 0
   const numTags = collection?.metadata?.tags ? collection?.metadata?.tags?.split(' ').length : 0
   const numSources = collection?.metadata?.sources.length || 0
-  const createdAt = collection?.metadata?.createdAt || '?'
+  const createdAt = collection?.metadata?.created_at || '?'
+  const embeddingModel = collection?.metadata?.embedding_model
   const icon = collection?.metadata?.icon || '🧠'
   const data = {
     name: collection.name || 'No name',
@@ -32,6 +33,11 @@ export const CollectionCard = (props: I_Props) => {
         name: 'Favorite count',
         value: numFavorites,
         icon: '⭐'
+      },
+      {
+        name: 'Embedding Model',
+        value: embeddingModel,
+        icon: '🤖'
       },
       {
         name: 'Tag count',
