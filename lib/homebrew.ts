@@ -231,6 +231,7 @@ export interface I_Collection {
     created_at?: string
     sharePath?: string
     favorites?: number
+    createdAt?: string
   }
 }
 

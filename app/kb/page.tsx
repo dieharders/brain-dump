@@ -57,16 +57,16 @@ export default function KnowledgeBasePage() {
   const [currentChunkItem, setCurrentChunkItem] = useState<I_DocumentChunk | null>(null)
   const [selectedChunk, setSelectedChunk] = useState<string | undefined>(undefined)
   // Styles
-  const toggleStyle = cn("flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl")
-  const headingStyle = cn("text-2xl font-bold")
-  const subHeadingStyle = cn("text-lg font-semibold")
-  const descriptionStyle = cn("text-md break-all text-muted-foreground saturate-50")
-  const tagStyle = cn("flex flex-row flex-wrap items-center justify-start gap-2")
+  const toggleStyle = cn('flex min-h-[5rem] min-w-[5rem] flex-col items-center justify-between gap-1 self-center rounded-lg p-2 text-center text-3xl')
+  const headingStyle = cn('text-2xl font-bold')
+  const subHeadingStyle = cn('text-lg font-semibold')
+  const descriptionStyle = cn('text-md break-all text-muted-foreground saturate-50')
+  const tagStyle = cn('flex flex-row flex-wrap items-center justify-start gap-2')
 
   // Render markdown string
   const mkdn = (text: string | undefined) => {
     return <MemoizedReactMarkdown
-      className={cn("prose min-h-[16rem] w-full rounded-md p-4 dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 sm:bg-muted", descriptionStyle, "break-words")}
+      className={cn('prose min-h-[16rem] w-full rounded-md p-4 dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 sm:bg-muted', descriptionStyle, 'break-words')}
       remarkPlugins={[remarkGfm, remarkMath]}
       components={{
         p({ children }) {
@@ -118,7 +118,7 @@ export default function KnowledgeBasePage() {
       <span className="text-center text-2xl font-bold">No document found, huh...</span>
       {/* @TODO Make this a button that can open the menu */}
       <p className={descriptionStyle}>
-        {`Try selecting a document from the "Documents" button on the header.`}
+        {'Try selecting a document from the "Documents" button on the header.'}
       </p>
     </div>
   )
@@ -126,12 +126,12 @@ export default function KnowledgeBasePage() {
   const documentPage = (
     document ?
       <div className="flex w-full flex-1 flex-col items-center justify-start gap-8">
-        <div className={cn("w-full self-center text-center", headingStyle)}>Document</div>
+        <div className={cn('w-full self-center text-center', headingStyle)}>Document</div>
 
         <div className="flex h-full w-full flex-col items-stretch justify-center gap-8 overflow-hidden lg:flex-row">
           {/* Document info */}
           <div className="flex h-fit w-full flex-1 flex-col items-center justify-start gap-8">
-            <h1 className={cn(subHeadingStyle, "text-center text-xl")}>Document Info</h1>
+            <h1 className={cn(subHeadingStyle, 'text-center text-xl')}>Document Info</h1>
             {/* Form */}
             <div className="flex w-full flex-1 flex-col items-start justify-start gap-3 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
               <div className={subHeadingStyle}>Title</div>
@@ -153,7 +153,7 @@ export default function KnowledgeBasePage() {
           <div className="flex flex-col items-center justify-center border-0 border-t-2 md:border-l-2"></div>
           {/* Document Text/Chunks */}
           <div className="mb-16 flex flex-1 flex-col items-center justify-start gap-8 overflow-hidden px-1">
-            <h1 className={cn(subHeadingStyle, "text-center text-xl")}>Document Content</h1>
+            <h1 className={cn(subHeadingStyle, 'text-center text-xl')}>Document Content</h1>
             {/* Toggle Group */}
             <ToggleGroup
               label="Text Mode"
@@ -204,7 +204,7 @@ export default function KnowledgeBasePage() {
           numSources={collection?.metadata?.sources.length || 0}
         /> */}
         {/* Header */}
-        <div className={cn("self-center pb-4 text-center", headingStyle)}>Collection</div>
+        <div className={cn('self-center pb-4 text-center', headingStyle)}>Collection</div>
         {/* Actions */}
         {/* <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 overflow-hidden pb-4">
           <Button variant="outline" className="w-fit p-5 text-lg" onClick={() => notifications().notAvailable()}>Edit</Button>
@@ -215,11 +215,11 @@ export default function KnowledgeBasePage() {
         <div className="flex w-full flex-col items-start justify-start gap-2 rounded-lg p-4 sm:max-w-[34rem] sm:bg-muted">
           {/* Title */}
           <div className={subHeadingStyle}>Title</div>
-          <div className={descriptionStyle} >{collectionName || "Explore files in this collection"}</div>
+          <div className={descriptionStyle} >{collectionName || 'Explore files in this collection'}</div>
           {/* Description */}
           <div className={subHeadingStyle}>Description</div>
           <p className={descriptionStyle}>
-            {collection?.metadata?.description || "Add a detailed description for the contents of this collection."}
+            {collection?.metadata?.description || 'Add a detailed description for the contents of this collection.'}
           </p>
           {/* Tags */}
           <div className={subHeadingStyle} >Tags</div>
@@ -233,9 +233,9 @@ export default function KnowledgeBasePage() {
           {/* Info */}
           <div className={subHeadingStyle}>Info</div>
           <div className="w-full flex-col flex-wrap items-center justify-between space-x-4">
-            <p className={cn("flex flex-row flex-wrap gap-4", descriptionStyle)}>
+            <p className={cn('flex flex-row flex-wrap gap-4', descriptionStyle)}>
               <span className="w-fit">📂 <span className="text-primary">Documents:</span> {collection?.metadata?.sources.length || 0}</span>
-              <span className="w-fit">📆 <span className="text-primary">Created:</span> {collection?.metadata?.createdAt || "?"}</span>
+              <span className="w-fit">📆 <span className="text-primary">Created:</span> {collection?.metadata?.createdAt || '?'}</span>
             </p>
           </div>
         </div>
